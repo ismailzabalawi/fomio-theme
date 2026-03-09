@@ -1,0 +1,3 @@
+fomio_app_url:
+  type: string
+  default: ""

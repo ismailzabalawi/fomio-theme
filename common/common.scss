@@ -1,0 +1,1012 @@
+// ============================================================
+// FOMIO THEME — DESIGN TOKENS & TYPOGRAPHY
+// "Ink & Paper" — Modern Editorial
+// ============================================================
+
+
+// ------------------------------------------------------------
+// 1. FONT STACKS
+// Lora loaded via common/head_tag.html (Google Fonts)
+// ------------------------------------------------------------
+
+:root {
+  --fomio-font-serif: "Lora", Georgia, "Times New Roman", serif;
+  --fomio-font-ui: -apple-system, "SF Pro Text", system-ui, sans-serif;
+}
+
+
+// ------------------------------------------------------------
+// 2. TYPE SCALE
+// ------------------------------------------------------------
+
+:root {
+  --fomio-text-xs:   0.75rem;    // 12px — timestamps, fine print
+  --fomio-text-sm:   0.8125rem;  // 13px — metadata, nav labels
+  --fomio-text-base: 1rem;       // 16px — base
+  --fomio-text-md:   1.125rem;   // 18px — body copy
+  --fomio-text-lg:   1.25rem;    // 20px — subheadings
+  --fomio-text-xl:   1.5rem;     // 24px — section headings
+  --fomio-text-2xl:  2rem;       // 32px — article titles
+  --fomio-text-3xl:  2.75rem;    // 44px — hero headlines
+  --fomio-text-4xl:  3.5rem;     // 56px — display / homepage feature
+}
+
+
+// ------------------------------------------------------------
+// 3. LEADING (line-height)
+// ------------------------------------------------------------
+
+:root {
+  --fomio-leading-tight:   1.1;   // Large headlines
+  --fomio-leading-snug:    1.3;   // Subheadings, titles in list
+  --fomio-leading-normal:  1.5;   // UI elements
+  --fomio-leading-relaxed: 1.65;  // Standard body
+  --fomio-leading-loose:   1.8;   // Longform reading (cooked posts)
+}
+
+
+// ------------------------------------------------------------
+// 4. TRACKING (letter-spacing)
+// ------------------------------------------------------------
+
+:root {
+  --fomio-tracking-tight:  -0.02em;  // Large headlines
+  --fomio-tracking-normal:  0;        // Body
+  --fomio-tracking-wide:    0.04em;   // UI labels
+  --fomio-tracking-wider:   0.08em;   // Eyebrow text, category labels
+}
+
+
+// ------------------------------------------------------------
+// 5. COLOUR ALIASES
+// Raw values come from the "Ink & Paper" scheme in about.json.
+// Always use these aliases — never raw hex — in this file.
+// ------------------------------------------------------------
+
+:root {
+  --fomio-ink:       #1a1a1a;               // Soft Charcoal = --primary
+  --fomio-paper:     #f9f7f2;               // Warm Cream    = --secondary
+  --fomio-red:       #c44536;               // Sealing Wax Red = --tertiary
+  --fomio-rule:      #e0e0e0;               // Subtle Gray — 1px borders only
+
+  --fomio-ink-muted: rgba(26, 26, 26, 0.5); // Secondary text, captions
+  --fomio-ink-ghost: rgba(26, 26, 26, 0.06);// Hover fills, subtle backgrounds
+  --fomio-red-dark:  #a8362b;               // Sealing Wax Red — hover state
+}
+
+
+// ------------------------------------------------------------
+// 6. BASE — Discourse variable overrides
+// ------------------------------------------------------------
+
+html {
+  --base-font-size: 16px;
+  --base-line-height: 1.65;
+  --base-font-family: var(--fomio-font-serif);
+}
+
+body {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--base-font-size);
+  line-height: var(--fomio-leading-relaxed);
+  color: var(--fomio-ink);
+  background-color: var(--fomio-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+// ------------------------------------------------------------
+// 7. HEADING SCALE
+// ------------------------------------------------------------
+
+h1 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-3xl);
+  font-weight: 700;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-ink);
+}
+
+h2 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-2xl);
+  font-weight: 600;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+}
+
+h3 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-xl);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+}
+
+h4 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-lg);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+}
+
+// h5/h6 — functional, uppercase label style
+h5,
+h6 {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-transform: uppercase;
+  line-height: var(--fomio-leading-normal);
+  color: var(--fomio-ink-muted);
+}
+
+
+// ------------------------------------------------------------
+// 8. COOKED (rendered post body)
+// ------------------------------------------------------------
+
+.cooked {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-md);
+  line-height: var(--fomio-leading-loose);
+  color: var(--fomio-ink);
+
+  p {
+    margin: 0 0 1.5em;
+  }
+
+  a {
+    color: var(--fomio-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--fomio-rule);
+
+    &:hover {
+      color: var(--fomio-red);
+      text-decoration-color: var(--fomio-red);
+    }
+  }
+
+  blockquote {
+    border-left: 2px solid var(--fomio-red);
+    padding-left: 1.25em;
+    margin: 2em 0;
+    font-style: italic;
+    color: var(--fomio-ink-muted);
+  }
+
+  strong {
+    font-weight: 700;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  code {
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875em;
+    background: var(--fomio-ink-ghost);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+
+  pre {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    background: var(--fomio-ink-ghost);
+    border-left: 2px solid var(--fomio-rule);
+    padding: 1.25em 1.5em;
+    overflow-x: auto;
+
+    code {
+      background: none;
+      padding: 0;
+      font-size: inherit;
+    }
+  }
+
+  // Heading styles inside posts mirror the global scale
+  h1, h2, h3, h4 {
+    font-family: var(--fomio-font-serif);
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 9. UI / FUNCTIONAL TYPOGRAPHY
+// Timestamps, metadata, nav — always SF Pro, never Lora
+// ------------------------------------------------------------
+
+.topic-list .age,
+.topic-list .num,
+.nav-pills li a,
+.post-info,
+.names .username,
+.names .full-name,
+.relative-date,
+.post-date,
+.topic-meta-data,
+.category-breadcrumb,
+.d-breadcrumbs {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+// Category labels — small-caps treatment
+.category-name,
+.badge-category__name {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+}
+
+
+// ------------------------------------------------------------
+// 10. TOPIC TITLES (list view)
+// Serif, editorial weight — content is the hero
+// ------------------------------------------------------------
+
+.topic-list-item .title,
+.topic-list .main-link a,
+.latest-topic-list-item .topic-title {
+  font-family: var(--fomio-font-serif);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+  letter-spacing: var(--fomio-tracking-tight);
+}
+
+
+// ------------------------------------------------------------
+// 11. HOMEPAGE SHELL
+// Homepage framing above the default discovery list
+// ------------------------------------------------------------
+
+.fomio-home-shell {
+  padding: 2rem 0 2.5rem;
+  border-bottom: 1px solid var(--fomio-rule);
+  margin-bottom: 2rem;
+}
+
+.fomio-home-shell__hero,
+.fomio-home-shell__supporting {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.fomio-home-shell__hero {
+  margin-bottom: 1.5rem;
+}
+
+.fomio-home-shell__intro,
+.fomio-home-shell__lead-card,
+.fomio-home-shell__section {
+  background: color-mix(in srgb, var(--fomio-paper) 86%, white 14%);
+  border: 1px solid var(--fomio-rule);
+  border-radius: 18px;
+  padding: 1.5rem;
+}
+
+.fomio-home-shell__eyebrow,
+.fomio-home-shell__card-label,
+.fomio-home-shell__section-label {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+  margin: 0 0 0.75rem;
+}
+
+.fomio-home-shell__title,
+.fomio-home-shell__card-title {
+  margin: 0 0 0.75rem;
+  color: var(--fomio-ink);
+}
+
+.fomio-home-shell__title {
+  max-width: 12ch;
+}
+
+.fomio-home-shell__dek,
+.fomio-home-shell__card-copy,
+.fomio-home-shell__section-copy {
+  margin: 0;
+  color: var(--fomio-ink);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-relaxed);
+}
+
+.fomio-home-shell__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  margin-top: 1.5rem;
+}
+
+.fomio-home-shell__primary-link,
+.fomio-home-shell__secondary-link,
+.fomio-home-shell__app-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.875rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.fomio-home-shell__primary-link,
+.fomio-home-shell__app-link {
+  background: var(--fomio-red);
+  border: 1px solid var(--fomio-red);
+  color: var(--fomio-paper);
+
+  &:hover {
+    background: var(--fomio-red-dark);
+    border-color: var(--fomio-red-dark);
+    color: var(--fomio-paper);
+  }
+}
+
+.fomio-home-shell__secondary-link {
+  background: transparent;
+  border: 1px solid var(--fomio-rule);
+  color: var(--fomio-ink);
+
+  &:hover {
+    border-color: var(--fomio-ink);
+    color: var(--fomio-ink);
+  }
+}
+
+.fomio-home-shell__signals {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+
+  li {
+    position: relative;
+    padding-left: 1rem;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: var(--fomio-leading-normal);
+    color: var(--fomio-ink);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 0.4rem;
+      height: 0.4rem;
+      border-radius: 999px;
+      background: var(--fomio-red);
+    }
+  }
+}
+
+.fomio-home-shell__section--handoff {
+  border-color: color-mix(in srgb, var(--fomio-red) 30%, var(--fomio-rule) 70%);
+}
+
+.fomio-home-shell__section--handoff .fomio-home-shell__section-copy {
+  margin-bottom: 1rem;
+}
+
+
+// ------------------------------------------------------------
+// 12. TOPIC LIST RAIL
+// Discovery lists become editorial reading rails
+// ------------------------------------------------------------
+
+.topic-list.--fomio-discovery-list {
+  border-collapse: separate;
+  border-spacing: 0 0.9rem;
+}
+
+.topic-list.--fomio-discovery-list .topic-list-header tr {
+  border-bottom: none;
+}
+
+.topic-list.--fomio-discovery-list .topic-list-header .topic-list-data,
+.topic-list.--fomio-discovery-list .topic-list-header .num {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+  border-bottom: none;
+  padding-bottom: 0.2rem;
+}
+
+.topic-list-item.--fomio-discovery-item td {
+  background: color-mix(in srgb, var(--fomio-paper) 92%, white 8%);
+  border-top: 1px solid var(--fomio-rule);
+  border-bottom: 1px solid var(--fomio-rule);
+  padding-top: 1.15rem;
+  padding-bottom: 1.15rem;
+  vertical-align: top;
+}
+
+.topic-list-item.--fomio-discovery-item td:first-child {
+  border-left: 1px solid var(--fomio-rule);
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  padding-left: 1.35rem;
+  width: auto;
+}
+
+.topic-list-item.--fomio-discovery-item td:last-child {
+  border-right: 1px solid var(--fomio-rule);
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  padding-right: 1rem;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link {
+  width: 100%;
+}
+
+.topic-list-item.--fomio-discovery-item .link-top-line {
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.topic-list-item.--fomio-discovery-item .link-bottom-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+  margin-bottom: 0.85rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+  color: var(--fomio-ink);
+  font-size: clamp(1.2rem, 1.1rem + 0.45vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.28;
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title:hover,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link:hover {
+  color: var(--fomio-red);
+}
+
+.topic-list-item.--fomio-discovery-item .category-name,
+.topic-list-item.--fomio-discovery-item .discourse-tags .discourse-tag {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+}
+
+.fomio-topic-context {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.fomio-topic-context__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1rem;
+  color: var(--fomio-ink-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+}
+
+.fomio-topic-context__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--fomio-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.fomio-topic-context__author .avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.fomio-topic-context__author-name {
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.fomio-topic-context__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fomio-topic-context__label {
+  text-transform: uppercase;
+  letter-spacing: var(--fomio-tracking-wider);
+  color: var(--fomio-ink-muted);
+}
+
+.fomio-topic-context__excerpt {
+  color: var(--fomio-ink-muted);
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-relaxed);
+  max-width: 62ch;
+}
+
+.topic-list-item.--fomio-discovery-item .posts-map,
+.topic-list-item.--fomio-discovery-item .activity {
+  width: 4.5rem;
+  text-align: right;
+  color: var(--fomio-ink-muted);
+  vertical-align: middle;
+}
+
+.topic-list-item.--fomio-discovery-item .badge-posts,
+.topic-list-item.--fomio-discovery-item .post-activity {
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 100%;
+  color: inherit;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .posts-map .number,
+.topic-list-item.--fomio-discovery-item .activity .relative-date {
+  font-weight: 500;
+}
+
+
+// ------------------------------------------------------------
+// 13. DISCOVERY CONTROLS
+// Read-first navigation and no misleading web authorship CTA
+// ------------------------------------------------------------
+
+.navigation-topics .list-controls,
+.navigation-categories .list-controls,
+.navigation-category .list-controls {
+  margin-top: 1.25rem;
+}
+
+.navigation-topics .navigation-container,
+.navigation-categories .navigation-container,
+.navigation-category .navigation-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0 1rem;
+  border-bottom: 1px solid var(--fomio-rule);
+}
+
+.navigation-topics .category-breadcrumb,
+.navigation-categories .category-breadcrumb,
+.navigation-category .category-breadcrumb {
+  margin: 0;
+}
+
+.navigation-topics .nav-pills,
+.navigation-categories .nav-pills,
+.navigation-category .nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.navigation-topics .nav-pills > li > a,
+.navigation-categories .nav-pills > li > a,
+.navigation-category .nav-pills > li > a {
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  letter-spacing: var(--fomio-tracking-wide);
+  color: var(--fomio-ink-muted);
+  border: 1px solid transparent;
+}
+
+.navigation-topics .nav-pills > li > a.active,
+.navigation-categories .nav-pills > li > a.active,
+.navigation-category .nav-pills > li > a.active,
+.navigation-topics .nav-pills > li > a:hover,
+.navigation-categories .nav-pills > li > a:hover,
+.navigation-category .nav-pills > li > a:hover {
+  color: var(--fomio-ink);
+  background: color-mix(in srgb, var(--fomio-paper) 88%, white 12%);
+  border-color: var(--fomio-rule);
+}
+
+.navigation-topics #create-topic,
+.navigation-categories #create-topic,
+.navigation-category #create-topic {
+  display: none;
+}
+
+.fomio-read-only-hidden,
+.sidebar-new-topic-button__wrapper,
+.composer-open-plugin-outlet-container,
+.topic-footer-main-buttons__actions .create,
+.topic-footer-main-buttons .topic-footer-button.create {
+  display: none !important;
+}
+
+
+// ------------------------------------------------------------
+// 13A. SIDEBAR SUPPRESSION ON PUBLIC WEB SURFACES
+// Discovery and regular topics should read as focused, single-pane pages.
+// Keep admin/sidebar behavior intact elsewhere.
+// ------------------------------------------------------------
+
+body.has-sidebar-page.navigation-topics,
+body.has-sidebar-page.navigation-categories,
+body.has-sidebar-page.navigation-category,
+body.has-sidebar-page.archetype-regular {
+  .sidebar-wrapper,
+  #d-sidebar,
+  .header-sidebar-toggle {
+    display: none !important;
+  }
+
+  #main-outlet-wrapper {
+    grid-template-columns: 0 minmax(0, 1fr) 0;
+    gap: 0;
+    padding-right: 0;
+  }
+
+  #main-outlet {
+    max-width: unset;
+  }
+
+  .d-header > .wrap .contents {
+    grid-template-areas: "logo extra-info panel";
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .home-logo-wrapper-outlet {
+    margin-left: 0;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 14. TOPIC PAGE
+// Reading-first topic surface
+// ------------------------------------------------------------
+
+.topic-post {
+  max-width: 100%;
+}
+
+#topic-title.container {
+  max-width: 64rem;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+#topic-title .title-wrapper {
+  border-bottom: 1px solid var(--fomio-rule);
+  padding-bottom: 1.25rem;
+}
+
+#topic-title h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2.4rem, 2rem + 1.2vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+#topic-title .fancy-title {
+  color: var(--fomio-ink);
+  text-decoration: none;
+}
+
+#topic-title .topic-category {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.fomio-topic-reading-meta {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.fomio-topic-reading-meta__trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-ink-muted);
+}
+
+.fomio-topic-reading-meta__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--fomio-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fomio-topic-reading-meta__author .avatar {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.fomio-topic-reading-meta__author-name {
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.fomio-topic-reading-meta__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fomio-topic-reading-meta__label {
+  text-transform: uppercase;
+  letter-spacing: var(--fomio-tracking-wider);
+  color: var(--fomio-ink-muted);
+}
+
+.fomio-topic-reading-meta__reading-note {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--fomio-ink-muted);
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-relaxed);
+}
+
+.regular .topic-body {
+  width: min(100%, 70rem);
+}
+
+.regular .topic-avatar {
+  width: 3.25rem;
+  padding-top: 0.25rem;
+}
+
+.regular .boxed .topic-body,
+.regular .topic-body {
+  border-top: none;
+}
+
+.topic-post article {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--fomio-rule);
+}
+
+.topic-post .topic-meta-data {
+  margin-bottom: 0.85rem;
+  font-family: var(--fomio-font-ui);
+}
+
+.topic-post .topic-meta-data .names,
+.topic-post .topic-meta-data .post-info {
+  font-family: var(--fomio-font-ui);
+}
+
+.topic-post .cooked {
+  font-size: var(--fomio-text-lg);
+  line-height: var(--fomio-leading-loose);
+  width: 100%;
+  max-width: 60rem;
+}
+
+.topic-post .cooked p,
+.topic-post .cooked ul,
+.topic-post .cooked ol,
+.topic-post .cooked blockquote,
+.topic-post .cooked pre {
+  margin-bottom: 1.45rem;
+}
+
+#topic-footer-buttons {
+  max-width: 64rem;
+  margin: 2rem auto 0;
+  border-top: 1px solid var(--fomio-rule);
+  padding-top: 1.5rem;
+}
+
+#topic-footer-buttons .topic-footer-main-buttons {
+  justify-content: flex-end;
+}
+
+#topic-footer-buttons .topic-footer-main-buttons > .btn-primary.create,
+#topic-footer-buttons .topic-footer-main-buttons > .topic-footer-button.create,
+.reply-area {
+  display: none;
+}
+
+#topic-footer-buttons .topic-footer-button,
+#topic-footer-buttons .btn-default {
+  border-radius: 999px;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+}
+
+#topic-footer-buttons .topic-footer-main-buttons,
+#topic-footer-buttons > .pinned-button,
+#topic-footer-buttons .notifications-button-footer,
+#topic-footer-buttons .select-kit,
+#topic-footer-buttons .user-tip,
+.topic-post nav.post-controls,
+.topic-post .actions-summary,
+.topic-post .topic-map,
+.topic-post .post-links-container {
+  display: none !important;
+}
+
+#topic-footer-buttons {
+  border-top: none;
+  padding-top: 0.5rem;
+}
+
+.fomio-topic-app-handoff {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid color-mix(in srgb, var(--fomio-red) 28%, var(--fomio-rule) 72%);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--fomio-paper) 90%, white 10%);
+}
+
+.fomio-topic-app-handoff__eyebrow {
+  margin: 0 0 0.35rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+}
+
+.fomio-topic-app-handoff__copy {
+  margin: 0;
+  max-width: 54ch;
+  color: var(--fomio-ink);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-relaxed);
+}
+
+.fomio-topic-app-handoff__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.875rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--fomio-red);
+  background: var(--fomio-red);
+  color: var(--fomio-paper);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-decoration: none;
+}
+
+.fomio-topic-app-handoff__action:hover {
+  background: var(--fomio-red-dark);
+  border-color: var(--fomio-red-dark);
+  color: var(--fomio-paper);
+}
+
+.timeline-container,
+.topic-navigation {
+  display: none;
+}
+
+.topic-area {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.regular .topic-body,
+.regular .boxed .topic-body {
+  width: min(100%, 70rem);
+}
+
+.topic-post .cooked {
+  max-width: 60rem;
+}
+
+nav.post-controls .post-action-menu__reply,
+nav.post-controls .reply,
+nav.post-controls .post-action-menu__show-replies {
+  display: none;
+}
+
+nav.post-controls .actions {
+  gap: 0.35rem;
+}
+
+nav.post-controls .actions button,
+nav.post-controls .actions .d-button-label {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  color: var(--fomio-ink-muted);
+}
+
+
+// ------------------------------------------------------------
+// 15. POLISH PASS
+// Final spacing and hierarchy tuning for phase one
+// ------------------------------------------------------------
+
+.navigation-topics #list-area,
+.navigation-categories #list-area,
+.navigation-category #list-area {
+  padding-top: 0.5rem;
+}
+
+.topic-list.--fomio-discovery-list .topic-list-header .topic-list-data {
+  padding-top: 0.2rem;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+  text-wrap: balance;
+}
+
+#topic-title h1 {
+  max-width: 14ch;
+}
+
+.fomio-topic-reading-meta {
+  max-width: 60rem;
+}
+
+.topic-post article {
+  max-width: 70rem;
+}
+
+.topic-post .topic-meta-data {
+  padding-bottom: 0.35rem;
+}
+
+.topic-post .cooked h2,
+.topic-post .cooked h3,
+.topic-post .cooked h4 {
+  margin-top: 2.2rem;
+}
+
+.topic-post .cooked > :last-child {
+  margin-bottom: 0;
+}
+
+.fomio-topic-app-handoff {
+  max-width: 60rem;
+}

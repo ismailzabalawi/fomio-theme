@@ -1,0 +1,222 @@
+.d-header-icons .hamburger-dropdown {
+  display: none;
+}
+
+.fomio-home-shell {
+  padding-top: 0.9rem;
+  margin-bottom: 1.4rem;
+}
+
+.fomio-home-shell__intro,
+.fomio-home-shell__lead-card,
+.fomio-home-shell__section {
+  padding: 1.15rem;
+  border-radius: 14px;
+}
+
+.fomio-home-shell__title {
+  max-width: none;
+  font-size: clamp(1.85rem, 8.2vw, 2.85rem);
+  line-height: 1.04;
+}
+
+.fomio-home-shell__actions {
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1.15rem;
+}
+
+.fomio-home-shell__primary-link,
+.fomio-home-shell__secondary-link,
+.fomio-home-shell__app-link {
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
+  min-height: 3.1rem;
+}
+
+.fomio-home-shell__primary-link,
+.fomio-home-shell__app-link {
+  color: var(--fomio-paper);
+}
+
+.fomio-home-shell__secondary-link {
+  color: var(--fomio-ink);
+}
+
+.fomio-home-shell__supporting {
+  gap: 1rem;
+}
+
+.navigation-topics .navigation-container,
+.navigation-categories .navigation-container,
+.navigation-category .navigation-container {
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.navigation-topics .nav-pills,
+.navigation-categories .nav-pills,
+.navigation-category .nav-pills {
+  gap: 0.3rem;
+}
+
+.topic-list.--fomio-discovery-list {
+  border-spacing: 0 0.75rem;
+}
+
+.topic-list-item.--fomio-discovery-item td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.topic-list-item.--fomio-discovery-item td:first-child {
+  padding-left: 1rem;
+}
+
+.topic-list-item.--fomio-discovery-item td:last-child {
+  padding-right: 1rem;
+}
+
+.topic-list-item.--fomio-discovery-item .pull-left {
+  display: none;
+}
+
+.topic-list-item.--fomio-discovery-item .topic-item-metadata.right {
+  width: 100%;
+  float: none;
+  overflow: hidden;
+  min-width: 0;
+  margin-left: 0;
+  padding-left: 0.15rem;
+  box-sizing: border-box;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link {
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+  display: block;
+  font-size: clamp(1.15rem, 5.8vw, 1.8rem);
+  line-height: 1.18;
+}
+
+.topic-list-item.--fomio-discovery-item .link-bottom-line {
+  margin-bottom: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .pull-right {
+  display: none;
+}
+
+.fomio-topic-context {
+  gap: 0.5rem;
+}
+
+.fomio-topic-context__meta {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.fomio-topic-context__author {
+  font-size: var(--fomio-text-sm);
+}
+
+.fomio-topic-context__author .avatar {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.fomio-topic-context__date {
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.fomio-topic-context__excerpt {
+  font-size: var(--fomio-text-sm);
+  line-height: 1.6;
+}
+
+.topic-list-item.--fomio-discovery-item .topic-item-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--fomio-rule);
+  clear: both;
+}
+
+.topic-list-item.--fomio-discovery-item .topic-item-stats__category-tags {
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .num.activity.last {
+  float: none;
+  margin-left: auto;
+}
+
+.topic-list-item.--fomio-discovery-item .age.activity a {
+  color: var(--fomio-ink-muted);
+  text-decoration: none;
+}
+
+#topic-title.container {
+  margin-top: 1.25rem;
+}
+
+#topic-title h1 {
+  font-size: clamp(2rem, 10vw, 2.9rem);
+}
+
+.with-topic-progress,
+#topic-progress-wrapper,
+.container.posts .topic-navigation,
+.timeline-container,
+.topic-navigation {
+  display: none !important;
+}
+
+.regular .topic-avatar {
+  width: 2.25rem;
+}
+
+.topic-post .cooked {
+  font-size: var(--fomio-text-base);
+  max-width: none;
+}
+
+.topic-post .topic-meta-data {
+  margin-bottom: 0.65rem;
+}
+
+#topic-footer-buttons {
+  margin-top: 1rem;
+  padding-top: 0;
+}
+
+#topic-footer-buttons .topic-footer-main-buttons,
+#topic-footer-buttons > .pinned-button,
+#topic-footer-buttons .notifications-button-footer,
+#topic-footer-buttons .select-kit,
+#topic-footer-buttons .user-tip,
+#topic-footer-buttons .topic-footer-button {
+  display: none !important;
+}
+
+.fomio-topic-app-handoff {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1rem;
+}
+
+.fomio-topic-app-handoff__action {
+  width: 100%;
+}

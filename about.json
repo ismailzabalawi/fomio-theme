@@ -1,0 +1,29 @@
+{
+  "name": "Fomio",
+  "component": false,
+  "license_url": null,
+  "about_url": null,
+  "authors": null,
+  "theme_version": null,
+  "minimum_discourse_version": null,
+  "maximum_discourse_version": null,
+  "assets": {},
+  "color_schemes": {
+    "Ink & Paper": {
+      "primary": "1a1a1a",
+      "secondary": "f9f7f2",
+      "tertiary": "c44536",
+      "quaternary": "e45735",
+      "header_background": "f9f7f2",
+      "header_primary": "1a1a1a",
+      "highlight": "f0e6d3",
+      "selected": "d1f0ff",
+      "hover": "f2f2f2",
+      "danger": "c44536",
+      "success": "4a7c59",
+      "love": "c44536"
+    }
+  },
+  "modifiers": {},
+  "learn_more": "https://meta.discourse.org/t/beginners-guide-to-using-discourse-themes/91966"
+}

@@ -1,0 +1,34 @@
+en:
+  theme_metadata:
+    description: "A read-only editorial Discourse theme for Fomio web."
+    settings:
+      fomio_app_url:
+        description: "External URL used for app handoff actions on the web theme."
+  homepage_shell:
+    eyebrow: "Fomio web"
+    title: "Reading-first knowledge, shaped like a publication."
+    dek: "Browse published ideas, open a topic with confidence, and move into the app only when you want to do more than read."
+    primary_action: "Start with the latest reading"
+    secondary_action: "Browse categories"
+    lead_label: "Lead story"
+    lead_title: "The homepage frames the list below as deliberate reading, not forum traffic."
+    lead_copy: "Topics stay central, but the shell now explains what Fomio is, how to start, and why the web experience stops at reading."
+    signal_one: "Clear title hierarchy over forum mechanics"
+    signal_two: "Calm metadata and category context"
+    signal_three: "Explicit handoff to the app for participation"
+    latest_label: "Latest reading"
+    latest_copy: "The stream below is the main reading rail. It should feel curated by hierarchy and rhythm, even when the source data is a standard topic list."
+    handoff_label: "Do more in the app"
+    handoff_copy: "Posting, replying, and deeper account actions belong in the Fomio app. The web stays focused on reading."
+    handoff_action: "Open the Fomio app"
+  topic_list:
+    published: "Published"
+    updated: "Updated"
+  topic_page:
+    published: "Published"
+    updated: "Updated"
+    reading_label: "Reading note"
+    reading_copy: "This page is designed for calm reading on the web. Posting and deeper participation continue in the Fomio app."
+    handoff_title: "Continue in the app"
+    handoff_copy: "If you want to reply, save, or go deeper with the conversation, move into the Fomio app for the next step."
+    handoff_action: "Open the Fomio app"

@@ -1,0 +1,194 @@
+@media (min-width: 768px) and (max-width: 1099px) {
+  body.has-sidebar-page.navigation-topics,
+  body.has-sidebar-page.navigation-categories,
+  body.has-sidebar-page.navigation-category,
+  body.has-sidebar-page.archetype-regular {
+    .sidebar-wrapper,
+    #d-sidebar,
+    .header-sidebar-toggle,
+    .d-header-icons .hamburger-dropdown,
+    .d-header-icons .header-dropdown-toggle.hamburger-dropdown {
+      display: none !important;
+    }
+
+    #main-outlet-wrapper {
+      grid-template-columns: 0 minmax(0, 1fr) 0;
+      gap: 0;
+      padding-right: 0;
+    }
+
+    #main-outlet {
+      max-width: unset;
+    }
+
+    .d-header > .wrap .contents {
+      grid-template-areas: "logo extra-info panel";
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 0.75rem;
+    }
+
+    .home-logo-wrapper-outlet {
+      margin-left: 0;
+    }
+  }
+
+  .fomio-home-shell {
+    padding-top: 1.35rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .fomio-home-shell__hero,
+  .fomio-home-shell__supporting {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.15rem;
+  }
+
+  .fomio-home-shell__intro,
+  .fomio-home-shell__lead-card,
+  .fomio-home-shell__section {
+    padding: 1.4rem;
+  }
+
+  .fomio-home-shell__title {
+    max-width: 13ch;
+    font-size: clamp(2.5rem, 5vw, 3.4rem);
+  }
+
+  .fomio-home-shell__actions {
+    gap: 0.75rem;
+  }
+
+  .navigation-topics .navigation-container,
+  .navigation-categories .navigation-container,
+  .navigation-category .navigation-container {
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-bottom: 0.85rem;
+  }
+
+  .navigation-topics .nav-pills,
+  .navigation-categories .nav-pills,
+  .navigation-category .nav-pills {
+    gap: 0.3rem;
+  }
+
+  .navigation-topics .nav-pills > li > a,
+  .navigation-categories .nav-pills > li > a,
+  .navigation-category .nav-pills > li > a {
+    padding: 0.5rem 0.8rem;
+  }
+
+  .topic-list.--fomio-discovery-list {
+    border-spacing: 0 0.75rem;
+  }
+
+  .topic-list-item.--fomio-discovery-item td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .topic-list-item.--fomio-discovery-item td:first-child {
+    padding-left: 1.1rem;
+  }
+
+  .topic-list-item.--fomio-discovery-item td:last-child {
+    padding-right: 0.9rem;
+  }
+
+  .topic-list-item.--fomio-discovery-item .main-link.topic-list-data {
+    padding-right: 1.1rem;
+  }
+
+  .topic-list-item.--fomio-discovery-item .main-link a.title,
+  .topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+    font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.65rem);
+  }
+
+  .topic-list-item.--fomio-discovery-item .link-bottom-line {
+    margin-bottom: 0.65rem;
+  }
+
+  .fomio-topic-context__excerpt {
+    max-width: 54ch;
+    font-size: var(--fomio-text-sm);
+  }
+
+  .topic-list-item.--fomio-discovery-item .posts-map,
+  .topic-list-item.--fomio-discovery-item .activity {
+    width: 3.75rem;
+  }
+
+  #topic-title.container {
+    max-width: 58rem;
+    margin-top: 1.6rem;
+  }
+
+  #topic-title h1 {
+    font-size: clamp(2.35rem, 3vw, 3.3rem);
+  }
+
+  .fomio-topic-reading-meta {
+    gap: 0.65rem;
+  }
+
+  .regular .topic-avatar {
+    width: 2.8rem;
+  }
+
+  .regular .topic-body,
+  .regular .boxed .topic-body {
+    width: min(100%, 60rem);
+  }
+
+  .topic-post .cooked {
+    max-width: 52rem;
+    font-size: var(--fomio-text-md);
+  }
+
+  #topic-footer-buttons {
+    max-width: 58rem;
+  }
+
+  .fomio-topic-app-handoff {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+    padding: 1.1rem 1.15rem;
+  }
+
+  .fomio-topic-app-handoff__copy {
+    max-width: none;
+  }
+
+  .fomio-topic-app-handoff__action {
+    width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .fomio-home-shell__hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.9fr);
+    align-items: stretch;
+  }
+
+  .fomio-home-shell__supporting {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fomio-home-shell__intro {
+    padding: 2.25rem;
+  }
+
+  .fomio-home-shell__lead-card,
+  .fomio-home-shell__section {
+    padding: 1.75rem;
+  }
+
+  .topic-list.--fomio-discovery-list .main-link.topic-list-data {
+    width: auto;
+  }
+
+  .topic-list-item.--fomio-discovery-item .main-link.topic-list-data {
+    padding-right: 2rem;
+  }
+}
