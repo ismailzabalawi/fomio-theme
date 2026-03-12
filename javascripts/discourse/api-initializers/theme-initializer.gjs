@@ -1,4 +1,5 @@
 import { apiInitializer } from "discourse/lib/api";
+import { settings } from "virtual:theme";
 
 export default apiInitializer("1.8.0", (api) => {
   api.onPageChange((url) => {
@@ -11,7 +12,7 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
-    const pageText = (document.body?.innerText || "").toLowerCase();
+    const appUrl = settings.fomio_app_url || "fomio://";
 
     // CASE 1: Login page -> send to app sign in
     if (url === "/login") {
@@ -19,44 +20,23 @@ export default apiInitializer("1.8.0", (api) => {
         "🔐",
         "Continue in Fomio",
         "Opening the app for sign in...",
-        "fomio://signin?autoAuth=true"
+        `${appUrl}signin?autoAuth=true`
       );
       return;
     }
 
-    // CASE 2: Signup completed -> show confirmation, then open app
-    const isSignupPage = url === "/signup" || url.startsWith("/u/account-created");
-    const hasActivationMessage =
-      document.querySelector(".activation-required") ||
-      document.querySelector(".account-created") ||
-      pageText.includes("sent an activation") ||
-      pageText.includes("check your email") ||
-      pageText.includes("activation mail");
-
-    if (isSignupPage && hasActivationMessage) {
+    // CASE 2: Activation link -> hand off token to app immediately
+    // onPageChange fires on URL change — intercept before user interacts with the page.
+    const activationMatch = url.match(/^\/u\/activate-account\/([^/?]+)/);
+    if (activationMatch) {
+      const token = activationMatch[1];
       showRedirectScreen(
-        "📧",
-        "Check Your Email",
-        "We sent you an activation link. Opening Fomio...",
-        "fomio://awaiting-activation"
+        "✉️",
+        "Opening Fomio",
+        "Activating your account…",
+        `${appUrl}activate?token=${encodeURIComponent(token)}`
       );
       return;
-    }
-
-    // CASE 3: Account activation success -> open app
-    const isActivationPage = url.includes("/u/activate-account/");
-    const isActivationSuccess =
-      document.querySelector(".account-activation-success") ||
-      pageText.includes("your new account is confirmed") ||
-      pageText.includes("account is confirmed");
-
-    if (isActivationPage && isActivationSuccess) {
-      showRedirectScreen(
-        "🎉",
-        "Account Activated!",
-        "Opening Fomio...",
-        "fomio://signin?autoAuth=true"
-      );
     }
   });
 
