@@ -30,6 +30,11 @@ export default apiInitializer("1.8.0", (api) => {
           "Opening the app for sign in...",
           `${appUrl}signin?autoAuth=true`
         );
+      } else {
+        // We're inside the sign-in auth flow (/user-api-key/new → /login).
+        // After the user logs in, Discourse redirects to home before returning
+        // to /user-api-key/new. Mark sessionStorage so the home redirect skips.
+        sessionStorage.setItem("fomio_auth_flow", "1");
       }
       return;
     }
@@ -42,8 +47,13 @@ export default apiInitializer("1.8.0", (api) => {
     //   /signup → /u/account-created → /u/activate-account/:token
     //   → click "Activate Account" button → Discourse redirects to /
     // Only THEN do we send them to the app.
+    // Guard: skip if we're mid sign-in auth flow (set on /login with redirectCount > 0).
     const HOME_PATHS = new Set(["/", "/latest", "/new", "/top", "/categories"]);
     if (HOME_PATHS.has(url)) {
+      if (sessionStorage.getItem("fomio_auth_flow") === "1") {
+        sessionStorage.removeItem("fomio_auth_flow");
+        return;
+      }
       showRedirectScreen(
         "🎉",
         "Account Ready!",
