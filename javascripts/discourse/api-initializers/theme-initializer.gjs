@@ -103,9 +103,8 @@ export default apiInitializer("1.8.0", (api) => {
       const arrivedViaRedirect = navEntry && navEntry.redirectCount > 0;
       if (!arrivedViaRedirect) {
         showRedirectScreen(
-          "🔐",
-          "Continue in Fomio",
-          "Opening the app for sign in...",
+          "Continue in the app.",
+          "Opening Fomio for sign in\u2026",
           `${appUrl}signin?autoAuth=true`
         );
       } else {
@@ -133,9 +132,8 @@ export default apiInitializer("1.8.0", (api) => {
         return;
       }
       showRedirectScreen(
-        "🎉",
-        "Account Ready!",
-        "Opening Fomio…",
+        "You\u2019re all set.",
+        "Opening Fomio\u2026",
         `${appUrl}signin?autoAuth=true`
       );
       return;
@@ -150,34 +148,82 @@ export default apiInitializer("1.8.0", (api) => {
   // Also handle subsequent Ember client-side navigations
   api.onPageChange(handleUrl);
 
-  function showRedirectScreen(emoji, title, subtitle, deepLink) {
+  function showRedirectScreen(title, subtitle, deepLink) {
     document.body.innerHTML = `
-      <div style="
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        height:100vh;
-        text-align:center;
-        font-family:-apple-system, sans-serif;
-        padding:20px;
-        background:#fff;
-      ">
-        <div style="font-size:48px; margin-bottom:16px;">${emoji}</div>
-        <h1 style="font-size:24px; margin-bottom:10px;">${title}</h1>
-        <p style="font-size:16px; color:#666; margin-bottom:20px;">${subtitle}</p>
-        <div style="
-          width:40px;
-          height:40px;
-          border:3px solid #eee;
-          border-top-color:#009688;
-          border-radius:50%;
-          animation:spin 1s linear infinite;
-        "></div>
-        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-
-        <p style="font-size:14px; color:#999; margin-top:30px;">
-          Not opening? <a href="${deepLink}" style="color:#009688;">Tap here</a>
+      <style>
+        @keyframes fomio-spin { to { transform: rotate(360deg); } }
+        .fomio-redirect {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          padding: 2rem;
+          background: var(--fomio-paper, #f9f7f2);
+          text-align: center;
+          box-sizing: border-box;
+        }
+        .fomio-redirect__eyebrow {
+          font-family: var(--fomio-font-ui, -apple-system, sans-serif);
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--fomio-ink-muted, rgba(26,26,26,0.5));
+          margin: 0 0 1.25rem;
+        }
+        .fomio-redirect__rule {
+          width: 2.5rem;
+          height: 1px;
+          background: var(--fomio-red, #c44536);
+          margin: 0 auto 1.5rem;
+        }
+        .fomio-redirect__title {
+          font-family: var(--fomio-font-serif, Georgia, serif);
+          font-size: clamp(1.75rem, 5vw, 2.75rem);
+          font-weight: 700;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          color: var(--fomio-ink, #1a1a1a);
+          margin: 0 0 0.875rem;
+          max-width: 14ch;
+        }
+        .fomio-redirect__subtitle {
+          font-family: var(--fomio-font-ui, -apple-system, sans-serif);
+          font-size: 1rem;
+          line-height: 1.5;
+          color: var(--fomio-ink-muted, rgba(26,26,26,0.5));
+          margin: 0 0 2.25rem;
+        }
+        .fomio-redirect__spinner {
+          width: 1.75rem;
+          height: 1.75rem;
+          border: 2px solid var(--fomio-rule, #e0e0e0);
+          border-top-color: var(--fomio-red, #c44536);
+          border-radius: 50%;
+          animation: fomio-spin 0.9s linear infinite;
+          margin-bottom: 2.25rem;
+        }
+        .fomio-redirect__fallback {
+          font-family: var(--fomio-font-ui, -apple-system, sans-serif);
+          font-size: 0.8125rem;
+          color: var(--fomio-ink-muted, rgba(26,26,26,0.5));
+          margin: 0;
+        }
+        .fomio-redirect__fallback a {
+          color: var(--fomio-red, #c44536);
+          font-weight: 600;
+          text-decoration: none;
+        }
+      </style>
+      <div class="fomio-redirect">
+        <p class="fomio-redirect__eyebrow">Fomio</p>
+        <div class="fomio-redirect__rule"></div>
+        <h1 class="fomio-redirect__title">${title}</h1>
+        <p class="fomio-redirect__subtitle">${subtitle}</p>
+        <div class="fomio-redirect__spinner"></div>
+        <p class="fomio-redirect__fallback">
+          Not opening? <a href="${deepLink}">Tap here</a>
         </p>
       </div>
     `;
