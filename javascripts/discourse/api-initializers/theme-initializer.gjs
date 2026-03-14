@@ -34,7 +34,21 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
-    // CASE 2: Activation link -> hand off token to app immediately
+    // CASE 2: Post-signup confirmation page -> return user to app
+    // Discourse lands here after the signup form is submitted. The browser
+    // stays open otherwise; this closes it and returns the user to the
+    // awaiting-activation screen to wait for their email.
+    if (url.startsWith("/u/account-created")) {
+      showRedirectScreen(
+        "📧",
+        "Check Your Email",
+        "We sent you an activation link. Opening Fomio…",
+        `${appUrl}awaiting-activation`
+      );
+      return;
+    }
+
+    // CASE 3: Activation link -> hand off token to app immediately
     const activationMatch = url.match(/^\/u\/activate-account\/([^/?]+)/);
     if (activationMatch) {
       const token = activationMatch[1];
