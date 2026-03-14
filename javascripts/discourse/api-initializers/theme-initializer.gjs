@@ -34,29 +34,21 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
-    // CASE 2: Post-signup confirmation page -> return user to app
-    // Discourse lands here after the signup form is submitted. The browser
-    // stays open otherwise; this closes it and returns the user to the
-    // awaiting-activation screen to wait for their email.
-    if (url.startsWith("/u/account-created")) {
+    // CASE 2: Home page -> redirect to app after signup or activation
+    // Discourse navigates here (via window.location.href="/") after:
+    //   a) successful account activation (activate-account.gjs:84)
+    //   b) any other completion that lands on home
+    // The user must complete the full web flow first:
+    //   /signup → /u/account-created → /u/activate-account/:token
+    //   → click "Activate Account" button → Discourse redirects to /
+    // Only THEN do we send them to the app.
+    const HOME_PATHS = new Set(["/", "/latest", "/new", "/top", "/categories"]);
+    if (HOME_PATHS.has(url)) {
       showRedirectScreen(
-        "📧",
-        "Check Your Email",
-        "We sent you an activation link. Opening Fomio…",
-        `${appUrl}awaiting-activation`
-      );
-      return;
-    }
-
-    // CASE 3: Activation link -> hand off token to app immediately
-    const activationMatch = url.match(/^\/u\/activate-account\/([^/?]+)/);
-    if (activationMatch) {
-      const token = activationMatch[1];
-      showRedirectScreen(
-        "✉️",
-        "Opening Fomio",
-        "Activating your account…",
-        `${appUrl}activate?token=${encodeURIComponent(token)}`
+        "🎉",
+        "Account Ready!",
+        "Opening Fomio…",
+        `${appUrl}signin?autoAuth=true`
       );
       return;
     }
