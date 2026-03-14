@@ -2,7 +2,7 @@ import { apiInitializer } from "discourse/lib/api";
 import { settings } from "virtual:theme";
 
 export default apiInitializer("1.8.0", (api) => {
-  api.onPageChange((url) => {
+  function handleUrl(url) {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera || "";
     const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
     const isFomioApp = userAgent.includes("FomioMobileApp");
@@ -26,7 +26,6 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     // CASE 2: Activation link -> hand off token to app immediately
-    // onPageChange fires on URL change — intercept before user interacts with the page.
     const activationMatch = url.match(/^\/u\/activate-account\/([^/?]+)/);
     if (activationMatch) {
       const token = activationMatch[1];
@@ -38,7 +37,15 @@ export default apiInitializer("1.8.0", (api) => {
       );
       return;
     }
-  });
+  }
+
+  // Run immediately on initializer load — catches fresh page loads from email link taps
+  // (onPageChange alone is insufficient: it hooks into Ember's router, which fires
+  // after the initial render, giving users a window to interact with the Discourse page)
+  handleUrl(window.location.pathname);
+
+  // Also handle subsequent Ember client-side navigations
+  api.onPageChange(handleUrl);
 
   function showRedirectScreen(emoji, title, subtitle, deepLink) {
     document.body.innerHTML = `
