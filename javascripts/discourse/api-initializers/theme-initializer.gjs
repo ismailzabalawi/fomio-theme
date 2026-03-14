@@ -15,13 +15,22 @@ export default apiInitializer("1.8.0", (api) => {
     const appUrl = settings.fomio_app_url || "fomio://";
 
     // CASE 1: Login page -> send to app sign in
+    // Guard: skip if we arrived here via a server-side redirect (redirectCount > 0).
+    // When the app's auth flow opens /user-api-key/new and the user isn't logged in
+    // on the web, Discourse 302-redirects to /login. We must not intercept that redirect
+    // or it interrupts ASWebAuthenticationSession / Chrome Custom Tabs, causing the
+    // auth payload to never reach the app and sign-in to silently fail.
     if (url === "/login") {
-      showRedirectScreen(
-        "🔐",
-        "Continue in Fomio",
-        "Opening the app for sign in...",
-        `${appUrl}signin?autoAuth=true`
-      );
+      const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
+      const arrivedViaRedirect = navEntry && navEntry.redirectCount > 0;
+      if (!arrivedViaRedirect) {
+        showRedirectScreen(
+          "🔐",
+          "Continue in Fomio",
+          "Opening the app for sign in...",
+          `${appUrl}signin?autoAuth=true`
+        );
+      }
       return;
     }
 
