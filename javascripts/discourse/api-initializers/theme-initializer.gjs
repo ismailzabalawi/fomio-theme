@@ -1,6 +1,84 @@
 import { apiInitializer } from "discourse/lib/api";
 import { settings } from "virtual:theme";
 
+/**
+ * theme-initializer.gjs — Mobile Web → App Handoff
+ *
+ * PURPOSE
+ * -------
+ * Detects mobile browsers (not the app webview) and redirects them to the
+ * Fomio app via deep links at the right moment in the auth/signup flow.
+ * Desktop browsers are never touched.
+ *
+ * DETECTION
+ * ---------
+ * Runs on every page load and every Ember client-side navigation.
+ * - isMobile: UA contains iPhone/iPad/iPod/Android
+ * - isFomioApp: UA contains "FomioMobileApp" (webview skip)
+ *
+ * SIGN-IN FLOW (app uses WebBrowser.openAuthSessionAsync)
+ * -------------------------------------------------------
+ *   App opens /user-api-key/new
+ *     → Discourse 302s to /login      (user not logged in on web)
+ *     → User logs in on Discourse web
+ *     → Discourse redirects to /      (home — post-login default)
+ *     → Discourse navigates back to /user-api-key/new
+ *     → User taps "Authorize"
+ *     → Discourse redirects to fomio://auth_redirect?payload=...
+ *     → ASWebAuthenticationSession / Chrome Custom Tab catches it
+ *     → lib/auth.ts decrypts payload, stores API key
+ *
+ *   GUARD 1 — redirectCount:
+ *     On /login, performance.getEntriesByType('navigation')[0].redirectCount > 0
+ *     means Discourse server-redirected us here from /user-api-key/new.
+ *     We must NOT fire the /login redirect or the auth session catches
+ *     fomio://signin?autoAuth=true (wrong URL, no payload) → "Authorization cancelled".
+ *     Instead we set sessionStorage['fomio_auth_flow'] = '1'.
+ *
+ *   GUARD 2 — sessionStorage flag:
+ *     On home (/), we check for the flag set by GUARD 1. If present,
+ *     this home visit is the post-login redirect inside the auth session —
+ *     skip the redirect and clear the flag. The auth session continues to
+ *     /user-api-key/new and completes normally.
+ *
+ * SIGN-UP FLOW (app uses WebBrowser.openBrowserAsync)
+ * ----------------------------------------------------
+ *   App opens /signup?fomio=1
+ *     → User fills signup form
+ *     → Discourse navigates to /u/account-created   ("check your email")
+ *     → User opens email, taps activation link
+ *     → Browser navigates to /u/activate-account/:token
+ *     → Discourse renders page with "Activate Account" button
+ *     → User clicks button (PUT /u/activate-account/:token.json)
+ *     → Discourse JS does window.location.href = "/"
+ *     → Browser lands on /
+ *     → Theme fires → fomio://signin?autoAuth=true
+ *     → App comes to foreground, user signs in
+ *
+ *   No guards needed: signup browser never visits /login with redirectCount > 0,
+ *   so sessionStorage flag is never set, and the home redirect fires correctly.
+ *
+ * DIRECT /login TAP (email link on mobile)
+ * -----------------------------------------
+ *   User taps a link to meta.fomio.app/login in email or browser.
+ *   redirectCount = 0 (direct navigation) → /login redirect fires → app sign-in.
+ *
+ * ⚠️  DO NOT REMOVE THE GUARDS ⚠️
+ *   Removing GUARD 1 breaks sign-in: auth session catches wrong deep link.
+ *   Removing GUARD 2 breaks sign-in: auth session catches home redirect deep link.
+ *   Changing redirect URLs: must match deep-linking.ts route table in mobile app.
+ *
+ * DEEP LINKS USED
+ * ---------------
+ *   fomio://signin?autoAuth=true  → app/(auth)/signin.tsx (autoAuth triggers auth-modal)
+ *
+ * SOURCE VERIFIED AGAINST
+ * -----------------------
+ *   Discourse activation flow: frontend/discourse/app/templates/activate-account.gjs:84
+ *   Discourse login redirect:  app/controllers/user_api_keys_controller.rb:32
+ *   App auth session:          apps/mobile/lib/auth.ts signIn()
+ *   App deep link table:       apps/mobile/lib/deep-linking.ts
+ */
 export default apiInitializer("1.8.0", (api) => {
   function handleUrl(url) {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera || "";
