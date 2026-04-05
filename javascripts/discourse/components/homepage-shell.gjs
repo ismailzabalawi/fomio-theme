@@ -32,6 +32,14 @@ export default class HomepageShell extends Component {
     return Boolean(this.appUrl);
   }
 
+  get latestUrl() {
+    return this.router.urlFor("discovery.latest");
+  }
+
+  get categoriesUrl() {
+    return this.router.urlFor("discovery.categories");
+  }
+
   get eyebrow() {
     return i18n(themePrefix("homepage_shell.eyebrow"));
   }
@@ -105,10 +113,10 @@ export default class HomepageShell extends Component {
             <h1 class="fomio-home-shell__title">{{this.title}}</h1>
             <p class="fomio-home-shell__dek">{{this.dek}}</p>
             <div class="fomio-home-shell__actions">
-              <a class="fomio-home-shell__primary-link" href="/latest">
+              <a class="fomio-home-shell__primary-link" href={{this.latestUrl}}>
                 {{this.primaryAction}}
               </a>
-              <a class="fomio-home-shell__secondary-link" href="/categories">
+              <a class="fomio-home-shell__secondary-link" href={{this.categoriesUrl}}>
                 {{this.secondaryAction}}
               </a>
             </div>

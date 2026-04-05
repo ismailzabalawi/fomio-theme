@@ -159,7 +159,7 @@ export default apiInitializer("1.8.0", (api) => {
           justify-content: center;
           min-height: 100vh;
           padding: 2rem;
-          background: var(--fomio-paper, #f9f7f2);
+          background: var(--fomio-bg, #FFFFFF);
           text-align: center;
           box-sizing: border-box;
         }
@@ -169,13 +169,13 @@ export default apiInitializer("1.8.0", (api) => {
           font-weight: 600;
           letter-spacing: 0.08em;
           text-transform: uppercase;
-          color: var(--fomio-ink-muted, rgba(26,26,26,0.5));
+          color: var(--fomio-muted, #6B6B72);
           margin: 0 0 1.25rem;
         }
         .fomio-redirect__rule {
           width: 2.5rem;
           height: 1px;
-          background: var(--fomio-red, #c44536);
+          background: var(--fomio-primary, #009688);
           margin: 0 auto 1.5rem;
         }
         .fomio-redirect__title {
@@ -184,7 +184,7 @@ export default apiInitializer("1.8.0", (api) => {
           font-weight: 700;
           line-height: 1.1;
           letter-spacing: -0.02em;
-          color: var(--fomio-ink, #1a1a1a);
+          color: var(--fomio-text, #0F172A);
           margin: 0 0 0.875rem;
           max-width: 14ch;
         }
@@ -192,14 +192,14 @@ export default apiInitializer("1.8.0", (api) => {
           font-family: var(--fomio-font-ui, -apple-system, sans-serif);
           font-size: 1rem;
           line-height: 1.5;
-          color: var(--fomio-ink-muted, rgba(26,26,26,0.5));
+          color: var(--fomio-muted, #6B6B72);
           margin: 0 0 2.25rem;
         }
         .fomio-redirect__spinner {
           width: 1.75rem;
           height: 1.75rem;
-          border: 2px solid var(--fomio-rule, #e0e0e0);
-          border-top-color: var(--fomio-red, #c44536);
+          border: 2px solid var(--fomio-border, #E3E3E6);
+          border-top-color: var(--fomio-primary, #009688);
           border-radius: 50%;
           animation: fomio-spin 0.9s linear infinite;
           margin-bottom: 2.25rem;
@@ -207,11 +207,11 @@ export default apiInitializer("1.8.0", (api) => {
         .fomio-redirect__fallback {
           font-family: var(--fomio-font-ui, -apple-system, sans-serif);
           font-size: 0.8125rem;
-          color: var(--fomio-ink-muted, rgba(26,26,26,0.5));
+          color: var(--fomio-muted, #6B6B72);
           margin: 0;
         }
         .fomio-redirect__fallback a {
-          color: var(--fomio-red, #c44536);
+          color: var(--fomio-primary, #009688);
           font-weight: 600;
           text-decoration: none;
         }

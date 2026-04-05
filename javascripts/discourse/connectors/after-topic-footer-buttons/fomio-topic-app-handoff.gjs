@@ -16,6 +16,13 @@ export default class FomioTopicAppHandoff extends Component {
     return Boolean(this.appUrl);
   }
 
+  // Deep-links directly to the Byte the user is reading: fomio://byte/:id
+  get deepLink() {
+    const id = this.topic?.id;
+    if (!this.appUrl || !id) return this.appUrl;
+    return `${this.appUrl}byte/${id}`;
+  }
+
   get shouldRender() {
     return this.hasAppUrl && !this.topic?.isPrivateMessage;
   }
@@ -41,7 +48,7 @@ export default class FomioTopicAppHandoff extends Component {
         </div>
         <a
           class="fomio-topic-app-handoff__action"
-          href={{this.appUrl}}
+          href={{this.deepLink}}
           target="_blank"
           rel="noopener noreferrer"
         >

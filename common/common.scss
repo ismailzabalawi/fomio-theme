@@ -1,17 +1,101 @@
 // ============================================================
 // FOMIO THEME — DESIGN TOKENS & TYPOGRAPHY
-// "Ink & Paper" — Modern Editorial
+// Canonical palette sourced from @fomio/design-tokens (packages/design-tokens)
 // ============================================================
+//
+// HOW THIS FILE RELATES TO THE SHARED PACKAGE
+// ─────────────────────────────────────────────────────────────
+// Discourse themes are static SCSS — they cannot import npm packages at
+// runtime. Instead, Section 1 below mirrors the output of
+//   toCssVariables('light')  from @fomio/design-tokens/web
+// and must be kept in sync with packages/design-tokens/tokens.js.
+//
+// Dark-mode values are not yet applied here (Discourse handles colour
+// schemes via about.json). Add a [data-theme="dark"] block when Discourse
+// dark-mode support is introduced.
+// ─────────────────────────────────────────────────────────────
 
 
 // ------------------------------------------------------------
-// 1. FONT STACKS
-// Lora loaded via common/head_tag.html (Google Fonts)
+// 1. CANONICAL TOKENS  ← sync with packages/design-tokens/tokens.js
+// These mirror toCssVariables('light') from @fomio/design-tokens/web.
+// Do NOT hardcode values elsewhere in this file — use these variables.
+// ------------------------------------------------------------
+
+// AUTO-SYNCED with @fomio/design-tokens — run `node scripts/check-theme-sync.js` to verify.
+// Last synced: 2026-04-04 — brand migration (terracotta primary, cream bg, Raleway UI font)
+:root {
+  --fomio-bg:           #F8F7F3;
+  --fomio-surface:      #F2F1EC;
+  --fomio-card:         #FFFFFF;
+  --fomio-text:         #1A1A1A;
+  --fomio-foreground:   #1A1A1A;
+  --fomio-muted:        #6B6B72;
+  --fomio-secondary:    #5C5D67;
+  --fomio-border:       #E3E3E6;
+  --fomio-border-soft:  rgba(15, 23, 42, 0.08);
+  --fomio-primary:      #C44536;
+  --fomio-primary-soft: #F5D0CC;
+  --fomio-primary-dark: #9E3326;
+  --fomio-accent:       #1565C0;
+  --fomio-accent-soft:  rgba(79,156,249,0.14);
+  --fomio-on-accent:    #FFFFFF;
+  --fomio-danger:       #EF4444;
+  --fomio-danger-soft:  rgba(220,38,38,0.12);
+  --fomio-warning:      #F59E0B;
+  --fomio-success:      #22c55e;
+  --fomio-info:         #1565C0;
+  --fomio-shadow:       rgba(0,0,0,0.14);
+  --fomio-liked:        #EF4444;
+  --fomio-hero-overlay: rgba(0,0,0,0.7);
+  --fomio-hero-text:    #FFFFFF;
+  --fomio-font-serif:   "Lora", Georgia, "Times New Roman", serif;
+  --fomio-font-mono:    "Space Mono", "Courier New", monospace;
+  --fomio-font-ui:      "Raleway", system-ui, sans-serif;
+  --fomio-brand-cream:  #F8F7F3;
+  --fomio-brand-red:    #C44536;
+  --fomio-brand-ink:    #1A1A1A;
+  --fomio-space-xs:     4px;
+  --fomio-space-sm:     8px;
+  --fomio-space-md:     12px;
+  --fomio-space-lg:     16px;
+  --fomio-space-xl:     24px;
+  --fomio-space-2xl:    32px;
+  --fomio-space-3xl:    40px;
+  --fomio-space-4xl:    48px;
+  --fomio-space-5xl:    64px;
+  --fomio-radius-sm:    8px;
+  --fomio-radius-md:    12px;
+  --fomio-radius-lg:    16px;
+  --fomio-radius-card:  18px;
+  --fomio-radius-pill:  9999px;
+  --fomio-content-max-width: 680px;
+  --fomio-button-height-sm:  32px;
+  --fomio-button-height:     40px;
+  --fomio-button-height-lg:  48px;
+  --fomio-input-height:      40px;
+}
+
+
+// ------------------------------------------------------------
+// 1A. LEGACY ALIASES
+// The rest of this file was authored with "Ink & Paper" names.
+// These aliases map those names onto the canonical variables so
+// all existing rules continue to work without a find-and-replace.
+//
+// Migration plan: once the Discourse redesign is complete,
+// do a single search-and-replace pass to use canonical names
+// directly and remove this block.
 // ------------------------------------------------------------
 
 :root {
-  --fomio-font-serif: "Lora", Georgia, "Times New Roman", serif;
-  --fomio-font-ui: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --fomio-ink:       var(--fomio-text);          // was: #1a1a1a (Soft Charcoal)
+  --fomio-paper:     var(--fomio-bg);             // was: #f9f7f2 (Warm Cream)
+  --fomio-red:       var(--fomio-primary);        // was: #c44536 (Sealing Wax Red) → was Fomio Teal → back to Terracotta #C44536
+  --fomio-red-dark:  var(--fomio-primary-dark);   // was: #a8362b
+  --fomio-rule:      var(--fomio-border);         // was: #e0e0e0
+  --fomio-ink-muted: var(--fomio-muted);          // was: rgba(26,26,26,0.5)
+  --fomio-ink-ghost: var(--fomio-border-soft);    // was: rgba(26,26,26,0.06)
 }
 
 
@@ -58,21 +142,12 @@
 
 
 // ------------------------------------------------------------
-// 5. COLOUR ALIASES
-// Raw values come from the "Ink & Paper" scheme in about.json.
-// Always use these aliases — never raw hex — in this file.
+// 5. COLOUR ALIASES  [migrated — values now live in Section 1 / 1A]
+// This block previously held hardcoded "Ink & Paper" hex values.
+// The aliases below are still present in Section 1A and continue
+// to work — this section is intentionally left empty to avoid
+// overriding those canonical definitions.
 // ------------------------------------------------------------
-
-:root {
-  --fomio-ink:       #1a1a1a;               // Soft Charcoal = --primary
-  --fomio-paper:     #f9f7f2;               // Warm Cream    = --secondary
-  --fomio-red:       #c44536;               // Sealing Wax Red = --tertiary
-  --fomio-rule:      #e0e0e0;               // Subtle Gray — 1px borders only
-
-  --fomio-ink-muted: rgba(26, 26, 26, 0.5); // Secondary text, captions
-  --fomio-ink-ghost: rgba(26, 26, 26, 0.06);// Hover fills, subtle backgrounds
-  --fomio-red-dark:  #a8362b;               // Sealing Wax Red — hover state
-}
 
 
 // ------------------------------------------------------------

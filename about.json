@@ -9,19 +9,19 @@
   "maximum_discourse_version": null,
   "assets": {},
   "color_schemes": {
-    "Ink & Paper": {
-      "primary": "1a1a1a",
-      "secondary": "f9f7f2",
-      "tertiary": "c44536",
-      "quaternary": "e45735",
-      "header_background": "f9f7f2",
-      "header_primary": "1a1a1a",
-      "highlight": "f0e6d3",
-      "selected": "d1f0ff",
-      "hover": "f2f2f2",
-      "danger": "c44536",
-      "success": "4a7c59",
-      "love": "c44536"
+    "Fomio": {
+      "primary":            "0F172A",
+      "secondary":          "FFFFFF",
+      "tertiary":           "009688",
+      "quaternary":         "26A69A",
+      "header_background":  "FFFFFF",
+      "header_primary":     "0F172A",
+      "highlight":          "B2DFDB",
+      "selected":           "B2DFDB",
+      "hover":              "F7F7F8",
+      "danger":             "EF4444",
+      "success":            "22c55e",
+      "love":               "EF4444"
     }
   },
   "modifiers": {},

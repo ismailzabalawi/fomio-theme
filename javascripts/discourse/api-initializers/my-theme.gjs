@@ -12,6 +12,8 @@ export default apiInitializer("1.8.0", (api) => {
     "t",
   ]);
 
+  // Verified: discourse/frontend/discourse/app/templates/application.gjs:106
+  // <PluginOutlet @name="above-main-container" @connectorTagName="div" />
   api.renderInOutlet("above-main-container", HomepageShell);
 
   api.registerValueTransformer("topic-list-class", ({ value: classes, context }) => {
