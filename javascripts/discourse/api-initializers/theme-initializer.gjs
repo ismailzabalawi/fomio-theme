@@ -1,5 +1,7 @@
 import { apiInitializer } from "discourse/lib/api";
-import { settings } from "virtual:theme";
+import { i18n } from "discourse-i18n";
+import getURL, { withoutPrefix } from "discourse/lib/get-url";
+import { settings, themePrefix } from "virtual:theme";
 
 /**
  * theme-initializer.gjs — Mobile Web → App Handoff
@@ -29,11 +31,17 @@ import { settings } from "virtual:theme";
  *     → lib/auth.ts decrypts payload, stores API key
  *
  *   GUARD 1 — redirectCount:
- *     On /login, performance.getEntriesByType('navigation')[0].redirectCount > 0
- *     means Discourse server-redirected us here from /user-api-key/new.
- *     We must NOT fire the /login redirect or the auth session catches
+ *     On /login (local login) or /session/* (SSO, 2FA, OTP, passkeys, etc.),
+ *     performance.getEntriesByType('navigation')[0].redirectCount > 0 means
+ *     Discourse server-redirected us here (e.g. from /user-api-key/new → /login
+ *     or → /session/sso when DiscourseConnect is enabled).
+ *     We must NOT fire the /login “open app” redirect or the auth session catches
  *     fomio://signin?autoAuth=true (wrong URL, no payload) → "Authorization cancelled".
- *     Instead we set sessionStorage['fomio_auth_flow'] = '1'.
+ *     Instead we set sessionStorage['fomio_auth_flow'] = '1' where applicable.
+ *
+ *   Paths under /session/, /user-api-key, /signup, password-reset, activation:
+ *     Never show the handoff overlay or fire app deep links — finish in-browser.
+ *   Handoff UI: locales/en.yml (mobile_handoff.*) + common.scss (.fomio-mobile-handoff).
  *
  *   GUARD 2 — sessionStorage flag:
  *     On home (/), we check for the flag set by GUARD 1. If present,
@@ -75,12 +83,134 @@ import { settings } from "virtual:theme";
  * SOURCE VERIFIED AGAINST
  * -----------------------
  *   Discourse activation flow: frontend/discourse/app/templates/activate-account.gjs:84
- *   Discourse login redirect:  app/controllers/user_api_keys_controller.rb:32
+ *   Discourse login redirect:  app/controllers/user_api_keys_controller.rb:26-33
  *   App auth session:          apps/mobile/lib/auth.ts signIn()
  *   App deep link table:       apps/mobile/lib/deep-linking.ts
  */
 export default apiInitializer("1.8.0", (api) => {
-  function handleUrl(url) {
+  /**
+   * Strip Discourse base_path (subfolder) and trailing slashes so /forum/login → /login.
+   */
+  function normalizeDiscoursePath(rawPath) {
+    getURL("/");
+    let path = withoutPrefix(rawPath);
+    if (!path || path === "") {
+      path = "/";
+    }
+    if (path.length > 1 && path.endsWith("/")) {
+      path = path.slice(0, -1);
+    }
+    return path;
+  }
+
+  function markFomioAuthFlowIfRedirected() {
+    const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
+    if (navEntry && navEntry.redirectCount > 0) {
+      sessionStorage.setItem("fomio_auth_flow", "1");
+    }
+  }
+
+  /**
+   * Discourse routes where we must not show the handoff overlay or deep-link to the app.
+   * (Authorize HTML is no_ember and does not load this script; this covers Ember routes.)
+   */
+  function isDiscourseAuthSupportingPath(path) {
+    return (
+      path.startsWith("/user-api-key") ||
+      path.startsWith("/session/") ||
+      path.startsWith("/password-reset") ||
+      path.startsWith("/u/activate-account") ||
+      path.startsWith("/u/account-created") ||
+      path.startsWith("/signup") ||
+      path.startsWith("/invites") ||
+      path.startsWith("/u/confirm") ||
+      path.startsWith("/auth/")
+    );
+  }
+
+  const HANDOFF_ROOT_ID = "fomio-mobile-handoff-root";
+
+  function th(key) {
+    return i18n(themePrefix(key));
+  }
+
+  function removeHandoffOverlayIfPresent() {
+    document.getElementById(HANDOFF_ROOT_ID)?.remove();
+    document.documentElement.style.removeProperty("overflow");
+    document.body.style.removeProperty("overflow");
+  }
+
+  /**
+   * Full-viewport overlay (see common.scss .fomio-mobile-handoff).
+   * Does not replace document.body — keeps Discourse DOM intact underneath.
+   */
+  function showHandoffOverlay(variant, deepLink) {
+    removeHandoffOverlayIfPresent();
+
+    const titleKey =
+      variant === "login"
+        ? "mobile_handoff.login_title"
+        : "mobile_handoff.home_title";
+    const subtitleKey =
+      variant === "login"
+        ? "mobile_handoff.login_subtitle"
+        : "mobile_handoff.home_subtitle";
+
+    const root = document.createElement("div");
+    root.id = HANDOFF_ROOT_ID;
+    root.className = "fomio-mobile-handoff";
+    root.setAttribute("role", "dialog");
+    root.setAttribute("aria-modal", "true");
+    root.setAttribute("aria-labelledby", "fomio-mobile-handoff-title");
+
+    const panel = document.createElement("div");
+    panel.className = "fomio-mobile-handoff__panel";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "fomio-mobile-handoff__eyebrow";
+    eyebrow.textContent = th("mobile_handoff.brand");
+
+    const rule = document.createElement("div");
+    rule.className = "fomio-mobile-handoff__rule";
+    rule.setAttribute("aria-hidden", "true");
+
+    const titleEl = document.createElement("h1");
+    titleEl.id = "fomio-mobile-handoff-title";
+    titleEl.className = "fomio-mobile-handoff__title";
+    titleEl.textContent = th(titleKey);
+
+    const subtitle = document.createElement("p");
+    subtitle.className = "fomio-mobile-handoff__subtitle";
+    subtitle.textContent = th(subtitleKey);
+
+    const spinner = document.createElement("div");
+    spinner.className = "fomio-mobile-handoff__spinner";
+    spinner.setAttribute("aria-hidden", "true");
+
+    const fallback = document.createElement("p");
+    fallback.className = "fomio-mobile-handoff__fallback";
+    fallback.appendChild(
+      document.createTextNode(`${th("mobile_handoff.fallback_lead")} `)
+    );
+    const link = document.createElement("a");
+    link.className = "fomio-mobile-handoff__link";
+    link.href = deepLink;
+    link.textContent = th("mobile_handoff.fallback_link");
+    fallback.appendChild(link);
+
+    panel.append(eyebrow, rule, titleEl, subtitle, spinner, fallback);
+    root.appendChild(panel);
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.appendChild(root);
+
+    setTimeout(() => {
+      window.location.href = deepLink;
+    }, 1200);
+  }
+
+  function handleUrl(rawPath) {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera || "";
     const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
     const isFomioApp = userAgent.includes("FomioMobileApp");
@@ -90,7 +220,16 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
+    const path = normalizeDiscoursePath(rawPath);
+
     const appUrl = settings.fomio_app_url || "fomio://";
+
+    if (isDiscourseAuthSupportingPath(path)) {
+      if (path.startsWith("/session/")) {
+        markFomioAuthFlowIfRedirected();
+      }
+      return;
+    }
 
     // CASE 1: Login page -> send to app sign in
     // Guard: skip if we arrived here via a server-side redirect (redirectCount > 0).
@@ -98,15 +237,11 @@ export default apiInitializer("1.8.0", (api) => {
     // on the web, Discourse 302-redirects to /login. We must not intercept that redirect
     // or it interrupts ASWebAuthenticationSession / Chrome Custom Tabs, causing the
     // auth payload to never reach the app and sign-in to silently fail.
-    if (url === "/login") {
+    if (path === "/login") {
       const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
       const arrivedViaRedirect = navEntry && navEntry.redirectCount > 0;
       if (!arrivedViaRedirect) {
-        showRedirectScreen(
-          "Continue in the app.",
-          "Opening Fomio for sign in\u2026",
-          `${appUrl}signin?autoAuth=true`
-        );
+        showHandoffOverlay("login", `${appUrl}signin?autoAuth=true`);
       } else {
         // We're inside the sign-in auth flow (/user-api-key/new → /login).
         // After the user logs in, Discourse redirects to home before returning
@@ -126,16 +261,12 @@ export default apiInitializer("1.8.0", (api) => {
     // Only THEN do we send them to the app.
     // Guard: skip if we're mid sign-in auth flow (set on /login with redirectCount > 0).
     const HOME_PATHS = new Set(["/", "/latest", "/new", "/top", "/categories"]);
-    if (HOME_PATHS.has(url)) {
+    if (HOME_PATHS.has(path)) {
       if (sessionStorage.getItem("fomio_auth_flow") === "1") {
         sessionStorage.removeItem("fomio_auth_flow");
         return;
       }
-      showRedirectScreen(
-        "You\u2019re all set.",
-        "Opening Fomio\u2026",
-        `${appUrl}signin?autoAuth=true`
-      );
+      showHandoffOverlay("home", `${appUrl}signin?autoAuth=true`);
       return;
     }
   }
@@ -143,93 +274,9 @@ export default apiInitializer("1.8.0", (api) => {
   // Run immediately on initializer load — catches fresh page loads from email link taps
   // (onPageChange alone is insufficient: it hooks into Ember's router, which fires
   // after the initial render, giving users a window to interact with the Discourse page)
+  // showHandoffOverlay must be defined above before this runs (temporal dead zone).
   handleUrl(window.location.pathname);
 
   // Also handle subsequent Ember client-side navigations
   api.onPageChange(handleUrl);
-
-  function showRedirectScreen(title, subtitle, deepLink) {
-    document.body.innerHTML = `
-      <style>
-        @keyframes fomio-spin { to { transform: rotate(360deg); } }
-        .fomio-redirect {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-          padding: 2rem;
-          background: var(--fomio-bg, #FFFFFF);
-          text-align: center;
-          box-sizing: border-box;
-        }
-        .fomio-redirect__eyebrow {
-          font-family: var(--fomio-font-ui, -apple-system, sans-serif);
-          font-size: 0.75rem;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--fomio-muted, #6B6B72);
-          margin: 0 0 1.25rem;
-        }
-        .fomio-redirect__rule {
-          width: 2.5rem;
-          height: 1px;
-          background: var(--fomio-primary, #009688);
-          margin: 0 auto 1.5rem;
-        }
-        .fomio-redirect__title {
-          font-family: var(--fomio-font-serif, Georgia, serif);
-          font-size: clamp(1.75rem, 5vw, 2.75rem);
-          font-weight: 700;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-          color: var(--fomio-text, #0F172A);
-          margin: 0 0 0.875rem;
-          max-width: 14ch;
-        }
-        .fomio-redirect__subtitle {
-          font-family: var(--fomio-font-ui, -apple-system, sans-serif);
-          font-size: 1rem;
-          line-height: 1.5;
-          color: var(--fomio-muted, #6B6B72);
-          margin: 0 0 2.25rem;
-        }
-        .fomio-redirect__spinner {
-          width: 1.75rem;
-          height: 1.75rem;
-          border: 2px solid var(--fomio-border, #E3E3E6);
-          border-top-color: var(--fomio-primary, #009688);
-          border-radius: 50%;
-          animation: fomio-spin 0.9s linear infinite;
-          margin-bottom: 2.25rem;
-        }
-        .fomio-redirect__fallback {
-          font-family: var(--fomio-font-ui, -apple-system, sans-serif);
-          font-size: 0.8125rem;
-          color: var(--fomio-muted, #6B6B72);
-          margin: 0;
-        }
-        .fomio-redirect__fallback a {
-          color: var(--fomio-primary, #009688);
-          font-weight: 600;
-          text-decoration: none;
-        }
-      </style>
-      <div class="fomio-redirect">
-        <p class="fomio-redirect__eyebrow">Fomio</p>
-        <div class="fomio-redirect__rule"></div>
-        <h1 class="fomio-redirect__title">${title}</h1>
-        <p class="fomio-redirect__subtitle">${subtitle}</p>
-        <div class="fomio-redirect__spinner"></div>
-        <p class="fomio-redirect__fallback">
-          Not opening? <a href="${deepLink}">Tap here</a>
-        </p>
-      </div>
-    `;
-
-    setTimeout(() => {
-      window.location.href = deepLink;
-    }, 1200);
-  }
 });

@@ -10,9 +10,9 @@
 //   toCssVariables('light')  from @fomio/design-tokens/web
 // and must be kept in sync with packages/design-tokens/tokens.js.
 //
-// Dark-mode values are not yet applied here (Discourse handles colour
-// schemes via about.json). Add a [data-theme="dark"] block when Discourse
-// dark-mode support is introduced.
+// Dark mode: Discourse ships two color-scheme stylesheets (light / dark).
+// `javascripts/discourse/api-initializers/fomio-color-mode.gjs` toggles
+// `html.fomio-color-dark` so `--fomio-*` tokens track the active scheme.
 // ─────────────────────────────────────────────────────────────
 
 
@@ -55,6 +55,7 @@
   --fomio-brand-cream:  #F8F7F3;
   --fomio-brand-red:    #C44536;
   --fomio-brand-ink:    #1A1A1A;
+  --fomio-on-primary:   var(--fomio-brand-cream);
   --fomio-space-xs:     4px;
   --fomio-space-sm:     8px;
   --fomio-space-md:     12px;
@@ -96,6 +97,46 @@
   --fomio-rule:      var(--fomio-border);         // was: #e0e0e0
   --fomio-ink-muted: var(--fomio-muted);          // was: rgba(26,26,26,0.5)
   --fomio-ink-ghost: var(--fomio-border-soft);    // was: rgba(26,26,26,0.06)
+}
+
+
+// ------------------------------------------------------------
+// 1B. DARK MODE (AMOLED) — mirrors toCssVariables('dark') / packages/design-tokens
+// Active when html.fomio-color-dark (see fomio-color-mode.gjs).
+// ------------------------------------------------------------
+
+html.fomio-color-dark {
+  --fomio-bg:           #000000;
+  --fomio-surface:      #0A0A0A;
+  --fomio-card:         #050505;
+  --fomio-text:         #FFFFFF;
+  --fomio-foreground:   #F5F5F7;
+  --fomio-muted:        #A1A1AA;
+  --fomio-secondary:    #A1A1AA;
+  --fomio-border:       #1C1C1E;
+  --fomio-border-soft:  rgba(255, 255, 255, 0.08);
+  --fomio-primary:      #D4604F;
+  --fomio-primary-soft: #2A100E;
+  --fomio-primary-dark: #B83D30;
+  --fomio-accent:       #42A5F5;
+  --fomio-accent-soft:  rgba(124, 196, 255, 0.18);
+  --fomio-on-accent:    #000000;
+  --fomio-danger:       #F97373;
+  --fomio-danger-soft:  rgba(239, 68, 68, 0.16);
+  --fomio-warning:      #FBBF24;
+  --fomio-success:      #4ade80;
+  --fomio-info:         #42A5F5;
+  --fomio-shadow:       rgba(96, 165, 250, 0.28);
+  --fomio-liked:        #EF4444;
+  --fomio-hero-overlay: rgba(0, 0, 0, 0.7);
+  --fomio-hero-text:    #FFFFFF;
+  --fomio-font-serif:   "Lora", Georgia, "Times New Roman", serif;
+  --fomio-font-mono:    "Space Mono", "Courier New", monospace;
+  --fomio-font-ui:      "Raleway", system-ui, sans-serif;
+  --fomio-brand-cream:  #F8F7F3;
+  --fomio-brand-red:    #C44536;
+  --fomio-brand-ink:    #1A1A1A;
+  --fomio-on-primary:   #FFFFFF;
 }
 
 
@@ -429,12 +470,12 @@ h6 {
 .fomio-home-shell__app-link {
   background: var(--fomio-red);
   border: 1px solid var(--fomio-red);
-  color: var(--fomio-paper);
+  color: var(--fomio-on-primary);
 
   &:hover {
     background: var(--fomio-red-dark);
     border-color: var(--fomio-red-dark);
-    color: var(--fomio-paper);
+    color: var(--fomio-on-primary);
   }
 }
 
@@ -986,7 +1027,7 @@ body.has-sidebar-page.archetype-regular {
   border-radius: 999px;
   border: 1px solid var(--fomio-red);
   background: var(--fomio-red);
-  color: var(--fomio-paper);
+  color: var(--fomio-on-primary);
   font-family: var(--fomio-font-ui);
   font-size: var(--fomio-text-sm);
   font-weight: 600;
@@ -997,7 +1038,7 @@ body.has-sidebar-page.archetype-regular {
 .fomio-topic-app-handoff__action:hover {
   background: var(--fomio-red-dark);
   border-color: var(--fomio-red-dark);
-  color: var(--fomio-paper);
+  color: var(--fomio-on-primary);
 }
 
 .timeline-container,
@@ -1084,4 +1125,107 @@ nav.post-controls .actions .d-button-label {
 
 .fomio-topic-app-handoff {
   max-width: 60rem;
+}
+
+
+// ------------------------------------------------------------
+// 16. MOBILE APP HANDOFF (theme-initializer.gjs)
+// Full-viewport overlay — tokens only, no raw hex in theme JS.
+// ------------------------------------------------------------
+
+@keyframes fomio-mobile-handoff-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fomio-mobile-handoff {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: var(--fomio-bg);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fomio-mobile-handoff__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 24rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.fomio-mobile-handoff__eyebrow {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: 0 0 var(--fomio-space-lg);
+}
+
+.fomio-mobile-handoff__rule {
+  width: 2.5rem;
+  height: 1px;
+  background-color: var(--fomio-primary);
+  margin: 0 auto var(--fomio-space-xl);
+}
+
+.fomio-mobile-handoff__title {
+  font-family: var(--fomio-font-serif);
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 700;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  margin: 0 0 var(--fomio-space-md);
+  max-width: 14ch;
+}
+
+.fomio-mobile-handoff__subtitle {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-normal);
+  color: var(--fomio-muted);
+  margin: 0 0 var(--fomio-space-2xl);
+}
+
+.fomio-mobile-handoff__spinner {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: var(--fomio-space-2xl);
+  border: 2px solid var(--fomio-border);
+  border-top-color: var(--fomio-primary);
+  border-radius: 50%;
+  animation: fomio-mobile-handoff-spin 0.9s linear infinite;
+}
+
+.fomio-mobile-handoff__fallback {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  line-height: var(--fomio-leading-normal);
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-mobile-handoff__link {
+  color: var(--fomio-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fomio-mobile-handoff__link:hover,
+.fomio-mobile-handoff__link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
