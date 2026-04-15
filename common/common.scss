@@ -1229,3 +1229,3225 @@ nav.post-controls .actions .d-button-label {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+
+// ============================================================
+// 17. AUTH PAGES — Manuscript Modernist
+// Stitch source: stitch_fomio_auth (2026-04-14)
+// Covers: login, signup, account-created, activate-account,
+//         password-reset, invite, 2FA / passkeys / backup codes
+// Design tokens from Section 1; Newsreader added to head_tag.html
+// ============================================================
+
+// Auth headings use the same editorial serif as the mobile DS (Lora).
+:root {
+  --fomio-font-headline: var(--fomio-font-serif);
+}
+
+
+// ── 17a. Shared auth page scaffold ────────────────────────
+
+body.login-page,
+body.signup-page,
+body.account-created-page,
+body.activate-account-page,
+body.password-reset-page,
+body.invite-page {
+  background: var(--fomio-bg) !important;
+
+  // Suppress the global site header — brand mark lives inside the auth card
+  .d-header {
+    display: none !important;
+  }
+
+  // Remove Discourse's header-offset padding from the main outlet
+  #main-outlet-wrapper {
+    padding-top: 0 !important;
+    display: block;
+  }
+
+  // Suppress Discourse's "powered by" badge and other chrome
+  .powered-by-discourse {
+    display: none !important;
+  }
+}
+
+
+// ── 17b. Fullpage flex containers ─────────────────────────
+
+// These exist on login / signup routes
+.login-fullpage,
+.signup-fullpage {
+  min-height: 100vh;
+  padding: var(--fomio-space-2xl) var(--fomio-space-lg);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+// Login: anchor to top — vertical centering left a large empty band above the card
+body.login-page .login-fullpage {
+  justify-content: flex-start;
+  padding-top: var(--fomio-space-xl);
+  padding-bottom: var(--fomio-space-2xl);
+}
+
+// Desktop — very faint cream→white radial behind the card (centered on card band)
+@media (min-width: 900px) {
+  html:not(.fomio-color-dark) body.login-page .login-fullpage {
+    position: relative;
+    isolation: isolate;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 72% 58% at 50% 32%,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.12) 44%,
+        transparent 72%
+      );
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
+
+// Fomio wordmark above the auth card (signup and other flows).
+// Login places the wordmark inside the card (see 17c-login).
+.login-fullpage::before,
+.signup-fullpage::before {
+  content: "Fomio";
+  display: block;
+  font-family: var(--fomio-font-headline);
+  font-size: 1.375rem; // 22px
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  text-align: center;
+  margin-bottom: var(--fomio-space-2xl);
+  flex-shrink: 0;
+}
+
+body.login-page .login-fullpage::before {
+  display: none;
+}
+
+// account-created & activate-account don't use .login-fullpage —
+// center them via #main-outlet
+body.account-created-page #main-outlet,
+body.activate-account-page #main-outlet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--fomio-space-2xl) var(--fomio-space-lg);
+  box-sizing: border-box;
+}
+
+body.activate-account-page #main-outlet::before {
+  content: "Fomio";
+  display: block;
+  font-family: var(--fomio-font-headline);
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  text-align: center;
+  margin-bottom: var(--fomio-space-2xl);
+}
+
+body.password-reset-page #main-outlet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--fomio-space-2xl) var(--fomio-space-lg);
+  box-sizing: border-box;
+}
+
+body.password-reset-page #main-outlet::before {
+  content: "Fomio";
+  display: block;
+  font-family: var(--fomio-font-headline);
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  text-align: center;
+  margin-bottom: var(--fomio-space-2xl);
+}
+
+
+// ── 17c. Auth card (shared shell) ─────────────────────────
+
+// Discourse wraps the login form in .login-body / .signup-body
+// We turn those into the "Manuscript Card"
+
+body.login-page .login-body,
+body.signup-page .signup-body {
+  width: 100%;
+  max-width: 440px;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-card);
+  border: 1px solid rgba(140, 113, 109, 0.14);
+  box-shadow: 0 12px 40px rgba(26, 26, 26, 0.06);
+  padding: var(--fomio-space-4xl) var(--fomio-space-3xl);
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 0;
+
+  // Reset Discourse's two-column layout
+  .login-left-side,
+  .login-right-side {
+    width: 100%;
+    max-width: 100%;
+    flex: none;
+  }
+}
+
+// Login — centered editorial card (design tokens + Screen 1 spec)
+body.login-page .login-body {
+  position: relative;
+  border: 1px solid var(--fomio-border);
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.04),
+    0 12px 32px rgba(26, 26, 26, 0.06);
+  flex-wrap: wrap;
+  padding-top: var(--fomio-space-2xl);
+  padding-bottom: var(--fomio-space-4xl);
+
+  // Must not use flex-grow — .login-body is display:flex; column on mobile, and
+  // flex: 1 on this ::before eats all remaining viewport height below the wordmark.
+  &::before {
+    content: "Fomio";
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    font-family: var(--fomio-font-headline);
+    font-size: 1.375rem; // 22px
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+    margin-bottom: var(--fomio-space-sm);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-auth-card-enter 320ms ease-out both;
+  }
+}
+
+@keyframes fomio-auth-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fomio-account-created-envelope-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes fomio-reset-success-envelope-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes fomio-reset-success-arrow-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+// Social login section separator
+body.login-page .login-or-separator,
+body.signup-page .login-or-separator {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-md);
+  margin: var(--fomio-space-lg) 0;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-muted);
+  letter-spacing: var(--fomio-tracking-wide);
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--fomio-border);
+  }
+}
+
+// account-created / activate-account card
+body.account-created-page .account-created,
+body.activate-account-page .activate-account {
+  width: 100%;
+  max-width: 440px;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-card);
+  border: 1px solid rgba(140, 113, 109, 0.14);
+  box-shadow: 0 12px 40px rgba(26, 26, 26, 0.06);
+  padding: var(--fomio-space-4xl) var(--fomio-space-3xl);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+// password-reset card
+body.password-reset-page .password-reset.container {
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+}
+
+body.password-reset-page .change-password-form {
+  width: 100%;
+  max-width: 100%;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-card);
+  border: 1px solid rgba(140, 113, 109, 0.14);
+  box-shadow: 0 12px 40px rgba(26, 26, 26, 0.06);
+  padding: var(--fomio-space-4xl) var(--fomio-space-3xl);
+  box-sizing: border-box;
+}
+
+
+// ── 17d. WelcomeHeader / Card headings ────────────────────
+
+body.login-page,
+body.signup-page,
+body.account-created-page,
+body.activate-account-page {
+  .login-welcome-header,
+  #create-account-title {
+    text-align: center;
+    margin-bottom: var(--fomio-space-2xl);
+
+    // Terracotta rule above the heading
+    &::before {
+      content: "";
+      display: block;
+      width: 32px;
+      height: 2px;
+      background: var(--fomio-primary);
+      margin: 0 auto var(--fomio-space-lg);
+    }
+  }
+}
+
+body.login-page h1.login-title,
+body.signup-page h1.login-title,
+body.account-created-page h1.login-title,
+body.activate-account-page h1.login-title {
+  font-family: var(--fomio-font-headline);
+  font-size: var(--fomio-text-2xl);
+  font-weight: 700;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  text-align: center;
+  margin: 0;
+}
+
+// Login title — 28px editorial (Screen 1)
+body.login-page h1.login-title {
+  font-size: 1.75rem;
+}
+
+body.login-page .fomio-login-subheader {
+  font-family: var(--fomio-font-ui);
+  font-size: 0.875rem; // 14px — Raleway dek
+  font-weight: 500;
+  line-height: var(--fomio-leading-normal);
+  letter-spacing: var(--fomio-tracking-wide);
+  color: var(--fomio-muted);
+  text-align: center;
+  margin: var(--fomio-space-xs) 0 var(--fomio-space-md);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+// Discourse core uses a 2-column grid here — breaks centering on mobile.
+body.login-page .login-welcome-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--fomio-space-sm);
+  grid-template-columns: unset;
+  grid-template-rows: unset;
+
+  h1.login-title {
+    text-align: center;
+    width: 100%;
+  }
+
+  // Extra air between terracotta rule and title (rule size/color unchanged)
+  &::before {
+    margin-bottom: var(--fomio-space-3xl);
+  }
+}
+
+// Signup sub-header link (already have an account?)
+body.signup-page .login-welcome-header,
+body.login-page .login-welcome-header {
+  p:not(.fomio-signup-eyebrow):not(.fomio-signup-subheader),
+  .login-subheader {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-muted);
+    text-align: center;
+    margin: var(--fomio-space-sm) 0 0;
+
+    a {
+      color: var(--fomio-primary);
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+    }
+  }
+}
+
+// Password-reset headings
+body.password-reset-page .change-password-form h2 {
+  font-family: var(--fomio-font-headline);
+  font-size: var(--fomio-text-2xl);
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  text-align: center;
+  margin: 0 0 var(--fomio-space-2xl);
+
+  &::before {
+    content: "";
+    display: block;
+    width: 2rem;
+    height: 2px;
+    background: var(--fomio-primary);
+    margin: 0 auto var(--fomio-space-lg);
+  }
+}
+
+
+// ── 17e. Signup progress bar ───────────────────────────────
+
+.signup-progress-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--fomio-space-xl);
+  margin-bottom: var(--fomio-space-2xl);
+  position: relative;
+
+  // Connecting line
+  &::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: calc(50% - 3rem);
+    right: calc(50% - 3rem);
+    height: 1px;
+    background: var(--fomio-border);
+    z-index: 0;
+  }
+
+  .signup-progress-bar-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  .signup-progress-bar-step__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--fomio-border);
+    flex-shrink: 0;
+  }
+
+  .signup-progress-bar-step.is-current .signup-progress-bar-step__dot,
+  .signup-progress-bar-step.active .signup-progress-bar-step__dot {
+    background: var(--fomio-primary);
+  }
+
+  .signup-progress-bar-step.is-complete .signup-progress-bar-step__dot,
+  .signup-progress-bar-step.done .signup-progress-bar-step__dot {
+    background: var(--fomio-primary-soft);
+  }
+}
+
+
+// ── 17f. Input fields ──────────────────────────────────────
+
+body.login-page,
+body.signup-page,
+body.activate-account-page,
+body.password-reset-page,
+body.invite-page {
+  // Input group wrapper
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--fomio-space-lg);
+    position: relative;
+  }
+
+  // Floating label → convert to standard above-input label
+  .input-group .alt-placeholder,
+  .input-group label:not(.checkbox-label) {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    margin-bottom: var(--fomio-space-xs);
+    order: -1;
+  }
+
+  // All text/email/password inputs
+  .input-group input[type="email"],
+  .input-group input[type="text"],
+  .input-group input[type="password"],
+  .input-group input:not([type="checkbox"]) {
+    width: 100%;
+    height: 48px;
+    padding: 0 var(--fomio-space-lg);
+    background: var(--fomio-surface);
+    border: 1px solid transparent;
+    border-radius: var(--fomio-radius-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base);
+    color: var(--fomio-text);
+    box-sizing: border-box;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    &::placeholder {
+      color: var(--fomio-muted);
+      opacity: 0.55;
+    }
+
+    &:focus {
+      outline: none;
+      background: var(--fomio-card);
+      border-color: var(--fomio-primary);
+      box-shadow: 0 0 0 3px rgba(196, 69, 54, 0.1);
+    }
+  }
+
+  // Password reveal toggle
+  .toggle-password-mask {
+    position: absolute;
+    right: var(--fomio-space-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--fomio-muted);
+
+    &:hover {
+      color: var(--fomio-text);
+    }
+
+    .d-icon {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+  }
+
+  // Input tip messages
+  .input-tip,
+  .more-info {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+    margin-top: var(--fomio-space-xs);
+    line-height: var(--fomio-leading-normal);
+  }
+
+  .input-tip.bad { color: var(--fomio-danger); }
+  .input-tip.good { color: var(--fomio-success); }
+  .input-tip.loading { color: var(--fomio-muted); }
+
+  // Password strength indicator
+  .create-account__password-info {
+    margin-top: var(--fomio-space-xs);
+  }
+
+  // Caps-lock warning
+  .caps-lock-warning {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-warning);
+  }
+}
+
+// Login inputs — 40px, cream fill, 12px radius (2px border avoids jump on focus)
+body.login-page {
+  .input-group input[type="email"],
+  .input-group input[type="text"],
+  .input-group input[type="password"],
+  .input-group input:not([type="checkbox"]) {
+    height: var(--fomio-input-height);
+    padding: 0 var(--fomio-space-lg);
+    background: var(--fomio-bg);
+    border: 2px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-md);
+
+    &:focus {
+      outline: none;
+      background: var(--fomio-card);
+      border: 2px solid var(--fomio-primary); // terracotta #C44536 — --fomio-primary
+      box-shadow:
+        inset 0 0 0 1px rgba(248, 247, 243, 0.92),
+        inset 0 0 20px rgba(196, 69, 54, 0.12),
+        inset 0 0 36px rgba(245, 208, 204, 0.35); // cream + --fomio-primary-soft wash
+    }
+  }
+
+  .input-group:focus-within .toggle-password-mask,
+  .toggle-password-mask:hover {
+    color: var(--fomio-primary);
+  }
+
+  .login__password-links {
+    text-align: left;
+    margin-top: var(--fomio-space-sm);
+  }
+}
+
+// Password field — extra right padding for the reveal icon
+body.login-page .input-group input[type="password"],
+body.signup-page .input-group input[type="password"],
+body.password-reset-page .input-group input[type="password"],
+body.password-reset-page #new-account-password {
+  padding-right: 3rem;
+}
+
+// Standalone password-reset input (outside .input-group)
+body.password-reset-page #new-account-password {
+  width: 100%;
+  height: 48px;
+  padding: 0 3rem 0 var(--fomio-space-lg);
+  background: var(--fomio-surface);
+  border: 1px solid transparent;
+  border-radius: var(--fomio-radius-md);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-base);
+  color: var(--fomio-text);
+  box-sizing: border-box;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 3px rgba(196, 69, 54, 0.1);
+  }
+}
+
+// .input wrapper (password-reset uses .input not .input-group)
+body.password-reset-page .change-password-form .input {
+  position: relative;
+  margin-bottom: var(--fomio-space-lg);
+}
+
+
+// ── 17g. Primary CTA button ────────────────────────────────
+
+// Shared mixin-style ruleset applied to every auth-page primary button
+body.login-page .login-page-cta .btn-primary,
+body.login-page #login-button,
+body.login-page button[type="submit"].btn-primary,
+body.signup-page .signup-page-cta .btn-primary,
+body.signup-page button[type="submit"].btn-primary,
+body.activate-account-page .activate-account-button,
+body.activate-account-page .continue-button,
+body.password-reset-page .change-password-form .btn-primary,
+body.password-reset-page .change-password-form button[type="submit"],
+body.invite-page .btn-primary,
+body.login-page .second-factor-auth .btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fomio-space-sm);
+  width: 100%;
+  height: 48px;
+  border-radius: var(--fomio-radius-pill);
+  background: linear-gradient(135deg, var(--fomio-primary-dark) 0%, var(--fomio-primary) 100%);
+  border: none;
+  color: var(--fomio-on-primary);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  margin-top: var(--fomio-space-lg);
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(162, 45, 33, 0.2);
+
+  &:hover {
+    opacity: 0.92;
+    color: var(--fomio-on-primary);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled,
+  &.disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+  }
+
+  .d-button-label {
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  .loading-indicator,
+  .d-icon {
+    color: inherit;
+  }
+}
+
+// Login route — solid terracotta primary CTA (no gradient; Screen 1)
+body.login-page .login-page-cta .btn-primary,
+body.login-page #login-button,
+body.login-page button[type="submit"].btn-primary,
+body.login-page .second-factor-auth .btn-primary {
+  background: var(--fomio-primary);
+  box-shadow: none;
+
+  &:hover {
+    opacity: 1;
+    background: var(--fomio-primary-dark);
+    color: var(--fomio-on-primary);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Sign up prompt row: muted lead + terracotta link (replaces default divider)
+body.login-page .login-page-cta__buttons {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: var(--fomio-space-md);
+  row-gap: var(--fomio-space-md);
+  width: 100%;
+}
+
+body.login-page .login-page-cta__login,
+body.login-page #login-button {
+  grid-column: 1 / -1;
+}
+
+body.login-page .login-page-cta__no-account-yet {
+  grid-column: 1;
+  justify-self: start;
+  margin: 0;
+  width: auto;
+  max-width: 16rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 500;
+  letter-spacing: var(--fomio-tracking-wide);
+  color: var(--fomio-muted);
+  text-align: left;
+  line-height: var(--fomio-leading-normal);
+
+  &::before {
+    display: none !important;
+  }
+}
+
+body.login-page .login-page-cta__signup {
+  grid-column: 2;
+  justify-self: end;
+  width: auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: var(--fomio-space-xs) 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--fomio-primary) !important;
+  font-family: var(--fomio-font-ui) !important;
+  font-size: var(--fomio-text-sm) !important;
+  font-weight: 600 !important;
+  letter-spacing: var(--fomio-tracking-wide) !important;
+  margin: 0 !important;
+  text-transform: none;
+  box-shadow: none !important;
+
+  &:hover,
+  &:focus-visible {
+    background: transparent !important;
+    color: var(--fomio-primary-dark) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 1 !important;
+  }
+}
+
+// Outline secondary button (resend email, "sign in" link as button)
+body.login-page .login-page-cta .btn-flat:not(.login-page-cta__signup),
+body.signup-page .signup-page-cta .btn-flat:not(.signup-page-cta__login),
+body.account-created-page .activation-controls .btn,
+body.password-reset-page .change-password-form a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--fomio-button-height);
+  border-radius: var(--fomio-radius-pill);
+  background: transparent;
+  border: 1px solid var(--fomio-primary);
+  color: var(--fomio-primary);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  padding: 0 var(--fomio-space-xl);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(196, 69, 54, 0.05);
+    color: var(--fomio-primary);
+  }
+}
+
+
+// ── 17h. Auth footer / links ───────────────────────────────
+
+// "Already have an account? Sign in" footer
+body.login-page .signup-link-cta,
+body.signup-page .login-link-cta,
+body.login-page .login-page-cta .create-account,
+body.signup-page .signup-page-cta .login-link {
+  display: block;
+  text-align: center;
+  margin-top: var(--fomio-space-xl);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  color: var(--fomio-muted);
+}
+
+// Login disclaimer / terms on signup
+body.signup-page .signup-disclaimer,
+.signup-page-cta .signup-disclaimer {
+  text-align: center;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-muted);
+  line-height: var(--fomio-leading-relaxed);
+  margin-top: var(--fomio-space-xl);
+
+  a {
+    color: var(--fomio-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+// Forgot password link (under password field; Discourse uses #forgot-password-link)
+body.login-page .login__password-links a,
+body.login-page #forgot-password-link {
+  display: inline;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 500;
+  letter-spacing: var(--fomio-tracking-wide);
+  color: var(--fomio-primary);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: var(--fomio-primary-dark);
+  }
+}
+
+
+// ── 17i. Social login buttons (right-side panel) ──────────
+
+body.login-page,
+body.signup-page {
+  .login-right-side {
+    box-sizing: border-box;
+    padding: var(--fomio-space-xl) 0 0;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .login-right-side .login-buttons {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .login-buttons .btn,
+  .login-buttons .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fomio-space-sm);
+    width: 100%;
+    height: var(--fomio-button-height);
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-surface);
+    border: 1px solid var(--fomio-border);
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    margin-bottom: var(--fomio-space-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--fomio-bg);
+    }
+  }
+
+  // Passkey button sometimes renders with different class combinations in Discourse.
+  // Force token-based styling so it never falls back to browser/default white.
+  #login-buttons .passkey-login-button,
+  #login-buttons .passkey-login-button.btn,
+  #login-buttons .passkey-login-button .btn,
+  #login-buttons .passkey-login-button button {
+    background: var(--fomio-surface) !important;
+    border: 1px solid var(--fomio-border) !important;
+    color: var(--fomio-text) !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-bg) !important;
+      border-color: var(--fomio-muted) !important;
+      color: var(--fomio-text) !important;
+    }
+  }
+
+  #login-buttons .passkey-login-button .d-icon,
+  #login-buttons .passkey-login-button .d-button-label {
+    color: inherit !important;
+  }
+}
+
+
+// ── 17j. Account-created (check your email) ───────────────
+
+body.account-created-page {
+  // Calm holding screen — no progress bar, no wordmark above the card
+  #main-outlet::before {
+    display: none;
+  }
+
+  .signup-progress-bar {
+    display: none;
+  }
+
+  .account-created {
+    position: relative;
+    max-width: 420px;
+    border: 1px solid var(--fomio-border);
+    box-shadow:
+      0 1px 2px rgba(26, 26, 26, 0.04),
+      0 12px 32px rgba(26, 26, 26, 0.06);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fomio-auth-card-enter 320ms ease-out both;
+    }
+  }
+
+  // Editorial envelope mark —72px circle, cream → surface, SVG + float
+  .account-created::before {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    margin-bottom: var(--fomio-space-xl);
+    border-radius: 50%;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 40 40' fill='none'%3E%3Crect x='6' y='12' width='28' height='18' rx='2' stroke='%231A1A1A' stroke-width='1.5'/%3E%3Cpath d='M6 12 L20 23 L34 12' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='27' cy='16' r='2.5' fill='%23C44536'/%3E%3C/svg%3E")
+        center / 36px 36px no-repeat,
+      linear-gradient(180deg, var(--fomio-bg) 0%, var(--fomio-card) 100%);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fomio-account-created-envelope-float 3s ease-in-out infinite;
+    }
+  }
+
+  .login-welcome-header {
+    margin-bottom: var(--fomio-space-lg);
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  h1.login-title {
+    font-size: 1.625rem; // 26px — “One more step.”
+  }
+
+  .success-info {
+    width: 100%;
+    max-width: none;
+    margin: 0 0 var(--fomio-space-xl);
+    text-align: center;
+
+    p {
+      margin: 0;
+    }
+
+    p:first-of-type {
+      font-family: var(--fomio-font-serif);
+      font-size: 1rem; // 16px
+      font-weight: 400;
+      line-height: 1.65;
+      letter-spacing: var(--fomio-tracking-tight);
+      color: var(--fomio-text);
+    }
+
+    p:last-of-type:not(:only-of-type) {
+      margin-top: var(--fomio-space-md);
+      font-family: var(--fomio-font-ui);
+      font-size: 0.8125rem; // 13px
+      font-weight: 500;
+      line-height: var(--fomio-leading-normal);
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-muted);
+    }
+  }
+
+  .activation-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--fomio-space-md);
+    width: 100%;
+
+    &::before {
+      content: "";
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--fomio-primary);
+      margin: 0 auto var(--fomio-space-lg);
+      align-self: center;
+    }
+
+    .btn {
+      justify-content: center;
+    }
+
+    .btn.resend {
+      width: 100%;
+      min-height: 40px;
+      height: 40px;
+      padding: 0 var(--fomio-space-lg);
+      border-radius: var(--fomio-radius-pill);
+      background: transparent;
+      border: 1px solid var(--fomio-primary);
+      color: var(--fomio-primary);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-wide);
+      box-shadow: none;
+      margin: 0;
+
+      .d-icon {
+        display: none;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: color-mix(in srgb, var(--fomio-primary) 8%, transparent);
+        border-color: var(--fomio-primary-dark);
+        color: var(--fomio-primary-dark);
+      }
+    }
+
+    .btn.edit-email {
+      width: 100%;
+      min-height: 0;
+      height: auto;
+      padding: var(--fomio-space-xs) 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      color: var(--fomio-primary);
+      font-family: var(--fomio-font-ui);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: var(--fomio-tracking-wide);
+      margin: 0;
+
+      .d-icon {
+        display: none;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: transparent;
+        color: var(--fomio-primary-dark);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+    }
+  }
+
+  .edit-activation-email-link {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  body.account-created-page #main-outlet {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  body.account-created-page .account-created {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0 !important;
+    border: none;
+    box-shadow: none;
+    padding: var(--fomio-space-3xl) var(--fomio-space-lg);
+  }
+}
+
+
+// ── 17k. Activate account ─────────────────────────────────
+
+body.activate-account-page {
+  // Body copy below the CTA
+  .activate-account > p,
+  .activate-account .login-welcome-header + p {
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-base);
+    line-height: var(--fomio-leading-relaxed);
+    color: var(--fomio-muted);
+    text-align: center;
+    margin: 0 auto var(--fomio-space-xl);
+    max-width: 30ch;
+  }
+
+  // Footer note ("You'll be taken to Fomio automatically")
+  .activate-account footer,
+  .activate-account .activation-footer {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+    opacity: 0.5;
+    text-align: center;
+    margin-top: var(--fomio-space-xl);
+  }
+
+  // Post-activation success state
+  .account-activated {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+
+    .tada-image {
+      margin-bottom: var(--fomio-space-lg);
+
+      img {
+        width: 3.5rem;
+        height: 3.5rem;
+      }
+    }
+
+    p {
+      font-family: var(--fomio-font-serif);
+      font-size: var(--fomio-text-base);
+      color: var(--fomio-muted);
+      line-height: var(--fomio-leading-relaxed);
+      margin: 0 auto var(--fomio-space-xl);
+      max-width: 28ch;
+    }
+  }
+
+  // Alert (already activated error)
+  .alert.alert-error {
+    background: var(--fomio-danger-soft);
+    border-radius: var(--fomio-radius-md);
+    color: var(--fomio-danger);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    padding: var(--fomio-space-md) var(--fomio-space-lg);
+    margin-bottom: var(--fomio-space-lg);
+    text-align: center;
+  }
+}
+
+
+// ── 17l. Password reset ───────────────────────────────────
+
+body.password-reset-page {
+  // Success / error messages inside the form
+  .change-password-form > p {
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-base);
+    line-height: var(--fomio-leading-relaxed);
+    color: var(--fomio-muted);
+    text-align: center;
+    margin: 0 auto var(--fomio-space-xl);
+  }
+
+  .change-password-form .alert.alert-error {
+    background: var(--fomio-danger-soft);
+    border-radius: var(--fomio-radius-md);
+    color: var(--fomio-danger);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    padding: var(--fomio-space-md) var(--fomio-space-lg);
+    margin-bottom: var(--fomio-space-lg);
+    text-align: center;
+  }
+
+  // Password field wrapper
+  .change-password__password-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--fomio-space-xs);
+  }
+
+  // "Sent just now" success note
+  .change-password-form .success-message,
+  .change-password-form .sent-message {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+    opacity: 0.65;
+    text-align: center;
+    margin-top: var(--fomio-space-sm);
+    text-transform: uppercase;
+  }
+
+  // 2FA / security-key verification inside password reset
+  .change-password-form .second-factor-form,
+  .change-password-form .security-key-form {
+    margin-top: var(--fomio-space-lg);
+
+    h2 {
+      font-size: var(--fomio-text-xl);
+      margin-bottom: var(--fomio-space-lg);
+    }
+  }
+}
+
+// Screen 6A — Password reset request modal (forgot-password)
+.d-modal.forgot-password-modal {
+  --fomio-reset-check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M5 12.5l4 4 10-10' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --fomio-reset-success-envelope-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'%3E%3Crect x='8' y='14' width='48' height='36' rx='6' stroke='%231A1A1A' stroke-width='1.5'/%3E%3Cpath d='M11.5 19.5 32 34l20.5-14.5' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M23.5 29 11 41.5M40.5 29 53 41.5' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  --fomio-reset-success-arrow-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 12 12 3M12 3H6.5M12 3v5.5' stroke='%23C44536' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  align-items: center;
+
+  .d-modal__container {
+    width: 100%;
+    max-width: 420px;
+    min-width: 0;
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-card);
+    box-shadow:
+      0 1px 2px rgba(26, 26, 26, 0.04),
+      0 12px 32px rgba(26, 26, 26, 0.06);
+  }
+
+  .d-modal__header {
+    border-bottom: none;
+    padding: var(--fomio-space-2xl) var(--fomio-space-3xl) 0;
+    justify-content: center;
+    position: relative;
+  }
+
+  .d-modal__title-text {
+    font-family: var(--fomio-font-headline);
+    font-size: 1.625rem;
+    font-weight: 700;
+    line-height: var(--fomio-leading-tight);
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+    margin: 0;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+  }
+
+  .d-modal__body {
+    padding: var(--fomio-space-md) var(--fomio-space-3xl) 0;
+
+    p {
+      margin: 0 0 var(--fomio-space-lg);
+      font-family: var(--fomio-font-ui);
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: var(--fomio-leading-normal);
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-muted);
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 var(--fomio-space-xs);
+      font-family: var(--fomio-font-ui);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-wide);
+      text-transform: uppercase;
+      color: var(--fomio-muted);
+    }
+
+    #username-or-email {
+      width: 100%;
+      height: var(--fomio-input-height);
+      padding: 0 var(--fomio-space-lg);
+      background: var(--fomio-bg);
+      border: 1px solid var(--fomio-border);
+      border-radius: var(--fomio-radius-md);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      color: var(--fomio-text);
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+      &:focus {
+        outline: none;
+        background: var(--fomio-card);
+        border: 2px solid var(--fomio-primary);
+        box-shadow:
+          inset 0 0 0 1px rgba(248, 247, 243, 0.92),
+          inset 0 0 20px rgba(196, 69, 54, 0.12),
+          inset 0 0 36px rgba(245, 208, 204, 0.35);
+      }
+    }
+
+    .fomio-forgot-valid-hint {
+      display: none;
+      margin: var(--fomio-space-xs) 0 0;
+      font-family: var(--fomio-font-ui);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-success);
+      text-align: left;
+    }
+  }
+
+  .d-modal__footer {
+    padding: var(--fomio-space-xl) var(--fomio-space-3xl) var(--fomio-space-3xl);
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--fomio-space-md);
+  }
+
+  .forgot-password-reset.btn-primary {
+    width: 100%;
+    height: var(--fomio-button-height-lg);
+    border-radius: var(--fomio-radius-pill);
+    border: none;
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: none;
+    box-shadow: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-primary-dark);
+      color: var(--fomio-on-primary);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .fomio-forgot-back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fomio-space-xs);
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  .fomio-forgot-spam-note {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.6875rem; // 11px
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+    text-align: center;
+  }
+
+  &.fomio-forgot-success {
+    .d-modal__container {
+      animation: fomio-auth-card-enter 320ms ease-out both;
+    }
+
+    .d-modal__header {
+      display: none;
+    }
+
+    .d-modal__body {
+      padding: var(--fomio-space-3xl) var(--fomio-space-3xl) 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .d-modal__body > p:not(.fomio-reset-success-body),
+    .fomio-forgot-valid-hint,
+    .fomio-forgot-spam-note {
+      display: none;
+    }
+
+    .fomio-reset-success-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--fomio-space-lg);
+      background-image: var(--fomio-reset-success-envelope-icon);
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      animation: fomio-reset-success-envelope-float 3s ease-in-out infinite;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 7px;
+        right: 2px;
+        width: 16px;
+        height: 16px;
+        background-image: var(--fomio-reset-success-arrow-icon);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        animation: fomio-reset-success-arrow-drift 2s ease-in-out infinite;
+      }
+    }
+
+    .fomio-reset-success-heading {
+      margin: 0 0 var(--fomio-space-md);
+      font-family: var(--fomio-font-headline);
+      font-size: 1.625rem;
+      font-weight: 700;
+      line-height: var(--fomio-leading-tight);
+      letter-spacing: var(--fomio-tracking-tight);
+      color: var(--fomio-text);
+    }
+
+    .fomio-reset-success-body {
+      margin: 0;
+      font-family: var(--fomio-font-serif);
+      font-size: var(--fomio-text-base);
+      font-weight: 400;
+      line-height: var(--fomio-leading-relaxed);
+      letter-spacing: 0;
+      color: var(--fomio-muted);
+      text-align: center;
+    }
+
+    .d-modal__footer {
+      padding-top: var(--fomio-space-lg);
+    }
+
+    .forgot-password-reset.btn-primary {
+      height: 40px;
+      border-radius: var(--fomio-radius-pill);
+      border: 1px solid var(--fomio-primary);
+      background: rgba(196, 69, 54, 0.06);
+      color: var(--fomio-primary);
+      box-shadow: none;
+
+      &:hover,
+      &:focus-visible {
+        background: rgba(196, 69, 54, 0.1);
+        color: var(--fomio-primary-dark);
+        border-color: var(--fomio-primary-dark);
+      }
+    }
+
+    .fomio-reset-success-divider {
+      width: 32px;
+      height: 1px;
+      margin: 0 auto;
+      background: var(--fomio-primary);
+    }
+  }
+
+  &.fomio-forgot-valid-email {
+    .d-modal__body #username-or-email {
+      padding-right: 2.75rem;
+    }
+
+    .d-modal__body::after {
+      content: "";
+      position: absolute;
+      right: calc(var(--fomio-space-3xl) + var(--fomio-space-lg));
+      top: calc(var(--fomio-space-md) + 2.625rem);
+      width: 18px;
+      height: 18px;
+      background: var(--fomio-success);
+      mask-image: var(--fomio-reset-check-icon);
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      -webkit-mask-image: var(--fomio-reset-check-icon);
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      pointer-events: none;
+    }
+
+    .fomio-forgot-valid-hint {
+      display: block;
+    }
+  }
+}
+
+.d-modal.forgot-password-modal .d-modal__body {
+  position: relative;
+}
+
+@media (max-width: 767px) {
+  .d-modal.forgot-password-modal {
+    align-items: stretch;
+
+    .d-modal__container {
+      max-width: none;
+      max-height: 100dvh;
+      height: 100dvh;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+
+    .d-modal__header,
+    .d-modal__body,
+    .d-modal__footer {
+      padding-left: var(--fomio-space-lg);
+      padding-right: var(--fomio-space-lg);
+    }
+
+    &.fomio-forgot-success {
+      .d-modal__body {
+        padding-top: var(--fomio-space-2xl);
+      }
+    }
+  }
+}
+
+
+// ── 17m. Invite page ──────────────────────────────────────
+
+body.invite-page {
+  // Fullpage layout (Discourse uses .invites-show for this route)
+  .invites-show {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--fomio-space-2xl) var(--fomio-space-lg);
+    box-sizing: border-box;
+  }
+
+  // Brand wordmark
+  .invites-show::before {
+    content: "Fomio";
+    display: block;
+    font-family: var(--fomio-font-headline);
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+    margin-bottom: var(--fomio-space-2xl);
+  }
+
+  // Invite form card
+  .invite-form,
+  .invites-show form {
+    width: 100%;
+    max-width: 440px;
+    background: var(--fomio-card);
+    border-radius: var(--fomio-radius-card);
+    border: 1px solid rgba(140, 113, 109, 0.14);
+    box-shadow: 0 12px 40px rgba(26, 26, 26, 0.06);
+    padding: var(--fomio-space-4xl) var(--fomio-space-3xl);
+    box-sizing: border-box;
+
+    // "YOU'RE INVITED" eyebrow
+    &::before {
+      content: "You're Invited";
+      display: block;
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-wider);
+      text-transform: uppercase;
+      color: var(--fomio-primary);
+      text-align: center;
+      margin-bottom: var(--fomio-space-md);
+    }
+
+    h2 {
+      font-family: var(--fomio-font-headline);
+      font-size: var(--fomio-text-2xl);
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-tight);
+      color: var(--fomio-text);
+      text-align: center;
+      margin: 0 0 var(--fomio-space-2xl);
+    }
+
+    // inputs inside invite form
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      height: 48px;
+      padding: 0 var(--fomio-space-lg);
+      background: var(--fomio-surface);
+      border: 1px solid transparent;
+      border-radius: var(--fomio-radius-md);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-base);
+      color: var(--fomio-text);
+      box-sizing: border-box;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        outline: none;
+        background: var(--fomio-card);
+        border-color: var(--fomio-primary);
+        box-shadow: 0 0 0 3px rgba(196, 69, 54, 0.1);
+      }
+    }
+
+    label {
+      display: block;
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-wider);
+      text-transform: uppercase;
+      color: var(--fomio-muted);
+      margin-bottom: var(--fomio-space-xs);
+    }
+  }
+
+  // Terms note
+  .invite-form p,
+  .invites-show form p {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+    text-align: center;
+    line-height: var(--fomio-leading-relaxed);
+    margin-top: var(--fomio-space-lg);
+
+    a {
+      color: var(--fomio-primary);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+
+// ── 17n. 2FA / Passkeys / Backup codes ────────────────────
+
+// These render inside .login-fullpage / .login-body on body.login-page
+// when the user has 2FA enabled after entering credentials.
+
+body.login-page {
+  // 2FA section heading / eyebrow
+  .second-factor-form .second-factor-title,
+  .second-factor-form h3 {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+    text-align: center;
+    margin: 0 0 var(--fomio-space-sm);
+  }
+
+  // 2FA description paragraph
+  .second-factor-form p {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-muted);
+    text-align: center;
+    line-height: var(--fomio-leading-relaxed);
+    margin-bottom: var(--fomio-space-xl);
+  }
+
+  // TOTP / Backup code token input (monospace, large, centered)
+  .second-factor-input input,
+  input.second-factor-token-input,
+  .second-factor-token-input input {
+    width: 100%;
+    height: 52px;
+    padding: 0 var(--fomio-space-lg);
+    background: var(--fomio-bg);
+    border: 2px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-md);
+    font-family: var(--fomio-font-mono);
+    font-size: var(--fomio-text-xl);
+    letter-spacing: 0.25em;
+    text-align: center;
+    color: var(--fomio-text);
+    box-sizing: border-box;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      background: var(--fomio-card);
+      border: 2px solid var(--fomio-primary);
+      box-shadow:
+        inset 0 0 0 1px rgba(248, 247, 243, 0.92),
+        inset 0 0 20px rgba(196, 69, 54, 0.12),
+        inset 0 0 36px rgba(245, 208, 204, 0.35);
+    }
+  }
+
+  // "Use another method" / toggle links
+  .toggle-second-factor-method,
+  .second-factor-form .alternative-login {
+    display: block;
+    text-align: center;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-primary);
+    text-decoration: none;
+    margin-top: var(--fomio-space-md);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  // Passkey authenticate button
+  #security-key-authenticate-button,
+  .passkey-login-button .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fomio-space-sm);
+    width: 100%;
+    height: 48px;
+    border-radius: var(--fomio-radius-pill);
+    background: linear-gradient(135deg, var(--fomio-primary-dark) 0%, var(--fomio-primary) 100%);
+    border: none;
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wide);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-top: var(--fomio-space-lg);
+    box-shadow: 0 2px 8px rgba(162, 45, 33, 0.2);
+
+    &:hover { opacity: 0.92; }
+
+    .d-button-label { color: inherit; font: inherit; }
+    .d-icon { color: inherit; }
+
+    &.fomio-passkey-loading {
+      background: var(--fomio-primary);
+      opacity: 1;
+      cursor: wait;
+    }
+
+    &.fomio-passkey-loading .d-icon {
+      display: none;
+    }
+
+    &.fomio-passkey-loading .fomio-passkey-loading-label {
+      font-size: 0.8125rem; // 13px
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-on-primary);
+      white-space: nowrap;
+    }
+
+    &.fomio-passkey-loading .fomio-passkey-loading-spinner {
+      width: 1rem; // 16px
+      height: 1rem; // 16px
+      border: 2px solid var(--fomio-on-primary);
+      border-right-color: transparent;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: fomio-passkey-button-spin 0.8s linear infinite;
+    }
+  }
+
+  // Backup code one-time warning
+  .backup-code-warning,
+  .second-factor-form .backup-warning {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: var(--fomio-radius-pill);
+    padding: var(--fomio-space-sm) var(--fomio-space-lg);
+    margin-bottom: var(--fomio-space-lg);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: #92400e;
+  }
+}
+
+@keyframes fomio-passkey-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ── 17s. TOTP default state (Screen 7A-1) ──────────────────
+// Applied at runtime by theme-initializer.gjs: enhanceSecondFactorTotp()
+body.login-page #second-factor.fomio-second-factor-totp {
+  margin-top: var(--fomio-space-sm);
+
+  // Shield icon (line-art + terracotta accent) above eyebrow
+  &::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto var(--fomio-space-sm);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none'%3E%3Cpath d='M20 4l12 5v8c0 9.5-5.8 14.8-12 19-6.2-4.2-12-9.5-12-19V9l12-5Z' stroke='%231A1A1A' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M20 19.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z' fill='%23C44536'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+  }
+
+  .fomio-second-factor-eyebrow {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.6875rem; // 11px
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+    text-align: center;
+  }
+
+  .fomio-second-factor-heading {
+    margin: var(--fomio-space-sm) 0 var(--fomio-space-sm);
+    font-family: var(--fomio-font-headline);
+    font-size: 1.5rem; // 24px
+    font-weight: 700;
+    line-height: var(--fomio-leading-tight);
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+  }
+
+  .second-factor__description {
+    margin: 0 0 var(--fomio-space-lg);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+    text-align: center;
+  }
+
+  .fomio-second-factor-code-label {
+    margin: 0 0 var(--fomio-space-sm);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    text-align: left;
+  }
+
+  .fomio-second-factor-otp-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(44px, 1fr));
+    gap: var(--fomio-space-sm);
+    width: 100%;
+    margin: 0 0 var(--fomio-space-xl);
+  }
+
+  .fomio-second-factor-otp-box {
+    width: 100%;
+    min-width: 44px;
+    height: 56px;
+    padding: 0;
+    background: var(--fomio-bg);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-sm); // 8px
+    font-family: var(--fomio-font-mono);
+    font-size: var(--fomio-text-lg);
+    letter-spacing: 0;
+    text-align: center;
+    color: var(--fomio-text);
+    box-sizing: border-box;
+  }
+
+  .fomio-second-factor-otp-box:focus {
+    border: 2px solid var(--fomio-primary);
+    outline: none;
+    box-shadow: none;
+  }
+
+  // Fallback for Discourse variants that expose one OTP input instead of 6.
+  &.fomio-second-factor-single .second-factor-token-input {
+    position: relative;
+    width: 100%;
+    margin: 0 0 var(--fomio-space-xl);
+  }
+
+  &.fomio-second-factor-single .fomio-second-factor-faux-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(44px, 1fr));
+    gap: var(--fomio-space-sm);
+    width: 100%;
+  }
+
+  &.fomio-second-factor-single .fomio-second-factor-faux-box {
+    min-width: 44px;
+    height: 56px;
+    background: var(--fomio-bg);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-sm);
+    font-family: var(--fomio-font-mono);
+    font-size: var(--fomio-text-lg);
+    color: var(--fomio-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  &.fomio-second-factor-single .fomio-second-factor-faux-box.is-active {
+    border: 2px solid var(--fomio-primary);
+  }
+
+  &.fomio-second-factor-single input.fomio-second-factor-single-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 56px;
+    opacity: 0;
+    background: transparent;
+    border: none;
+    font-size: 16px; // Keep iOS keyboard behavior stable.
+    letter-spacing: 0;
+  }
+
+  &.fomio-second-factor-single .second-factor-token-input > :not(input) {
+    display: none !important;
+  }
+
+  &.fomio-second-factor-single .second-factor-token-input button {
+    display: none !important;
+  }
+
+  .fomio-second-factor-switches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    width: 100%;
+    margin-top: var(--fomio-space-md);
+
+    &::before {
+      content: "";
+      width: 100%;
+      height: 1px;
+      background: var(--fomio-border);
+      margin-bottom: var(--fomio-space-sm);
+    }
+  }
+
+  .fomio-second-factor-switch-link,
+  .toggle-second-factor-method {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.8125rem; // 13px
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-primary);
+    text-decoration: none;
+    text-align: center;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  > p:empty {
+    display: none;
+  }
+}
+
+// ── 17t. Backup code default state (Screen 7C-1) ───────────
+// Applied at runtime by theme-initializer.gjs: enhanceSecondFactorBackupCode()
+body.login-page #second-factor.fomio-second-factor-backup {
+  margin-top: var(--fomio-space-sm);
+
+  &::before {
+    content: "";
+    display: block;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--fomio-space-sm);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='16' cy='24' r='7.5' stroke='%231A1A1A' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='24' r='2.5' fill='%23C44536'/%3E%3Cpath d='M23 24h16' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M33 24v4' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M37 24v3' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M40.5 24v2.25' stroke='%231A1A1A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+  }
+
+  .second-factor-title,
+  h3 {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.6875rem; // 11px
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+    text-align: center;
+  }
+
+  .fomio-backup-code-heading {
+    margin: var(--fomio-space-sm) 0 var(--fomio-space-sm);
+    font-family: var(--fomio-font-headline);
+    font-size: 1.5rem; // 24px
+    font-weight: 700;
+    line-height: var(--fomio-leading-tight);
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+  }
+
+  .second-factor__description {
+    margin: 0 0 var(--fomio-space-lg);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem; // 14px
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+    text-align: center;
+  }
+
+  .fomio-backup-code-label {
+    margin: 0 0 var(--fomio-space-sm);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.75rem; // 12px
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    text-align: left;
+  }
+
+  .fomio-backup-code-input,
+  .second-factor-token-input input.fomio-backup-code-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 var(--fomio-space-lg);
+    background: var(--fomio-bg);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-lg); // 16px
+    font-family: var(--fomio-font-mono);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--fomio-text);
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: var(--fomio-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border: 2px solid var(--fomio-primary);
+      box-shadow:
+        inset 0 0 0 1px rgba(248, 247, 243, 0.92),
+        inset 0 0 18px rgba(196, 69, 54, 0.12);
+    }
+  }
+
+  .fomio-backup-code-warning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fomio-space-xs);
+    margin: var(--fomio-space-sm) 0 var(--fomio-space-sm);
+    padding: 6px 12px;
+    border-radius: var(--fomio-radius-pill);
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.75rem; // 12px
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: #92400e;
+    animation: fomio-backup-warning-fade 200ms ease-out 200ms both;
+  }
+
+  .fomio-backup-code-warning__icon {
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+
+  .fomio-backup-code-support {
+    margin: 0 0 var(--fomio-space-lg);
+    text-align: center;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.6875rem; // 11px
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+  }
+
+  .fomio-backup-code-support-link {
+    color: var(--fomio-primary);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  #login-button,
+  .btn-primary {
+    width: 100%;
+    height: 48px;
+    margin: 0;
+    border: none;
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wide);
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--fomio-primary-dark);
+    }
+  }
+}
+
+@keyframes fomio-backup-warning-fade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Screen 7A-1 default uses a muted Verify button until all 6 digits are entered.
+body.login-page:has(#second-factor.fomio-second-factor-totp) #login-button:disabled {
+  background: var(--fomio-border);
+  color: var(--fomio-muted);
+  border: 1px solid var(--fomio-border);
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  body.login-page #second-factor.fomio-second-factor-totp .fomio-second-factor-otp-grid {
+    gap: 0.375rem;
+  }
+
+  body.login-page #second-factor.fomio-second-factor-totp .fomio-second-factor-otp-box {
+    aspect-ratio: 1 / 1.15;
+    height: auto;
+  }
+
+  body.login-page #second-factor.fomio-second-factor-totp.fomio-second-factor-single .fomio-second-factor-faux-row {
+    gap: 0.375rem;
+  }
+
+  body.login-page #second-factor.fomio-second-factor-totp.fomio-second-factor-single .fomio-second-factor-faux-box {
+    aspect-ratio: 1 / 1.15;
+    height: auto;
+  }
+}
+
+
+// ── 17o. Flash messages on auth pages ─────────────────────
+
+body.login-page,
+body.signup-page,
+body.account-created-page,
+body.activate-account-page,
+body.password-reset-page,
+body.invite-page {
+  .flash-message,
+  .alert {
+    border-radius: var(--fomio-radius-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    padding: var(--fomio-space-md) var(--fomio-space-lg);
+    margin-bottom: var(--fomio-space-lg);
+    text-align: center;
+  }
+
+  .flash-message.error,
+  .alert-error {
+    background: var(--fomio-danger-soft);
+    color: var(--fomio-danger);
+  }
+
+  .flash-message.success,
+  .alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #15803d;
+  }
+}
+
+
+// ── 17p. Mobile overrides for auth cards ──────────────────
+
+@media (max-width: 480px) {
+  body.login-page .login-body,
+  body.signup-page .signup-body,
+  body.account-created-page .account-created,
+  body.activate-account-page .activate-account,
+  body.password-reset-page .change-password-form,
+  body.invite-page .invite-form,
+  body.invite-page .invites-show form {
+    padding: var(--fomio-space-3xl) var(--fomio-space-xl);
+    border-radius: var(--fomio-radius-lg);
+  }
+
+  .login-fullpage,
+  .signup-fullpage {
+    padding: var(--fomio-space-xl) var(--fomio-space-md);
+    justify-content: flex-start;
+    padding-top: var(--fomio-space-3xl);
+  }
+}
+
+// Login — full-bleed card on small viewports (Screen 1: 320–767px)
+@media (max-width: 767px) {
+  body.login-page .login-fullpage {
+    padding: 0;
+    min-height: 100vh;
+    justify-content: flex-start;
+  }
+
+  body.login-page .login-body {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0 !important;
+    border: none;
+    box-shadow: none;
+    padding: var(--fomio-space-2xl) var(--fomio-space-lg) var(--fomio-space-3xl);
+  }
+}
+
+// ── 17r. Signup — /signup (Stitch Screen 3, 2026-04-15) ─────────────
+// Mirrors login card: wordmark in-card, cream inputs, terracotta focus,
+// staggered field entrance, optional fullname “(optional)”, strength bar (JS).
+
+@keyframes fomio-signup-field-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.signup-page .signup-fullpage::before {
+  display: none;
+}
+
+body.signup-page .signup-body {
+  position: relative;
+  border: 1px solid var(--fomio-border);
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.04),
+    0 12px 32px rgba(26, 26, 26, 0.06);
+  flex-wrap: wrap;
+  padding-top: var(--fomio-space-2xl);
+  padding-bottom: var(--fomio-space-4xl);
+
+  &::before {
+    content: "Fomio";
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    font-family: var(--fomio-font-headline);
+    font-size: 1.375rem; // 22px
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+    margin-bottom: var(--fomio-space-sm);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-auth-card-enter 320ms ease-out both;
+  }
+}
+
+body.signup-page .signup-progress-bar {
+  flex: 1 1 100%;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: var(--fomio-space-xl);
+
+  &::before {
+    opacity: 0.65;
+  }
+
+  .signup-progress-bar-step {
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+body.signup-page h1.login-title {
+  font-size: 1.75rem; // 28px — Screen 3
+}
+
+body.signup-page .login-welcome-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--fomio-space-md);
+  grid-template-columns: unset;
+  grid-template-rows: unset;
+  width: 100%;
+
+  h1.login-title {
+    text-align: center;
+    width: 100%;
+  }
+
+  // Let eyebrow + subheader participate in this flex (order below)
+  .fomio-signup-header-stack {
+    display: contents;
+  }
+
+  // Extra outlet wrapper Ember may insert around the connector
+  > *:has(> .fomio-signup-header-stack) {
+    display: contents;
+  }
+
+  // Visual order: eyebrow → terracotta rule → title → subtext
+  .fomio-signup-eyebrow {
+    order: 1;
+  }
+
+  // 2px × 32px terracotta rule beneath eyebrow (shared 17d), then title
+  &::before {
+    order: 2;
+    width: 32px;
+    height: 2px;
+    margin-bottom: var(--fomio-space-lg);
+  }
+
+  > h1.login-title {
+    order: 3;
+  }
+
+  .fomio-signup-subheader {
+    order: 4;
+  }
+}
+
+body.signup-page .fomio-signup-eyebrow {
+  margin: 0 0 var(--fomio-space-sm);
+  font-family: var(--fomio-font-ui);
+  font-size: 0.6875rem; // 11px
+  font-weight: 600;
+  line-height: var(--fomio-leading-normal);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fomio-primary);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body.signup-page .fomio-signup-subheader {
+  font-family: var(--fomio-font-ui);
+  font-size: 0.875rem; // 14px
+  font-weight: 500;
+  line-height: var(--fomio-leading-normal);
+  letter-spacing: var(--fomio-tracking-wide);
+  color: var(--fomio-muted);
+  text-align: center;
+  margin: var(--fomio-space-sm) 0 var(--fomio-space-xl);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+// Staggered field entrance (40ms steps)
+body.signup-page #login-form > .input-group.create-account-email {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-signup-field-enter 0.45s ease-out both;
+    animation-delay: 0ms;
+  }
+}
+
+body.signup-page #login-form > .input-group.create-account__username {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-signup-field-enter 0.45s ease-out both;
+    animation-delay: 40ms;
+  }
+}
+
+body.signup-page #login-form > .input-group.create-account__fullname {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-signup-field-enter 0.45s ease-out both;
+    animation-delay: 80ms;
+  }
+}
+
+body.signup-page #login-form > .input-group.create-account__password {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-signup-field-enter 0.45s ease-out both;
+    animation-delay: 120ms;
+  }
+}
+
+body.signup-page #login-form > .input-group.create-account__invite-code {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-signup-field-enter 0.45s ease-out both;
+    animation-delay: 160ms;
+  }
+}
+
+// Signup inputs — 40px, cream fill, 12px radius, 2px terracotta focus + glow
+body.signup-page {
+  // Icon anchor for fields that have label above + 40px input.
+  --fomio-signup-input-row-center-y: calc(
+    0.75rem + var(--fomio-space-xs) + (var(--fomio-input-height) / 2)
+  );
+
+  .input-group input[type="email"],
+  .input-group input[type="text"],
+  .input-group input[type="password"],
+  .input-group input:not([type="checkbox"]) {
+    height: var(--fomio-input-height);
+    padding: 0 var(--fomio-space-lg);
+    background: var(--fomio-bg);
+    border: 2px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-md);
+
+    &:focus {
+      outline: none;
+      background: var(--fomio-card);
+      border: 2px solid var(--fomio-primary);
+      box-shadow:
+        inset 0 0 0 1px rgba(248, 247, 243, 0.92),
+        inset 0 0 20px rgba(196, 69, 54, 0.12),
+        inset 0 0 36px rgba(245, 208, 204, 0.35);
+    }
+  }
+
+  .input-group:focus-within .toggle-password-mask,
+  .toggle-password-mask:hover {
+    color: var(--fomio-primary);
+  }
+
+  .toggle-password-mask {
+    top: var(--fomio-signup-input-row-center-y);
+    transform: translateY(-50%);
+  }
+
+  // Password validation copy should sit under the strength line, full-width.
+  .create-account__password-info {
+    display: block;
+    margin-top: var(--fomio-space-xs);
+  }
+
+  .create-account__password-tip-validation {
+    display: block;
+    width: 100%;
+  }
+
+  .create-account__password-tip-validation .tip {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--fomio-space-xs);
+    width: 100%;
+    margin-top: var(--fomio-space-xs);
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .create-account__password-tip-validation .tip.bad {
+    color: var(--fomio-primary);
+  }
+
+  .create-account__password-tip-validation .tip .d-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-top: 0.05rem;
+    flex-shrink: 0;
+  }
+
+  // Full name optional — “(optional)” muted, inline after label text
+  .create-account__fullname:not(.required) label.alt-placeholder::after {
+    content: " (optional)";
+    font-weight: 500;
+    color: var(--fomio-muted);
+    text-transform: none;
+    letter-spacing: var(--fomio-tracking-wide);
+  }
+
+  // Username — valid: 20px green check inside field; bad + visible message: terracotta X inside.
+  // Empty field still gets class .tip.bad (required) but no reason — InputTip is empty; skip X/padding.
+  .create-account__username:has(.tip.good) #new-account-username,
+  .create-account__username:has(.tip.bad:not(:empty)) #new-account-username {
+    padding-right: calc(20px + var(--fomio-space-lg) + var(--fomio-space-xs));
+  }
+
+  .create-account__username:has(.tip.good) #new-account-username:not(:focus) {
+    border-color: color-mix(in srgb, var(--fomio-success) 40%, var(--fomio-border));
+  }
+
+  .create-account__username .tip.good {
+    position: absolute;
+    right: var(--fomio-space-lg);
+    top: var(--fomio-signup-input-row-center-y);
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    pointer-events: none;
+    line-height: 1;
+    font-size: 0;
+
+    .d-icon {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      color: var(--fomio-success);
+      flex-shrink: 0;
+    }
+  }
+
+  // Inline terracotta X only when Discourse renders tip content (taken, too short, checking, etc.)
+  .create-account__username:has(.tip.bad:not(:empty))::after {
+    content: "";
+    position: absolute;
+    right: var(--fomio-space-lg);
+    top: var(--fomio-signup-input-row-center-y);
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    background: var(--fomio-primary);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 6l12 12M18 6L6 18' stroke='%23000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 6l12 12M18 6L6 18' stroke='%23000' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+  }
+
+  .create-account__username:has(.tip.bad:not(:empty)) #new-account-username:not(:focus) {
+    border-color: color-mix(in srgb, var(--fomio-primary) 35%, var(--fomio-border));
+  }
+
+  .create-account__username .tip.bad {
+    position: static;
+    margin-top: var(--fomio-space-xs);
+    padding: 0;
+    display: block;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+
+    .d-icon {
+      display: none;
+    }
+  }
+
+  .signup-page-cta__disclaimer,
+  .signup-disclaimer {
+    font-size: 0.6875rem; // 11px
+    line-height: var(--fomio-leading-relaxed);
+    margin-top: 0;
+    margin-bottom: var(--fomio-space-lg);
+  }
+
+  .signup-page-cta__existing-account {
+    font-size: 0.8125rem; // 13px
+    color: var(--fomio-muted);
+
+    &::before {
+      display: none !important;
+    }
+  }
+
+  .signup-page-cta__login {
+    width: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: var(--fomio-space-xs) 0 !important;
+    margin-top: var(--fomio-space-xs) !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--fomio-primary) !important;
+    font-family: var(--fomio-font-ui) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    letter-spacing: var(--fomio-tracking-wide) !important;
+    text-transform: none;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus-visible {
+      background: transparent !important;
+      color: var(--fomio-primary-dark) !important;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      opacity: 1 !important;
+    }
+  }
+}
+
+// Password strength track (fill width set by theme-initializer.gjs)
+body.signup-page .fomio-password-strength-bar {
+  box-sizing: border-box;
+  width: 100%;
+  height: 3px;
+  margin: var(--fomio-space-sm) 0 var(--fomio-space-xs);
+  border-radius: 9999px;
+  background: var(--fomio-border);
+  overflow: hidden;
+}
+
+body.signup-page .fomio-password-strength-bar__fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: var(--fomio-primary);
+  transition: width 0.22s ease-out;
+}
+
+// Solid terracotta primary — “Create account”
+body.signup-page .signup-page-cta .btn-primary,
+body.signup-page button[type="submit"].btn-primary {
+  background: var(--fomio-primary);
+  box-shadow: none;
+  margin-top: var(--fomio-space-md);
+
+  &:hover {
+    opacity: 1;
+    background: var(--fomio-primary-dark);
+    color: var(--fomio-on-primary);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Signup — full-bleed card on small viewports (320–767px)
+@media (max-width: 767px) {
+  body.signup-page .signup-fullpage {
+    padding: 0;
+    min-height: 100vh;
+    justify-content: flex-start;
+  }
+
+  body.signup-page .signup-body {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0 !important;
+    border: none;
+    box-shadow: none;
+    padding: var(--fomio-space-2xl) var(--fomio-space-lg) var(--fomio-space-3xl);
+  }
+}
+
+
+// ── 17q. User API key authorize (/user-api-key/*, layout no_ember) ──
+// Discourse template: app/views/user_api_keys/new.html.erb (.authorize-api-key)
+// Stitch Screen 2 — trust-forward permission grant (2026-04-15)
+
+body.no-ember:has(.authorize-api-key) {
+  background: var(--fomio-bg) !important;
+
+  .d-header {
+    display: none !important;
+  }
+
+  .powered-by-discourse {
+    display: none !important;
+  }
+
+  #main-outlet {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+    padding: var(--fomio-space-2xl) var(--fomio-space-lg);
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Editorial card — full flow only (new.html has h1 as first child inside .authorize-api-key)
+.authorize-api-key:has(> h1) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--fomio-space-2xl);
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  &::before {
+    content: "F";
+    align-self: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    margin-bottom: var(--fomio-space-lg);
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 56px;
+    text-align: center;
+    letter-spacing: var(--fomio-tracking-tight);
+    flex-shrink: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      // Fixed 2px ring; only opacity breathes — subtle, not a spreading glow
+      animation: fomio-authorize-icon-halo 3.2s ease-in-out infinite;
+    }
+  }
+
+  > h1 {
+    order: 2;
+    margin: 0 0 var(--fomio-space-md);
+    font-family: var(--fomio-font-headline);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: var(--fomio-leading-tight);
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    text-align: center;
+  }
+
+  > .authorize-api-key__user {
+    order: 3;
+    justify-content: center;
+    margin: 0 0 var(--fomio-space-xl);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+
+    .authorize-api-key__username {
+      color: var(--fomio-text);
+      font-weight: 600;
+    }
+
+    .avatar {
+      border-radius: 50%;
+    }
+  }
+
+  > .authorize-api-key__permissions {
+    order: 4;
+    margin: 0 0 var(--fomio-space-lg);
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  > .authorize-api-key__redirect {
+    order: 5;
+    margin: 0 0 var(--fomio-space-lg);
+    padding: var(--fomio-space-md) var(--fomio-space-lg);
+    background: var(--fomio-surface);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-md);
+  }
+
+  > .fomio-authorize-official-line {
+    order: 6;
+  }
+
+  > form {
+    order: 7;
+    margin: 0;
+  }
+
+  .authorize-api-key__permissions-header {
+    margin: 0 0 var(--fomio-space-md);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-muted);
+    text-align: center;
+  }
+
+  .authorize-api-key__scopes {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--fomio-space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--fomio-space-sm);
+    background: transparent;
+  }
+
+  .authorize-api-key__scopes li {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 40px;
+    margin: 0;
+    padding: var(--fomio-space-sm) var(--fomio-space-md) var(--fomio-space-sm) 2.25rem;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: var(--fomio-leading-normal);
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-text);
+    display: flex;
+    align-items: center;
+    background: var(--fomio-bg);
+    border-radius: var(--fomio-radius-sm);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: var(--fomio-space-md);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 1rem;
+      background: var(--fomio-primary);
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M5 12.5l4 4 10-10' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M5 12.5l4 4 10-10' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fomio-authorize-scope-row 240ms ease-out both;
+
+      @for $i from 1 through 8 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{($i - 1) * 60}ms;
+        }
+      }
+    }
+  }
+
+  // AMOLED: cream row fill (--fomio-bg) matches the page; lift rows with surface.
+  html.fomio-color-dark & .authorize-api-key__scopes li {
+    background: var(--fomio-surface);
+  }
+
+  .error-message {
+    order: 8;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-danger);
+    text-align: center;
+    margin: 0 0 var(--fomio-space-lg);
+  }
+
+  .authorize-api-key__redirect-url {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: var(--fomio-leading-normal);
+    color: var(--fomio-text);
+
+    strong {
+      color: var(--fomio-primary);
+      font-weight: 600;
+    }
+  }
+
+  .authorize-api-key__buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: var(--fomio-space-md);
+    margin: 0;
+
+    .btn-primary {
+      flex: 3 1 0;
+      min-width: 0;
+      box-sizing: border-box;
+      height: var(--fomio-button-height-lg);
+      padding: 0 var(--fomio-space-lg);
+      border: none;
+      border-radius: var(--fomio-radius-pill);
+      background: var(--fomio-primary);
+      color: var(--fomio-on-primary);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-wide);
+      cursor: pointer;
+      transition:
+        background 0.15s ease,
+        transform 0.12s ease;
+
+      &:hover {
+        background: var(--fomio-primary-dark);
+        color: var(--fomio-on-primary);
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
+    .btn-default {
+      flex: 2 1 0;
+      min-width: 0;
+      box-sizing: border-box;
+      height: var(--fomio-button-height-lg);
+      padding: 0 var(--fomio-space-lg);
+      border-radius: var(--fomio-radius-pill);
+      border: 1px solid var(--fomio-border);
+      background: transparent;
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-wide);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+
+      &:hover {
+        background: var(--fomio-surface);
+        border-color: var(--fomio-muted);
+        color: var(--fomio-text);
+      }
+    }
+  }
+}
+
+.fomio-authorize-official-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fomio-space-sm);
+  margin: 0 0 var(--fomio-space-xl);
+  font-family: var(--fomio-font-ui);
+  font-size: 0.75rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: var(--fomio-leading-normal);
+  letter-spacing: var(--fomio-tracking-wide);
+  color: var(--fomio-muted);
+  text-align: center;
+}
+
+.fomio-authorize-official-line__lock {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background: var(--fomio-primary);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='5' y='11' width='14' height='10' rx='2' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='5' y='11' width='14' height='10' rx='2' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+@keyframes fomio-authorize-icon-halo {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fomio-primary) 11%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fomio-primary) 24%, transparent);
+  }
+}
+
+@keyframes fomio-authorize-scope-row {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  body.no-ember:has(.authorize-api-key) #main-outlet {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .authorize-api-key:has(> h1) {
+    max-width: none;
+    min-height: 100dvh;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: var(--fomio-space-3xl) var(--fomio-space-lg);
+  }
+
+  .authorize-api-key:has(> h1) .authorize-api-key__buttons {
+    flex-direction: column;
+
+    .btn-primary,
+    .btn-default {
+      flex: none;
+      width: 100%;
+      max-width: none;
+    }
+  }
+}
+
+// OTP confirm step — minimal chrome inside same layout
+.authorize-api-key:not(:has(> h1)) {
+  box-sizing: border-box;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--fomio-space-xl);
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+
+  .btn-primary {
+    width: 100%;
+    height: var(--fomio-button-height-lg);
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wide);
+    border: none;
+
+    &:hover {
+      background: var(--fomio-primary-dark);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}

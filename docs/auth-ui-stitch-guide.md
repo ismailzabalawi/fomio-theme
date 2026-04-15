@@ -10,7 +10,7 @@ Every URL a user can hit during sign-in or sign-up on Fomio's Discourse backend 
 
 1. **How to use Google Stitch** — the workflow, modes, and tips specific to this project
 2. **A global context prefix** — paste this before every prompt to keep the visual language consistent
-3. **Ready-to-paste prompts** for all 9 auth screens, each with refinement follow-ups
+3. **Ready-to-paste prompts** for all 17 auth screens, each with refinement follow-ups
 4. **Implementation notes** — how the approved design translates into Discourse SCSS
 5. **Iteration rules** — how to refine without breaking what's already working
 
@@ -252,165 +252,417 @@ On the account-created screen, add a small progress indicator below the heading 
 
 ### Screen 5 — `/u/activate-account/:token` — Activate account
 
-**Purpose:** The user clicks the email link and lands here. Discourse shows an "Activate Account" button. One tap → account is live → redirect to `/` → mobile handoff fires. This is the finish line. Make it feel rewarding.
+**Purpose:** The user clicks the email link and lands here. Discourse shows an "Activate Account" button. One tap → account is live → Discourse redirects to `/` → mobile handoff overlay fires. This is **step 2 of 3** in the signup journey — not the finish line. The finish line is Screen 8 Variant B. Design this screen to feel like the penultimate moment: email confirmed, one tap away from being in.
 
 **Prompt:**
 ```
 [PASTE GLOBAL CONTEXT PREFIX]
 
-Design the "Activate your account" screen for Fomio. The user has clicked their activation email link and landed on this page. There is a single primary action. This is the final step before they're in.
+Design the "Activate your account" screen for Fomio. The user has clicked their activation email link. There is a single primary action. This is step 2 of 3 in the signup flow.
 
 Centered card (max-width 420px) on full-height cream page.
 
 Card contents (top to bottom):
-  - Icon: 72px circle, terracotta fill (#C44536), white checkmark icon centered — clean, solid, not outlined. This is the only "celebration" element.
-  - Small eyebrow: "ALMOST THERE" in Raleway 11px uppercase terracotta, letter-spacing 0.1em
+  - Three-step progress indicator, centered, below the card top edge:
+      · Three dots in a horizontal row with connecting lines between them, 20px spacing
+      · Dot 1: filled terracotta (#C44536), 10px diameter — "Account created"
+      · Dot 2: filled terracotta (#C44536), 10px diameter — "Email confirmed" — this is the current step; add a soft terracotta glow halo (12px, 15% opacity) around it
+      · Dot 3: empty circle, 10px diameter, #E3E3E6 border — "You're in"
+      · Below each dot, a Raleway 10px muted label: "Account", "Email", "In"
+  - Icon: 72px circle, terracotta fill (#C44536), white checkmark icon centered — clean, solid, not outlined
+  - Small eyebrow: "STEP 2 OF 3" in Raleway 11px uppercase terracotta, letter-spacing 0.1em
   - Heading: "Activate your account" in Lora serif bold, 26px
   - Body: "Your email is confirmed. Tap below to complete your Fomio setup." Lora 16px relaxed.
-  - Pill primary CTA: "Activate account" — 100% card width, 48px, terracotta fill, cream text, Raleway semibold
+  - Pill primary CTA: "Activate account" — 100% card width, 48px, terracotta fill, cream text, Raleway semibold, right-pointing chevron icon on the right side
   - Muted note below button: "You'll be taken to Fomio automatically." Raleway 12px muted, centered.
 
 On mobile: full-screen card, centered vertically.
 
-Animations: the checkmark icon entrance — circle scales from 0.6 to 1.0 with a spring ease (overshoot slightly to 1.05 then settle to 1.0, ~400ms) and the checkmark draws in with a path animation (stroke-dashoffset) over 300ms after the circle appears. The CTA button has a gentle shimmer animation (light sweep from left to right, 1.5s interval) to draw the eye to the action.
+Animations: the checkmark icon entrance — circle scales from 0.6 to 1.0 with a spring ease (overshoot slightly to 1.05 then settle to 1.0, ~400ms) and the checkmark draws in with a path animation (stroke-dashoffset) over 300ms after the circle appears. Progress indicator dot 2's glow pulses gently (opacity 0.1–0.25, 2s ease-in-out infinite). The CTA button has a gentle shimmer animation (light sweep left to right, 1.5s interval) to draw the eye to the action.
 ```
 
 **Refinement prompts:**
 
 ```
-On the activate-account screen, add a very subtle terracotta radial glow behind the icon (20% opacity, 80px radius) that pulses gently (opacity 0.1–0.2, 2s ease-in-out infinite) to reinforce that this is a live moment.
+On the activate-account screen, make the connecting line between dot 1 and dot 2 on the progress indicator fully filled terracotta, and the connecting line between dot 2 and dot 3 empty (#E3E3E6), to clearly show how far along the user is.
 ```
 
 ```
-On the activate-account screen, change the "Activate account" button to also show a tiny right-pointing chevron arrow on the right side, to signal forward progression, keeping the pill shape and all other button styles.
+On the activate-account screen, add an annotation note (small callout in the design file, not rendered on screen) marking that after the user taps "Activate account", Discourse redirects to "/" and Screen 8 Variant B (the congratulations handoff overlay) takes over as step 3.
 ```
 
 ---
 
-### Screen 6 — `/password-reset` — Forgot password
+### Screen 6A — `/password-reset` — Request reset
 
-**Purpose:** User requests a password reset email. Two states: (1) input form, (2) success "email sent" state.
+**Purpose:** The user has forgotten their password and needs to request a reset link. This is a task screen — one input, one action, done. Keep it focused and frictionless.
 
 **Prompt:**
 ```
 [PASTE GLOBAL CONTEXT PREFIX]
 
-Design the Fomio password reset screen. Show both states in the design:
+Design the Fomio "Reset your password" screen. This is a focused task screen — one input, one CTA.
 
-STATE 1 — "Forgot your password?" form:
-  Centered card (max-width 420px).
-  - Fomio wordmark in Lora serif 20px, centered
-  - Thin terracotta rule beneath (2px × 28px)
+Centered card (max-width 420px) on full-height cream page.
+
+Card contents (top to bottom):
+  - Fomio wordmark in Lora serif 20px, near-black, centered
+  - Thin terracotta rule (2px × 28px, centered)
   - Heading: "Reset your password" — Lora bold 26px
-  - Subtext: "We'll send a reset link to your email." — Raleway 14px muted
-  - Email input field: Raleway label "Email address" above, 40px height, 12px border-radius
-  - Pill primary CTA: "Send reset link" — terracotta fill, 48px, full width
-  - Below: "Back to sign in" — Raleway 13px, terracotta link, left-aligned or centered
+  - Subtext: "We'll send a reset link to your email address." — Raleway 14px muted
+  - Email input field with Raleway uppercase label "EMAIL ADDRESS" above (12px, letter-spacing 0.04em, muted), 40px input height, 12px border-radius, cream fill, 1px border #E3E3E6
+  - Inline validation hint below input: when a valid email format is detected, show "We'll look for your account" in Raleway 12px green (#22C55E). Show this validated state in the design.
+  - Pill primary CTA: "Send reset link" — terracotta fill, cream text, 48px height, 100% card width, Raleway semibold
+  - Below button: left-pointing chevron + "Back to sign in" in Raleway 13px terracotta — consistent with the back-navigation pattern used across auth screens
 
-STATE 2 — "Email sent" confirmation (same card, different content):
-  - Icon: soft envelope with a terracotta arrow-up leaving it (send motion), 64px
-  - Heading: "Check your inbox." — Lora bold 26px
-  - Body: "We've sent a reset link. It expires in 30 minutes." — Lora 16px
-  - Secondary pill button: "Resend email" — outline, terracotta
-  - Link: "Back to sign in"
+On mobile: full-screen card, comfortable 16px padding.
 
-Show State 1 as the primary design and State 2 inset smaller (as a second artboard or overlay) to the right or below.
-
-On mobile: full screen, both states scroll naturally.
-
-Animations (State 1→2 transition): the card content cross-fades (300ms) with a slight upward slide for State 2 content entering from below. No full-page reload feeling.
+Animations: card entrance fades and slides up 12px (320ms ease-out). Input focus: 2px terracotta border + soft cream-terracotta glow. CTA button: scale 0.97 on press (150ms).
 ```
 
 **Refinement prompts:**
 
 ```
-On the password reset screen — State 1 — add inline validation under the email field: when a valid email format is detected, show a small Raleway 12px muted text "We'll look for your account" in green (#22C55E). Show this validation state in the design.
+On the password reset request screen, make the email input's validated state also show a small green checkmark icon (18px) inside the right side of the input, matching the pattern used on the signup screen username field.
 ```
 
 ```
-On the password reset screen, make the "Back to sign in" link include a small left-pointing chevron before the text, consistent with the activation screen's forward arrow pattern.
+On the password reset request screen, add a subtle muted note below the CTA in Raleway 11px: "Check your spam folder if the email doesn't arrive." — positioned between the button and the back link, centered.
 ```
 
 ---
 
-### Screen 7 — `/session/*` — Two-factor authentication (2FA)
+### Screen 6B — `/password-reset` (success) — Reset link sent
 
-**Purpose:** 2FA, OTP, passkeys, and backup codes all live under `/session/*`. This is a secondary but real path many users hit. Design for the most common case: 6-digit TOTP code entry.
+**Purpose:** The reset email has been sent. The user's task is complete — now they wait. This is a status screen, not a form. It should feel calm and reassuring, not busy. Structurally close to Screen 4 (Account Created) but the tone is more neutral — this could be anyone recovering access, not necessarily a new member.
 
 **Prompt:**
 ```
 [PASTE GLOBAL CONTEXT PREFIX]
 
-Design the Fomio two-factor authentication screen. This appears when a user has 2FA enabled and is completing the login flow.
+Design the Fomio "Reset link sent" confirmation screen. The user has requested a password reset and the email is on its way. No form — this is a calm status screen.
+
+Centered card (max-width 420px) on full-height cream page.
+
+Card contents (top to bottom):
+  - Icon: 64px line-art style envelope, near-black strokes (1.5px), with a small terracotta arrow leaving the top-right corner of the envelope flap — suggesting the email is already in transit. No cartoon fill. Editorial.
+  - Heading: "Check your inbox." — Lora bold 26px — same short, declarative voice as Screen 4
+  - Body: "We've sent a reset link to your email. It expires in 30 minutes." — Lora serif 16px, relaxed line-height, muted #6B6B72
+  - Thin terracotta divider rule (1px, 32px wide, centered) as a visual pause before the actions
+  - Secondary pill button: "Resend reset email" — outline style, 40px height, terracotta border and text, full card width
+  - Below: left-pointing chevron + "Back to sign in" in Raleway 13px terracotta
+
+On mobile: full-screen card, comfortable 16px padding.
+
+Animations: card entrance fades and slides up 12px (320ms ease-out). The envelope icon has a gentle float animation (translate-y oscillating ±4px over 3s, ease-in-out, infinite) — the same motion used on the account-created envelope in Screen 4, keeping the two "waiting for email" screens visually consistent. The arrow on the envelope has a subtle upward drift (translate-y 0 → -3px, 2s ease-in-out, infinite, offset from the envelope's main float timing).
+```
+
+**Refinement prompts:**
+
+```
+On the password reset confirmation screen, add a small muted timestamp hint below the body copy — "Sent just now" in Raleway 11px muted — to give the screen a sense of immediacy without adding noise.
+```
+
+```
+On the password reset confirmation screen, give the "Resend reset email" outline button a soft terracotta fill at 6% opacity as a background resting state, so it reads as slightly warmer than a pure white outline button without competing with a filled CTA.
+```
+
+---
+
+### Screen 7A-1 — TOTP code entry — Default state
+
+**Purpose:** The most common 2FA path. This is the resting/default state: boxes are empty, the CTA is muted until all 6 digits are filled. Run this prompt first, then run Screen 7A-2 for the error state as a separate generation.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio two-factor authentication screen — TOTP code entry, default state. This appears when a user has 2FA enabled and is signing in. The boxes are empty and the CTA is in its inactive/muted state.
+
+The page is a full-height cream background (#F8F7F3) with a single centered card (max-width 400px, 18px border-radius, white fill, 1px border #E3E3E6, 32px internal padding). No navigation bar. No header. No footer. No watermarks. Nothing on the page except the card on the cream background.
+
+Card contents, strictly in this order from top to bottom:
+  1. Shield icon — 40px, centered. Line-art style: near-black strokes at 1.5px weight, terracotta (#C44536) fill on the shield notch/inner badge only. The shield body is not filled. No dot, badge, or notification indicator on or near the icon.
+  2. Eyebrow label — "TWO-STEP VERIFICATION" in Raleway 11px, uppercase, terracotta (#C44536), letter-spacing 0.1em, centered. This is a label, not a heading.
+  3. Heading — "Enter your code" in Lora serif bold, 24px, near-black (#1A1A1A), centered.
+  4. Subtext — "Open your authenticator app and enter the 6-digit code." in Raleway 14px, muted (#6B6B72), centered.
+  5. "CODE" label — Raleway 12px, uppercase, muted (#6B6B72), letter-spacing 0.08em, left-aligned above the box row.
+  6. OTP box row — 6 individual boxes in a single horizontal row. Each box is a SQUARE with rounded corners: 8px border-radius. NOT circles. NOT pills. NOT ovals. Square boxes with slightly rounded corners only. Dimensions: 48px wide × 56px tall on desktop. Box fill: cream (#F8F7F3). Box border: 1px solid #E3E3E6. First box (leftmost) has 2px terracotta border (#C44536) to show it is focused/active. All boxes are empty — no digits inside. Space Mono font for any digits.
+  7. CTA button — pill shape (9999px border-radius), full card width, 48px height. Label: "Verify" in Raleway semibold. Inactive/muted state: #E3E3E6 fill, #6B6B72 text. This button is inactive because no digits have been entered yet.
+  8. Thin horizontal divider — 1px solid #E3E3E6, full card width.
+  9. Two switch links — each on its own line, centered, Raleway 13px, terracotta (#C44536):
+       · "Use a passkey instead"
+       · "Use a backup code instead"
+
+The card ends after the two switch links. Nothing below the card.
+
+Do NOT add any of the following — these are explicitly excluded:
+  - Navigation bars, header menus, or top-bar links ("Support", "Security", help icons)
+  - Any dot, badge, or notification indicator on the shield icon
+  - Footer text of any kind ("Secured by", protocol names, copyright, version numbers)
+  - Watermarks or decorative text on the page background (Roman numerals, brand names, etc.)
+  - Progress bars above or below the card
+  - "Back to login", "Resend code", or any link not listed above
+  - A "CODE" label in the heading position — "CODE" is only the small label above the box row
+
+On mobile (viewport under 480px): the 6 OTP boxes must remain square with rounded corners and scale fluidly. Each box width = calc((100% - 40px) / 6). Height maintains 1:1.15 aspect ratio. The entire box row must fit within the card's inner width at all viewport sizes. Minimum tap target per box: 44px.
+
+Animations: card fades in and slides up 12px on page load (320ms ease-out). No other animations on this static default state.
+```
+
+**Refinement prompts:**
+
+```
+On the 7A-1 TOTP default screen, show 3 of the 6 boxes in a partially filled state —
+digits "1", "2", "3" in the first three boxes, with the fourth box showing the active
+terracotta border (cursor position). Boxes 5 and 6 remain empty with the default
+#E3E3E6 border. The Verify button remains muted. Do not change any other element.
+```
+
+```
+On the 7A-1 TOTP default screen, produce an OTP variant as a second artboard:
+change only the subtext to "We sent a 6-digit code to your email address." and
+add a "Resend code  0:45" line in Raleway 13px terracotta below the two switch
+links — "Resend code" as the link and "0:45" as muted countdown text beside it.
+Keep all box shapes, card dimensions, heading, eyebrow, icon, and button identical
+to the default state. Do not add a progress bar or any other new element.
+```
+
+---
+
+### Screen 7A-2 — TOTP code entry — Error state
+
+**Purpose:** The user submitted a wrong or expired code. Run this as a new Stitch generation after Screen 7A-1 is approved.
+
+> **In Stitch:** Start a new generation. Reference Screen 7A-1 as the base.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio two-factor authentication screen — TOTP code entry, error state. The user has just submitted an incorrect code and the screen is showing the error.
+
+The page layout is exactly the same as Screen 7A-1: full-height cream background (#F8F7F3), single centered card (max-width 400px, 18px border-radius, white fill, 1px border #E3E3E6, 32px internal padding). No navigation bar. No header. No footer. No watermarks.
+
+Card contents, strictly in this order — identical to 7A-1 except where marked CHANGED:
+
+  1. Shield icon — identical to 7A-1. 40px, line-art, terracotta notch only. No dot or badge.
+  2. Eyebrow — identical to 7A-1. "TWO-STEP VERIFICATION", Raleway 11px uppercase terracotta.
+  3. Heading — identical to 7A-1. "Enter your code", Lora bold 24px. Do NOT change this to "Verification Required" or any other text.
+  4. Subtext — identical to 7A-1. "Open your authenticator app and enter the 6-digit code."
+  5. "CODE" label — identical to 7A-1. Raleway 12px uppercase muted, left-aligned.
+  6. OTP box row — CHANGED. Same SQUARE boxes with 8px border-radius as 7A-1 (not circles, not pills). All 6 boxes are filled with digits: "4", "8", "2", "1", "9", "3" in Space Mono. All 6 boxes now have a 2px red border (#EF4444) instead of the default border. No box has a terracotta border.
+  7. Error message — CHANGED. New element inserted directly below the box row, before the button: "Incorrect code. Try again." in Raleway 13px, #EF4444, left-aligned with the box row.
+  8. CTA button — identical label "Verify", identical pill shape — but back to muted state (#E3E3E6 fill, #6B6B72 text), same as the empty/inactive state in 7A-1.
+  9. Thin divider — identical to 7A-1.
+  10. Two switch links — identical to 7A-1. "Use a passkey instead" and "Use a backup code instead".
+
+The card ends after the two switch links. Nothing below the card.
+
+Do NOT add any of the following:
+  - "Resend code" or "Resend" link — this is an error state for TOTP, not an OTP screen
+  - "Back to login" or any back navigation link
+  - A changed heading — the heading must remain "Enter your code"
+  - Circular or pill-shaped boxes — boxes are square with 8px border-radius only
+  - A "VERIFY ACCOUNT" button — the button label is "Verify", not "VERIFY ACCOUNT"
+  - Navigation bars, footers, watermarks, or any element not listed above
+```
+
+---
+
+### Screen 7B-1 — Passkeys — Default state
+
+**Purpose:** The passkey path has no input field. The page exists to provide context and trigger the browser/OS native biometric dialog (Face ID, Touch ID, Windows Hello). This is the resting state — the CTA is fully active and waiting for the user to tap. Run this first, then run Screen 7B-2 for the loading state.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio passkey authentication screen — default/ready state. There is no input field. The page shows context and one button that will trigger the browser's native biometric or hardware key dialog.
 
 Centered card (max-width 400px) on full-height cream page.
 
-Card contents:
-  - Small shield icon with terracotta accent (40px), centered at top — editorial line-art style, near-black strokes, terracotta fill on the shield badge/notch only
-  - Heading: "Two-step verification" — Lora bold 24px
-  - Subtext: "Enter the 6-digit code from your authenticator app." — Raleway 14px muted
-  - OTP input: 6 individual digit boxes in a row, each 48px × 56px, 8px border-radius, cream fill, 1px border (#E3E3E6). Active box has 2px terracotta border. Auto-advance cursor on digit entry. Monospace font (Space Mono) for the digits.
-  - Pill primary CTA: "Verify" — terracotta fill, 100% width, 48px
-  - Below CTA: two links in Raleway 13px muted — "Use a backup code" and "Use a passkey instead" — each on its own line, terracotta, underline on hover
+Card contents (top to bottom):
+  - Icon: 56px, centered — a fingerprint outline in near-black line-art (1.5px strokes), with the center whorl detail filled in terracotta. Editorial, not a stock icon.
+  - Eyebrow: "PASSKEY SIGN-IN" in Raleway 11px uppercase terracotta, letter-spacing 0.1em, centered
+  - Heading: "Verify it's you" — Lora bold 24px
+  - Subtext: "Use your fingerprint, face, or device PIN to continue." — Raleway 14px muted
+  - Small muted note in Raleway 12px italic, centered: "Your browser will prompt you to authenticate."
+  - Pill primary CTA: "Authenticate with passkey" — terracotta fill (#C44536), cream text, 48px height, 100% card width, Raleway semibold. Small fingerprint icon (16px, white) on the left side of the button label.
+  - Thin divider rule (1px, #E3E3E6)
+  - Two switch links below, Raleway 13px terracotta, each on its own line, centered:
+      · "Use an authenticator code instead"
+      · "Use a backup code instead"
 
-On mobile: OTP boxes scale proportionally but maintain tap targets.
+On mobile: full-screen card.
 
-Animations: when all 6 digits are entered, the OTP row gets a brief terracotta border flash (box-shadow pulse, 200ms) before the Verify button activates. The Verify button remains visually muted (#E3E3E6 fill, muted text) until all 6 digits are present, then snaps to full terracotta with a 150ms transition.
+Animations: card entrance fades + slides up 12px (320ms). The fingerprint icon pulses gently (opacity 0.85 ↔ 1.0, 2s ease-in-out infinite) to suggest the system is ready.
 ```
 
-**Refinement prompts:**
+**Refinement prompt:**
 
 ```
-On the 2FA screen, add a small Raleway 12px muted label above the OTP boxes: "CODE" in uppercase, letter-spacing 0.08em — matching the eyebrow label style used on other auth screens.
-```
-
-```
-On the 2FA screen, add an error state design: when the code is wrong, the 6 OTP boxes all get a red (#EF4444) border and shake horizontally (keyframe shake, 400ms), and a small error message "Incorrect code. Try again." appears below in Raleway 13px danger red.
+On the 7B-1 passkey default screen, add a faint terracotta radial glow (12% opacity, 64px radius) behind the fingerprint icon, pulsing in sync with the icon's opacity animation — so the glow and the icon breathe together.
 ```
 
 ---
 
-### Screen 8 — Mobile Handoff Overlay (`.fomio-mobile-handoff`)
+### Screen 7B-2 — Passkeys — Loading state
 
-**Purpose:** This is a full-viewport overlay the web theme injects via JavaScript on `/login` (direct visit) and on home paths after sign-up. It tells the user to return to the Fomio app. Two variants: **login handoff** ("Continue in the app.") and **home handoff** ("You're all set.").
+**Purpose:** The user has tapped "Authenticate with passkey" and the browser's native biometric dialog is about to appear (or is processing). The Fomio card remains visible behind the native OS dialog. Run this as a new Stitch generation after Screen 7B-1 is approved.
+
+> **In Stitch:** Start a new generation. Reference Screen 7B-1 as the base.
 
 **Prompt:**
 ```
 [PASTE GLOBAL CONTEXT PREFIX]
 
-Design the Fomio mobile browser handoff overlay. This is a full-viewport, fixed-position overlay that covers the entire Discourse page when the mobile browser should return control to the Fomio native app.
+Design the Fomio passkey authentication screen — loading state. This is the same screen as Screen 7B-1 after the user has tapped the CTA, while the browser's native biometric dialog is processing.
 
-Full-screen layout (no card — the overlay IS the page):
-  - Background: cream #F8F7F3 fills the entire viewport
-  - Everything centered vertically and horizontally within the viewport
-  - Content panel max-width 320px, centered
+Keep every element — card dimensions, typography, icon, eyebrow, heading, subtext, divider, switch links — identical to Screen 7B-1. Change only the following:
 
-VARIANT A — "Continue in the app" (shown on /login when opened directly in mobile Safari):
+  - CTA button: terracotta fill remains (#C44536). The button label changes from "Authenticate with passkey" to "Waiting for authentication…" in Raleway 13px. The fingerprint icon on the left is replaced by a white spinner (16px circle, 2px border, white with a transparent arc, spinning at 0.8s linear infinite).
+  - The fingerprint icon above the heading continues its pulse animation unchanged — only the button changes.
+
+Everything else is unchanged from Screen 7B-1.
+```
+
+---
+
+### Screen 7C-1 — Backup codes — Default state
+
+**Purpose:** The user is entering a single-use alphanumeric backup code to recover account access. The input is empty, the CTA is active. Run this first, then run Screen 7C-2 for the error state.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio backup code authentication screen — default state. The user is entering a single-use alphanumeric recovery code. Input is empty and ready.
+
+Centered card (max-width 400px) on full-height cream page.
+
+Card contents (top to bottom):
+  - Icon: 48px — a small key in near-black line-art (1.5px strokes), horizontal orientation, with a small terracotta circle on the bow (top loop) of the key. Minimal, editorial.
+  - Eyebrow: "BACKUP CODE" in Raleway 11px uppercase terracotta, letter-spacing 0.1em, centered
+  - Heading: "Enter a backup code" — Lora bold 24px
+  - Subtext: "Use one of the backup codes you saved when you set up two-factor authentication." — Raleway 14px muted
+  - Single wide text input: full card width, 48px height, 16px border-radius, cream fill (#F8F7F3), 1px border #E3E3E6. Space Mono font inside. Placeholder text: "xxxx-xxxx-xxxx" in muted. Raleway uppercase 12px label above: "BACKUP CODE"
+  - Amber warning pill directly below the input: background rgba(245,158,11,0.10), border 1px solid rgba(245,158,11,0.30), border-radius 999px, padding 6px 12px. Contains a ⚠ icon and Raleway 12px text: "Each backup code can only be used once."
+  - Muted note below the warning pill: "Lost your backup codes? Contact support." in Raleway 11px muted, with "Contact support" as a terracotta link.
+  - Pill primary CTA: "Verify backup code" — terracotta fill, cream text, 48px, 100% card width, Raleway semibold
+  - Thin divider rule (1px, #E3E3E6)
+  - Two switch links below, Raleway 13px terracotta, centered:
+      · "Use an authenticator code instead"
+      · "Use a passkey instead"
+
+On mobile: full-screen card, comfortable 16px padding.
+
+Animations: card entrance fades + slides up 12px (320ms). Input focus: 2px terracotta border + soft cream-terracotta glow. Warning pill fades in 200ms after the card settles.
+```
+
+**Refinement prompt:**
+
+```
+On the 7C-1 backup code default screen, show the input in a partially filled state — "a3f9-" with the cursor blinking after the dash — to illustrate the auto-formatting behaviour where a dash is inserted after every 4 characters as the user types.
+```
+
+---
+
+### Screen 7C-2 — Backup codes — Error state
+
+**Purpose:** The user submitted an invalid or already-used backup code. Run this as a new Stitch generation after Screen 7C-1 is approved.
+
+> **In Stitch:** Start a new generation. Reference Screen 7C-1 as the base.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio backup code authentication screen — error state. This is the same screen as Screen 7C-1 after the user has submitted an invalid or already-used backup code.
+
+Keep every element — card dimensions, typography, icon, eyebrow, heading, subtext, warning pill, support link, divider, switch links — identical to Screen 7C-1. Change only the following:
+
+  - Input: 2px red border (#EF4444). Show a partially filled value ("a3f9-b2c1") in Space Mono inside the input to indicate a submitted entry.
+  - Error message: directly below the input (above the warning pill), add "Invalid or already used backup code." in Raleway 13px, #EF4444, left-aligned.
+  - Animation note (for implementation reference, not visible in static design): the input performs a horizontal shake keyframe (400ms) at the moment of error.
+
+Everything else is unchanged from Screen 7C-1.
+```
+
+---
+
+### Screen 8A — Mobile Handoff — Sign-in transit
+
+**Purpose:** Fires from JavaScript on `/login` when the user taps that URL directly in mobile Safari (not via the app's auth session). It redirects them back to the Fomio app. This is a functional transit screen — no progress indicator, no celebration. Run this independently of Screen 8B.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio mobile browser handoff overlay — sign-in transit state. This is a full-viewport, fixed-position overlay on a pure cream canvas. No card, no border, no box-shadow. Content panel max-width 320px, centered both horizontally and vertically in the viewport.
+
+Contents (top to bottom):
   - Eyebrow: "FOMIO" in Raleway 11px uppercase terracotta, letter-spacing 0.1em, centered
   - Thin terracotta rule (2px × 32px, centered)
-  - Heading: "Continue in the app." — Lora serif bold, clamp(1.75rem, 5vw, 2.75rem), near-black, tight tracking, max-width 14ch
+  - Heading: "Continue in the app." — Lora serif bold, clamp(1.75rem, 5vw, 2.75rem), near-black, tight tracking (-0.02em), max-width 14ch, centered
   - Subtext: "Opening Fomio for sign in…" — Raleway 14px muted, centered
-  - Spinner: 28px circle, 2px border, cream border with terracotta top segment (border-top-color #C44536), spinning continuously
-  - Fallback below spinner: "Not opening?" in Raleway 13px muted, followed by a "Tap here" link in Raleway 13px terracotta semibold
+  - Spinner: 28px circle, 2px border, #E3E3E6 base with terracotta top arc (border-top-color #C44536), spinning continuously at 0.9s linear infinite
+  - Fallback: "Not opening?" in Raleway 13px muted → "Tap here" in Raleway 13px terracotta semibold, on the same line
 
-VARIANT B — "You're all set" (shown on / after signup activation):
-  - Same structure but heading: "You're all set." and subtext: "Opening Fomio…"
+Background: #F8F7F3 cream fills the entire viewport. Nothing else.
 
-Show both variants side by side as two artboards.
+Animations: eyebrow fades in 0–200ms, rule slides in 150–350ms, heading slides up 8px from below 200–500ms ease-out, subtext fades 350–550ms, spinner appears at 450ms+.
+```
 
-No borders, no cards, no box-shadow — this is pure cream canvas.
+**Refinement prompt:**
 
-Animations: the eyebrow fades in first (0–200ms), rule slides in (150–350ms), heading slides up from 8px below (200–500ms, ease-out), subtext fades (350–550ms), spinner appears (450ms+) and spins at 0.9s linear infinite.
+```
+On Screen 8A, give the heading a very subtle warm text shadow (1px 1px 0 rgba(255,255,255,0.5)) to lift it off the cream background without adding any colour to the canvas.
+```
+
+---
+
+### Screen 8B — Mobile Handoff — Signup congratulations (step 3 of 3)
+
+**Purpose:** Fires from JavaScript on `/` after the user completes account activation. This is step 3 of 3 in the signup journey — the arrival. It is not a loading screen; it is the congratulations moment. Design it as a distinct, warmer screen from Screen 8A. Run this independently.
+
+**Prompt:**
+```
+[PASTE GLOBAL CONTEXT PREFIX]
+
+Design the Fomio mobile browser handoff overlay — signup congratulations, step 3 of 3. This is a full-viewport, fixed-position overlay on a pure cream canvas. No card, no border, no box-shadow. Content panel max-width 320px, centered both horizontally and vertically in the viewport.
+
+This is the arrival moment — the user has just completed account creation and email verification. It should feel calm, editorial, and quietly celebratory.
+
+Contents (top to bottom):
+  - Three-step progress indicator, centered:
+      · Three dots in a horizontal row connected by lines
+      · All three dots: filled terracotta (#C44536), 10px diameter
+      · All connecting lines: filled terracotta
+      · Dot 3 (rightmost): slightly larger at 13px, with a soft terracotta glow halo (16px radius, 20% opacity) — this is the step just completed
+      · Below each dot, Raleway 10px muted labels: "Account", "Email", "In"
+  - Icon: 56px circle, terracotta fill (#C44536), white checkmark centered — solid, resolved, no animated entrance needed
+  - Eyebrow: "STEP 3 OF 3 — COMPLETE" in Raleway 11px uppercase terracotta, letter-spacing 0.1em, centered
+  - Thin terracotta rule (2px × 32px, centered)
+  - Heading: "You're in." — Lora serif bold, clamp(1.75rem, 5vw, 2.75rem), near-black, tight tracking (-0.02em). Short and decisive.
+  - Subtext line 1: "Welcome to Fomio." — Lora serif regular 18px muted, centered
+  - Subtext line 2: "Opening the app now…" — Raleway 14px muted, centered
+  - Horizontal terracotta loading bar: 2px height, 80px wide, centered, fills left to right over 1.5s ease-in-out then loops
+  - Fallback: "Not opening?" in Raleway 13px muted → "Tap here" in Raleway 13px terracotta semibold
+
+Background: #F8F7F3 cream fills the entire viewport. Nothing else.
+
+Animations: progress dots light up left to right (each: scale 0→1, 150ms, staggered 60ms apart). Then icon appears (spring scale 0.6→1.05→1.0, 400ms). Then eyebrow fades, rule slides in, heading slides up 8px, subtexts fade. Then loading bar begins. Total entrance ~900ms.
 ```
 
 **Refinement prompts:**
 
 ```
-On the mobile handoff overlay, give the heading a very subtle warm text shadow (1px 1px 0 rgba(255,255,255,0.5)) to lift it off the cream background. Keep the cream background pure — no color change.
+On Screen 8B, add a very faint circular terracotta radial gradient behind the checkmark icon (80px radius, 8% opacity) as the only warm accent on the cream canvas. All other elements stay as designed.
 ```
 
 ```
-On the mobile handoff overlay, replace the spinner with a more editorial animation: a horizontal terracotta loading bar (2px height, cream background) that fills from left to right over 1.5s with an ease-in-out curve, then loops. The bar should be 80px wide, centered, beneath the subtext.
+On Screen 8B, make the terracotta loading bar slightly thicker at 3px and give it a soft rounded cap on both ends (border-radius: 9999px) so it reads as a deliberate brand element rather than a system progress bar.
 ```
 
 ---
@@ -632,17 +884,36 @@ Discourse handles layout reflow at 768px. Only add `desktop.scss` tablet overrid
 
 ## Appendix — Quick reference: all 9 prompts at a glance
 
-| Screen | Route | Stitch prompt section |
+| Screen | Route | Notes | Stitch prompt section |
+|---|---|---|---|
+| 1. Login | `/login` | Sign-in entry point | Part 3 → Screen 1 |
+| 2. Authorize | `/user-api-key/new` | Trust-critical permission grant | Part 3 → Screen 2 |
+| 3. Signup | `/signup?fomio=1` | New account form | Part 3 → Screen 3 |
+| 4. Account created | `/u/account-created` | **Progress step 1+2** — check email | Part 3 → Screen 4 |
+| 5. Activate account | `/u/activate-account/:token` | **Progress step 2** — confirm email | Part 3 → Screen 5 |
+| 6A. Password reset — form | `/password-reset` | Request reset link | Part 3 → Screen 6A |
+| 6B. Password reset — sent | `/password-reset` (success) | Confirmation screen | Part 3 → Screen 6B |
+| 7A-1. TOTP — default | `/session/*` | Empty boxes, muted CTA | Part 3 → Screen 7A-1 |
+| 7A-2. TOTP — error | `/session/*` | Red borders, error message | Part 3 → Screen 7A-2 |
+| 7B-1. Passkeys — default | `/session/*` | Ready state, CTA active | Part 3 → Screen 7B-1 |
+| 7B-2. Passkeys — loading | `/session/*` | Button with spinner, awaiting biometric | Part 3 → Screen 7B-2 |
+| 7C-1. Backup codes — default | `/session/*` | Empty input, warning pill | Part 3 → Screen 7C-1 |
+| 7C-2. Backup codes — error | `/session/*` | Red border, error message | Part 3 → Screen 7C-2 |
+| 8A. Handoff — sign-in | `.fomio-mobile-handoff` on `/login` | Transit screen, no progress dots | Part 3 → Screen 8A |
+| 8B. Handoff — welcome | `.fomio-mobile-handoff` on `/` | **Progress step 3 / congratulations** | Part 3 → Screen 8B |
+| 9. Invites | `/invites` | Personal invitation acceptance | Part 3 → Screen 9 |
+
+### The three-step progress system
+
+Screens 4, 5, and 8B form a connected visual system across the signup journey:
+
+| Step | Screen | Progress state |
 |---|---|---|
-| 1. Login | `/login` | Part 3 → Screen 1 |
-| 2. Authorize | `/user-api-key/new` | Part 3 → Screen 2 |
-| 3. Signup | `/signup?fomio=1` | Part 3 → Screen 3 |
-| 4. Account created | `/u/account-created` | Part 3 → Screen 4 |
-| 5. Activate account | `/u/activate-account/:token` | Part 3 → Screen 5 |
-| 6. Password reset | `/password-reset` | Part 3 → Screen 6 |
-| 7. Two-factor auth | `/session/*` | Part 3 → Screen 7 |
-| 8. Mobile handoff | `.fomio-mobile-handoff` | Part 3 → Screen 8 |
-| 9. Invites | `/invites` | Part 3 → Screen 9 |
+| 1 (Account created) | Screen 4 `/u/account-created` | Dot 1 filled, dot 2 filled, dot 3 empty |
+| 2 (Email confirmed) | Screen 5 `/u/activate-account/:token` | Dot 1 filled, dot 2 filled + glowing, dot 3 empty |
+| 3 (You're in) | Screen 8B handoff overlay on `/` | All three dots filled, dot 3 slightly enlarged + glowing |
+
+If you run Screen 4's progress indicator refinement prompt, you must also run Screen 5's and design Screen 8B accordingly — the three screens are a set.
 
 ---
 

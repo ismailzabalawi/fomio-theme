@@ -1,0 +1,21 @@
+<script>
+(function () {
+  try {
+    var root = document.querySelector(".authorize-api-key");
+    if (!root || !root.querySelector("form .authorize-api-key__buttons")) return;
+    if (root.querySelector(".fomio-authorize-official-line")) return;
+    var p = document.createElement("p");
+    p.className = "fomio-authorize-official-line";
+    p.setAttribute("role", "note");
+    var lock = document.createElement("span");
+    lock.className = "fomio-authorize-official-line__lock";
+    lock.setAttribute("aria-hidden", "true");
+    var text = document.createElement("span");
+    text.textContent = "You're authorizing the official Fomio app.";
+    p.appendChild(lock);
+    p.appendChild(text);
+    var form = root.querySelector("form");
+    root.insertBefore(p, form);
+  } catch (e) {}
+})();
+</script>

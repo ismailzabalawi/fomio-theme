@@ -1,4 +1,76 @@
 en:
+  js:
+    log_in: "Sign in"
+    invites:
+      welcome_to: "One more step."
+    login:
+      header_title: "Welcome back"
+      email_placeholder: "you@example.com"
+      resend_title: "Resend activation email"
+      change_email: "Wrong email? Start over"
+    forgot_password:
+      title: "Reset your password"
+      action: "Forgot password?"
+      invite: "We'll send a reset link to your email address."
+      email-username: "Email address"
+      reset: "Send reset link"
+    create_account:
+      header_title: "Join Fomio"
+      title: "Create account"
+      activation_title: "One more step."
+      disclaimer: "By joining, you agree to our <a href='%{tos_link}' target='_blank' rel='noopener noreferrer'>Terms</a> and <a href='%{privacy_link}' target='_blank' rel='noopener noreferrer'>Privacy Policy</a>."
+    user:
+      email:
+        title: "Email address"
+  auth_login:
+    subheader: "It's been a minute."
+  auth_signup:
+    eyebrow: "New account"
+    subheader: "Find your corner of the internet."
+  auth_password_reset:
+    valid_hint: "We'll look for your account"
+    spam_note: "Check your spam folder if the email doesn't arrive."
+    success_title: "Check your inbox."
+    success_body: "We've sent a reset link to your email. It expires in 30 minutes."
+    resend_reset_email: "Resend reset email"
+    back_to_sign_in: "Back to sign in"
+  auth_second_factor:
+    eyebrow: "Two-step verification"
+    heading: "Enter your code"
+    code_label: "CODE"
+    use_passkey_instead: "Use a passkey instead"
+    use_backup_instead: "Use a backup code instead"
+    use_authenticator_instead: "Use an authenticator code instead"
+    waiting_for_authentication: "Waiting for authentication…"
+    backup_eyebrow: "BACKUP CODE"
+    backup_heading: "Enter a backup code"
+    backup_subtext: "Use one of the backup codes you saved when you set up two-factor authentication."
+    backup_code_label: "BACKUP CODE"
+    backup_placeholder: "xxxx-xxxx-xxxx"
+    backup_warning: "Each backup code can only be used once."
+    backup_lost_codes: "Lost your backup codes?"
+    backup_contact_support: "Contact support"
+    verify_backup_code: "Verify backup code"
+
+  # Server session message on /u/account-created (UserActivator → login.activate_email).
+  login:
+    activate_email: "<p>We've sent an activation link to <b>%{email}</b>. Open it to complete your Fomio account.</p><p>Can't find it? Check your spam folder.</p>"
+
+  # Trust line injected by common/body_tag.html — keep both strings identical.
+  auth_user_api_key:
+    official_line: "You're authorizing the official Fomio app."
+
+  # Server-rendered /user-api-key/new (ERB). Overrides discourse/config/locales/server.en.yml.
+  user_api_key:
+    title: 'Allow %{application_name} to access your account'
+    permissions_header: "%{application_name} is requesting the following permissions:"
+    scopes:
+      read: "Read your profile and Bytes"
+      write: "Create Bytes and reply on your behalf"
+      notifications: "Manage your notifications"
+      session_info: "Read session details used to keep you signed in"
+      one_time_password: "Create secure one-time sign-in tokens"
+
   theme_metadata:
     description: "A reading-first editorial web theme for Fomio."
     settings:
