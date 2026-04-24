@@ -144,17 +144,11 @@ export default apiInitializer("1.8.0", (api) => {
    * Full-viewport overlay (see common.scss .fomio-mobile-handoff).
    * Does not replace document.body — keeps Discourse DOM intact underneath.
    */
-  function showHandoffOverlay(variant, deepLink) {
+  function showHandoffOverlay(deepLink) {
     removeHandoffOverlayIfPresent();
 
-    const titleKey =
-      variant === "login"
-        ? "mobile_handoff.login_title"
-        : "mobile_handoff.home_title";
-    const subtitleKey =
-      variant === "login"
-        ? "mobile_handoff.login_subtitle"
-        : "mobile_handoff.home_subtitle";
+    const titleKey = "mobile_handoff.home_title";
+    const subtitleKey = "mobile_handoff.home_subtitle";
 
     const root = document.createElement("div");
     root.id = HANDOFF_ROOT_ID;
@@ -228,27 +222,30 @@ export default apiInitializer("1.8.0", (api) => {
       if (path.startsWith("/session/")) {
         markFomioAuthFlowIfRedirected();
       }
+      if (path.startsWith("/signup")) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("fomio") === "1") {
+          sessionStorage.setItem("fomio_app_signup", "1");
+        }
+      }
       if (path.startsWith("/u/activate-account")) {
-        sessionStorage.setItem("fomio_activation_pending", "1");
+        if (sessionStorage.getItem("fomio_app_signup") === "1") {
+          sessionStorage.removeItem("fomio_app_signup");
+          sessionStorage.setItem("fomio_activation_pending", "1");
+        }
       }
       return;
     }
 
-    // CASE 1: Login page -> send to app sign in
-    // Guard: skip if we arrived here via a server-side redirect (redirectCount > 0).
-    // When the app's auth flow opens /user-api-key/new and the user isn't logged in
-    // on the web, Discourse 302-redirects to /login. We must not intercept that redirect
-    // or it interrupts ASWebAuthenticationSession / Chrome Custom Tabs, causing the
-    // auth payload to never reach the app and sign-in to silently fail.
+    // CASE 1: Login page
+    // Guard: if we arrived via a server-side redirect (redirectCount > 0), we're inside
+    // the app's auth flow (/user-api-key/new → /login). Mark sessionStorage so the home
+    // redirect skips (GUARD 2). Do not intercept direct /login visits — web users must
+    // be able to authenticate on the web without being sent to the app.
     if (path === "/login") {
       const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
       const arrivedViaRedirect = navEntry && navEntry.redirectCount > 0;
-      if (!arrivedViaRedirect) {
-        showHandoffOverlay("login", `${appUrl}signin?autoAuth=true`);
-      } else {
-        // We're inside the sign-in auth flow (/user-api-key/new → /login).
-        // After the user logs in, Discourse redirects to home before returning
-        // to /user-api-key/new. Mark sessionStorage so the home redirect skips.
+      if (arrivedViaRedirect) {
         sessionStorage.setItem("fomio_auth_flow", "1");
       }
       return;
@@ -271,7 +268,7 @@ export default apiInitializer("1.8.0", (api) => {
       }
       if (sessionStorage.getItem("fomio_activation_pending") === "1") {
         sessionStorage.removeItem("fomio_activation_pending");
-        showHandoffOverlay("home", `${appUrl}signin?autoAuth=true`);
+        showHandoffOverlay(`${appUrl}signin?autoAuth=true`);
       }
       return;
     }

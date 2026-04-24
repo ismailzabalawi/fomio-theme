@@ -98,8 +98,6 @@ en:
     updated: "Updated"
   mobile_handoff:
     brand: "Fomio"
-    login_title: "Continue in the app."
-    login_subtitle: "Opening Fomio for sign in…"
     home_title: "You're all set."
     home_subtitle: "Opening Fomio…"
     fallback_lead: "Not opening?"
