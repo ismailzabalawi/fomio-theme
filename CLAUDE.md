@@ -49,7 +49,6 @@ apps/web/
     └── connectors/
         ├── topic-list-main-link-bottom/fomio-topic-context.gjs
         ├── topic-title/fomio-topic-reading-meta.gjs
-        └── after-topic-footer-buttons/fomio-topic-app-handoff.gjs
 ```
 
 ## Auth & Handoff Flow

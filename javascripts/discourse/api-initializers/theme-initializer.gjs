@@ -228,6 +228,9 @@ export default apiInitializer("1.8.0", (api) => {
       if (path.startsWith("/session/")) {
         markFomioAuthFlowIfRedirected();
       }
+      if (path.startsWith("/u/activate-account")) {
+        sessionStorage.setItem("fomio_activation_pending", "1");
+      }
       return;
     }
 
@@ -266,7 +269,10 @@ export default apiInitializer("1.8.0", (api) => {
         sessionStorage.removeItem("fomio_auth_flow");
         return;
       }
-      showHandoffOverlay("home", `${appUrl}signin?autoAuth=true`);
+      if (sessionStorage.getItem("fomio_activation_pending") === "1") {
+        sessionStorage.removeItem("fomio_activation_pending");
+        showHandoffOverlay("home", `${appUrl}signin?autoAuth=true`);
+      }
       return;
     }
   }

@@ -988,59 +988,6 @@ body.has-sidebar-page.archetype-regular {
   padding-top: 0.5rem;
 }
 
-.fomio-topic-app-handoff {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.25rem;
-  padding: 1.25rem 1.35rem;
-  border: 1px solid color-mix(in srgb, var(--fomio-red) 28%, var(--fomio-rule) 72%);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--fomio-paper) 90%, white 10%);
-}
-
-.fomio-topic-app-handoff__eyebrow {
-  margin: 0 0 0.35rem;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  font-weight: 600;
-  letter-spacing: var(--fomio-tracking-wider);
-  text-transform: uppercase;
-  color: var(--fomio-ink-muted);
-}
-
-.fomio-topic-app-handoff__copy {
-  margin: 0;
-  max-width: 54ch;
-  color: var(--fomio-ink);
-  font-size: var(--fomio-text-base);
-  line-height: var(--fomio-leading-relaxed);
-}
-
-.fomio-topic-app-handoff__action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.875rem;
-  padding: 0.7rem 1rem;
-  border-radius: 999px;
-  border: 1px solid var(--fomio-red);
-  background: var(--fomio-red);
-  color: var(--fomio-on-primary);
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 600;
-  letter-spacing: var(--fomio-tracking-wide);
-  text-decoration: none;
-}
-
-.fomio-topic-app-handoff__action:hover {
-  background: var(--fomio-red-dark);
-  border-color: var(--fomio-red-dark);
-  color: var(--fomio-on-primary);
-}
-
 .timeline-container,
 .topic-navigation {
   display: none;
@@ -1121,10 +1068,6 @@ nav.post-controls .actions .d-button-label {
 
 .topic-post .cooked > :last-child {
   margin-bottom: 0;
-}
-
-.fomio-topic-app-handoff {
-  max-width: 60rem;
 }
 
 
