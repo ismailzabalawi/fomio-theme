@@ -70,11 +70,20 @@
   --fomio-radius-lg:    16px;
   --fomio-radius-card:  18px;
   --fomio-radius-pill:  9999px;
-  --fomio-content-max-width: 680px;
+  --fomio-prose-w:           680px;   // reading rail — .cooked, excerpts
+  --fomio-column-w:          54rem;   // page column — title, body, footer
+  --fomio-content-max-width: 680px;   // legacy alias for --fomio-prose-w
+  --fomio-code-bg:           var(--fomio-surface);  // code block container — overridden in dark
   --fomio-button-height-sm:  32px;
   --fomio-button-height:     40px;
   --fomio-button-height-lg:  48px;
   --fomio-input-height:      40px;
+
+  // Motion — Fomio Design System Handoff (2026-05) / colors_and_type.css
+  --fomio-ease:     cubic-bezier(0.22, 0.61, 0.36, 1);
+  --fomio-dur-fast: 120ms;
+  --fomio-dur-med:  200ms;
+  --fomio-dur-slow: 320ms;
 }
 
 
@@ -101,42 +110,47 @@
 
 
 // ------------------------------------------------------------
-// 1B. DARK MODE (AMOLED) — mirrors toCssVariables('dark') / packages/design-tokens
+// 1B. DARK MODE (WEB — warm brown)
 // Active when html.fomio-color-dark (see fomio-color-mode.gjs).
+//
+// Intentionally NOT AMOLED here: Fomio Design System Handoff + brand guideline
+// specify warm brown for Discourse/web (#1a1917). Mobile app remains AMOLED via
+// packages/design-tokens (separate surface).
 // ------------------------------------------------------------
 
 html.fomio-color-dark {
-  --fomio-bg:           #000000;
-  --fomio-surface:      #0A0A0A;
-  --fomio-card:         #050505;
-  --fomio-text:         #FFFFFF;
-  --fomio-foreground:   #F5F5F7;
-  --fomio-muted:        #A1A1AA;
-  --fomio-secondary:    #A1A1AA;
-  --fomio-border:       #1C1C1E;
+  --fomio-bg:           #1a1917;
+  --fomio-surface:      #2a2723;
+  --fomio-card:         #2a2723;
+  --fomio-text:         #f5f3f0;
+  --fomio-foreground:   #f5f3f0;
+  --fomio-muted:        #8b8680;
+  --fomio-secondary:    #a1a1aa;
+  --fomio-border:       #3a3530;
   --fomio-border-soft:  rgba(255, 255, 255, 0.08);
-  --fomio-primary:      #D4604F;
-  --fomio-primary-soft: #2A100E;
-  --fomio-primary-dark: #B83D30;
-  --fomio-accent:       #42A5F5;
+  --fomio-primary:      #e67458;
+  --fomio-primary-soft: #2a100e;
+  --fomio-primary-dark: #d45944;
+  --fomio-accent:       #42a5f5;
   --fomio-accent-soft:  rgba(124, 196, 255, 0.18);
   --fomio-on-accent:    #000000;
-  --fomio-danger:       #F97373;
+  --fomio-danger:       #f87171;
   --fomio-danger-soft:  rgba(239, 68, 68, 0.16);
-  --fomio-warning:      #FBBF24;
-  --fomio-success:      #4ade80;
-  --fomio-info:         #42A5F5;
-  --fomio-shadow:       rgba(96, 165, 250, 0.28);
-  --fomio-liked:        #EF4444;
-  --fomio-hero-overlay: rgba(0, 0, 0, 0.7);
-  --fomio-hero-text:    #FFFFFF;
+  --fomio-warning:      #fbbf24;
+  --fomio-success:      #34d399;
+  --fomio-info:         #42a5f5;
+  --fomio-shadow:       rgba(0, 0, 0, 0.6);
+  --fomio-liked:        #f87171;
+  --fomio-hero-overlay: rgba(0, 0, 0, 0.72);
+  --fomio-hero-text:    #f5f3f0;
   --fomio-font-serif:   "Lora", Georgia, "Times New Roman", serif;
   --fomio-font-mono:    "Space Mono", "Courier New", monospace;
   --fomio-font-ui:      "Raleway", system-ui, sans-serif;
-  --fomio-brand-cream:  #F8F7F3;
-  --fomio-brand-red:    #C44536;
-  --fomio-brand-ink:    #1A1A1A;
-  --fomio-on-primary:   #FFFFFF;
+  --fomio-brand-cream:  #f8f7f3;
+  --fomio-brand-red:    #c44536;
+  --fomio-brand-ink:    #1a1a1a;
+  --fomio-on-primary:   #ffffff;
+  --fomio-code-bg:      #3a3530;
 }
 
 
@@ -303,18 +317,20 @@ h6 {
   }
 
   code {
-    font-family: var(--fomio-font-ui);
+    font-family: var(--fomio-font-mono);
     font-size: 0.875em;
+    font-variant-ligatures: none;
     background: var(--fomio-ink-ghost);
     padding: 0.1em 0.35em;
     border-radius: 2px;
   }
 
   pre {
-    font-family: var(--fomio-font-ui);
+    font-family: var(--fomio-font-mono);
     font-size: var(--fomio-text-sm);
-    background: var(--fomio-ink-ghost);
-    border-left: 2px solid var(--fomio-rule);
+    font-variant-ligatures: none;
+    background: var(--fomio-code-bg);
+    border-radius: var(--fomio-radius-md);
     padding: 1.25em 1.5em;
     overflow-x: auto;
 
@@ -325,11 +341,43 @@ h6 {
     }
   }
 
-  // Heading styles inside posts mirror the global scale
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 2em 0;
+    border-radius: var(--fomio-radius-sm);
+  }
+
+  // Heading hierarchy — sizes descend from page title context
   h1, h2, h3, h4 {
     font-family: var(--fomio-font-serif);
     margin-top: 2em;
     margin-bottom: 0.5em;
+  }
+
+  h1 {
+    font-size: var(--fomio-text-2xl);
+    line-height: var(--fomio-leading-tight);
+    letter-spacing: var(--fomio-tracking-tight);
+  }
+
+  h2 {
+    font-size: var(--fomio-text-xl);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  h3 {
+    font-size: 1.375rem;
+    line-height: var(--fomio-leading-snug);
+  }
+
+  h4 {
+    font-size: var(--fomio-text-md);
+    line-height: var(--fomio-leading-normal);
+    font-family: var(--fomio-font-ui);
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
   }
 }
 
@@ -534,7 +582,7 @@ h6 {
 
 .topic-list.--fomio-discovery-list {
   border-collapse: separate;
-  border-spacing: 0 0.9rem;
+  border-spacing: 0 1.75rem; // breathing room between entries
 }
 
 .topic-list.--fomio-discovery-list .topic-list-header tr {
@@ -554,27 +602,21 @@ h6 {
 }
 
 .topic-list-item.--fomio-discovery-item td {
-  background: color-mix(in srgb, var(--fomio-paper) 92%, white 8%);
-  border-top: 1px solid var(--fomio-rule);
-  border-bottom: 1px solid var(--fomio-rule);
-  padding-top: 1.15rem;
-  padding-bottom: 1.15rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  padding-top: 0;
+  padding-bottom: 1.25rem;
   vertical-align: top;
 }
 
 .topic-list-item.--fomio-discovery-item td:first-child {
-  border-left: 1px solid var(--fomio-rule);
-  border-top-left-radius: 18px;
-  border-bottom-left-radius: 18px;
-  padding-left: 1.35rem;
+  padding-left: 0;
   width: auto;
 }
 
 .topic-list-item.--fomio-discovery-item td:last-child {
-  border-right: 1px solid var(--fomio-rule);
-  border-top-right-radius: 18px;
-  border-bottom-right-radius: 18px;
-  padding-right: 1rem;
+  padding-right: 0;
 }
 
 .topic-list-item.--fomio-discovery-item .main-link {
@@ -620,8 +662,27 @@ h6 {
 }
 
 .fomio-topic-context {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+// Text column — grows to fill; the thumbnail (if present) anchors right
+.fomio-topic-context__text {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.6rem;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+// Thumbnail — topic.image_url (OG image for link posts, or first image)
+.fomio-topic-context__thumb {
+  flex: 0 0 auto;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: var(--fomio-radius-sm);
+  background: var(--fomio-surface); // placeholder while loading
 }
 
 .fomio-topic-context__meta {
@@ -641,6 +702,8 @@ h6 {
   color: var(--fomio-ink);
   text-decoration: none;
   font-weight: 600;
+  position: relative;
+  z-index: 1; // stays above the stretched-link overlay
 }
 
 .fomio-topic-context__author .avatar {
@@ -669,31 +732,17 @@ h6 {
   font-family: var(--fomio-font-serif);
   font-size: var(--fomio-text-base);
   line-height: var(--fomio-leading-relaxed);
-  max-width: 62ch;
+  // Clamp to 2 lines — enough to preview, not enough to replace reading
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
+// Forum metrics are not reading signals — hidden in the editorial feed.
 .topic-list-item.--fomio-discovery-item .posts-map,
 .topic-list-item.--fomio-discovery-item .activity {
-  width: 4.5rem;
-  text-align: right;
-  color: var(--fomio-ink-muted);
-  vertical-align: middle;
-}
-
-.topic-list-item.--fomio-discovery-item .badge-posts,
-.topic-list-item.--fomio-discovery-item .post-activity {
-  display: inline-flex;
-  justify-content: flex-end;
-  width: 100%;
-  color: inherit;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  text-decoration: none;
-}
-
-.topic-list-item.--fomio-discovery-item .posts-map .number,
-.topic-list-item.--fomio-discovery-item .activity .relative-date {
-  font-weight: 500;
+  display: none;
 }
 
 
@@ -757,21 +806,6 @@ h6 {
   border-color: var(--fomio-rule);
 }
 
-.navigation-topics #create-topic,
-.navigation-categories #create-topic,
-.navigation-category #create-topic {
-  display: none;
-}
-
-.fomio-read-only-hidden,
-.sidebar-new-topic-button__wrapper,
-.composer-open-plugin-outlet-container,
-.topic-footer-main-buttons__actions .create,
-.topic-footer-main-buttons .topic-footer-button.create {
-  display: none !important;
-}
-
-
 // ------------------------------------------------------------
 // 13A. SIDEBAR SUPPRESSION ON PUBLIC WEB SURFACES
 // Discovery and regular topics should read as focused, single-pane pages.
@@ -820,21 +854,34 @@ body.has-sidebar-page.archetype-regular {
 }
 
 #topic-title.container {
-  max-width: 64rem;
+  max-width: var(--fomio-column-w);
   margin-top: 2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 #topic-title .title-wrapper {
-  border-bottom: 1px solid var(--fomio-rule);
-  padding-bottom: 1.25rem;
+  padding-bottom: 0;
+  order: 2;
+}
+
+// topic-title is rendered before the theme connector in Discourse.
+// Flatten the outlet wrappers so crumbs can sit above the native title,
+// while deck + byline remain below it.
+#topic-title > div:not(.title-wrapper),
+#topic-title .fomio-topic-header {
+  display: contents;
 }
 
 #topic-title h1 {
-  margin: 0 0 1rem;
+  margin: 0 0 1.25rem;
   font-size: clamp(2.4rem, 2rem + 1.2vw, 4rem);
   line-height: 1.08;
   letter-spacing: -0.03em;
+  max-width: 15ch;
+  text-wrap: balance;
 }
 
 #topic-title .fancy-title {
@@ -843,25 +890,84 @@ body.has-sidebar-page.archetype-regular {
 }
 
 #topic-title .topic-category {
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  letter-spacing: var(--fomio-tracking-wide);
+  display: none;
 }
 
-.fomio-topic-reading-meta {
-  display: grid;
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-.fomio-topic-reading-meta__trust {
+.fomio-topic-header__crumbs {
+  order: 1;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem 1rem;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
   font-family: var(--fomio-font-ui);
   font-size: var(--fomio-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
   color: var(--fomio-ink-muted);
+}
+
+.fomio-topic-header__crumb {
+  color: inherit;
+  text-decoration: none;
+}
+
+.fomio-topic-header__crumb:hover,
+.fomio-topic-header__crumb:focus-visible {
+  color: var(--fomio-primary);
+}
+
+.fomio-topic-header__crumb--hub {
+  color: var(--fomio-primary);
+}
+
+.fomio-topic-header__crumb-sep {
+  opacity: 0.45;
+}
+
+.fomio-topic-header__deck {
+  order: 3;
+  max-width: 42rem;
+  margin: 0 0 2rem;
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-lg);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--fomio-ink-muted);
+  text-wrap: pretty;
+}
+
+// ── Byline ────────────────────────────────────────────────────
+// Rendered by topic-title/fomio-topic-reading-meta.gjs.
+// Terminates the header section with a rule before the post body begins.
+
+.fomio-topic-reading-meta {
+  order: 4;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  color: var(--fomio-ink-muted);
+  position: relative;
+}
+
+.fomio-topic-reading-meta::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--fomio-rule) 0%,
+    var(--fomio-rule) 32%,
+    transparent 100%
+  );
 }
 
 .fomio-topic-reading-meta__author {
@@ -871,40 +977,27 @@ body.has-sidebar-page.archetype-regular {
   color: var(--fomio-ink);
   font-weight: 600;
   text-decoration: none;
-}
-
-.fomio-topic-reading-meta__author .avatar {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-.fomio-topic-reading-meta__author-name {
   letter-spacing: var(--fomio-tracking-wide);
 }
 
+.fomio-topic-reading-meta__author .avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
 .fomio-topic-reading-meta__date {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.fomio-topic-reading-meta__label {
-  text-transform: uppercase;
-  letter-spacing: var(--fomio-tracking-wider);
   color: var(--fomio-ink-muted);
 }
 
-.fomio-topic-reading-meta__reading-note {
-  max-width: 60ch;
-  margin: 0;
-  color: var(--fomio-ink-muted);
-  font-family: var(--fomio-font-serif);
-  font-size: var(--fomio-text-base);
-  line-height: var(--fomio-leading-relaxed);
+.fomio-topic-reading-meta__read-time {
+  margin-left: auto;
+  font-size: var(--fomio-text-xs);
+  font-style: italic;
 }
 
 .regular .topic-body {
-  width: min(100%, 70rem);
+  width: min(100%, var(--fomio-column-w));
+  position: relative;
 }
 
 .regular .topic-avatar {
@@ -918,37 +1011,132 @@ body.has-sidebar-page.archetype-regular {
 }
 
 .topic-post article {
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--fomio-rule);
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
+// OP's author/date block is redundant — the byline connector covers it.
+// data-post-number="1" targets the first post specifically.
+[data-post-number="1"] .topic-meta-data {
+  display: none;
+}
+
+// Reply author block — minimal context, not a focal point.
 .topic-post .topic-meta-data {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
   font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  color: var(--fomio-ink-muted);
 }
 
 .topic-post .topic-meta-data .names,
 .topic-post .topic-meta-data .post-info {
   font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+}
+
+.topic-post .topic-meta-data .names .username a,
+.topic-post .topic-meta-data .names .full-name {
+  color: var(--fomio-ink);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .topic-post .cooked {
   font-size: var(--fomio-text-lg);
   line-height: var(--fomio-leading-loose);
   width: 100%;
-  max-width: 60rem;
+  max-width: var(--fomio-prose-w);
+}
+
+[data-post-number="1"] .cooked > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.05em 0.12em -0.05em 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 4.25em;
+  font-weight: 700;
+  line-height: 0.92;
+  color: var(--fomio-primary);
 }
 
 .topic-post .cooked p,
 .topic-post .cooked ul,
-.topic-post .cooked ol,
-.topic-post .cooked blockquote,
-.topic-post .cooked pre {
-  margin-bottom: 1.45rem;
+.topic-post .cooked ol {
+  margin-bottom: 1.5em;
+}
+
+.topic-post .cooked h2 {
+  margin-top: 2.5em;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.topic-post .cooked h3 {
+  margin-top: 2em;
+  font-size: 1.375rem;
+  line-height: 1.3;
+}
+
+.topic-post .cooked a {
+  color: var(--fomio-ink);
+  text-decoration-color: color-mix(in srgb, var(--fomio-primary) 50%, transparent);
+  text-underline-offset: 0.25rem;
+  text-decoration-thickness: 1px;
+}
+
+.topic-post .cooked a:hover,
+.topic-post .cooked a:focus-visible {
+  color: var(--fomio-primary);
+  text-decoration-color: var(--fomio-primary);
+}
+
+.topic-post .cooked blockquote {
+  margin: 2.5em 0;
+  padding: 0 0 0 1.75rem;
+  border-left: 2px solid var(--fomio-primary);
+  font-size: 1.375rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--fomio-ink-muted);
+}
+
+.topic-post .cooked blockquote p {
+  margin-bottom: 0;
+}
+
+.topic-post .cooked blockquote cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+}
+
+.topic-post .cooked hr {
+  border: 0;
+  margin: 3em auto;
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.topic-post .cooked hr::before {
+  content: "·  ·  ·";
+  font-family: var(--fomio-font-serif);
+  font-size: 1rem;
+  letter-spacing: 0.4em;
+  color: var(--fomio-ink-muted);
 }
 
 #topic-footer-buttons {
-  max-width: 64rem;
+  max-width: var(--fomio-column-w);
   margin: 2rem auto 0;
   border-top: 1px solid var(--fomio-rule);
   padding-top: 1.5rem;
@@ -956,12 +1144,6 @@ body.has-sidebar-page.archetype-regular {
 
 #topic-footer-buttons .topic-footer-main-buttons {
   justify-content: flex-end;
-}
-
-#topic-footer-buttons .topic-footer-main-buttons > .btn-primary.create,
-#topic-footer-buttons .topic-footer-main-buttons > .topic-footer-button.create,
-.reply-area {
-  display: none;
 }
 
 #topic-footer-buttons .topic-footer-button,
@@ -976,10 +1158,14 @@ body.has-sidebar-page.archetype-regular {
 #topic-footer-buttons .notifications-button-footer,
 #topic-footer-buttons .select-kit,
 #topic-footer-buttons .user-tip,
-.topic-post nav.post-controls,
-.topic-post .actions-summary,
 .topic-post .topic-map,
 .topic-post .post-links-container {
+  display: none !important;
+}
+
+// OP has no action bar — it's an article, not a reply.
+[data-post-number="1"] nav.post-controls,
+[data-post-number="1"] .actions-summary {
   display: none !important;
 }
 
@@ -995,21 +1181,6 @@ body.has-sidebar-page.archetype-regular {
 
 .topic-area {
   grid-template-columns: minmax(0, 1fr);
-}
-
-.regular .topic-body,
-.regular .boxed .topic-body {
-  width: min(100%, 70rem);
-}
-
-.topic-post .cooked {
-  max-width: 60rem;
-}
-
-nav.post-controls .post-action-menu__reply,
-nav.post-controls .reply,
-nav.post-controls .post-action-menu__show-replies {
-  display: none;
 }
 
 nav.post-controls .actions {
@@ -1054,6 +1225,7 @@ nav.post-controls .actions .d-button-label {
 
 .topic-post article {
   max-width: 70rem;
+  position: relative;
 }
 
 .topic-post .topic-meta-data {
@@ -1237,9 +1409,10 @@ body.login-page .login-fullpage {
   padding-bottom: var(--fomio-space-2xl);
 }
 
-// Desktop — very faint cream→white radial behind the card (centered on card band)
+// Desktop — faint terracotta radial behind auth card (Fomio Auth UI handoff / auth-styles.css)
 @media (min-width: 900px) {
-  html:not(.fomio-color-dark) body.login-page .login-fullpage {
+  html:not(.fomio-color-dark) body.login-page .login-fullpage,
+  html:not(.fomio-color-dark) body.signup-page .signup-fullpage {
     position: relative;
     isolation: isolate;
 
@@ -1250,10 +1423,9 @@ body.login-page .login-fullpage {
       z-index: 0;
       pointer-events: none;
       background: radial-gradient(
-        ellipse 72% 58% at 50% 32%,
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(255, 255, 255, 0.12) 44%,
-        transparent 72%
+        ellipse 60% 60% at 50% 45%,
+        color-mix(in oklab, var(--fomio-primary) 6%, transparent),
+        transparent 70%
       );
     }
 
@@ -1387,7 +1559,7 @@ body.login-page .login-body {
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: fomio-auth-card-enter 320ms ease-out both;
+    animation: fomio-auth-card-enter var(--fomio-dur-slow) var(--fomio-ease) both;
   }
 }
 
@@ -1703,36 +1875,46 @@ body.invite-page {
     order: -1;
   }
 
-  // All text/email/password inputs
+  // All text/email/password inputs — 40px height, cream fill (Design System Handoff)
   .input-group input[type="email"],
   .input-group input[type="text"],
   .input-group input[type="password"],
   .input-group input:not([type="checkbox"]) {
     width: 100%;
-    height: 48px;
-    padding: 0 var(--fomio-space-lg);
-    background: var(--fomio-surface);
-    border: 1px solid transparent;
+    height: var(--fomio-input-height);
+    padding: 0 14px;
+    background: var(--fomio-bg);
+    border: 1px solid var(--fomio-border);
     border-radius: var(--fomio-radius-md);
     font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-base);
+    font-size: 0.875rem;
+    font-weight: 500;
     color: var(--fomio-text);
     box-sizing: border-box;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      border-color var(--fomio-dur-med) var(--fomio-ease),
+      box-shadow var(--fomio-dur-med) var(--fomio-ease),
+      background var(--fomio-dur-med) var(--fomio-ease);
     box-shadow: none;
     -webkit-appearance: none;
     appearance: none;
 
     &::placeholder {
       color: var(--fomio-muted);
-      opacity: 0.55;
+      opacity: 0.7;
+    }
+
+    &:hover {
+      border-color: color-mix(in oklab, var(--fomio-text) 18%, var(--fomio-border));
     }
 
     &:focus {
       outline: none;
       background: var(--fomio-card);
       border-color: var(--fomio-primary);
-      box-shadow: 0 0 0 3px rgba(196, 69, 54, 0.1);
+      box-shadow:
+        0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+        inset 0 0 0 1px var(--fomio-primary);
     }
   }
 
@@ -1788,29 +1970,8 @@ body.invite-page {
   }
 }
 
-// Login inputs — 40px, cream fill, 12px radius (2px border avoids jump on focus)
+// Login — same input spec as shared auth block (single source of truth)
 body.login-page {
-  .input-group input[type="email"],
-  .input-group input[type="text"],
-  .input-group input[type="password"],
-  .input-group input:not([type="checkbox"]) {
-    height: var(--fomio-input-height);
-    padding: 0 var(--fomio-space-lg);
-    background: var(--fomio-bg);
-    border: 2px solid var(--fomio-border);
-    border-radius: var(--fomio-radius-md);
-
-    &:focus {
-      outline: none;
-      background: var(--fomio-card);
-      border: 2px solid var(--fomio-primary); // terracotta #C44536 — --fomio-primary
-      box-shadow:
-        inset 0 0 0 1px rgba(248, 247, 243, 0.92),
-        inset 0 0 20px rgba(196, 69, 54, 0.12),
-        inset 0 0 36px rgba(245, 208, 204, 0.35); // cream + --fomio-primary-soft wash
-    }
-  }
-
   .input-group:focus-within .toggle-password-mask,
   .toggle-password-mask:hover {
     color: var(--fomio-primary);
@@ -1848,7 +2009,9 @@ body.password-reset-page #new-account-password {
     outline: none;
     background: var(--fomio-card);
     border-color: var(--fomio-primary);
-    box-shadow: 0 0 0 3px rgba(196, 69, 54, 0.1);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+      inset 0 0 0 1px var(--fomio-primary);
   }
 }
 
@@ -1880,7 +2043,7 @@ body.login-page .second-factor-auth .btn-primary {
   width: 100%;
   height: 48px;
   border-radius: var(--fomio-radius-pill);
-  background: linear-gradient(135deg, var(--fomio-primary-dark) 0%, var(--fomio-primary) 100%);
+  background: var(--fomio-primary);
   border: none;
   color: var(--fomio-on-primary);
   font-family: var(--fomio-font-ui);
@@ -1888,13 +2051,17 @@ body.login-page .second-factor-auth .btn-primary {
   font-weight: 600;
   letter-spacing: var(--fomio-tracking-wide);
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.15s ease;
+  transition:
+    background var(--fomio-dur-med) var(--fomio-ease),
+    transform var(--fomio-dur-fast) var(--fomio-ease),
+    opacity var(--fomio-dur-med) var(--fomio-ease);
   margin-top: var(--fomio-space-lg);
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(162, 45, 33, 0.2);
+  box-shadow: none;
 
   &:hover {
-    opacity: 0.92;
+    opacity: 1;
+    background: var(--fomio-primary-dark);
     color: var(--fomio-on-primary);
   }
 
@@ -2178,7 +2345,7 @@ body.account-created-page {
       0 12px 32px rgba(26, 26, 26, 0.06);
 
     @media (prefers-reduced-motion: no-preference) {
-      animation: fomio-auth-card-enter 320ms ease-out both;
+      animation: fomio-auth-card-enter var(--fomio-dur-slow) var(--fomio-ease) both;
     }
   }
 
@@ -2655,7 +2822,7 @@ body.password-reset-page {
 
   &.fomio-forgot-success {
     .d-modal__container {
-      animation: fomio-auth-card-enter 320ms ease-out both;
+      animation: fomio-auth-card-enter var(--fomio-dur-slow) var(--fomio-ease) both;
     }
 
     .d-modal__header {
@@ -3020,7 +3187,7 @@ body.login-page {
     width: 100%;
     height: 48px;
     border-radius: var(--fomio-radius-pill);
-    background: linear-gradient(135deg, var(--fomio-primary-dark) 0%, var(--fomio-primary) 100%);
+    background: var(--fomio-primary);
     border: none;
     color: var(--fomio-on-primary);
     font-family: var(--fomio-font-ui);
@@ -3028,11 +3195,16 @@ body.login-page {
     font-weight: 600;
     letter-spacing: var(--fomio-tracking-wide);
     cursor: pointer;
-    transition: opacity 0.2s ease;
+    transition:
+      background var(--fomio-dur-med) var(--fomio-ease),
+      opacity var(--fomio-dur-med) var(--fomio-ease);
     margin-top: var(--fomio-space-lg);
-    box-shadow: 0 2px 8px rgba(162, 45, 33, 0.2);
+    box-shadow: none;
 
-    &:hover { opacity: 0.92; }
+    &:hover {
+      opacity: 1;
+      background: var(--fomio-primary-dark);
+    }
 
     .d-button-label { color: inherit; font: inherit; }
     .d-icon { color: inherit; }
@@ -3160,6 +3332,19 @@ body.login-page #second-factor.fomio-second-factor-totp {
     margin: 0 0 var(--fomio-space-xl);
   }
 
+  .d-otp {
+    position: relative;
+    width: 100%;
+    margin: 0 0 var(--fomio-space-xl);
+  }
+
+  .d-otp .d-otp-group {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(44px, 1fr));
+    gap: var(--fomio-space-sm);
+    width: 100%;
+  }
+
   .fomio-second-factor-otp-box {
     width: 100%;
     min-width: 44px;
@@ -3176,10 +3361,31 @@ body.login-page #second-factor.fomio-second-factor-totp {
     box-sizing: border-box;
   }
 
+  .d-otp .fomio-second-factor-dotp-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 56px;
+    opacity: 0;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    letter-spacing: 0;
+  }
+
   .fomio-second-factor-otp-box:focus {
     border: 2px solid var(--fomio-primary);
     outline: none;
     box-shadow: none;
+  }
+
+  .d-otp-slot.fomio-second-factor-otp-box.--is-focused,
+  .d-otp-slot.fomio-second-factor-otp-box.--show-cursor {
+    border: 2px solid var(--fomio-primary);
+  }
+
+  .d-otp-slot.fomio-second-factor-otp-box.--placeholder {
+    color: var(--fomio-border);
   }
 
   // Fallback for Discourse variants that expose one OTP input instead of 6.
@@ -3594,7 +3800,7 @@ body.signup-page .signup-body {
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: fomio-auth-card-enter 320ms ease-out both;
+    animation: fomio-auth-card-enter var(--fomio-dur-slow) var(--fomio-ease) both;
   }
 }
 
@@ -4364,6 +4570,272 @@ body.no-ember:has(.authorize-api-key) {
   }
 }
 
+// ============================================================
+// FOMIO SIDEBAR
+// Fixed 260px navigation panel — desktop only.
+// Controlled by body.fomio-sidebar-active (see fomio-layout.gjs).
+// ============================================================
+
+body.fomio-auth-mode {
+  .fomio-sidebar,
+  .fomio-bottom-bar {
+    display: none !important;
+  }
+}
+
+// Suppress Discourse's native sidebar at all viewport widths whenever
+// Fomio's layout is active. Scoped to fomio-sidebar-active (set only on
+// non-auth pages by fomio-layout.gjs) so auth flows are never affected.
+body.fomio-sidebar-active {
+  .sidebar-wrapper,
+  #d-sidebar,
+  .d-sidebar,
+  .sidebar-container {
+    display: none !important;
+  }
+}
+
+:root {
+  --fomio-sidebar-width:      260px;
+  --fomio-sidebar-rail-width:  72px;
+}
+
+// The sidebar is injected at the above-site-header outlet (before .d-header)
+// and is position:fixed, so DOM order does not affect visual layout.
+.fomio-sidebar {
+  display: none; // mobile: hidden — shown only via desktop.scss
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--fomio-sidebar-width);
+  background: var(--fomio-bg);
+  border-inline-end: 1px solid var(--fomio-border);
+  flex-direction: column;
+  z-index: 900; // below Discourse modals (z-index 1000+)
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+// ── Zones ────────────────────────────────────────────────────
+
+.fomio-sidebar__zone {
+  display: flex;
+  flex-direction: column;
+  padding: var(--fomio-space-sm) var(--fomio-space-md);
+}
+
+.fomio-sidebar__zone--top {
+  padding-top: var(--fomio-space-xl);
+  padding-bottom: var(--fomio-space-md);
+  border-bottom: 1px solid var(--fomio-border-soft);
+  gap: var(--fomio-space-sm);
+}
+
+.fomio-sidebar__zone--core {
+  flex: 1;
+  padding-top: var(--fomio-space-md);
+  gap: var(--fomio-space-xs);
+  overflow-y: auto;
+}
+
+.fomio-sidebar__zone--bottom {
+  padding-bottom: var(--fomio-space-xl);
+  border-top: 1px solid var(--fomio-border-soft);
+  gap: var(--fomio-space-xs);
+}
+
+// ── Wordmark ─────────────────────────────────────────────────
+
+.fomio-sidebar__wordmark {
+  display: flex;
+  align-items: center;
+  padding: var(--fomio-space-xs) var(--fomio-space-sm);
+  text-decoration: none;
+  color: var(--fomio-text);
+}
+
+.fomio-sidebar__wordmark-text {
+  font-family: var(--fomio-font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+}
+
+// ── Nav items (shared) ───────────────────────────────────────
+
+.fomio-sidebar__item,
+.fomio-sidebar__search-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-sm);
+  padding: var(--fomio-space-sm) var(--fomio-space-sm);
+  border-radius: var(--fomio-radius-sm);
+  text-decoration: none;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 500;
+  letter-spacing: var(--fomio-tracking-wide);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease, background 150ms ease;
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    background: var(--fomio-primary-soft);
+  }
+
+  .fomio-sidebar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    color: currentColor;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      fill: currentColor;
+    }
+  }
+}
+
+.fomio-sidebar__item-label {
+  flex: 1;
+}
+
+// ── Search trigger specifics ─────────────────────────────────
+
+.fomio-sidebar__search-trigger {
+  background: var(--fomio-surface);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-sm);
+  color: var(--fomio-muted);
+
+  &:hover {
+    border-color: var(--fomio-primary-soft);
+    color: var(--fomio-text);
+  }
+}
+
+// ── Hub sub-list ─────────────────────────────────────────────
+
+.fomio-sidebar__hub-list {
+  list-style: none;
+  margin: var(--fomio-space-xs) 0 var(--fomio-space-xs) calc(var(--fomio-space-sm) + 1rem);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fomio-sidebar__hub-link {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-sm);
+  padding: var(--fomio-space-xs) var(--fomio-space-sm);
+  border-radius: var(--fomio-radius-sm);
+  text-decoration: none;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 500;
+  letter-spacing: var(--fomio-tracking-wide);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease, background 150ms ease;
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-sidebar__hub-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fomio-sidebar__hub-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Create Byte CTA ──────────────────────────────────────────
+
+.fomio-sidebar__create-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-sm);
+  width: 100%;
+  margin-top: var(--fomio-space-sm);
+  padding: var(--fomio-space-sm) var(--fomio-space-md);
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary);
+  color: var(--fomio-on-primary);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  border: none;
+  cursor: pointer;
+  justify-content: center;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background 150ms ease, transform 100ms ease;
+  }
+
+  .fomio-sidebar__icon {
+    color: var(--fomio-on-primary);
+    width: 0.875rem;
+    height: 0.875rem;
+
+    svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      fill: var(--fomio-on-primary);
+    }
+  }
+
+  &:hover {
+    background: var(--fomio-primary-dark);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// ── Profile item specifics ───────────────────────────────────
+
+.fomio-sidebar__item--profile {
+  font-weight: 600;
+
+  .fomio-sidebar__item-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+
+// ============================================================
 // OTP confirm step — minimal chrome inside same layout
 .authorize-api-key:not(:has(> h1)) {
   box-sizing: border-box;
@@ -4392,5 +4864,1463 @@ body.no-ember:has(.authorize-api-key) {
     &:active {
       transform: scale(0.97);
     }
+  }
+}
+
+
+// ============================================================
+// PHASE 2D — CONVERSATION LAYER
+// Replies as readable conversation entries, not Discourse UI blocks.
+// OP = article. Replies = lightweight, flat conversation.
+// ============================================================
+
+// ── 1. Reply density — breathing room between posts ──────────
+
+// Adjacent posts get a soft separator via spacing + faint rule.
+// The OP flows directly from the byline rule — no top margin needed.
+.topic-post + .topic-post {
+  margin-top: 2.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--fomio-border-soft);
+}
+
+// ── 2. Reply header — hide noise, keep identity ───────────────
+
+// Post-number permalink, wiki badge, read count are chrome, not content.
+.topic-post .topic-meta-data .post-info .post-number,
+.topic-post .topic-meta-data .post-info .wiki,
+.topic-post .topic-meta-data .post-info .reads,
+.topic-post .topic-meta-data .post-info .raw-views,
+.topic-post .topic-meta-data .post-info .badge-notification {
+  display: none;
+}
+
+// ── 3. Reply actions — muted by default, revealed on hover ───
+
+// nav.post-controls was previously hidden for ALL posts via display:none !important.
+// We restored it for replies by scoping the hide to [data-post-number="1"] only.
+// Now explicitly ensure reply posts show the bar and fade it softly.
+// data-post-number sits on .topic-post itself, so :not() targets it directly.
+.topic-post:not([data-post-number="1"]) nav.post-controls {
+  display: block;
+  opacity: 0.45;
+  transition: opacity 0.18s ease;
+}
+
+.topic-post:not([data-post-number="1"]):hover nav.post-controls {
+  opacity: 1;
+}
+
+// ── 4. Reply content — enforce prose width ────────────────────
+
+// Replies should read inside the same rail as the article body.
+// (max-width already set on .topic-post .cooked — this enforces the avatar column
+//  doesn't stretch the body beyond the reading rail.)
+.topic-post .topic-body {
+  min-width: 0;
+}
+
+// ── 5. Actions-summary — mute the "X people liked this" row ──
+
+.topic-post .actions-summary {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-ink-muted);
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+// ── Dark mode adjustments ─────────────────────────────────────
+
+html.fomio-color-dark {
+  .topic-post + .topic-post {
+    border-top-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+
+// ============================================================
+// PHASE 3A — LINK CARD SYSTEM
+// Discourse oneboxes restyled as Fomio reference blocks.
+// OG metadata is fetched server-side by Discourse — we own presentation.
+// ============================================================
+
+.cooked aside.onebox {
+  // ── Reset Discourse's shadow-border system ────────────────────
+  box-shadow: none !important;
+  margin-inline: 0 !important;
+
+  // ── Fomio card shape ──────────────────────────────────────────
+  position: relative; // establishes stacking context for stretched-link
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-md);
+  padding: 0;
+  background: var(--fomio-card);
+  max-width: var(--fomio-prose-w);
+  margin-block: 1.75em;
+  overflow: hidden;
+  transition: transform 0.12s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px var(--fomio-shadow) !important;
+  }
+
+  // ── Source bar (favicon + domain) ────────────────────────────
+  header.source {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background: var(--fomio-surface);
+    border-bottom: 1px solid var(--fomio-border-soft);
+    margin-bottom: 0; // override Discourse's 1em bottom margin
+
+    img.site-icon {
+      flex: 0 0 auto;
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+    }
+
+    a[href] {
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      font-weight: 500; // trust signal — slightly stronger than ambient muted
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-ink-muted);
+      text-decoration: none;
+      position: relative; // stays above the stretched-link overlay
+      z-index: 1;
+    }
+  }
+
+  // ── Card body: grid — text left, thumbnail right ──────────────
+  .onebox-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0 0.85rem;
+    padding: 0.9rem 1rem 1rem;
+    clear: none; // cancel Discourse's clear:both
+
+    h3, h4 {
+      grid-column: 1;
+      grid-row: 1;
+      margin: 0 0 0.3em;
+      font-family: var(--fomio-font-serif);
+      font-size: var(--fomio-text-base);
+      font-weight: 700;
+      line-height: var(--fomio-leading-snug);
+      // Guard against very long titles overflowing the card
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      a[href],
+      a[href]:visited {
+        color: var(--fomio-ink);
+        text-decoration: none;
+
+        // Stretched-link: the entire card surface becomes clickable
+        // via the title anchor. Source bar stays above via z-index:1.
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+        }
+
+        &:hover { color: var(--fomio-primary); }
+      }
+    }
+
+    p {
+      grid-column: 1;
+      grid-row: 2;
+      margin: 0;
+      font-size: var(--fomio-text-sm);
+      line-height: var(--fomio-leading-relaxed);
+      color: var(--fomio-ink-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    // Thumbnail — cancel Discourse float, anchor to grid column 2.
+    // Targets both bare img and .aspect-image wrapper divs.
+    > img:not(.avatar, .emoji),
+    > .aspect-image {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      float: none;
+      width: 4.5rem;
+      height: 4.5rem;
+      max-width: 4.5rem;
+      max-height: 4.5rem;
+      object-fit: cover;
+      border-radius: var(--fomio-radius-sm);
+      margin: 0;
+      overflow: hidden;
+      align-self: start;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        max-width: none;
+        max-height: none;
+        float: none;
+        border-radius: var(--fomio-radius-sm);
+      }
+    }
+
+    // Full-bleed media (Twitter/Instagram images) — span full width
+    .aspect-image-full-size {
+      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 100%;
+      max-height: 220px;
+      overflow: hidden;
+      border-radius: 0;
+      margin: 0.5rem 0 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        max-height: 220px;
+        max-width: none;
+        float: none;
+      }
+    }
+  }
+
+  // Hide Discourse metadata row and attribution — visual noise
+  .onebox-metadata,
+  > article > p.attribution {
+    display: none;
+  }
+
+  // ── Keyboard / focus-visible ──────────────────────────────────
+  // The stretched-link covers the card; give keyboard users a clear ring.
+  .onebox-body h3 a:focus-visible::after,
+  .onebox-body h4 a:focus-visible::after {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 3px;
+    border-radius: var(--fomio-radius-md);
+  }
+
+  // ── Long domain guard ─────────────────────────────────────────
+  header.source a[href] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40ch;
+  }
+}
+
+// ── Touch active state (hover: none devices) ──────────────────
+// translateY doesn't fire on tap — give mobile a tactile signal instead.
+@media (hover: none) and (pointer: coarse) {
+  .cooked aside.onebox:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px var(--fomio-shadow) !important;
+  }
+}
+
+// ── Primary reference variant ─────────────────────────────────
+// When a Byte leads with a URL, the link card is the main object.
+// Slightly more prominent: warmer border, larger thumbnail.
+
+[data-post-number="1"] .cooked > aside.onebox:first-child {
+  border-color: color-mix(in srgb, var(--fomio-primary) 18%, var(--fomio-border) 82%);
+  margin-bottom: 2em;
+
+  .onebox-body {
+    padding: 1.1rem 1.15rem 1.2rem;
+
+    h3, h4 {
+      font-size: var(--fomio-text-lg);
+    }
+
+    > img:not(.avatar, .emoji),
+    > .aspect-image {
+      width: 6rem;
+      height: 6rem;
+      max-width: 6rem;
+      max-height: 6rem;
+    }
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+
+html.fomio-color-dark {
+  .cooked aside.onebox {
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+
+    header.source {
+      background: color-mix(in srgb, var(--fomio-surface) 60%, black 40%);
+      border-bottom-color: var(--fomio-border);
+    }
+  }
+
+  [data-post-number="1"] .cooked > aside.onebox:first-child {
+    border-color: color-mix(in srgb, var(--fomio-primary) 30%, var(--fomio-border) 70%);
+  }
+}
+
+
+// ============================================================
+// PHASE 3B — EDITORIAL FEED
+// /latest as a readable stream of Bytes, not a forum table.
+// ============================================================
+
+// ── Table header — forum chrome, not editorial ────────────────
+.topic-list.--fomio-discovery-list .topic-list-header {
+  display: none;
+}
+
+// ── Link-bottom-line — Discourse's native tag/category chips ──
+// The fomio-topic-context connector (topic-list-main-link-bottom) replaces
+// these with author + date + excerpt. Hide the Discourse originals.
+.topic-list-item.--fomio-discovery-item .link-bottom-line {
+  display: none;
+}
+
+// Pinned topics can render Discourse's native expanded excerpt directly inside
+// .main-link. The Fomio card owns excerpt placement, so hide the native copy
+// and keep a single themed excerpt inside fomio-topic-context.
+.topic-list-item.--fomio-discovery-item .main-link > .topic-excerpt {
+  display: none;
+}
+
+// ── Stretched-link — whole entry surface is clickable ─────────
+// Same pattern as the onebox card. The main-link td establishes
+// the stacking context; the title anchor covers it; the author
+// link inside fomio-topic-context stays above via z-index: 1.
+.topic-list-item.--fomio-discovery-item td.main-link {
+  position: relative;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title::after,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .fomio-topic-context {
+  position: relative;
+  z-index: 1; // stays above the stretched-link overlay
+}
+
+// ── Focus-visible for keyboard navigation ─────────────────────
+.topic-list-item.--fomio-discovery-item .main-link a.title:focus-visible::after,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link:focus-visible::after {
+  outline: 2px solid var(--fomio-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+// ── Touch active state ────────────────────────────────────────
+@media (hover: none) and (pointer: coarse) {
+  .topic-list-item.--fomio-discovery-item:active td {
+    background: color-mix(in srgb, var(--fomio-surface) 60%, transparent 40%);
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+html.fomio-color-dark .topic-list-item.--fomio-discovery-item td {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+
+// ============================================================
+// PHASE 3B.1 — FEED REFINEMENT
+// Separator removal, width alignment, preview hierarchy.
+// ============================================================
+
+// ── Last-visit separator — pure Discourse chrome ──────────────
+.topic-list .topic-list-item-separator {
+  display: none;
+}
+
+// ── Feed max-width + hero→feed break ─────────────────────────
+// max-width aligns feed with the reading column.
+// margin-top creates a clear breath between the homepage shell and the stream.
+.navigation-topics #list-area,
+.navigation-categories #list-area,
+.navigation-category #list-area {
+  max-width: var(--fomio-column-w);
+  margin-top: 2rem;
+}
+
+// ── Title → meta gap — breathe before the byline ─────────────
+.topic-list-item.--fomio-discovery-item .link-top-line {
+  margin-bottom: 0.65rem;
+}
+
+// ── Non-lead titles — recede gently into the stream ──────────
+// The lead item is the anchor. The rest flow. 0.92 is imperceptible
+// consciously but registers as hierarchy subliminally.
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:not(:first-of-type) {
+
+  .main-link a.title,
+  .main-link .raw-topic-link {
+    opacity: 0.92;
+  }
+}
+
+// ── Lead item — first entry gets slightly more presence ──────
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image) {
+
+  .main-link a.title,
+  .main-link .raw-topic-link {
+    font-size: clamp(1.4rem, 1.25rem + 0.65vw, 1.85rem);
+  }
+
+  .fomio-topic-context__excerpt {
+    -webkit-line-clamp: 3; // lead item shows one extra line of preview
+  }
+
+  .fomio-topic-context__thumb {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+
+// ── Lead item — extra bottom clearance ───────────────────────
+// The item is larger; give it proportionally more space below.
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image) td {
+  padding-bottom: 2rem;
+}
+
+// ── Thumbnail aspect-ratio guard ──────────────────────────────
+// width + height + object-fit already enforce the square. aspect-ratio
+// adds an explicit contract so the shape survives any cascade override.
+.fomio-topic-context__thumb {
+  aspect-ratio: 1 / 1;
+}
+
+// ── Thumbnail placeholder colour (dark) ───────────────────────
+html.fomio-color-dark .fomio-topic-context__thumb {
+  background: var(--fomio-surface);
+}
+
+
+// ============================================================
+// PHASE 3C — BYTE CARD
+// Topic list items rendered as editorial cards.
+// Layout: CSS Grid on td.main-link with named areas; the
+// connector root uses display:contents so its children
+// (meta, text, footer, thumb) participate directly in the
+// grid, placing the teret badge row ABOVE the Discourse title.
+// ============================================================
+
+// ── Table spacing — gap between cards ─────────────────────
+.topic-list.--fomio-discovery-list {
+  border-spacing: 0 1rem;
+}
+
+// ── Row background: transparent ────────────────────────────
+// In a table with border-collapse:separate, the <tr> paints its
+// background *behind* the <td>'s border-radius — causing a rectangular
+// bleed at each corner. Clearing it lets the page bg show through.
+.topic-list-item.--fomio-discovery-item {
+  background: transparent !important;
+}
+
+// ── Hide extra desktop columns (replies, activity) ────────
+// DO NOT use td:not(.main-link) — on mobile the only td is
+// td.topic-list-data (no main-link class); hiding it makes
+// all topics invisible. Use specific class selectors instead.
+.topic-list-item.--fomio-discovery-item .posts-map,
+.topic-list-item.--fomio-discovery-item td.num.activity {
+  display: none;
+}
+
+// ── Card container (DESKTOP: td.main-link) ─────────────────
+// Mobile has a different structure (div.main-link inside td.topic-list-data)
+// and is handled in mobile.scss.
+.topic-list-item.--fomio-discovery-item td.main-link {
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  padding: 24px;
+  border-bottom: 1px solid var(--fomio-border); // override Phase 3B border-bottom reset
+  display: grid;
+  grid-template-areas:
+    "meta  thumb"
+    "title thumb"
+    "text  thumb"
+    "footer thumb";
+  grid-template-columns: 1fr 180px;
+  grid-template-rows: auto auto 1fr auto;
+  column-gap: 20px;
+  row-gap: 0;
+  width: auto; // override old width: 100%
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+// No thumbnail: single column
+.topic-list-item.--fomio-discovery-item td.main-link:not(:has(.fomio-topic-context--has-image)) {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "meta"
+    "title"
+    "text"
+    "footer";
+}
+
+// Hover lifts the card border + adds a faint shadow
+.topic-list-item.--fomio-discovery-item:hover td.main-link {
+  border-color: #d8d7db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+// Focus ring for keyboard navigation
+.topic-list-item.--fomio-discovery-item td.main-link:focus-within {
+  border-color: var(--fomio-primary);
+  box-shadow: 0 0 0 2px rgba(196, 69, 54, 0.2);
+}
+
+// ── Grid area: title (Discourse native link-top-line) ──────
+.topic-list-item.--fomio-discovery-item .link-top-line {
+  grid-area: title;
+  margin-bottom: 0;
+  display: block;
+}
+
+// Title → Lora serif per design spec
+.topic-list-item.--fomio-discovery-item .main-link a.title,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+  display: -webkit-box;
+  font-family: var(--fomio-font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-wrap: balance;
+}
+
+// Connector root: transparent box → children become grid items
+.topic-list-item.--fomio-discovery-item .fomio-topic-context {
+  display: contents;
+}
+
+// ── Meta row (teret badge · read time · pinned) ────────────
+.fomio-topic-context__meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-bottom: 6px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  color: var(--fomio-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.fomio-topic-context__teret {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+  font-family: var(--fomio-font-ui);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.fomio-topic-context__meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-muted);
+  opacity: 0.55;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.fomio-topic-context__pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--fomio-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  svg { flex-shrink: 0; }
+}
+
+.fomio-topic-context__read-time {
+  color: var(--fomio-muted);
+}
+
+// ── Grid area: text (excerpt) ──────────────────────────────
+.fomio-topic-context__text {
+  grid-area: text;
+  display: block;
+  flex: unset;
+  min-width: 0;
+  margin-bottom: 14px;
+}
+
+.fomio-topic-context__excerpt {
+  font-family: var(--fomio-font-serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fomio-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+// ── Grid area: footer (author · stats · date · unread) ─────
+.fomio-topic-context__footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12.5px;
+  color: var(--fomio-muted);
+  font-weight: 500;
+}
+
+.fomio-topic-context__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--fomio-text);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.fomio-topic-context__author .avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.fomio-topic-context__author-name {
+  letter-spacing: 0.01em;
+}
+
+.fomio-topic-context__sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.fomio-topic-context__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--fomio-muted);
+  font-variant-numeric: tabular-nums;
+
+  svg { flex-shrink: 0; }
+}
+
+.fomio-topic-context__date {
+  color: var(--fomio-muted);
+}
+
+.fomio-topic-context__unread {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fomio-primary);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+// ── Grid area: thumb (right column) ───────────────────────
+.fomio-topic-context__thumb {
+  grid-area: thumb;
+  width: 180px;
+  height: 140px;
+  border-radius: var(--fomio-radius-md);
+  object-fit: cover;
+  background: var(--fomio-surface);
+  align-self: start;
+  flex: none;
+  aspect-ratio: auto; // override Phase 3B.1 aspect-ratio: 1/1
+}
+
+// ── Lead item — first card uses a feature layout ───────────
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  td.main-link {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "thumb"
+    "meta"
+    "title"
+    "text"
+    "footer";
+  padding: 0;
+  overflow: hidden;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .fomio-topic-context__thumb {
+  width: 100%;
+  height: 220px;
+  border-radius: 0;
+  align-self: stretch;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .fomio-topic-context__meta {
+  padding: 20px 24px 0;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .link-top-line {
+  padding: 0 24px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .fomio-topic-context__text {
+  padding: 0 24px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .fomio-topic-context__footer {
+  padding: 0 24px 22px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .main-link a.title,
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .main-link .raw-topic-link {
+  font-size: clamp(1.4rem, 1.25rem + 0.65vw, 1.85rem);
+  -webkit-line-clamp: 3;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image)
+  .fomio-topic-context__excerpt {
+  -webkit-line-clamp: 3;
+}
+
+// Non-lead items: restore title opacity
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:not(:first-of-type)
+  .main-link a.title,
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:not(:first-of-type)
+  .main-link .raw-topic-link {
+  opacity: 0.94;
+}
+
+// ── Dark mode ──────────────────────────────────────────────
+html.fomio-color-dark .topic-list-item.--fomio-discovery-item td.main-link {
+  background: var(--fomio-card);
+  border-color: var(--fomio-border);
+}
+
+html.fomio-color-dark .topic-list-item.--fomio-discovery-item:hover td.main-link {
+  box-shadow: none;
+  border-color: var(--fomio-muted);
+}
+
+html.fomio-color-dark .fomio-topic-context__thumb {
+  background: var(--fomio-surface);
+}
+
+
+// ============================================================
+// FOMIO BOTTOM BAR
+// Fixed mobile navigation dock — 0–767px only.
+// Shown via mobile.scss when body.fomio-sidebar-active.
+// ============================================================
+
+.fomio-bottom-bar {
+  display: none; // shown only via mobile.scss
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  height: calc(56px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--fomio-bg);
+  border-top: 1px solid var(--fomio-border);
+  z-index: 900;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.fomio-bottom-bar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: var(--fomio-space-xs) var(--fomio-space-sm);
+  text-decoration: none;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--fomio-tracking-wide);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease;
+  }
+
+  &:hover,
+  &:active {
+    color: var(--fomio-text);
+    text-decoration: none;
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+  }
+}
+
+.fomio-bottom-bar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: currentColor;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+  }
+}
+
+.fomio-bottom-bar__label {
+  line-height: 1;
+}
+
+// Create — visually emphasized center item
+.fomio-bottom-bar__item--create {
+  .fomio-bottom-bar__icon {
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    border-radius: var(--fomio-radius-sm);
+    width: 2rem;
+    height: 2rem;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &:hover .fomio-bottom-bar__icon,
+  &:active .fomio-bottom-bar__icon {
+    background: var(--fomio-primary-dark);
+  }
+}
+
+// Dark mode
+html.fomio-color-dark .fomio-bottom-bar {
+  background: var(--fomio-bg);
+  border-top-color: var(--fomio-border);
+}
+
+
+// ============================================================
+// FOMIO BYTE INTERACTION SYSTEM
+// Three layers: Primary Toolbar · Secondary Menu · Discussion
+// Quiet, editorial, reading-first.
+// Discourse semantics preserved underneath.
+// ============================================================
+
+
+// ── Suppress default Discourse post controls ────────────────
+//
+// These are hidden for the Byte (first post) where the Fomio
+// toolbar takes over. Comment posts also get the action bar
+// suppressed because FomioCommentActions replaces it.
+//
+// .post-menu-area / .post-actions are inside .topic-post.
+// We target them broadly and restore via the Fomio components.
+
+.topic-post .post-menu-area,
+.topic-post .post-actions,
+.topic-post .post__actions {
+  display: none !important;
+}
+
+// The post-links outlet now carries our toolbar; hide the
+// native PostLinks link-list (forum-era chrome — each link in a
+// post listed as a bulleted external URL). Not useful in a
+// reading theme and would appear above the Fomio toolbar.
+.post-links-container {
+  display: none;
+}
+
+// Hide Discourse's topic-footer main buttons — the Fomio
+// toolbar handles those interactions.
+#topic-footer-buttons .topic-footer-main-buttons,
+#topic-footer-buttons .bookmark-button,
+#topic-footer-buttons .notifications-button-footer,
+#topic-footer-buttons .topic-notifications-button,
+#topic-footer-buttons .select-kit.notifications-button {
+  display: none;
+}
+
+
+// ── 1. Primary Toolbar ─────────────────────────────────────
+
+.fomio-byte-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 24px 0 0;
+  padding: 0;
+  max-width: var(--fomio-prose-w, 680px);
+  position: relative;
+}
+
+// Hairline rule above the toolbar (matches byline fade pattern)
+.fomio-byte-actions::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -24px;
+  width: 96px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--fomio-border) 0%,
+    transparent 100%
+  );
+}
+
+.fomio-byte-primary-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fomio-byte-secondary-actions {
+  position: relative;
+  margin-left: auto;
+}
+
+
+// ── Action button (shared: toolbar + comment actions) ───────
+
+.fomio-action {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 6px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fomio-secondary);
+  opacity: 0.62;
+  cursor: pointer;
+  border-radius: var(--fomio-radius-sm);
+  font: inherit;
+  letter-spacing: 0.01em;
+  transition:
+    opacity 140ms var(--fomio-ease),
+    color 140ms var(--fomio-ease),
+    transform 180ms var(--fomio-ease);
+  position: relative;
+  min-width: 28px;
+  min-height: 28px;
+  justify-content: center;
+  line-height: 1;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    color: var(--fomio-primary);
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fomio-primary) 28%, transparent);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    opacity: 1;
+  }
+
+  &.like.is-active svg {
+    animation: fomio-thump 220ms var(--fomio-ease);
+  }
+
+  &.share.is-active {
+    color: var(--fomio-success);
+    opacity: 1;
+  }
+
+  &.more.is-open {
+    opacity: 1;
+    color: var(--fomio-text);
+  }
+
+  // Comment count badge / label
+  &.has-count {
+    opacity: 0.78;
+    padding-right: 8px;
+
+    &:hover { opacity: 1; }
+  }
+
+  // Small variant (comment actions)
+  &.sm {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 4px 6px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@keyframes fomio-thump {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+.fomio-action__count {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fomio-secondary);
+
+  .fomio-action:hover &,
+  .fomio-action.is-active & {
+    color: var(--fomio-primary);
+  }
+}
+
+.fomio-action__label {
+  font-family: var(--fomio-font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+// Tooltip (desktop only — hidden on mobile via mobile.scss)
+.fomio-action[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translate(-50%, 2px);
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--fomio-text);
+  background: var(--fomio-card);
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fomio-border) 70%, transparent),
+    0 6px 18px -10px var(--fomio-shadow);
+  transition:
+    opacity 140ms var(--fomio-ease),
+    transform 140ms var(--fomio-ease);
+  z-index: 4;
+}
+
+.fomio-action:hover[data-tip]::after,
+.fomio-action:focus-visible[data-tip]::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+
+// ── 2. Secondary Actions Menu (⋯) ──────────────────────────
+
+.fomio-byte-more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-md);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fomio-border) 70%, transparent),
+    0 12px 32px -16px color-mix(in srgb, var(--fomio-shadow) 80%, transparent),
+    0 4px 12px -8px color-mix(in srgb, var(--fomio-shadow) 50%, transparent);
+  z-index: 100;
+  font-family: var(--fomio-font-ui);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: fomio-dropdown-in 140ms var(--fomio-ease);
+
+  &.is-end {
+    right: 0;
+    left: auto;
+  }
+
+  button {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--fomio-text);
+    cursor: pointer;
+    transition:
+      background 120ms var(--fomio-ease),
+      color 120ms var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-surface);
+      outline: none;
+    }
+
+    &.is-destructive {
+      color: var(--fomio-primary);
+
+      &:hover {
+        background: color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+      }
+    }
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: var(--fomio-border-soft);
+    margin: 4px 6px;
+  }
+}
+
+@keyframes fomio-dropdown-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+// ── 3. Endmark (◆) ─────────────────────────────────────────
+
+.fomio-byte-endmark {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 3.5rem 0 0;
+  max-width: var(--fomio-prose-w, 680px);
+}
+
+.fomio-byte-endmark__glyph {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--fomio-primary);
+  transform: rotate(45deg);
+  display: inline-block;
+  opacity: 0.7;
+}
+
+
+// ── 4. Discussion shell ─────────────────────────────────────
+
+// Lives at the bottom of the Byte post (#1), injected by the
+// post-links connector. The comment posts (#2+) appear below
+// in the Discourse post stream, styled as Fomio comment cards.
+
+.fomio-discussion {
+  padding-top: 2.5rem;
+  max-width: var(--fomio-prose-w, 680px);
+}
+
+.fomio-discussion__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--fomio-border-soft);
+}
+
+.fomio-discussion__title {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-discussion__count {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-muted);
+  letter-spacing: 0.02em;
+}
+
+
+// ── 5. Comment entry point ──────────────────────────────────
+
+.fomio-comment-entry {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: var(--fomio-prose-w, 680px);
+  padding: 14px 18px;
+  background: var(--fomio-surface);
+  border: 1px solid transparent;
+  border-radius: var(--fomio-radius-md);
+  cursor: text;
+  text-decoration: none;
+  text-align: left;
+  font: inherit;
+  color: var(--fomio-secondary);
+  transition:
+    background 140ms var(--fomio-ease),
+    border-color 140ms var(--fomio-ease);
+  margin: 0;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--fomio-card);
+    border-color: color-mix(in srgb, var(--fomio-primary) 30%, var(--fomio-border));
+    outline: none;
+  }
+
+  &.is-guest .fomio-comment-entry__placeholder {
+    font-style: normal;
+    font-family: var(--fomio-font-ui);
+    font-weight: 500;
+    font-size: var(--fomio-text-base);
+    color: var(--fomio-secondary);
+  }
+}
+
+.fomio-comment-entry__avatar {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--fomio-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: lowercase;
+
+  &.is-empty {
+    background: color-mix(in srgb, var(--fomio-muted) 25%, transparent);
+  }
+}
+
+.fomio-comment-entry__placeholder {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-base);
+  font-style: italic;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+
+// ── 6. Comment post cards (posts #2+) ──────────────────────
+//
+// Discourse renders each post as .topic-post.regular.boxed.
+// We restyle these into the Fomio comment card pattern:
+// suppress forum chrome, promote content + avatar + meta.
+
+// Hide Discourse's post header chrome for comment posts
+.topic-post:not([data-post-number="1"]) {
+  .post-avatar,
+  .topic-avatar,
+  .names,
+  .post-info,
+  .post-date,
+  .user-title,
+  .post-action-types,
+  .embedded-posts,
+  .post__topic-map,
+  .small-action,
+  .timeline-date-created {
+    display: none;
+  }
+
+  // The cooked body — give it reading-friendly spacing
+  .cooked {
+    font-size: var(--fomio-text-base);
+    line-height: var(--fomio-leading-relaxed);
+    padding: 0;
+    margin: 0;
+  }
+
+  // Comment card container
+  article.boxed {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  // Tonal separator between comment posts
+  &:not(:nth-child(2)) article.boxed {
+    border-top: 1px solid var(--fomio-border-soft);
+    padding-top: 1.5rem;
+    margin-top: 0.25rem;
+  }
+
+  // The inner content wrapper
+  .row {
+    margin: 0;
+    padding: 0;
+  }
+
+  .topic-body {
+    padding: 0;
+    border: none;
+    float: none;
+    width: 100%;
+    margin: 0;
+  }
+
+  // Inline poster meta injected above .cooked via Discourse's .names etc.
+  // Since we hide .names, we rely on CSS to show the avatar + username
+  // from the post's data-user-id if available. Most readable approach:
+  // let the FomioCommentActions connector sit beneath .cooked.
+  .topic-meta-data {
+    display: none;
+  }
+}
+
+// Post stream — remove default spacing/borders between posts
+.post-stream .topic-post:not([data-post-number="1"]) {
+  padding: 0;
+
+  &:nth-child(2) {
+    margin-top: 2rem; // first comment after the Byte
+  }
+}
+
+// The FomioCommentActions sit in .post-links outlet (bottom of post)
+// so they appear after .cooked. Ensure alignment matches prose width.
+.topic-post:not([data-post-number="1"]) .fomio-comment-actions {
+  margin-top: 0.625rem;
+  padding-bottom: 1.25rem;
+}
+
+.fomio-comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: var(--fomio-prose-w, 680px);
+}
+
+.fomio-comment-actions__more {
+  position: relative;
+  margin-left: auto;
+}
+
+
+// ── Dark mode overrides ─────────────────────────────────────
+
+html.fomio-color-dark {
+  .fomio-byte-more-menu {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--fomio-border) 80%, transparent),
+      0 12px 32px -16px rgba(0, 0, 0, 0.5);
+  }
+
+  .fomio-comment-entry:hover,
+  .fomio-comment-entry:focus-visible {
+    border-color: color-mix(in srgb, var(--fomio-primary) 40%, var(--fomio-border));
+  }
+
+  .topic-post:not([data-post-number="1"]) article.boxed {
+    background: transparent;
   }
 }

@@ -1,0 +1,726 @@
+import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
+import { service } from "@ember/service";
+import { on } from "@ember/modifier";
+import { eq, or } from "discourse/truth-helpers";
+import { i18n } from "discourse-i18n";
+import { themePrefix } from "virtual:theme";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+import Composer from "discourse/models/composer";
+
+// ── SVG icon helpers ─────────────────────────────────────────
+
+const IcoHeart = <template>
+  {{#if @filled}}
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path fill="currentColor" d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
+    </svg>
+  {{else}}
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
+    </svg>
+  {{/if}}
+</template>;
+
+const IcoChat = <template>
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 11.5a8.5 8.5 0 0 1-12.9 7.3L3 20l1.3-4.4A8.5 8.5 0 1 1 21 11.5Z" />
+  </svg>
+</template>;
+
+const IcoBookmark = <template>
+  {{#if @filled}}
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path fill="currentColor" d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1Z" />
+    </svg>
+  {{else}}
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1Z" />
+    </svg>
+  {{/if}}
+</template>;
+
+const IcoShare = <template>
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 14V4m0 0-3.5 3.5M12 4l3.5 3.5M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+  </svg>
+</template>;
+
+const IcoCheck = <template>
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m5 12 5 5L20 7" />
+  </svg>
+</template>;
+
+const IcoMore = <template>
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <circle cx="5"  cy="12" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    <circle cx="19" cy="12" r="1.5" fill="currentColor" />
+  </svg>
+</template>;
+
+const IcoReply = <template>
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9 17 4 12l5-5M4 12h11a5 5 0 0 1 5 5v3" />
+  </svg>
+</template>;
+
+const IcoHeartSm = <template>
+  {{#if @filled}}
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <path fill="currentColor" d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
+    </svg>
+  {{else}}
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
+    </svg>
+  {{/if}}
+</template>;
+
+// ── Shared mixin: dismissable menu ───────────────────────────
+// Adds click-outside and Escape-key dismissal to a component
+// that tracks menuOpen state.
+
+class WithDismissMenu extends Component {
+  _outsideHandler = null;
+
+  openMenu(containerRef) {
+    this.menuOpen = true;
+    this._outsideHandler = (e) => {
+      if (containerRef && !containerRef.contains(e.target)) {
+        this.closeMenu();
+      }
+    };
+    // Defer so the current click doesn't immediately dismiss
+    setTimeout(() => {
+      document.addEventListener("mousedown", this._outsideHandler);
+    }, 0);
+  }
+
+  @action
+  closeMenu() {
+    this.menuOpen = false;
+    if (this._outsideHandler) {
+      document.removeEventListener("mousedown", this._outsideHandler);
+      this._outsideHandler = null;
+    }
+  }
+
+  willDestroy() {
+    super.willDestroy();
+    if (this._outsideHandler) {
+      document.removeEventListener("mousedown", this._outsideHandler);
+    }
+  }
+}
+
+// ── 1. Byte toolbar (post #1) ─────────────────────────────────
+
+class FomioByteToolbar extends WithDismissMenu {
+  @service currentUser;
+  @service composer;
+
+  @tracked liked = false;
+  @tracked likeCount = 0;
+  @tracked bookmarked = false;
+  @tracked shared = false;
+  @tracked menuOpen = false;
+
+  moreRef = null;
+
+  constructor(owner, args) {
+    super(owner, args);
+    const post = args.post;
+    this.liked = post?.likeAction?.acted ?? false;
+    this.likeCount = post?.likeAction?.count ?? 0;
+    this.bookmarked = post?.bookmarked ?? false;
+  }
+
+  get post() {
+    return this.args.post;
+  }
+
+  get commentCount() {
+    return this.post?.topic?.reply_count ?? 0;
+  }
+
+  get canEdit() {
+    return this.post?.can_edit ?? false;
+  }
+
+  get canDelete() {
+    return this.post?.can_delete ?? false;
+  }
+
+  get isMod() {
+    return this.currentUser?.staff ?? false;
+  }
+
+  get shareUrl() {
+    const topicId = this.post?.topicId ?? this.post?.topic_id;
+    const slug = this.post?.topic?.slug;
+    if (slug && topicId) {
+      return `${window.location.origin}/t/${slug}/${topicId}`;
+    }
+    return window.location.href;
+  }
+
+  @action
+  async toggleLike() {
+    if (!this.currentUser) return;
+    const wasLiked = this.liked;
+    this.liked = !wasLiked;
+    this.likeCount = wasLiked
+      ? Math.max(0, this.likeCount - 1)
+      : this.likeCount + 1;
+    try {
+      if (wasLiked) {
+        await ajax(`/post_actions/${this.post.id}`, {
+          type: "DELETE",
+          data: { post_action_type_id: 2 },
+        });
+      } else {
+        await ajax("/post_actions", {
+          type: "POST",
+          data: { id: this.post.id, post_action_type_id: 2, flag_topic: false },
+        });
+      }
+    } catch (e) {
+      this.liked = wasLiked;
+      this.likeCount = wasLiked
+        ? this.likeCount + 1
+        : Math.max(0, this.likeCount - 1);
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  jumpToComments() {
+    const anchor = document.getElementById("fomio-discussion");
+    if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  @action
+  async toggleBookmark() {
+    if (!this.currentUser) return;
+    const wasBookmarked = this.bookmarked;
+    this.bookmarked = !wasBookmarked;
+    try {
+      if (wasBookmarked && this.post.bookmark_id) {
+        await ajax(`/bookmarks/${this.post.bookmark_id}`, { type: "DELETE" });
+      } else {
+        await ajax("/bookmarks", {
+          type: "POST",
+          data: {
+            bookmarkable_id: this.post.id,
+            bookmarkable_type: "Post",
+          },
+        });
+      }
+    } catch (e) {
+      this.bookmarked = wasBookmarked;
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  async share() {
+    const url = this.shareUrl;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: document.title, url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch { /* user cancelled */ }
+    this.shared = true;
+    setTimeout(() => (this.shared = false), 1800);
+  }
+
+  @action
+  toggleMenu(e) {
+    if (this.menuOpen) {
+      this.closeMenu();
+    } else {
+      this.openMenu(e.currentTarget.closest(".fomio-byte-secondary-actions"));
+    }
+  }
+
+  @action
+  handleMenuKeydown(e) {
+    if (e.key === "Escape") this.closeMenu();
+  }
+
+  @action
+  copyLink() {
+    if (navigator.clipboard) navigator.clipboard.writeText(this.shareUrl);
+    this.closeMenu();
+  }
+
+  @action
+  openCompose() {
+    if (!this.currentUser) {
+      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+    this.composer.open({
+      action: Composer.REPLY,
+      topic: this.post.topic,
+      draftKey: this.post.topic?.draft_key ?? `topic_${this.post.topic?.id ?? this.post.topic_id}`,
+    });
+  }
+
+  <template>
+    <nav
+      class="fomio-byte-actions"
+      aria-label={{i18n (themePrefix "byte_toolbar.aria_label")}}
+    >
+      <div class="fomio-byte-primary-actions">
+
+        {{! Like }}
+        <button
+          type="button"
+          class="fomio-action like {{if this.liked 'is-active'}}"
+          aria-pressed={{this.liked}}
+          aria-label={{i18n (themePrefix "byte_toolbar.like_label")}}
+          data-tip={{i18n (themePrefix "byte_toolbar.like_tip")}}
+          {{on "click" this.toggleLike}}
+        >
+          <IcoHeart @filled={{this.liked}} />
+          {{#if this.likeCount}}
+            <span class="fomio-action__count">{{this.likeCount}}</span>
+          {{/if}}
+        </button>
+
+        {{! Comment / discussion jump }}
+        <button
+          type="button"
+          class="fomio-action comment has-count"
+          aria-label={{i18n (themePrefix "byte_toolbar.comment_label") count=this.commentCount}}
+          data-tip={{i18n (themePrefix "byte_toolbar.comment_tip")}}
+          {{on "click" this.jumpToComments}}
+        >
+          <IcoChat />
+          <span class="fomio-action__count">{{this.commentCount}}</span>
+        </button>
+
+        {{! Bookmark }}
+        <button
+          type="button"
+          class="fomio-action bookmark {{if this.bookmarked 'is-active'}}"
+          aria-pressed={{this.bookmarked}}
+          aria-label={{if this.bookmarked
+            (i18n (themePrefix "byte_toolbar.saved_label"))
+            (i18n (themePrefix "byte_toolbar.bookmark_label"))
+          }}
+          data-tip={{if this.bookmarked
+            (i18n (themePrefix "byte_toolbar.saved_tip"))
+            (i18n (themePrefix "byte_toolbar.bookmark_tip"))
+          }}
+          {{on "click" this.toggleBookmark}}
+        >
+          <IcoBookmark @filled={{this.bookmarked}} />
+        </button>
+
+        {{! Share }}
+        <button
+          type="button"
+          class="fomio-action share {{if this.shared 'is-active'}}"
+          aria-label={{if this.shared
+            (i18n (themePrefix "byte_toolbar.copied_label"))
+            (i18n (themePrefix "byte_toolbar.share_label"))
+          }}
+          data-tip={{if this.shared
+            (i18n (themePrefix "byte_toolbar.copied_tip"))
+            (i18n (themePrefix "byte_toolbar.share_tip"))
+          }}
+          {{on "click" this.share}}
+        >
+          {{#if this.shared}}
+            <IcoCheck />
+          {{else}}
+            <IcoShare />
+          {{/if}}
+        </button>
+
+      </div>
+
+      {{! More ⋯ }}
+      <div
+        class="fomio-byte-secondary-actions"
+        {{on "keydown" this.handleMenuKeydown}}
+      >
+        <button
+          type="button"
+          class="fomio-action more {{if this.menuOpen 'is-open'}}"
+          aria-haspopup="menu"
+          aria-expanded={{this.menuOpen}}
+          aria-label={{i18n (themePrefix "byte_toolbar.more_label")}}
+          data-tip={{i18n (themePrefix "byte_toolbar.more_tip")}}
+          {{on "click" this.toggleMenu}}
+        >
+          <IcoMore />
+        </button>
+
+        {{#if this.menuOpen}}
+          <div class="fomio-byte-more-menu" role="menu">
+            {{#if this.canEdit}}
+              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+                {{i18n (themePrefix "byte_toolbar.edit")}}
+              </button>
+            {{/if}}
+            {{#if this.canDelete}}
+              <button
+                type="button"
+                role="menuitem"
+                class="is-destructive"
+                {{on "click" this.closeMenu}}
+              >
+                {{i18n (themePrefix "byte_toolbar.delete")}}
+              </button>
+            {{/if}}
+            {{#if (or this.canEdit this.canDelete)}}
+              <hr />
+            {{/if}}
+            {{#if this.isMod}}
+              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+                {{i18n (themePrefix "byte_toolbar.hide")}}
+              </button>
+              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+                {{i18n (themePrefix "byte_toolbar.lock")}}
+              </button>
+              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+                {{i18n (themePrefix "byte_toolbar.pin")}}
+              </button>
+              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+                {{i18n (themePrefix "byte_toolbar.archive")}}
+              </button>
+              <hr />
+            {{/if}}
+            <button type="button" role="menuitem" {{on "click" this.copyLink}}>
+              {{i18n (themePrefix "byte_toolbar.copy_link")}}
+            </button>
+            <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              {{i18n (themePrefix "byte_toolbar.report")}}
+            </button>
+          </div>
+        {{/if}}
+      </div>
+    </nav>
+  </template>
+}
+
+// ── 2. Comment entry point ────────────────────────────────────
+
+class FomioCommentEntry extends Component {
+  @service currentUser;
+  @service composer;
+
+  get initial() {
+    return (this.currentUser?.username?.[0] ?? "").toLowerCase();
+  }
+
+  @action
+  openCompose() {
+    if (!this.currentUser) {
+      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+    this.args.onReply?.();
+  }
+
+  get draftKey() {
+    const topic = this.args.post?.topic;
+    return topic?.draft_key ?? `topic_${topic?.id ?? "new"}`;
+  }
+
+  <template>
+    {{#if this.currentUser}}
+      <button
+        type="button"
+        class="fomio-comment-entry"
+        aria-label={{i18n (themePrefix "comment_entry.aria_label")}}
+        {{on "click" this.openCompose}}
+      >
+        <span
+          class="fomio-comment-entry__avatar"
+          style="background: var(--fomio-primary)"
+          aria-hidden="true"
+        >{{this.initial}}</span>
+        <span class="fomio-comment-entry__placeholder">
+          {{i18n (themePrefix "comment_entry.placeholder")}}
+        </span>
+      </button>
+    {{else}}
+      <a
+        class="fomio-comment-entry is-guest"
+        href="/login"
+        role="button"
+      >
+        <span class="fomio-comment-entry__avatar is-empty" aria-hidden="true"></span>
+        <span class="fomio-comment-entry__placeholder">
+          {{i18n (themePrefix "comment_entry.guest_placeholder")}}
+        </span>
+      </a>
+    {{/if}}
+  </template>
+}
+
+// ── 3. Comment actions (posts #2+) ────────────────────────────
+
+class FomioCommentActions extends WithDismissMenu {
+  @service currentUser;
+  @service composer;
+
+  @tracked liked = false;
+  @tracked likeCount = 0;
+  @tracked menuOpen = false;
+
+  constructor(owner, args) {
+    super(owner, args);
+    const post = args.post;
+    this.liked = post?.likeAction?.acted ?? false;
+    this.likeCount = post?.likeAction?.count ?? 0;
+  }
+
+  get post() {
+    return this.args.post;
+  }
+
+  get canEdit() {
+    return this.post?.can_edit ?? false;
+  }
+
+  get canDelete() {
+    return this.post?.can_delete ?? false;
+  }
+
+  get shareUrl() {
+    const topicId = this.post?.topicId ?? this.post?.topic_id;
+    const postNumber = this.post?.post_number;
+    const slug = this.post?.topic?.slug;
+    if (slug && topicId && postNumber) {
+      return `${window.location.origin}/t/${slug}/${topicId}/${postNumber}`;
+    }
+    return window.location.href;
+  }
+
+  @action
+  async toggleLike() {
+    if (!this.currentUser) return;
+    const wasLiked = this.liked;
+    this.liked = !wasLiked;
+    this.likeCount = wasLiked
+      ? Math.max(0, this.likeCount - 1)
+      : this.likeCount + 1;
+    try {
+      if (wasLiked) {
+        await ajax(`/post_actions/${this.post.id}`, {
+          type: "DELETE",
+          data: { post_action_type_id: 2 },
+        });
+      } else {
+        await ajax("/post_actions", {
+          type: "POST",
+          data: { id: this.post.id, post_action_type_id: 2, flag_topic: false },
+        });
+      }
+    } catch (e) {
+      this.liked = wasLiked;
+      this.likeCount = wasLiked
+        ? this.likeCount + 1
+        : Math.max(0, this.likeCount - 1);
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  reply() {
+    if (!this.currentUser) {
+      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+    this.composer.open({
+      action: Composer.REPLY,
+      post: this.post,
+      topic: this.post.topic,
+      draftKey: this.post.topic?.draft_key ?? `topic_${this.post.topic?.id ?? this.post.topic_id}`,
+    });
+  }
+
+  @action
+  toggleMenu(e) {
+    if (this.menuOpen) {
+      this.closeMenu();
+    } else {
+      this.openMenu(e.currentTarget.closest(".fomio-comment-actions__more"));
+    }
+  }
+
+  @action
+  handleMenuKeydown(e) {
+    if (e.key === "Escape") this.closeMenu();
+  }
+
+  @action
+  copyLink() {
+    if (navigator.clipboard) navigator.clipboard.writeText(this.shareUrl);
+    this.closeMenu();
+  }
+
+  <template>
+    <div class="fomio-comment-actions">
+      {{! Like }}
+      <button
+        type="button"
+        class="fomio-action sm like {{if this.liked 'is-active'}}"
+        aria-pressed={{this.liked}}
+        aria-label={{i18n (themePrefix "comment_actions.like_label")}}
+        {{on "click" this.toggleLike}}
+      >
+        <IcoHeartSm @filled={{this.liked}} />
+        {{#if this.likeCount}}
+          <span class="fomio-action__count">{{this.likeCount}}</span>
+        {{/if}}
+      </button>
+
+      {{! Reply }}
+      <button
+        type="button"
+        class="fomio-action sm reply"
+        aria-label={{i18n (themePrefix "comment_actions.reply_label")}}
+        {{on "click" this.reply}}
+      >
+        <IcoReply />
+        <span class="fomio-action__label">
+          {{i18n (themePrefix "comment_actions.reply_text")}}
+        </span>
+      </button>
+
+      {{! More ⋯ }}
+      <div
+        class="fomio-comment-actions__more"
+        {{on "keydown" this.handleMenuKeydown}}
+      >
+        <button
+          type="button"
+          class="fomio-action sm more {{if this.menuOpen 'is-open'}}"
+          aria-haspopup="menu"
+          aria-expanded={{this.menuOpen}}
+          aria-label={{i18n (themePrefix "comment_actions.more_label")}}
+          {{on "click" this.toggleMenu}}
+        >
+          <IcoMore />
+        </button>
+
+        {{#if this.menuOpen}}
+          <div class="fomio-byte-more-menu is-end" role="menu">
+            {{#if this.canEdit}}
+              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+                {{i18n (themePrefix "byte_toolbar.edit")}}
+              </button>
+            {{/if}}
+            {{#if this.canDelete}}
+              <button
+                type="button"
+                role="menuitem"
+                class="is-destructive"
+                {{on "click" this.closeMenu}}
+              >
+                {{i18n (themePrefix "byte_toolbar.delete")}}
+              </button>
+            {{/if}}
+            {{#if (or this.canEdit this.canDelete)}}
+              <hr />
+            {{/if}}
+            <button type="button" role="menuitem" {{on "click" this.copyLink}}>
+              {{i18n (themePrefix "byte_toolbar.copy_link")}}
+            </button>
+            <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              {{i18n (themePrefix "byte_toolbar.report")}}
+            </button>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </template>
+}
+
+// ── Root connector ────────────────────────────────────────────
+
+export default class FomioPostInteractions extends Component {
+  @service currentUser;
+  @service composer;
+
+  get post() {
+    return this.args.outletArgs?.post;
+  }
+
+  get isBytePost() {
+    return this.post?.post_number === 1;
+  }
+
+  get isCommentPost() {
+    return (this.post?.post_number ?? 0) > 1;
+  }
+
+  get discussionCount() {
+    return this.post?.topic?.reply_count ?? 0;
+  }
+
+  @action
+  openReply() {
+    if (!this.currentUser) {
+      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+    this.composer.open({
+      action: Composer.REPLY,
+      topic: this.post.topic,
+      draftKey: this.post.topic?.draft_key ?? `topic_${this.post.topic?.id ?? this.post.topic_id}`,
+    });
+  }
+
+  <template>
+    {{#if this.isBytePost}}
+      {{! Primary toolbar }}
+      <FomioByteToolbar @post={{this.post}} />
+
+      {{! Endmark ◆ }}
+      <div class="fomio-byte-endmark" aria-hidden="true">
+        <span class="fomio-byte-endmark__glyph"></span>
+      </div>
+
+      {{! Discussion anchor + header + comment entry }}
+      <section
+        class="fomio-discussion"
+        id="fomio-discussion"
+        aria-label={{i18n (themePrefix "discussion.aria_label")}}
+      >
+        {{#if this.discussionCount}}
+          <header class="fomio-discussion__header">
+            <h2 class="fomio-discussion__title">
+              {{i18n (themePrefix "discussion.title")}}
+            </h2>
+            <span class="fomio-discussion__count">
+              {{this.discussionCount}}
+              {{if (eq this.discussionCount 1)
+                (i18n (themePrefix "discussion.reply_singular"))
+                (i18n (themePrefix "discussion.reply_plural"))
+              }}
+            </span>
+          </header>
+        {{/if}}
+
+        <FomioCommentEntry @onReply={{this.openReply}} />
+      </section>
+
+    {{else if this.isCommentPost}}
+      {{! Comment post actions }}
+      <FomioCommentActions @post={{this.post}} />
+    {{/if}}
+  </template>
+}

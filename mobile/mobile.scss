@@ -1,6 +1,113 @@
-.d-header-icons .hamburger-dropdown {
+// ============================================================
+// FOMIO MOBILE HEADER
+// Restyle Discourse's d-header — preserve all behavior, replace appearance.
+// Only hide visually; never remove structural elements.
+// Auth pages are excluded via body.fomio-sidebar-active guard.
+// ============================================================
+
+// ── Suppress noise — hide visually, not structurally ─────────
+
+body.fomio-sidebar-active .d-header-icons .hamburger-dropdown,
+body.fomio-sidebar-active .d-header #current-user,
+body.fomio-sidebar-active .d-header .header-buttons,
+body.fomio-sidebar-active .d-header-icons .header-color-scheme-toggle,
+body.fomio-sidebar-active .d-header-icons .language-switcher {
+  display: none !important;
+}
+
+// ── Shell — surface and chrome ────────────────────────────────
+
+body.fomio-sidebar-active .d-header {
+  background: var(--fomio-bg);
+  border-bottom: 1px solid var(--fomio-border-soft);
+  box-shadow: none;
+}
+
+// ── Wordmark — style the text fallback; logo image shows as-is ──
+
+// Style Discourse's text-logo fallback (when no logo image is configured)
+body.fomio-sidebar-active .d-header #site-text-logo {
+  font-family: var(--fomio-font-serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  line-height: 1;
+}
+
+// When a topic is scrolled, Discourse minimizes the logo area.
+// Hide it entirely so topic info can own the full header width.
+body.fomio-sidebar-active .d-header .title--minimized {
   display: none;
 }
+
+// ── Topic title — typography when scrolled past the heading ──
+
+body.fomio-sidebar-active .d-header .extra-info-wrapper {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.fomio-sidebar-active .d-header .extra-info {
+  padding: 0;
+}
+
+body.fomio-sidebar-active .d-header .header-title {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-base);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+  color: var(--fomio-text);
+  margin: 0;
+
+  // Truncate long titles to single line
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.fomio-sidebar-active .d-header .header-title .topic-link {
+  color: var(--fomio-text);
+  text-decoration: none;
+
+  span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Category badges and tags are too noisy in the header
+body.fomio-sidebar-active .d-header .categories-wrapper,
+body.fomio-sidebar-active .d-header .topic-header-extra,
+body.fomio-sidebar-active .d-header .topic-header-participants {
+  display: none;
+}
+
+// ── Search icon ───────────────────────────────────────────────
+
+body.fomio-sidebar-active .d-header .search-dropdown .btn {
+  color: var(--fomio-muted);
+}
+
+body.fomio-sidebar-active .d-header .search-dropdown:hover .btn,
+body.fomio-sidebar-active .d-header .search-dropdown.active .btn {
+  color: var(--fomio-text);
+}
+
+// ── Bottom bar — visible on content pages, hidden on auth pages ──
+
+body.fomio-sidebar-active .fomio-bottom-bar {
+  display: flex;
+}
+
+// Prevent page content from being obscured by the fixed bottom bar
+body.fomio-sidebar-active #main-outlet-wrapper {
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}
+
 
 .fomio-home-shell {
   padding-top: 0.9rem;
@@ -66,114 +173,172 @@
   border-spacing: 0 0.75rem;
 }
 
+// ── Mobile td: strip padding from all tds ──────────────────────
+// On mobile, Discourse renders ONE <td class="topic-list-data"> (no main-link
+// class) wrapping a <div class="main-link"> inside. The desktop uses
+// <td class="main-link topic-list-data"> — a completely different structure.
 .topic-list-item.--fomio-discovery-item td {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 0;
+  border-bottom: none;
 }
 
-.topic-list-item.--fomio-discovery-item td:first-child {
-  padding-left: 1rem;
-}
-
-.topic-list-item.--fomio-discovery-item td:last-child {
-  padding-right: 1rem;
-}
-
-.topic-list-item.--fomio-discovery-item .pull-left {
-  display: none;
-}
-
-.topic-list-item.--fomio-discovery-item .topic-item-metadata.right {
-  width: 100%;
-  float: none;
+// ── Mobile card visual ─────────────────────────────────────────
+// Target the mobile-only td (topic-list-data without main-link class).
+// Desktop's td already has main-link class and is handled by common.scss.
+.topic-list-item.--fomio-discovery-item td.topic-list-data:not(.main-link) {
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
   overflow: hidden;
-  min-width: 0;
-  margin-left: 0;
-  padding-left: 0.15rem;
-  box-sizing: border-box;
 }
 
-.topic-list-item.--fomio-discovery-item .main-link {
-  display: block;
-  width: 100%;
-  margin-bottom: 0;
-  min-width: 0;
+.topic-list-item.--fomio-discovery-item:hover td.topic-list-data:not(.main-link) {
+  border-color: #d8d7db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-.topic-list-item.--fomio-discovery-item .main-link a.title,
-.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
-  display: block;
-  font-size: clamp(1.15rem, 5.8vw, 1.8rem);
-  line-height: 1.18;
-}
-
-.topic-list-item.--fomio-discovery-item .link-bottom-line {
-  margin-bottom: 0;
-}
-
-.topic-list-item.--fomio-discovery-item .pull-right {
+// ── Hide mobile chrome our connector replaces ──────────────────
+.topic-list-item.--fomio-discovery-item .pull-left,
+.topic-list-item.--fomio-discovery-item .pull-right,
+.topic-list-item.--fomio-discovery-item .topic-item-stats,
+.topic-list-item.--fomio-discovery-item .link-bottom-line,
+.topic-list-item.--fomio-discovery-item div.main-link .topic-statuses {
   display: none;
 }
 
-.fomio-topic-context {
-  gap: 0.5rem;
+// ── topic-item-metadata wrapper: remove stray spacing ─────────
+.topic-list-item.--fomio-discovery-item .topic-item-metadata.right {
+  padding: 0;
+  margin: 0;
 }
 
+// ── div.main-link: flex column for element ordering ────────────
+// display:contents on .fomio-topic-context (common.scss) makes its children
+// (meta, text, footer, thumb) direct flex items of this div.
+.topic-list-item.--fomio-discovery-item div.main-link {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// Thumbnail: order -1 → top of card; bleeds to edges via negative margin
+.fomio-topic-context__thumb {
+  order: -1;
+  display: block;
+  width: calc(100% + 32px);
+  margin: -16px -16px 14px;
+  height: 160px;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
+// Meta (teret badge, read time): order 0 → above title
 .fomio-topic-context__meta {
-  display: grid;
-  gap: 0.35rem;
+  order: 0;
+  display: flex;
+  gap: 6px 8px;
+  padding: 0;
+  margin-bottom: 6px;
 }
 
-.fomio-topic-context__author {
-  font-size: var(--fomio-text-sm);
+.topic-list-item.--fomio-discovery-item .link-top-line {
+  order: 1;
+  display: block;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
-.fomio-topic-context__author .avatar {
-  width: 1.35rem;
-  height: 1.35rem;
+// Title anchor: order 1 → after meta
+.topic-list-item.--fomio-discovery-item div.main-link a.title,
+.topic-list-item.--fomio-discovery-item div.main-link a.raw-topic-link {
+  display: -webkit-box;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(1.15rem, 5.8vw, 1.55rem);
+  line-height: 1.22;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
-.fomio-topic-context__date {
-  flex-wrap: wrap;
-  gap: 0.25rem 0.5rem;
+// Excerpt: order 2 → below title
+.fomio-topic-context__text {
+  order: 2;
+  padding: 0;
+  margin: 8px 0 4px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+// Footer stats: order 3 → last
+.fomio-topic-context__footer {
+  order: 3;
+  padding: 0;
+  gap: 8px 10px;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .fomio-topic-context__excerpt {
+  display: -webkit-box;
   font-size: var(--fomio-text-sm);
   line-height: 1.6;
-}
-
-.topic-list-item.--fomio-discovery-item .topic-item-stats {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--fomio-rule);
-  clear: both;
-}
-
-.topic-list-item.--fomio-discovery-item .topic-item-stats__category-tags {
   min-width: 0;
+  width: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-wrap: pretty;
 }
 
-.topic-list-item.--fomio-discovery-item .num.activity.last {
-  float: none;
-  margin-left: auto;
-}
-
-.topic-list-item.--fomio-discovery-item .age.activity a {
-  color: var(--fomio-ink-muted);
-  text-decoration: none;
+.fomio-topic-context__author .avatar {
+  width: 20px;
+  height: 20px;
 }
 
 #topic-title.container {
   margin-top: 1.25rem;
 }
 
+#topic-title > div:not(.title-wrapper),
+#topic-title .fomio-topic-header {
+  display: contents;
+}
+
 #topic-title h1 {
   font-size: clamp(2rem, 10vw, 2.9rem);
+}
+
+.fomio-topic-header__crumbs {
+  margin-bottom: 1rem;
+}
+
+.fomio-topic-header__deck {
+  margin-bottom: 1.5rem;
+  font-size: 1.0625rem;
+}
+
+.fomio-topic-reading-meta {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.fomio-topic-reading-meta__read-time {
+  width: 100%;
+  margin-left: 0;
 }
 
 .with-topic-progress,
@@ -191,6 +356,14 @@
 .topic-post .cooked {
   font-size: var(--fomio-text-base);
   max-width: none;
+}
+
+[data-post-number="1"] .cooked > p:first-of-type::first-letter {
+  float: none;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
 }
 
 .topic-post .topic-meta-data {
@@ -211,3 +384,64 @@
   display: none !important;
 }
 
+.fomio-topic-app-handoff {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1rem;
+}
+
+.fomio-topic-app-handoff__action {
+  width: 100%;
+}
+
+
+// ── Byte interaction system — mobile adjustments (0–767px) ─
+
+// Hide tooltips — tap targets are primary navigation on mobile
+.fomio-action[data-tip]::after {
+  display: none;
+}
+
+// Bigger tap targets, slightly more breathing room
+.fomio-byte-actions {
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.fomio-byte-primary-actions {
+  gap: 16px;
+}
+
+.fomio-action {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 8px;
+}
+
+.fomio-action.sm {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 6px;
+}
+
+// Comment entry — compact on small screens
+.fomio-comment-entry {
+  padding: 12px 14px;
+  gap: 10px;
+}
+
+.fomio-comment-entry__placeholder {
+  font-size: var(--fomio-text-sm);
+}
+
+// Discussion section — reduce top padding slightly
+.fomio-discussion {
+  padding-top: 2rem;
+}
+
+// Ensure more menu doesn't clip on small screens
+.fomio-byte-more-menu {
+  right: 0;
+  left: auto;
+  min-width: 160px;
+}
