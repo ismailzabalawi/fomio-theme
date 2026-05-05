@@ -373,7 +373,9 @@ const ComposerCrumbs = <template>
 class FomioComposerShell extends Component {
   @service composer;
   @service currentUser;
+  @service appEvents;
 
+  @tracked _isOpen = false;
   @tracked title = "";
   @tracked sourceMode = false;
   @tracked isSaving = false;
@@ -381,18 +383,34 @@ class FomioComposerShell extends Component {
 
   constructor(owner, args) {
     super(owner, args);
+    // composer.isOpen is an Ember computed, not @tracked — subscribe via appEvents instead
+    this.appEvents.on("composer:opened", this, "_onComposerOpen");
+    this.appEvents.on("composer:closed", this, "_onComposerClose");
+    this.appEvents.on("composer:cancelled", this, "_onComposerClose");
+  }
+
+  willDestroy() {
+    super.willDestroy();
+    this.appEvents.off("composer:opened", this, "_onComposerOpen");
+    this.appEvents.off("composer:closed", this, "_onComposerClose");
+    this.appEvents.off("composer:cancelled", this, "_onComposerClose");
+  }
+
+  @action _onComposerOpen() {
+    this._isOpen = true;
     this._syncTitle();
+  }
+
+  @action _onComposerClose() {
+    this._isOpen = false;
+    this.isSaving = false;
   }
 
   _syncTitle() {
     this.title = this.composer.model?.title || "";
   }
 
-  // ── Body class management ─────────────────────────────────────
-  // Hides native #reply-control while our overlay is active so Discourse
-  // publishing logic stays in the DOM but doesn't visually conflict.
-
-  get isOpen() { return this.composer.isOpen; }
+  get isOpen() { return this._isOpen; }
 
   get model() { return this.composer.model; }
 

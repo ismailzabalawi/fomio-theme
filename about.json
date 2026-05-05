@@ -24,17 +24,17 @@
       "love":               "EF4444"
     },
     "Fomio Dark": {
-      "primary":            "F5F5F7",
-      "secondary":          "000000",
-      "tertiary":           "D4604F",
-      "quaternary":         "B83D30",
-      "header_background":  "000000",
-      "header_primary":     "F5F5F7",
+      "primary":            "F5F3F0",
+      "secondary":          "1A1917",
+      "tertiary":           "E67458",
+      "quaternary":         "D45944",
+      "header_background":  "1A1917",
+      "header_primary":     "F5F3F0",
       "highlight":          "2A100E",
-      "selected":           "1C1C1E",
-      "hover":              "0A0A0A",
-      "danger":             "F97373",
-      "success":            "4ade80",
+      "selected":           "2A2723",
+      "hover":              "2A2723",
+      "danger":             "F87171",
+      "success":            "34D399",
       "love":               "F87171"
     }
   },
