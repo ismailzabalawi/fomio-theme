@@ -88,6 +88,8 @@ import { settings, themePrefix } from "virtual:theme";
  *   App deep link table:       apps/mobile/lib/deep-linking.ts
  */
 export default apiInitializer("1.8.0", (api) => {
+  const WEB_AUTH_INTENT_KEY = "fomio_web_auth_intent";
+
   /**
    * Strip Discourse base_path (subfolder) and trailing slashes so /forum/login → /login.
    */
@@ -107,6 +109,22 @@ export default apiInitializer("1.8.0", (api) => {
     const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
     if (navEntry && navEntry.redirectCount > 0) {
       sessionStorage.setItem("fomio_auth_flow", "1");
+    }
+  }
+
+  function hasExplicitWebAuthIntent() {
+    try {
+      return window.localStorage.getItem(WEB_AUTH_INTENT_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function setExplicitWebAuthIntent() {
+    try {
+      window.localStorage.setItem(WEB_AUTH_INTENT_KEY, "1");
+    } catch {
+      // Ignore storage failures and fall back to default handoff behavior.
     }
   }
 
@@ -215,6 +233,14 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     const path = normalizeDiscoursePath(rawPath);
+    const searchParams = new URLSearchParams(window.location.search);
+    const hasWebAuthParam = searchParams.get("fomio_web") === "1";
+    const explicitWebAuthIntent =
+      hasWebAuthParam || hasExplicitWebAuthIntent();
+
+    if (hasWebAuthParam && (path === "/login" || path.startsWith("/signup"))) {
+      setExplicitWebAuthIntent();
+    }
 
     const appUrl = settings.fomio_app_url || "fomio://";
 
@@ -243,6 +269,9 @@ export default apiInitializer("1.8.0", (api) => {
     // redirect skips (GUARD 2). Do not intercept direct /login visits — web users must
     // be able to authenticate on the web without being sent to the app.
     if (path === "/login") {
+      if (explicitWebAuthIntent) {
+        return;
+      }
       const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
       const arrivedViaRedirect = navEntry && navEntry.redirectCount > 0;
       if (arrivedViaRedirect) {
@@ -266,10 +295,18 @@ export default apiInitializer("1.8.0", (api) => {
         sessionStorage.removeItem("fomio_auth_flow");
         return;
       }
-      if (sessionStorage.getItem("fomio_activation_pending") === "1") {
-        sessionStorage.removeItem("fomio_activation_pending");
-        showHandoffOverlay(`${appUrl}signin?autoAuth=true`);
+      if (explicitWebAuthIntent) {
+        const currentUser = api.getCurrentUser();
+        if (currentUser) {
+          try {
+            window.localStorage.removeItem(WEB_AUTH_INTENT_KEY);
+          } catch {
+            // Ignore storage failures.
+          }
+        }
+        return;
       }
+      showHandoffOverlay("home", `${appUrl}signin?autoAuth=true`);
       return;
     }
   }
@@ -483,13 +520,18 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     const titleText = root.querySelector("h3")?.textContent?.toLowerCase() || "";
+    const dotp = root.querySelector(".d-otp");
+    const dotpSlots = Array.from(root.querySelectorAll(".d-otp-slot"));
     const otpInputs = Array.from(root.querySelectorAll("input")).filter(
       (input) => input.type !== "hidden"
     );
     const isLikelyTotpTitle =
       (titleText.includes("two-factor") || titleText.includes("authentication")) &&
       !titleText.includes("backup");
-    const isTotp = otpInputs.length === 6 || (otpInputs.length === 1 && isLikelyTotpTitle);
+    const isTotp =
+      dotpSlots.length > 0 ||
+      otpInputs.length === 6 ||
+      (otpInputs.length === 1 && isLikelyTotpTitle);
     if (!isTotp) {
       root.classList.remove("fomio-second-factor-totp");
       root.classList.remove("fomio-second-factor-single");
@@ -504,21 +546,35 @@ export default apiInitializer("1.8.0", (api) => {
 
     let otpGrid = root.querySelector(".fomio-second-factor-otp-grid");
     if (!otpGrid) {
-      const tokenContainer = root.querySelector(".second-factor-token-input");
-      if (tokenContainer && tokenContainer.querySelectorAll("input").length > 1) {
-        otpGrid = tokenContainer;
-      } else if (otpInputs[0]?.parentElement) {
-        otpGrid = otpInputs[0].parentElement;
+      if (dotp) {
+        otpGrid = dotp.querySelector(".d-otp-group");
+      } else {
+        const tokenContainer = root.querySelector(".second-factor-token-input");
+        if (tokenContainer && tokenContainer.querySelectorAll("input").length > 1) {
+          otpGrid = tokenContainer;
+        } else if (otpInputs[0]?.parentElement) {
+          otpGrid = otpInputs[0].parentElement;
+        }
       }
     }
     if (!otpGrid) {
       return;
     }
 
-    const isSingleInputTotp = otpInputs.length === 1;
+    const isSingleInputTotp = !dotp && otpInputs.length === 1;
     root.classList.toggle("fomio-second-factor-single", isSingleInputTotp);
 
-    if (isSingleInputTotp) {
+    if (dotp) {
+      otpGrid.classList.add("fomio-second-factor-otp-grid");
+      dotpSlots.forEach((slot) => slot.classList.add("fomio-second-factor-otp-box"));
+
+      const dotpInput = dotp.querySelector(".d-otp-input");
+      if (dotpInput) {
+        dotpInput.classList.add("fomio-second-factor-dotp-input");
+      }
+
+      root.querySelector(".fomio-second-factor-faux-row")?.remove();
+    } else if (isSingleInputTotp) {
       const input = otpInputs[0];
       input.classList.add("fomio-second-factor-single-input");
 

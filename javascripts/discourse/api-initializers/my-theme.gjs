@@ -1,16 +1,10 @@
 import { apiInitializer } from "discourse/lib/api";
+import { i18n } from "discourse-i18n";
+import { themePrefix } from "virtual:theme";
 import HomepageShell from "../components/homepage-shell";
 
 export default apiInitializer("1.8.0", (api) => {
-  api.disableDefaultKeyboardShortcuts([
-    "=",
-    "c",
-    "shift+c",
-    "q",
-    "r",
-    "shift+r",
-    "t",
-  ]);
+  api.disableDefaultKeyboardShortcuts(["="]);
 
   // Verified: discourse/frontend/discourse/app/templates/application.gjs:106
   // <PluginOutlet @name="above-main-container" @connectorTagName="div" />
@@ -19,6 +13,10 @@ export default apiInitializer("1.8.0", (api) => {
   api.registerValueTransformer("topic-list-class", ({ value: classes, context }) => {
     if (context.listContext === "discovery") {
       classes.push("--fomio-discovery-list");
+    }
+
+    if (context.listContext === "suggested") {
+      classes.push("--fomio-fresh-bytes-list");
     }
 
     return classes;
@@ -31,12 +29,16 @@ export default apiInitializer("1.8.0", (api) => {
         classes.push("--fomio-discovery-item");
       }
 
+      if (context.listContext === "suggested") {
+        classes.push("--fomio-fresh-byte-item");
+      }
+
       return classes;
     }
   );
 
   api.registerValueTransformer("topic-list-columns", ({ value: columns, context }) => {
-    if (context.listContext !== "discovery") {
+    if (!["discovery", "suggested"].includes(context.listContext)) {
       return columns;
     }
 
@@ -45,30 +47,6 @@ export default apiInitializer("1.8.0", (api) => {
 
     return columns;
   });
-
-  api.registerValueTransformer("create-topic-button-class", ({ value: classes }) => {
-    classes.push("fomio-read-only-hidden");
-    return classes;
-  });
-
-  api.registerValueTransformer("post-menu-buttons", ({ value: dag }) => {
-    dag.delete("reply");
-    dag.delete("replies");
-    return dag;
-  });
-
-  api.registerValueTransformer(
-    "composer-service-cannot-submit-post",
-    ({ value, context }) => {
-      const action = context.model?.action;
-
-      if (action === "createTopic" || action === "reply" || action === "replyToTopic") {
-        return true;
-      }
-
-      return value;
-    }
-  );
 
   api.registerValueTransformer(
     "welcome-banner-display-for-route",
@@ -80,4 +58,37 @@ export default apiInitializer("1.8.0", (api) => {
       return value;
     }
   );
+
+  api.modifyClass("component:suggested-topics", {
+    pluginId: "fomio-fresh-bytes",
+
+    get suggestedTitle() {
+      const href = this.currentUser?.pmPath(this.args.topic);
+      if (href && this.args.topic.isPrivateMessage) {
+        return i18n("suggested_topics.pm_title");
+      }
+
+      return i18n(themePrefix("fresh_bytes.title"));
+    },
+  });
+
+  api.modifyClass("component:more-topics/browse-more", {
+    pluginId: "fomio-fresh-bytes",
+
+    get topicBrowseMoreMessage() {
+      let unreadTopics = 0;
+      let newTopics = 0;
+
+      if (this.currentUser) {
+        unreadTopics = this.topicTrackingState.countUnread();
+        newTopics = this.topicTrackingState.countNew();
+      }
+
+      if (newTopics + unreadTopics > 0) {
+        return i18n(themePrefix("fresh_bytes.subtitle"));
+      }
+
+      return "";
+    },
+  });
 });
