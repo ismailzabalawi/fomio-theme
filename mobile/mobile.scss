@@ -163,19 +163,48 @@ body.fomio-sidebar-active #reply-control {
   }
 
   .submit-panel {
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
     gap: 0.6rem;
+
+    > span:first-child,
+    > span:last-of-type {
+      display: none;
+    }
+
+    #mobile-file-upload,
+    .mobile-file-upload {
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: start;
+      align-self: center;
+      width: 2.8rem;
+      min-width: 2.8rem;
+      height: 2.8rem;
+      padding: 0;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .save-or-cancel {
+    grid-column: 2;
     width: 100%;
     margin-right: 0;
     gap: 0.45rem;
+    justify-content: flex-end;
 
     .btn-primary.create {
       flex: 1 1 auto;
       max-width: none;
       justify-content: center;
+    }
+
+    .discard-button {
+      flex: 0 0 auto;
     }
   }
 }

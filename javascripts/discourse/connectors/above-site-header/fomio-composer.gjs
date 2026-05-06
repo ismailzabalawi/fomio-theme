@@ -682,7 +682,5 @@ class FomioComposerShell extends Component {
 export default class FomioComposerConnector extends Component {
   @service composer;
 
-  <template>
-    <FomioComposerShell />
-  </template>
+  <template></template>
 }

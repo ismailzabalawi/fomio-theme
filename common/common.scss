@@ -6521,7 +6521,7 @@ body.fomio-sidebar-active #reply-control {
       color-mix(in srgb, var(--fomio-card) 94%, transparent),
       color-mix(in srgb, var(--fomio-surface) 92%, transparent)
     );
-  border: 1px solid color-mix(in srgb, var(--fomio-border) 55%, transparent);
+  border: 1px solid var(--fomio-border);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   box-shadow:
@@ -6541,12 +6541,12 @@ body.fomio-sidebar-active #reply-control {
   }
 
   &.open {
-    border-color: color-mix(in srgb, var(--fomio-primary) 14%, var(--fomio-border));
+    border-color: color-mix(in srgb, var(--fomio-primary) 18%, var(--fomio-border));
   }
 
   .reply-area {
     gap: 0.85rem;
-    padding: 1rem 1rem 0.95rem;
+    padding: 0.8rem 0.8rem 0.85rem;
   }
 
   .reply-to {
@@ -6563,25 +6563,28 @@ body.fomio-sidebar-active #reply-control {
     }
 
     .composer-action-title {
+      display: none;
+    }
+
+    .composer-action-title,
+    .composer-action-title .action-title,
+    .composer-action-title .topic-link,
+    .composer-action-title .user-link,
+    .composer-action-title .post-link,
+    .composer-action-title .username {
       font-style: normal;
 
-      .action-title,
-      .topic-link,
-      .user-link,
-      .post-link,
-      .username {
-        color: var(--fomio-text);
-      }
+      color: var(--fomio-text);
+    }
 
-      .topic-link,
-      .user-link,
-      .post-link {
-        font-family: var(--fomio-font-serif);
-        font-size: var(--fomio-text-base);
-        font-weight: 600;
-        letter-spacing: var(--fomio-tracking-tight);
-        text-transform: none;
-      }
+    .composer-action-title .topic-link,
+    .composer-action-title .user-link,
+    .composer-action-title .post-link {
+      font-family: var(--fomio-font-serif);
+      font-size: var(--fomio-text-base);
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-tight);
+      text-transform: none;
     }
 
     .composer-controls {
@@ -6617,12 +6620,30 @@ body.fomio-sidebar-active #reply-control {
     gap: 0.75rem;
   }
 
+  .title-and-category {
+    align-items: stretch;
+    padding-top: 0.5rem;
+  }
+
+  .fomio-fullscreen-composer-fields {
+    padding-bottom: 0.35rem;
+  }
+
+  .title-input,
+  .category-input,
+  .tags-input {
+    display: flex;
+    align-items: stretch;
+  }
+
   #reply-title,
   .title-input input,
   .category-input .select-kit-header,
   .tags-input .select-kit-header,
   #edit-reason {
     min-height: 3rem;
+    height: 3rem;
+    box-sizing: border-box;
     border: 1px solid color-mix(in srgb, var(--fomio-border) 50%, transparent);
     border-radius: 14px;
     background: color-mix(in srgb, var(--fomio-surface) 86%, var(--fomio-card));
@@ -6645,6 +6666,7 @@ body.fomio-sidebar-active #reply-control {
 
   #reply-title,
   .title-input input {
+    padding-block: 0;
     padding-inline: 1rem;
     font-family: var(--fomio-font-serif);
     font-size: clamp(1.05rem, 0.98rem + 0.2vw, 1.2rem);
@@ -6667,6 +6689,8 @@ body.fomio-sidebar-active #reply-control {
 
   .category-input .select-kit-header,
   .tags-input .select-kit-header {
+    display: flex;
+    align-items: center;
     padding-inline: 0.95rem;
     color: var(--fomio-secondary);
   }
@@ -6680,7 +6704,7 @@ body.fomio-sidebar-active #reply-control {
     overflow: hidden;
     border-radius: 18px;
     background: color-mix(in srgb, var(--fomio-card) 90%, var(--fomio-surface));
-    border: 1px solid color-mix(in srgb, var(--fomio-border) 48%, transparent);
+    border: 1px solid var(--fomio-border);
   }
 
   .d-editor {
@@ -6710,10 +6734,14 @@ body.fomio-sidebar-active #reply-control {
     background: transparent;
   }
 
+  .ProseMirror-container {
+    border-top: 1px solid var(--fomio-border);
+  }
+
   .d-editor-input,
   .d-editor-preview {
     min-height: 16rem;
-    padding: 1rem 1.05rem 1.15rem;
+    padding: 0.75rem 0.8rem 0.9rem;
     background: transparent;
     color: var(--fomio-text);
     font-family: var(--fomio-font-serif);
@@ -6725,6 +6753,10 @@ body.fomio-sidebar-active #reply-control {
     &::placeholder {
       color: var(--fomio-muted);
       font-style: italic;
+    }
+
+    p[data-placeholder]::before {
+      color: var(--fomio-muted);
     }
 
     &:focus {
@@ -6794,6 +6826,57 @@ body.fomio-sidebar-active #reply-control {
   }
 }
 
+#reply-control .d-editor-container.--rich-editor-enabled .d-editor-button-bar__wrap {
+  display: none;
+}
+
+.fk-d-menu[data-identifier="fomio-composer-selection-toolbar"] {
+  z-index: 1100;
+  user-select: none;
+
+  .fk-d-menu__inner-content {
+    overflow: visible;
+    padding: 0.35rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 55%, transparent);
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fomio-card) 96%, transparent),
+        color-mix(in srgb, var(--fomio-surface) 94%, transparent)
+      );
+    box-shadow:
+      0 18px 40px -28px color-mix(in srgb, var(--fomio-shadow) 60%, transparent),
+      0 1px 0 color-mix(in srgb, var(--fomio-card) 72%, transparent) inset;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .toolbar__button {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fomio-secondary);
+
+    .d-icon {
+      color: currentColor;
+    }
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: color-mix(in srgb, var(--fomio-surface) 90%, transparent);
+      color: var(--fomio-text);
+    }
+
+    &.--active {
+      background: color-mix(in srgb, var(--fomio-primary) 14%, transparent);
+      color: var(--fomio-text);
+    }
+  }
+}
+
 
 // ── Dark mode overrides ─────────────────────────────────────
 
@@ -6820,7 +6903,7 @@ html.fomio-color-dark {
         color-mix(in srgb, var(--fomio-card) 92%, transparent),
         color-mix(in srgb, var(--fomio-surface) 94%, transparent)
       );
-    border-color: color-mix(in srgb, var(--fomio-border) 70%, transparent);
+    border-color: var(--fomio-border);
 
     .wmd-controls,
     #reply-title,

@@ -181,6 +181,7 @@ en:
     crumb_drafts: "Drafts"
     crumb_new_byte: "New byte"
     editor_label: "Body"
+    rich_placeholder: "Write your byte here."
     source_label: "Markdown source"
     add_block: "Add block"
     block_ph_first: "Start writing…"
