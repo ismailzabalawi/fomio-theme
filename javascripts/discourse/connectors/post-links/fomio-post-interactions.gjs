@@ -9,6 +9,8 @@ import { themePrefix } from "virtual:theme";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Composer from "discourse/models/composer";
+import FlagModal from "discourse/components/modal/flag";
+import PostFlag from "discourse/lib/flag-targets/post-flag";
 
 // ── SVG icon helpers ─────────────────────────────────────────
 
@@ -122,6 +124,7 @@ class WithDismissMenu extends Component {
 class FomioByteToolbar extends WithDismissMenu {
   @service currentUser;
   @service composer;
+  @service modal;
 
   @tracked liked = false;
   @tracked likeCount = 0;
@@ -273,6 +276,60 @@ class FomioByteToolbar extends WithDismissMenu {
     });
   }
 
+  @action
+  editPost() {
+    this.closeMenu();
+    this.composer.open({
+      action: Composer.EDIT,
+      post: this.post,
+      draftKey: this.post.topic?.draft_key ?? `topic_${this.post.topic?.id ?? this.post.topic_id}`,
+      draftSequence: this.post.topic?.draft_sequence,
+    });
+  }
+
+  @action
+  async deletePost() {
+    this.closeMenu();
+    try {
+      await ajax(`/posts/${this.post.id}`, { type: "DELETE" });
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  _topicId() {
+    return this.post.topic?.id ?? this.post.topic_id;
+  }
+
+  async _setTopicStatus(status, enabled) {
+    this.closeMenu();
+    try {
+      await ajax(`/t/${this._topicId()}/status`, {
+        type: "PUT",
+        data: { status, enabled },
+      });
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  @action hidePost()    { return this._setTopicStatus("visible", false); }
+  @action lockTopic()   { return this._setTopicStatus("closed", true); }
+  @action pinTopic()    { return this._setTopicStatus("pinned", true); }
+  @action archiveTopic(){ return this._setTopicStatus("archived", true); }
+
+  @action
+  reportPost() {
+    this.closeMenu();
+    this.modal.show(FlagModal, {
+      model: {
+        flagTarget: new PostFlag(),
+        flagModel: this.post,
+        setHidden: () => {},
+      },
+    });
+  }
+
   <template>
     <nav
       class="fomio-byte-actions"
@@ -368,7 +425,7 @@ class FomioByteToolbar extends WithDismissMenu {
         {{#if this.menuOpen}}
           <div class="fomio-byte-more-menu" role="menu">
             {{#if this.canEdit}}
-              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              <button type="button" role="menuitem" {{on "click" this.editPost}}>
                 {{i18n (themePrefix "byte_toolbar.edit")}}
               </button>
             {{/if}}
@@ -377,7 +434,7 @@ class FomioByteToolbar extends WithDismissMenu {
                 type="button"
                 role="menuitem"
                 class="is-destructive"
-                {{on "click" this.closeMenu}}
+                {{on "click" this.deletePost}}
               >
                 {{i18n (themePrefix "byte_toolbar.delete")}}
               </button>
@@ -386,16 +443,16 @@ class FomioByteToolbar extends WithDismissMenu {
               <hr />
             {{/if}}
             {{#if this.isMod}}
-              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              <button type="button" role="menuitem" {{on "click" this.hidePost}}>
                 {{i18n (themePrefix "byte_toolbar.hide")}}
               </button>
-              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              <button type="button" role="menuitem" {{on "click" this.lockTopic}}>
                 {{i18n (themePrefix "byte_toolbar.lock")}}
               </button>
-              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              <button type="button" role="menuitem" {{on "click" this.pinTopic}}>
                 {{i18n (themePrefix "byte_toolbar.pin")}}
               </button>
-              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              <button type="button" role="menuitem" {{on "click" this.archiveTopic}}>
                 {{i18n (themePrefix "byte_toolbar.archive")}}
               </button>
               <hr />
@@ -403,7 +460,7 @@ class FomioByteToolbar extends WithDismissMenu {
             <button type="button" role="menuitem" {{on "click" this.copyLink}}>
               {{i18n (themePrefix "byte_toolbar.copy_link")}}
             </button>
-            <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+            <button type="button" role="menuitem" {{on "click" this.reportPost}}>
               {{i18n (themePrefix "byte_toolbar.report")}}
             </button>
           </div>
@@ -474,6 +531,7 @@ class FomioCommentEntry extends Component {
 class FomioCommentActions extends WithDismissMenu {
   @service currentUser;
   @service composer;
+  @service modal;
 
   @tracked liked = false;
   @tracked likeCount = 0;
@@ -571,6 +629,39 @@ class FomioCommentActions extends WithDismissMenu {
     this.closeMenu();
   }
 
+  @action
+  editComment() {
+    this.closeMenu();
+    this.composer.open({
+      action: Composer.EDIT,
+      post: this.post,
+      draftKey: this.post.topic?.draft_key ?? `topic_${this.post.topic?.id ?? this.post.topic_id}`,
+      draftSequence: this.post.topic?.draft_sequence,
+    });
+  }
+
+  @action
+  async deleteComment() {
+    this.closeMenu();
+    try {
+      await ajax(`/posts/${this.post.id}`, { type: "DELETE" });
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  reportComment() {
+    this.closeMenu();
+    this.modal.show(FlagModal, {
+      model: {
+        flagTarget: new PostFlag(),
+        flagModel: this.post,
+        setHidden: () => {},
+      },
+    });
+  }
+
   <template>
     <div class="fomio-comment-actions">
       {{! Like }}
@@ -619,7 +710,7 @@ class FomioCommentActions extends WithDismissMenu {
         {{#if this.menuOpen}}
           <div class="fomio-byte-more-menu is-end" role="menu">
             {{#if this.canEdit}}
-              <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+              <button type="button" role="menuitem" {{on "click" this.editComment}}>
                 {{i18n (themePrefix "byte_toolbar.edit")}}
               </button>
             {{/if}}
@@ -628,7 +719,7 @@ class FomioCommentActions extends WithDismissMenu {
                 type="button"
                 role="menuitem"
                 class="is-destructive"
-                {{on "click" this.closeMenu}}
+                {{on "click" this.deleteComment}}
               >
                 {{i18n (themePrefix "byte_toolbar.delete")}}
               </button>
@@ -639,7 +730,7 @@ class FomioCommentActions extends WithDismissMenu {
             <button type="button" role="menuitem" {{on "click" this.copyLink}}>
               {{i18n (themePrefix "byte_toolbar.copy_link")}}
             </button>
-            <button type="button" role="menuitem" {{on "click" this.closeMenu}}>
+            <button type="button" role="menuitem" {{on "click" this.reportComment}}>
               {{i18n (themePrefix "byte_toolbar.report")}}
             </button>
           </div>

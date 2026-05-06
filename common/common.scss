@@ -430,153 +430,7 @@ h6 {
 
 
 // ------------------------------------------------------------
-// 11. HOMEPAGE SHELL
-// Homepage framing above the default discovery list
-// ------------------------------------------------------------
-
-.fomio-home-shell {
-  padding: 2rem 0 2.5rem;
-  border-bottom: 1px solid var(--fomio-rule);
-  margin-bottom: 2rem;
-}
-
-.fomio-home-shell__hero,
-.fomio-home-shell__supporting {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.fomio-home-shell__hero {
-  margin-bottom: 1.5rem;
-}
-
-.fomio-home-shell__intro,
-.fomio-home-shell__lead-card,
-.fomio-home-shell__section {
-  background: color-mix(in srgb, var(--fomio-paper) 86%, white 14%);
-  border: 1px solid var(--fomio-rule);
-  border-radius: 18px;
-  padding: 1.5rem;
-}
-
-.fomio-home-shell__eyebrow,
-.fomio-home-shell__card-label,
-.fomio-home-shell__section-label {
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  font-weight: 600;
-  letter-spacing: var(--fomio-tracking-wider);
-  text-transform: uppercase;
-  color: var(--fomio-ink-muted);
-  margin: 0 0 0.75rem;
-}
-
-.fomio-home-shell__title,
-.fomio-home-shell__card-title {
-  margin: 0 0 0.75rem;
-  color: var(--fomio-ink);
-}
-
-.fomio-home-shell__title {
-  max-width: 12ch;
-}
-
-.fomio-home-shell__dek,
-.fomio-home-shell__card-copy,
-.fomio-home-shell__section-copy {
-  margin: 0;
-  color: var(--fomio-ink);
-  font-size: var(--fomio-text-base);
-  line-height: var(--fomio-leading-relaxed);
-}
-
-.fomio-home-shell__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.875rem;
-  margin-top: 1.5rem;
-}
-
-.fomio-home-shell__primary-link,
-.fomio-home-shell__secondary-link,
-.fomio-home-shell__app-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.875rem;
-  padding: 0.7rem 1rem;
-  border-radius: 999px;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 600;
-  letter-spacing: var(--fomio-tracking-wide);
-  text-decoration: none;
-  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
-}
-
-.fomio-home-shell__primary-link,
-.fomio-home-shell__app-link {
-  background: var(--fomio-red);
-  border: 1px solid var(--fomio-red);
-  color: var(--fomio-on-primary);
-
-  &:hover {
-    background: var(--fomio-red-dark);
-    border-color: var(--fomio-red-dark);
-    color: var(--fomio-on-primary);
-  }
-}
-
-.fomio-home-shell__secondary-link {
-  background: transparent;
-  border: 1px solid var(--fomio-rule);
-  color: var(--fomio-ink);
-
-  &:hover {
-    border-color: var(--fomio-ink);
-    color: var(--fomio-ink);
-  }
-}
-
-.fomio-home-shell__signals {
-  margin: 1rem 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.65rem;
-
-  li {
-    position: relative;
-    padding-left: 1rem;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    line-height: var(--fomio-leading-normal);
-    color: var(--fomio-ink);
-
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.5rem;
-      width: 0.4rem;
-      height: 0.4rem;
-      border-radius: 999px;
-      background: var(--fomio-red);
-    }
-  }
-}
-
-.fomio-home-shell__section--handoff {
-  border-color: color-mix(in srgb, var(--fomio-red) 30%, var(--fomio-rule) 70%);
-}
-
-.fomio-home-shell__section--handoff .fomio-home-shell__section-copy {
-  margin-bottom: 1rem;
-}
-
-
-// ------------------------------------------------------------
-// 12. TOPIC LIST RAIL
+// 11. TOPIC LIST RAIL
 // Discovery lists become editorial reading rails
 // ------------------------------------------------------------
 
@@ -747,67 +601,7 @@ h6 {
 
 
 // ------------------------------------------------------------
-// 13. DISCOVERY CONTROLS
-// Read-first navigation and no misleading web authorship CTA
-// ------------------------------------------------------------
-
-.navigation-topics .list-controls,
-.navigation-categories .list-controls,
-.navigation-category .list-controls {
-  margin-top: 1.25rem;
-}
-
-.navigation-topics .navigation-container,
-.navigation-categories .navigation-container,
-.navigation-category .navigation-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.35rem 0 1rem;
-  border-bottom: 1px solid var(--fomio-rule);
-}
-
-.navigation-topics .category-breadcrumb,
-.navigation-categories .category-breadcrumb,
-.navigation-category .category-breadcrumb {
-  margin: 0;
-}
-
-.navigation-topics .nav-pills,
-.navigation-categories .nav-pills,
-.navigation-category .nav-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin: 0;
-}
-
-.navigation-topics .nav-pills > li > a,
-.navigation-categories .nav-pills > li > a,
-.navigation-category .nav-pills > li > a {
-  border-radius: 999px;
-  padding: 0.55rem 0.9rem;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  letter-spacing: var(--fomio-tracking-wide);
-  color: var(--fomio-ink-muted);
-  border: 1px solid transparent;
-}
-
-.navigation-topics .nav-pills > li > a.active,
-.navigation-categories .nav-pills > li > a.active,
-.navigation-category .nav-pills > li > a.active,
-.navigation-topics .nav-pills > li > a:hover,
-.navigation-categories .nav-pills > li > a:hover,
-.navigation-category .nav-pills > li > a:hover {
-  color: var(--fomio-ink);
-  background: color-mix(in srgb, var(--fomio-paper) 88%, white 12%);
-  border-color: var(--fomio-rule);
-}
-
-// ------------------------------------------------------------
-// 13A. SIDEBAR SUPPRESSION ON PUBLIC WEB SURFACES
+// 12. SIDEBAR SUPPRESSION ON PUBLIC WEB SURFACES
 // Discovery and regular topics should read as focused, single-pane pages.
 // Keep admin/sidebar behavior intact elsewhere.
 // ------------------------------------------------------------
@@ -845,7 +639,7 @@ body.has-sidebar-page.archetype-regular {
 
 
 // ------------------------------------------------------------
-// 14. TOPIC PAGE
+// 13. TOPIC PAGE
 // Reading-first topic surface
 // ------------------------------------------------------------
 
@@ -1403,7 +1197,7 @@ nav.post-controls .actions .d-button-label {
 
 
 // ------------------------------------------------------------
-// 15. POLISH PASS
+// 14. POLISH PASS
 // Final spacing and hierarchy tuning for phase one
 // ------------------------------------------------------------
 
@@ -1447,7 +1241,7 @@ nav.post-controls .actions .d-button-label {
 
 
 // ------------------------------------------------------------
-// 16. MOBILE APP HANDOFF (theme-initializer.gjs)
+// 15. MOBILE APP HANDOFF (theme-initializer.gjs)
 // Full-viewport overlay — tokens only, no raw hex in theme JS.
 // ------------------------------------------------------------
 
@@ -1550,7 +1344,7 @@ nav.post-controls .actions .d-button-label {
 
 
 // ============================================================
-// 17. AUTH PAGES — Manuscript Modernist
+// 16. AUTH PAGES — Manuscript Modernist
 // Stitch source: stitch_fomio_auth (2026-04-14)
 // Covers: login, signup, account-created, activate-account,
 //         password-reset, invite, 2FA / passkeys / backup codes
@@ -4796,6 +4590,15 @@ body.fomio-sidebar-active {
   .sidebar-container {
     display: none !important;
   }
+
+  // Breadcrumb, Latest/Hot/Categories pills, and inline New Topic — replaced
+  // by Fomio sidebar (desktop) and bottom bar (mobile). Keep visible on auth
+  // flows where fomio-sidebar-active is off.
+  .navigation-topics .navigation-container,
+  .navigation-categories .navigation-container,
+  .navigation-category .navigation-container {
+    display: none !important;
+  }
 }
 
 :root {
@@ -4933,7 +4736,12 @@ body.fomio-sidebar-active {
   }
 }
 
-// ── Hub sub-list ─────────────────────────────────────────────
+// ── Hub tree ─────────────────────────────────────────────────
+
+.fomio-sidebar__section {
+  display: flex;
+  flex-direction: column;
+}
 
 .fomio-sidebar__hub-list {
   list-style: none;
@@ -4944,10 +4752,37 @@ body.fomio-sidebar-active {
   gap: 2px;
 }
 
+.fomio-sidebar__hub-item {
+  display: flex;
+  flex-direction: column;
+}
+
+// Hub row: stretches full width, name link + chevron side-by-side
+.fomio-sidebar__hub-row {
+  display: flex;
+  align-items: center;
+  border-radius: var(--fomio-radius-sm);
+
+  &.is-active > .fomio-sidebar__hub-link {
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+
+  &:hover {
+    background: var(--fomio-surface);
+
+    .fomio-sidebar__hub-chevron {
+      opacity: 1;
+    }
+  }
+}
+
 .fomio-sidebar__hub-link {
   display: flex;
   align-items: center;
   gap: var(--fomio-space-sm);
+  flex: 1;
+  min-width: 0;
   padding: var(--fomio-space-xs) var(--fomio-space-sm);
   border-radius: var(--fomio-radius-sm);
   text-decoration: none;
@@ -4958,12 +4793,11 @@ body.fomio-sidebar-active {
   letter-spacing: var(--fomio-tracking-wide);
 
   @media (prefers-reduced-motion: no-preference) {
-    transition: color 150ms ease, background 150ms ease;
+    transition: color 150ms ease;
   }
 
   &:hover {
     color: var(--fomio-text);
-    background: var(--fomio-surface);
   }
 }
 
@@ -4978,6 +4812,99 @@ body.fomio-sidebar-active {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.fomio-sidebar__hub-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-right: var(--fomio-space-xs);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--fomio-muted);
+  cursor: pointer;
+  opacity: 0;
+  border-radius: var(--fomio-radius-sm);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform 150ms ease, opacity 150ms ease, color 150ms ease;
+  }
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  &.is-open {
+    transform: rotate(90deg);
+    opacity: 1;
+    color: var(--fomio-text);
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-border);
+  }
+}
+
+// ── Teret sub-list ────────────────────────────────────────────
+
+.fomio-sidebar__teret-list {
+  list-style: none;
+  margin: 2px 0 var(--fomio-space-xs) calc(var(--fomio-space-sm) + 16px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-left: 1px solid var(--fomio-border);
+  padding-left: var(--fomio-space-sm);
+}
+
+.fomio-sidebar__teret-link {
+  display: block;
+  padding: 3px var(--fomio-space-sm);
+  border-radius: var(--fomio-radius-sm);
+  text-decoration: none;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: var(--fomio-tracking-wide);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease, background 150ms ease;
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    font-weight: 600;
+  }
+}
+
+.fomio-sidebar__hub-more {
+  display: block;
+  padding: var(--fomio-space-xs) var(--fomio-space-sm);
+  margin-top: var(--fomio-space-xs);
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--fomio-primary);
+  }
 }
 
 // ── Create Byte CTA ──────────────────────────────────────────
@@ -5070,6 +4997,767 @@ body.fomio-sidebar-active {
   }
 }
 
+
+// ============================================================
+// HUBS INDEX PAGE  (/categories)
+// Fomio-branded Hub grid/list injected via below-discovery-categories outlet.
+// Native Discourse categories table hidden via .categories-list scope.
+// ============================================================
+
+// Suppress native Discourse categories UI on the hub index page.
+body.fomio-sidebar-active.categories-list {
+  .contents           { display: none; }
+  .list-controls      { display: none; }
+  #navigation-bar     { display: none; }
+}
+
+// ── Page wrapper ─────────────────────────────────────────────
+.fomio-hubs {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 44px 36px 80px;
+  font-family: var(--fomio-font-ui);
+}
+
+// ── Header row (title + view toggle) ─────────────────────────
+.fomio-hubs__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--fomio-space-md);
+  margin-bottom: 24px;
+}
+
+.fomio-hubs__title {
+  margin: 0;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--fomio-text);
+
+  em {
+    color: var(--fomio-primary);
+    font-style: italic;
+  }
+}
+
+.fomio-hubs__stat {
+  margin: 5px 0 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// ── View toggle ───────────────────────────────────────────────
+.fomio-hubs__view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--fomio-surface);
+  border: 1px solid var(--fomio-border);
+  border-radius: 8px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.fomio-hubs__view-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--fomio-muted);
+  transition: background 120ms, border-color 120ms, color 120ms, box-shadow 120ms;
+  font: inherit;
+
+  .d-icon { width: 14px; height: 14px; }
+
+  &.is-active {
+    background: var(--fomio-card);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  }
+
+  &:hover:not(.is-active) {
+    color: var(--fomio-text);
+  }
+}
+
+// ── Search bar ────────────────────────────────────────────────
+.fomio-hubs__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 38px;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 11px;
+  padding: 0 14px;
+  margin-bottom: 20px;
+  gap: 10px;
+
+  &:focus-within {
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+  }
+}
+
+.fomio-hubs__search-icon {
+  color: var(--fomio-muted);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  .d-icon { width: 15px; height: 15px; }
+}
+
+.fomio-hubs__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  color: var(--fomio-text);
+  padding: 0;
+
+  &::placeholder { color: var(--fomio-muted); }
+  &::-webkit-search-cancel-button { display: none; }
+}
+
+// ── Shared hub swatch ─────────────────────────────────────────
+.fomio-hub-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 14px;
+  font-style: italic;
+
+  &--lg {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+}
+
+// ── Grid ──────────────────────────────────────────────────────
+.fomio-hubs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.fomio-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 120ms, box-shadow 120ms, transform 120ms;
+
+  &:hover {
+    border-color: color-mix(in oklab, var(--fomio-text) 18%, var(--fomio-border));
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+}
+
+.fomio-hub-card__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fomio-hub-card__name {
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--fomio-text);
+}
+
+.fomio-hub-card__count {
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.fomio-hub-card__desc {
+  margin: 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--fomio-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fomio-hub-card__terets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--fomio-border);
+}
+
+.fomio-hub-card__teret-pill {
+  font-family: var(--fomio-font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: var(--fomio-surface);
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+// ── List ──────────────────────────────────────────────────────
+.fomio-hubs__list {
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.fomio-hub-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 22px;
+  border-bottom: 1px solid var(--fomio-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 100ms;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--fomio-surface); }
+}
+
+.fomio-hub-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fomio-hub-row__top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.fomio-hub-row__name {
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
+  color: var(--fomio-text);
+  white-space: nowrap;
+}
+
+.fomio-hub-row__terets {
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  color: var(--fomio-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fomio-hub-row__desc {
+  margin: 3px 0 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--fomio-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fomio-hub-row__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.fomio-hub-row__count {
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fomio-text);
+}
+
+.fomio-hub-row__label {
+  font-family: var(--fomio-font-ui);
+  font-size: 10px;
+  color: var(--fomio-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fomio-hub-row__chevron {
+  color: var(--fomio-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  .d-icon { width: 13px; height: 13px; }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+html.fomio-color-dark {
+  .fomio-hub-card:hover {
+    border-color: color-mix(in oklab, var(--fomio-text) 25%, var(--fomio-border));
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  }
+}
+
+// ============================================================
+// HUB PAGE CHROME  (/c/:slug/:id and /c/:slug/:teret/:id)
+// Injected via discovery-list-controls-above outlet.
+// Hides native .list-controls using :has() when chrome is present.
+// ============================================================
+
+// Suppress native Discourse nav bar when Fomio hub chrome is rendered.
+body.fomio-sidebar-active:has(.fomio-hub-chrome) {
+  .list-controls { display: none; }
+}
+
+// ── Outer container ───────────────────────────────────────────
+.fomio-hub-chrome {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 36px;
+  font-family: var(--fomio-font-ui);
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────
+.fomio-hub-chrome__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 20px 0 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+}
+
+.fomio-hub-chrome__crumb-link {
+  color: var(--fomio-muted);
+  text-decoration: none;
+
+  &:hover { color: var(--fomio-text); }
+}
+
+.fomio-hub-chrome__crumb-sep {
+  color: var(--fomio-muted);
+  display: flex;
+  align-items: center;
+  .d-icon { width: 10px; height: 10px; }
+}
+
+.fomio-hub-chrome__crumb-current {
+  color: var(--fomio-text);
+}
+
+// ── Hero ──────────────────────────────────────────────────────
+.fomio-hub-chrome__hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 0 24px;
+  border-bottom: 1px solid var(--fomio-border);
+}
+
+.fomio-hub-chrome__swatch {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 22px;
+  font-style: italic;
+}
+
+.fomio-hub-chrome__hero-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fomio-hub-chrome__name {
+  margin: 0 0 4px;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--fomio-text);
+}
+
+.fomio-hub-chrome__desc {
+  margin: 0 0 12px;
+  font-family: var(--fomio-font-serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fomio-muted);
+}
+
+.fomio-hub-chrome__stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+}
+
+.fomio-hub-chrome__stat {
+  strong {
+    font-weight: 700;
+    color: var(--fomio-text);
+    margin-right: 3px;
+  }
+  span { color: var(--fomio-muted); font-weight: 500; }
+}
+
+.fomio-hub-chrome__stat-sep {
+  color: var(--fomio-border);
+}
+
+// ── Teret tabs ────────────────────────────────────────────────
+.fomio-hub-chrome__teret-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--fomio-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.fomio-hub-chrome__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 120ms;
+
+  &:hover {
+    color: var(--fomio-text);
+    border-color: var(--fomio-border);
+    background: var(--fomio-surface);
+  }
+
+  &.is-active {
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+}
+
+.fomio-hub-chrome__tab-count {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fomio-muted);
+  opacity: 0.8;
+}
+
+// ── Filter bar ────────────────────────────────────────────────
+.fomio-hub-chrome__filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 0 0;
+  margin-bottom: 4px;
+}
+
+.fomio-hub-chrome__filter {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  transition: all 100ms;
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+  }
+
+  &.is-active {
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+}
+
+// ============================================================
+// SEARCH PAGE  (/search)
+// Reskins Discourse's full-page-search UI to match Fomio editorial style.
+// Layout: serif title → clean search bar → editorial result rows.
+// ============================================================
+
+body.fomio-sidebar-active.search-page {
+
+  // ── Page container ─────────────────────────────────────────
+  .search-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 36px 80px;
+  }
+
+  // ── Injected page title ────────────────────────────────────
+  .fomio-search-pg-header {
+    padding: 44px 0 24px;
+  }
+
+  .fomio-search-pg-header__title {
+    margin: 0;
+    font-family: var(--fomio-font-serif);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--fomio-text);
+
+    em {
+      color: var(--fomio-primary);
+      font-style: italic;
+    }
+  }
+
+  // ── Search header ──────────────────────────────────────────
+  .search-header { margin: 0 0 24px; }
+  .search-page-heading { display: none !important; }
+
+  // ── Search bar ─────────────────────────────────────────────
+  .search-bar {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border);
+    border-radius: 12px;
+    padding: 0;
+    gap: 0;
+    box-shadow: none;
+    margin: 0;
+
+    &:focus-within {
+      border-color: var(--fomio-primary);
+      box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+    }
+
+    .select-kit.combo-box { display: none !important; }
+
+    input.full-page-search {
+      flex: 1;
+      height: 100%;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      background: transparent;
+      font-family: var(--fomio-font-ui);
+      font-size: 15px;
+      color: var(--fomio-text);
+      padding: 0 16px;
+      border-radius: 12px 0 0 12px;
+
+      &::placeholder { color: var(--fomio-muted); }
+    }
+
+    .search-cta.btn {
+      height: 100%;
+      border: none;
+      border-left: 1px solid var(--fomio-border);
+      border-radius: 0 12px 12px 0;
+      background: transparent;
+      color: var(--fomio-muted);
+      padding: 0 18px;
+      box-shadow: none;
+      transition: background 100ms, color 100ms;
+
+      .d-icon { width: 15px; height: 15px; }
+      .d-button-label { display: none; }
+
+      &:hover {
+        background: var(--fomio-surface);
+        color: var(--fomio-primary);
+      }
+    }
+  }
+
+  .search-filters { display: none !important; }
+  .search-context { display: none !important; }
+  .search-info    { display: none !important; }
+
+  // ── Results container ──────────────────────────────────────
+  .search-results {
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-card);
+    background: var(--fomio-card);
+    overflow: hidden;
+  }
+
+  // ── Individual result entry ────────────────────────────────
+  .fps-result {
+    display: block;
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--fomio-border);
+    transition: background 100ms;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: var(--fomio-surface); }
+
+    .author { display: none; }
+  }
+
+  .fps-topic .search-link {
+    display: block;
+    font-family: var(--fomio-font-serif);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--fomio-text);
+    text-decoration: none;
+    margin-bottom: 6px;
+
+    &:hover { color: var(--fomio-primary); }
+    &.visited { color: var(--fomio-muted); }
+    .topic-statuses { display: none; }
+  }
+
+  .search-category {
+    margin-bottom: 8px;
+    font-family: var(--fomio-font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fomio-muted);
+    letter-spacing: 0.02em;
+
+    .badge-wrapper {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fomio-muted);
+
+      .badge-category-bg,
+      .badge-category-parent-bg { display: none; }
+      .badge-category { color: var(--fomio-muted); }
+    }
+
+    .discourse-tags { display: none; }
+  }
+
+  .blurb.container {
+    font-family: var(--fomio-font-serif);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--fomio-muted);
+    margin: 0;
+
+    .date {
+      font-family: var(--fomio-font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fomio-muted);
+      margin-right: 4px;
+    }
+
+    .separator { margin: 0 2px; }
+  }
+
+  .like-count {
+    margin-top: 8px;
+    font-family: var(--fomio-font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fomio-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .d-icon { width: 12px; height: 12px; }
+  }
+
+  .no-results-container {
+    padding: 48px 22px;
+    text-align: center;
+
+    h3 {
+      font-family: var(--fomio-font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fomio-text);
+      margin: 0 0 8px;
+    }
+  }
+
+  .search-footer {
+    padding: 16px 22px;
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fomio-muted);
+    text-align: center;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--fomio-border);
+    margin: 0;
+  }
+}
 
 // ============================================================
 // PHASE 2D — CONVERSATION LAYER
@@ -5454,9 +6142,9 @@ html.fomio-color-dark .topic-list-item.--fomio-discovery-item td {
   display: none;
 }
 
-// ── Feed max-width + hero→feed break ─────────────────────────
+// ── Feed max-width + top spacing ─────────────────────────────
 // max-width aligns feed with the reading column.
-// margin-top creates a clear breath between the homepage shell and the stream.
+// margin-top clears space above the discovery stream.
 .navigation-topics #list-area,
 .navigation-categories #list-area,
 .navigation-category #list-area {

@@ -63,24 +63,69 @@ apps/web/
 ├── mobile/mobile.scss
 ├── docs/
 │   ├── auth-ui-stitch-guide.md       # Design prompts for all 17 auth screens
-│   └── manuscript-design-system.md  # Design system strategy reference
+│   ├── manuscript-design-system.md  # Design system strategy reference
+│   └── web/
+│       ├── composer-audit.md         # Composer feature audit
+│       └── rich-editor-composer-reference.md  # Rich editor integration notes
 └── javascripts/discourse/
     ├── api-initializers/
     │   ├── theme-initializer.gjs     # Auth UI enhancements + mobile handoff (see below)
     │   ├── fomio-color-mode.gjs      # Dark mode: syncs html.fomio-color-dark
     │   ├── fomio-layout.gjs          # Sidebar layout: toggles body.fomio-sidebar-active
+    │   ├── fomio-rich-editor-toolbar.gjs  # Forces rich editor mode; registers ProseMirror toolbar extension
     │   └── my-theme.gjs             # Legacy placeholder — do not add to
     ├── components/
-    │   └── homepage-shell.gjs        # Homepage editorial shell component
+    │   └── fomio-block-editor.gjs    # HISTORICAL — old block shell, not active, do not use
+    ├── lib/
+    │   └── fomio-selection-toolbar-extension.js  # ProseMirror floating selection toolbar
     └── connectors/
-        ├── above-site-header/fomio-sidebar.gjs  # Persistent sidebar nav (desktop)
+        ├── above-site-header/fomio-sidebar.gjs   # Persistent sidebar nav (desktop)
+        ├── above-site-header/fomio-bottom-bar.gjs # Mobile bottom navigation bar
+        ├── above-site-header/fomio-composer.gjs   # INTENTIONALLY DISABLED — renders nothing
+        ├── before-composer-fields/fomio-fullscreen-composer-fields.gjs  # Restores title/category/tags in fullscreen
         ├── login-header-bottom/fomio-login-subheader.gjs
         ├── login-before-modal-body/  # Login modal body overrides
         ├── create-account-header-bottom/fomio-signup-subheader.gjs
         ├── create-account-before-modal-body/  # Signup modal body overrides
+        ├── post-links/fomio-post-interactions.gjs  # Per-post interaction bar
         ├── topic-list-main-link-bottom/fomio-topic-context.gjs
         ├── topic-title/fomio-topic-reading-meta.gjs
 ```
+
+## Composer Architecture
+
+> See `docs/web/rich-editor-composer-reference.md` for full detail.
+
+The active composer is the **native Discourse composer**, restyled by the theme and extended through supported theme APIs. The custom block shell (`fomio-composer.gjs`, `fomio-block-editor.gjs`) was an earlier experiment and is no longer active.
+
+- `connectors/above-site-header/fomio-composer.gjs` — **intentionally neutralized**, renders nothing. Do not add behavior here.
+- `components/fomio-block-editor.gjs` — **historical code**, not the active composer path. Do not use.
+
+### Active composer extension points
+
+**`fomio-rich-editor-toolbar.gjs`** (the main file):
+- Forces rich-editor mode via `registerValueTransformer("composer-force-editor-mode")` → `USER_OPTION_COMPOSITION_MODES.rich`; markdown textarea path is out of scope
+- Overrides the placeholder via `registerValueTransformer("composer-editor-reply-placeholder")`
+- Registers `lib/fomio-selection-toolbar-extension.js` via `api.registerRichEditorExtension`
+
+**`lib/fomio-selection-toolbar-extension.js`** — ProseMirror plugin:
+- Shows a floating Bold / Italic / Link toolbar on non-empty `TextSelection` inside `#reply-control`
+- Uses Discourse core primitives (`ToolbarBase`, `ToolbarButtons`, `UpsertHyperlink`, Float Kit) — do not invent a parallel formatting system
+- Access ProseMirror classes through extension params (e.g. `pmState.TextSelection`), not direct package imports — theme bundles do not resolve raw `prosemirror-*` imports
+
+**`connectors/before-composer-fields/fomio-fullscreen-composer-fields.gjs`**:
+- Restores title/category/tags in fullscreen mode — core deliberately removes them when `viewFullscreen` is true
+- Uses the `before-composer-fields` outlet
+
+### Styling the composer
+
+The native `#reply-control` is styled under `body.fomio-sidebar-active #reply-control` in `common.scss`. The fixed top toolbar (`.d-editor-button-bar__wrap`) is hidden because the floating toolbar replaces it. `.composer-action-title` is also hidden.
+
+### Known failure modes
+
+1. **Direct ProseMirror package imports** (`import { TextSelection } from "prosemirror-state"`) fail — use extension params instead.
+2. **Unimported helpers in GJS templates** — strict-mode templates only see explicitly imported values; always import `hash`, `fn`, `eq`, etc.
+3. **Extension plugin errors cascade**: if the floating toolbar extension throws during editor setup, typing can stop entirely. Check theme JS errors before debugging input behavior.
 
 ## `theme-initializer.gjs` — Scope
 
@@ -202,7 +247,7 @@ All deep links are constructed from the `fomio_app_url` theme setting. Never har
 - **Transformers before workarounds:** transformer → connector → `onPageChange` → DOM (last resort)
 - **All CSS scoped** under `fomio-` prefix — no bare Discourse class overrides
 - **No fetch calls** in theme JS — themes are UI-only
-- **No shared lib modules** — Discourse's theme build only processes `api-initializers/`, `connectors/`, and `components/`. Files in `lib/` are NOT compiled and cannot be imported. Duplicate shared constants instead.
+- **`lib/` files are not entry points** — Discourse's theme build only compiles `api-initializers/`, `connectors/`, and `components/` as entry points. Files in `lib/` are never compiled standalone, but CAN be imported via relative path from those compiled files (e.g. `import ext from "../lib/fomio-selection-toolbar-extension"`). Do not import `lib/` files from other `lib/` files.
 - **No hardcoded deep links** — always use `fomio_app_url` setting
 - **No hardcoded hex values** in SCSS — use `--fomio-*` tokens from `common.scss` Section 1
 - **No forbidden terminology** in `locales/en.yml` or any component copy
