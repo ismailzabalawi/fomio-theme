@@ -1,14 +1,9 @@
 import { apiInitializer } from "discourse/lib/api";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import HomepageShell from "../components/homepage-shell";
 
 export default apiInitializer("1.8.0", (api) => {
   api.disableDefaultKeyboardShortcuts(["="]);
-
-  // Verified: discourse/frontend/discourse/app/templates/application.gjs:106
-  // <PluginOutlet @name="above-main-container" @connectorTagName="div" />
-  api.renderInOutlet("above-main-container", HomepageShell);
 
   api.registerValueTransformer("topic-list-class", ({ value: classes, context }) => {
     if (context.listContext === "discovery") {

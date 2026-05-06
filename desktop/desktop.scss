@@ -70,52 +70,6 @@
     }
   }
 
-  .fomio-home-shell {
-    padding-top: 1.35rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .fomio-home-shell__hero,
-  .fomio-home-shell__supporting {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.15rem;
-  }
-
-  .fomio-home-shell__intro,
-  .fomio-home-shell__lead-card,
-  .fomio-home-shell__section {
-    padding: 1.4rem;
-  }
-
-  .fomio-home-shell__title {
-    max-width: 13ch;
-    font-size: clamp(2.5rem, 5vw, 3.4rem);
-  }
-
-  .fomio-home-shell__actions {
-    gap: 0.75rem;
-  }
-
-  .navigation-topics .navigation-container,
-  .navigation-categories .navigation-container,
-  .navigation-category .navigation-container {
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding-bottom: 0.85rem;
-  }
-
-  .navigation-topics .nav-pills,
-  .navigation-categories .nav-pills,
-  .navigation-category .nav-pills {
-    gap: 0.3rem;
-  }
-
-  .navigation-topics .nav-pills > li > a,
-  .navigation-categories .nav-pills > li > a,
-  .navigation-category .nav-pills > li > a {
-    padding: 0.5rem 0.8rem;
-  }
-
   .topic-list.--fomio-discovery-list {
     border-spacing: 0 0.75rem;
   }
@@ -371,24 +325,6 @@
 }
 
 @media (min-width: 900px) {
-  .fomio-home-shell__hero {
-    grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.9fr);
-    align-items: stretch;
-  }
-
-  .fomio-home-shell__supporting {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .fomio-home-shell__intro {
-    padding: 2.25rem;
-  }
-
-  .fomio-home-shell__lead-card,
-  .fomio-home-shell__section {
-    padding: 1.75rem;
-  }
-
   .topic-list.--fomio-discovery-list .main-link.topic-list-data {
     width: auto;
   }

@@ -933,6 +933,447 @@ body.has-sidebar-page.archetype-regular {
   color: var(--fomio-ink-muted);
 }
 
+// ── Inline code · kbd · mark ──────────────────────────────────
+
+.topic-post .cooked code {
+  font-family: var(--fomio-font-mono);
+  font-size: 0.86em;
+  background: color-mix(in oklab, var(--fomio-surface) 80%, transparent);
+  color: var(--fomio-ink);
+  padding: 1px 6px;
+  border-radius: 5px;
+  letter-spacing: -0.005em;
+}
+
+.topic-post .cooked kbd {
+  font-family: var(--fomio-font-ui);
+  font-size: 0.78em;
+  font-weight: 600;
+  background: var(--fomio-surface);
+  border: 1px solid var(--fomio-border);
+  border-bottom-width: 2px;
+  color: var(--fomio-secondary);
+  padding: 1px 6px 2px;
+  border-radius: 5px;
+  letter-spacing: 0.02em;
+}
+
+.topic-post .cooked mark {
+  background: color-mix(in oklab, var(--fomio-primary) 18%, transparent);
+  color: var(--fomio-ink);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+// ── Code block ────────────────────────────────────────────────
+
+.topic-post .cooked pre {
+  margin: 2.25em 0;
+  padding: 22px 24px;
+  background: var(--fomio-surface);
+  border-radius: 14px;
+  overflow-x: auto;
+  font-family: var(--fomio-font-mono);
+  font-size: 0.84em;
+  line-height: 1.65;
+  color: var(--fomio-ink);
+  letter-spacing: -0.005em;
+  position: relative;
+
+  code {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  &[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: var(--fomio-font-ui);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fomio-ink-muted);
+  }
+}
+
+// ── Tables ────────────────────────────────────────────────────
+
+.topic-post .cooked table {
+  width: 100%;
+  margin: 2.25em 0;
+  border-collapse: collapse;
+  font-family: var(--fomio-font-ui);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.topic-post .cooked th {
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+  padding: 10px 14px;
+  background: var(--fomio-surface);
+
+  &:first-child { border-radius: 8px 0 0 8px; }
+  &:last-child  { border-radius: 0 8px 8px 0; }
+}
+
+.topic-post .cooked td {
+  padding: 12px 14px;
+  color: var(--fomio-ink);
+  vertical-align: top;
+}
+
+.topic-post .cooked tbody tr + tr td {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--fomio-border) 50%, transparent) 0,
+    color-mix(in oklab, var(--fomio-border) 50%, transparent) 1px,
+    transparent 1px
+  );
+}
+
+// ── Figure / image ────────────────────────────────────────────
+
+.topic-post .cooked figure {
+  margin: 2.5em 0;
+  padding: 0;
+
+  img {
+    width: 100%;
+    border-radius: 12px;
+    margin: 0;
+  }
+}
+
+.topic-post .cooked figcaption {
+  margin-top: 0.75rem;
+  font-family: var(--fomio-font-ui);
+  font-style: italic;
+  font-size: 0.8125rem;
+  color: var(--fomio-ink-muted);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+// ── Custom list counters ──────────────────────────────────────
+
+.topic-post .cooked ol {
+  counter-reset: fomio-li;
+  list-style: none;
+  padding-left: 0;
+
+  > li {
+    counter-increment: fomio-li;
+    position: relative;
+    padding-left: 2.5em;
+
+    &::before {
+      content: counter(fomio-li, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 0.05em;
+      font-family: var(--fomio-font-ui);
+      font-size: 0.78em;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+.topic-post .cooked ul {
+  list-style: none;
+  padding-left: 0;
+
+  > li {
+    position: relative;
+    padding-left: 1.5em;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0.1em;
+      top: 0.85em;
+      width: 0.45em;
+      height: 1.5px;
+      background: var(--fomio-primary);
+      border-radius: 1px;
+    }
+  }
+}
+
+// ── Onebox / link card ────────────────────────────────────────
+// Discourse renders external link previews as aside.onebox.
+// HTML structure: aside.onebox > header? + .onebox-body > (h3/h4 + p + img.thumbnail)
+// We style these as clean editorial cards — overriding Discourse's default shadow/border.
+
+.topic-post .cooked aside.onebox {
+  margin: 2.25em 0;
+  background: var(--fomio-card);
+  border-radius: 14px;
+  overflow: hidden;
+  font-family: var(--fomio-font-ui);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--fomio-border) 60%, transparent) !important;
+  border: 0 !important;
+  transition:
+    transform 200ms var(--fomio-ease),
+    box-shadow 200ms var(--fomio-ease);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--fomio-primary) 28%, var(--fomio-border)),
+      0 18px 48px -28px color-mix(in oklab, var(--fomio-primary) 30%, transparent) !important;
+  }
+
+  // Strip Discourse's default header chrome
+  header {
+    display: none;
+  }
+
+  .onebox-body {
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    clear: none;
+  }
+
+  // Title (Discourse uses h3 or h4)
+  h3, h4 {
+    font-family: var(--fomio-font-serif);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--fomio-ink);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // Excerpt / description
+  p, .description {
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--fomio-secondary);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // Thumbnail — cap at card height, full width below text
+  img.thumbnail,
+  img:not(.emoji, .avatar, .onebox-avatar) {
+    max-width: 100%;
+    max-height: 220px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0 0 14px 14px;
+    display: block;
+    margin: 0;
+  }
+}
+
+// ── Internal Discourse quote (aside.quote) ────────────────────
+// Structure: aside.quote > .title (attribution) + blockquote (content)
+// .title contains: .quote-title__text-content (author, hub) + .quote-controls (buttons)
+
+.topic-post .cooked aside.quote {
+  margin: 2em 0;
+  border-left: 2px solid color-mix(in oklab, var(--fomio-primary) 50%, var(--fomio-border));
+  background: color-mix(in oklab, var(--fomio-surface) 60%, transparent);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--fomio-secondary);
+  padding: 0;
+
+  // Attribution header
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--fomio-font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fomio-ink-muted);
+    padding: 12px 18px 8px;
+    background: transparent;
+    border-radius: 0;
+
+    // Hide Discourse's expand/collapse button — editorial view
+    .quote-controls button { display: none; }
+
+    // Strip link styling from username in attribution
+    a {
+      color: var(--fomio-ink-muted);
+      text-decoration: none;
+      font-weight: 700;
+
+      &:hover { color: var(--fomio-primary); }
+    }
+  }
+
+  blockquote {
+    border: 0;
+    padding: 12px 18px 14px;
+    margin: 0;
+    font-style: normal;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+
+    p { margin-bottom: 0; }
+  }
+}
+
+// ── Poll ──────────────────────────────────────────────────────
+// Discourse polls: div.poll-outer > div.poll > .poll-title + .poll-container + .poll-info + .poll-buttons
+// Results view: li[data-poll-option-id] contains .bar-back > .bar + .option-text + .percentage
+
+.topic-post .cooked div.poll-outer {
+  margin: 2.25em 0;
+}
+
+.topic-post .cooked div.poll {
+  padding: 22px 24px 24px;
+  background: var(--fomio-card);
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--fomio-border) 60%, transparent);
+  border: 0 !important;
+  font-family: var(--fomio-font-ui);
+  display: block; // override the Discourse grid
+}
+
+.topic-post .cooked .poll-title {
+  font-family: var(--fomio-font-serif);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fomio-ink);
+  margin: 0 0 16px;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.topic-post .cooked .poll-container {
+  padding: 0;
+}
+
+.topic-post .cooked .poll-container li[data-poll-option-id] {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: var(--fomio-surface);
+  font-size: 0.9375rem;
+  color: var(--fomio-ink);
+  overflow: hidden;
+  cursor: default;
+  list-style: none;
+
+  // Fomio tinted bar replaces Discourse's .bar-back
+  .bar-back {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background: transparent;
+    border-radius: inherit;
+
+    .bar {
+      height: 100%;
+      background: color-mix(in oklab, var(--fomio-primary) 14%, transparent);
+      border-radius: inherit;
+      transition: width 400ms var(--fomio-ease);
+    }
+  }
+
+  // Content sits above the bar
+  button, .option-text, .percentage {
+    position: relative;
+    z-index: 1;
+  }
+
+  .percentage {
+    margin-left: auto;
+    font-family: var(--fomio-font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fomio-secondary);
+  }
+
+  &.chosen {
+    .bar { background: color-mix(in oklab, var(--fomio-primary) 28%, transparent); }
+    .percentage { color: var(--fomio-primary); }
+  }
+}
+
+.topic-post .cooked .poll-info {
+  margin-top: 12px;
+  padding: 0;
+  grid-area: unset;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+  font-weight: 600;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  border: 0;
+}
+
+.topic-post .cooked .poll-buttons {
+  border-top: 1px solid var(--fomio-border-soft);
+  padding: 14px 0 0;
+  margin-top: 14px;
+}
+
+// ── Reading rail (decorative, desktop only) ───────────────────
+// Static terracotta accent rail at the left edge of the reading column.
+// No scroll tracking — purely decorative.
+
+@media (min-width: 900px) {
+  .topic-body-wrapper,
+  .posts-wrapper {
+    position: relative;
+  }
+
+  [data-post-number="1"] .topic-body::before {
+    content: "";
+    position: absolute;
+    left: -48px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+}
+
 #topic-footer-buttons {
   display: none !important;
 }
