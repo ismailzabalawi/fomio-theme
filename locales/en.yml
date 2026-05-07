@@ -23,7 +23,7 @@ en:
       email:
         title: "Email address"
   auth_login:
-    subheader: "It's been a minute."
+    subheader: "Welcome back."
   auth_signup:
     eyebrow: "New account"
     subheader: "Find your corner of the internet."

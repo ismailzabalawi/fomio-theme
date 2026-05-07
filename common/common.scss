@@ -1842,8 +1842,8 @@ body.invite-page {
 
 // Login: anchor to top — vertical centering left a large empty band above the card
 body.login-page .login-fullpage {
-  justify-content: flex-start;
-  padding-top: var(--fomio-space-xl);
+  justify-content: center;
+  padding-top: clamp(var(--fomio-space-lg), 10vh, var(--fomio-space-5xl));
   padding-bottom: var(--fomio-space-2xl);
 }
 
@@ -2151,7 +2151,7 @@ body.login-page .fomio-login-subheader {
   font-size: 0.875rem; // 14px — Raleway dek
   font-weight: 500;
   line-height: var(--fomio-leading-normal);
-  letter-spacing: var(--fomio-tracking-wide);
+  letter-spacing: 0.02em;
   color: var(--fomio-muted);
   text-align: center;
   margin: var(--fomio-space-xs) 0 var(--fomio-space-md);
@@ -2568,7 +2568,7 @@ body.login-page .login-page-cta__no-account-yet {
   font-family: var(--fomio-font-ui);
   font-size: var(--fomio-text-sm);
   font-weight: 500;
-  letter-spacing: var(--fomio-tracking-wide);
+  letter-spacing: 0.02em;
   color: var(--fomio-muted);
   text-align: left;
   line-height: var(--fomio-leading-normal);
