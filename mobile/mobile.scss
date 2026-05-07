@@ -97,15 +97,93 @@ body.fomio-sidebar-active .d-header .search-dropdown.active .btn {
   color: var(--fomio-text);
 }
 
-// ── Bottom bar — visible on content pages, hidden on auth pages ──
+// ── Mobile sidebar — slide-in drawer ──────────────────────────
+// On mobile the sidebar is off-screen by default; it slides in from the left
+// when body.fomio-mobile-sidebar-open is toggled by the hamburger button.
 
-body.fomio-sidebar-active .fomio-bottom-bar {
+body.fomio-sidebar-active .fomio-sidebar {
+  display: flex; // always in layout flow; kept off-screen via transform
+  width: min(var(--fomio-sidebar-width), 88vw);
+  transform: translateX(-100%);
+  box-shadow: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--fomio-dur-slow) var(--fomio-ease),
+                box-shadow var(--fomio-dur-slow) var(--fomio-ease);
+  }
+}
+
+body.fomio-mobile-sidebar-open.fomio-sidebar-active .fomio-sidebar {
+  transform: translateX(0);
+  box-shadow: 4px 0 24px var(--fomio-shadow);
+}
+
+// Show the mobile-only close button inside the sidebar
+body.fomio-sidebar-active .fomio-sidebar__mobile-close {
   display: flex;
 }
 
-// Prevent page content from being obscured by the fixed bottom bar
-body.fomio-sidebar-active #main-outlet-wrapper {
-  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+// Dark scrim behind the open sidebar (pseudo-element on body — no extra DOM)
+body.fomio-mobile-sidebar-open::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 897;
+  pointer-events: none; // clicks are caught by .fomio-sidebar-backdrop below
+}
+
+// Transparent click-catcher that closes the sidebar when tapping outside it
+body.fomio-mobile-sidebar-open .fomio-sidebar-backdrop {
+  display: block;
+}
+
+// ── Hamburger button — fixed in the d-header's left slot ──────
+// Positioned to sit flush with the header so it feels like a native header icon.
+
+body.fomio-sidebar-active .fomio-mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  width: 52px;
+  // Match Discourse's default mobile header height (--header-offset is JS-set;
+  // use a fallback that works before JS runs)
+  height: var(--header-offset, 50px);
+  z-index: 910; // above d-header (~1000 in Discourse, but we're inside it visually)
+  background: transparent;
+  border: none;
+  color: var(--fomio-text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+  }
+
+  &:hover,
+  &:active {
+    color: var(--fomio-primary);
+  }
+}
+
+// Hide the hamburger while the sidebar is open — the × inside takes over
+body.fomio-mobile-sidebar-open.fomio-sidebar-active .fomio-mobile-menu-btn {
+  display: none;
+}
+
+// Shift the d-header's inner wrap so the logo doesn't sit under the hamburger
+body.fomio-sidebar-active .d-header .wrap {
+  padding-inline-start: 52px;
+}
+
+// When sidebar is open the header is behind the scrim — no shift needed
+body.fomio-mobile-sidebar-open.fomio-sidebar-active .d-header .wrap {
+  padding-inline-start: 0;
 }
 
 body.fomio-sidebar-active #reply-control {

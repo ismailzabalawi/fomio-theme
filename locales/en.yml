@@ -103,12 +103,8 @@ en:
     notifications: "Notifications"
     sign_in: "Sign in"
     all_hubs: "See all Hubs →"
-  bottom_bar:
-    home: "Home"
-    hubs: "Hubs"
-    create: "Create"
-    profile: "Profile"
-    sign_in: "Sign in"
+    open_menu: "Open navigation"
+    close_menu: "Close navigation"
   topic_list:
     published: "Published"
     min_read: "min read"

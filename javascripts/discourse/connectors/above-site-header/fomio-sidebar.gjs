@@ -142,11 +142,13 @@ export default class FomioSidebar extends Component {
   get notificationsLabel() { return i18n(themePrefix("sidebar.notifications")); }
   get signInLabel()        { return i18n(themePrefix("sidebar.sign_in")); }
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
+  get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
 
   // ── Actions ──────────────────────────────────────────────────
 
   @action
   openNewByte() {
+    document.body.classList.remove("fomio-mobile-sidebar-open");
     if (this.currentUser) {
       this.composer.openNewTopic();
     } else {
@@ -161,9 +163,42 @@ export default class FomioSidebar extends Component {
     this._expandedHubId = this._expandedHubId === hubId ? null : hubId;
   }
 
+  // Close the mobile sidebar when a navigation link inside it is tapped.
+  @action
+  onNavClick(e) {
+    if (e.target.closest("a[href]")) {
+      document.body.classList.remove("fomio-mobile-sidebar-open");
+    }
+  }
+
+  // Close button and overlay tap handler.
+  @action
+  closeMobile() {
+    document.body.classList.remove("fomio-mobile-sidebar-open");
+  }
+
   <template>
     {{#if this.shouldRender}}
-      <nav class="fomio-sidebar" aria-label={{this.ariaLabel}}>
+
+      {{! Backdrop — covers page content on mobile when sidebar is open.
+          Click closes the sidebar. Hidden on desktop via CSS. }}
+      <div
+        class="fomio-sidebar-backdrop"
+        aria-hidden="true"
+        {{on "click" this.closeMobile}}
+      ></div>
+
+      <nav class="fomio-sidebar" aria-label={{this.ariaLabel}} {{on "click" this.onNavClick}}>
+
+        {{! ── Mobile close button — hidden on desktop via CSS ──────── }}
+        <button
+          type="button"
+          class="fomio-sidebar__mobile-close"
+          aria-label={{this.closeMenuLabel}}
+          {{on "click" this.closeMobile}}
+        >
+          {{icon "xmark"}}
+        </button>
 
         {{! ── Zone A — Top (logo + search) ──────────────── }}
         <div class="fomio-sidebar__zone fomio-sidebar__zone--top">

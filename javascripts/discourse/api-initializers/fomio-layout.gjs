@@ -49,6 +49,9 @@ export default apiInitializer("1.8.0", (api) => {
 
     document.body.classList.toggle("fomio-auth-mode", authMode);
     document.body.classList.toggle("fomio-sidebar-active", !authMode);
+    // Close the mobile sidebar on every navigation so it doesn't stay open
+    // after the user taps a link inside it.
+    document.body.classList.remove("fomio-mobile-sidebar-open");
   }
 
   syncLayoutClasses();

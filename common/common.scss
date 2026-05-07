@@ -5405,6 +5405,50 @@ body.fomio-sidebar-active {
   }
 }
 
+// ── Mobile close button (× inside the sidebar) ───────────────
+// Hidden on desktop; shown on mobile via mobile.scss.
+
+.fomio-sidebar__mobile-close {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding: var(--fomio-space-sm) var(--fomio-space-md);
+  background: transparent;
+  border: none;
+  color: var(--fomio-muted);
+  cursor: pointer;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+  }
+}
+
+// ── Mobile sidebar backdrop ───────────────────────────────────
+// Transparent full-screen click-catcher rendered behind the open sidebar.
+// The dark tint comes from body.fomio-mobile-sidebar-open::before (mobile.scss).
+// Hidden by default; mobile.scss shows it when the sidebar is open.
+
+.fomio-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 899; // between content and sidebar (900)
+}
+
+// ── Mobile menu hamburger button ─────────────────────────────
+// Rendered by fomio-bottom-bar.gjs; shown only on mobile via mobile.scss.
+// Hidden here so it never appears on desktop.
+
+.fomio-mobile-menu-btn {
+  display: none;
+}
+
 
 // ============================================================
 // OTP confirm step — minimal chrome inside same layout
