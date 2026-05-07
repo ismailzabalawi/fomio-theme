@@ -306,7 +306,7 @@ export default apiInitializer("1.8.0", (api) => {
         }
         return;
       }
-      showHandoffOverlay("home", `${appUrl}signin?autoAuth=true`);
+      showHandoffOverlay(`${appUrl}signin?autoAuth=true`);
       return;
     }
   }
