@@ -93,6 +93,8 @@ export default apiInitializer("1.8.0", (api) => {
   /** App-initiated signup only: set on /u/activate-account, consumed on next home visit. */
   const POST_ACTIVATION_HANDOFF_EXPIRY_KEY = "fomio_post_activation_expires_at";
   const ACTIVATION_HANDOFF_TTL_MS = 10 * 60 * 1000;
+  /** Direct mobile web sign-in: set on /login (no redirect, no explicit web intent), cleared on home after auth. */
+  const MOBILE_SIGNIN_PENDING_KEY = "fomio_mobile_signin_pending";
 
   /**
    * Strip Discourse base_path (subfolder) and trailing slashes so /forum/login → /login.
@@ -271,10 +273,13 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     // CASE 1: Login page
-    // Guard: if we arrived via a server-side redirect (redirectCount > 0), we're inside
-    // the app's auth flow (/user-api-key/new → /login). Mark sessionStorage so the home
-    // redirect skips (GUARD 2). Do not intercept direct /login visits — web users must
-    // be able to authenticate on the web without being sent to the app.
+    // If arrived via server-side redirect (redirectCount > 0) we're inside the app's
+    // User API Key auth flow (/user-api-key/new → /login). Set GUARD 1 so the home
+    // handler (GUARD 2) skips the handoff — intercepting fomio://signin?autoAuth=true
+    // inside the auth session would cancel it.
+    // If it's a direct mobile web visit (no redirect, no explicit web intent) the user
+    // is signing in via their browser. Mark it so the home handler can hand them off
+    // to the app once Discourse confirms auth.
     if (path === "/login") {
       if (explicitWebAuthIntent) {
         return;
@@ -283,14 +288,18 @@ export default apiInitializer("1.8.0", (api) => {
       const arrivedViaRedirect = navEntry && navEntry.redirectCount > 0;
       if (arrivedViaRedirect) {
         sessionStorage.setItem("fomio_auth_flow", "1");
+      } else {
+        sessionStorage.setItem(MOBILE_SIGNIN_PENDING_KEY, "1");
       }
       return;
     }
 
-    // CASE 2: Home-like routes — auto-open app only after app-initiated signup activation.
-    // Discourse navigates to / (via window.location.href="/") after successful activation.
-    // Ordinary mobile visits to /, /latest, etc. stay on the web.
-    // Guard: skip if we're mid User API Key auth session (GUARD 1 / GUARD 2).
+    // CASE 2: Home-like routes — hand off to the app after sign-in.
+    // Three sub-cases:
+    //   a) App-initiated signup activation (POST_ACTIVATION_HANDOFF_EXPIRY_KEY, TTL-guarded)
+    //   b) Direct mobile web sign-in (MOBILE_SIGNIN_PENDING_KEY, only fires once user is authed)
+    //   c) Ordinary logged-in browse → no redirect
+    // GUARD 2: skip if we're mid User API Key auth session (GUARD 1 set fomio_auth_flow).
     const HOME_PATHS = new Set(["/", "/latest", "/new", "/top", "/categories"]);
     if (HOME_PATHS.has(path)) {
       if (sessionStorage.getItem("fomio_auth_flow") === "1") {
@@ -309,6 +318,7 @@ export default apiInitializer("1.8.0", (api) => {
         return;
       }
 
+      // Sub-case a: app-initiated signup activation handoff (TTL-bounded).
       const expiryRaw = sessionStorage.getItem(
         POST_ACTIVATION_HANDOFF_EXPIRY_KEY
       );
@@ -320,7 +330,22 @@ export default apiInitializer("1.8.0", (api) => {
         } else {
           sessionStorage.removeItem(POST_ACTIVATION_HANDOFF_EXPIRY_KEY);
         }
+        return;
       }
+
+      // Sub-case b: direct mobile web sign-in — hand off once Discourse confirms the user.
+      // The marker is set on /login (direct visit, no redirect). Guard against stale markers
+      // left when the user visited /login but did not complete sign-in by requiring an
+      // authenticated session before firing.
+      if (
+        sessionStorage.getItem(MOBILE_SIGNIN_PENDING_KEY) === "1" &&
+        api.getCurrentUser()
+      ) {
+        sessionStorage.removeItem(MOBILE_SIGNIN_PENDING_KEY);
+        showHandoffOverlay(`${appUrl}signin?autoAuth=true`);
+        return;
+      }
+
       return;
     }
   }
@@ -965,12 +990,20 @@ export default apiInitializer("1.8.0", (api) => {
     enhanceSecondFactorPasskeyLoading();
   });
 
-  // Forgot-password modal opens without a route transition; observe DOM inserts.
+  // Forgot-password modal and 2FA forms open without a route transition; observe DOM inserts.
+  // Debounce so the callback only fires after Glimmer has finished its full render batch.
+  // Without this, the observer fires between Ember run-loop frames while #second-factor is
+  // still being rendered — our DOM moves (switches.appendChild(toggle)) land on elements
+  // Glimmer is mid-reconcile, which prevents the 2FA form from becoming interactive.
+  let observerDebounceTimer = null;
   const modalObserver = new MutationObserver(() => {
-    enhanceForgotPasswordModal();
-    enhanceSecondFactorTotp();
-    enhanceSecondFactorBackupCode();
-    enhanceSecondFactorPasskeyLoading();
+    clearTimeout(observerDebounceTimer);
+    observerDebounceTimer = setTimeout(() => {
+      enhanceForgotPasswordModal();
+      enhanceSecondFactorTotp();
+      enhanceSecondFactorBackupCode();
+      enhanceSecondFactorPasskeyLoading();
+    }, 50);
   });
   modalObserver.observe(document.body, { childList: true, subtree: true });
 });
