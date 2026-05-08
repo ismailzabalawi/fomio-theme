@@ -45,11 +45,34 @@ export default class FomioHubChrome extends Component {
   }
 
   get swatchLetter() {
-    return this.hub?.name?.[0] ?? "";
+    return this.detailEntity?.name?.[0] ?? "";
   }
 
-  get bytesFormatted()   { return fmtK(this.hub?.topic_count  || 0); }
-  get repliesFormatted() { return fmtK(this.hub?.post_count   || 0); }
+  get detailEntity() {
+    return this.activeTeret ?? this.hub;
+  }
+
+  get detailName() {
+    return this.detailEntity?.name ?? "";
+  }
+
+  get detailDescription() {
+    return this.detailEntity?.description_text || this.hub?.description_text || "";
+  }
+
+  get bytesFormatted() {
+    return fmtK(this.detailEntity?.topic_count || 0);
+  }
+
+  get repliesFormatted() {
+    return fmtK(this.detailEntity?.post_count || 0);
+  }
+
+  get entityTypeLabel() {
+    return this.activeTeret
+      ? i18n(themePrefix("hub_page.entity_teret"))
+      : i18n(themePrefix("hub_page.entity_hub"));
+  }
 
   get currentFilter() {
     const url = (this.router.currentURL || "").split("?")[0];
@@ -105,8 +128,10 @@ export default class FomioHubChrome extends Component {
   }
 
   get breadcrumbLabel()   { return i18n(themePrefix("hub_page.breadcrumb_hubs")); }
+  get bytesSectionLabel() { return i18n(themePrefix("hub_page.bytes_section_title")); }
   get bytesLabel()        { return i18n(themePrefix("hub_page.bytes_label")); }
   get repliesLabel()      { return i18n(themePrefix("hub_page.replies_label")); }
+  get parentHubLabel()    { return i18n(themePrefix("hub_page.parent_hub_label")); }
 
   <template>
     {{#if this.shouldRender}}
@@ -128,10 +153,19 @@ export default class FomioHubChrome extends Component {
           >{{this.swatchLetter}}</div>
 
           <div class="fomio-hub-chrome__hero-body">
-            <h1 class="fomio-hub-chrome__name">{{this.hub.name}}</h1>
-            {{#if this.hub.description_text}}
-              <p class="fomio-hub-chrome__desc">{{this.hub.description_text}}</p>
+            <p class="fomio-hub-chrome__eyebrow">{{this.entityTypeLabel}}</p>
+            <h1 class="fomio-hub-chrome__name">{{this.detailName}}</h1>
+            {{#if this.detailDescription}}
+              <p class="fomio-hub-chrome__desc">{{this.detailDescription}}</p>
             {{/if}}
+            <div class="fomio-hub-chrome__meta">
+              {{#if this.activeTeret}}
+                <span class="fomio-hub-chrome__meta-item">
+                  <span class="fomio-hub-chrome__meta-label">{{this.parentHubLabel}}</span>
+                  <span class="fomio-hub-chrome__meta-value">{{this.hub.name}}</span>
+                </span>
+              {{/if}}
+            </div>
             <div class="fomio-hub-chrome__stats">
               <span class="fomio-hub-chrome__stat">
                 <strong>{{this.bytesFormatted}}</strong>
@@ -175,6 +209,10 @@ export default class FomioHubChrome extends Component {
               aria-selected={{if f.isActive "true" "false"}}
             >{{f.label}}</a>
           {{/each}}
+        </div>
+
+        <div class="fomio-hub-chrome__bytes-intro">
+          {{this.bytesSectionLabel}}
         </div>
 
       </div>

@@ -7,17 +7,17 @@
 
 // ── Suppress noise — hide visually, not structurally ─────────
 
-body.fomio-sidebar-active .d-header-icons .hamburger-dropdown,
-body.fomio-sidebar-active .d-header #current-user,
-body.fomio-sidebar-active .d-header .header-buttons,
-body.fomio-sidebar-active .d-header-icons .header-color-scheme-toggle,
-body.fomio-sidebar-active .d-header-icons .language-switcher {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header-icons .hamburger-dropdown,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header #current-user,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .header-buttons,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header-icons .header-color-scheme-toggle,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header-icons .language-switcher {
   display: none !important;
 }
 
 // ── Shell — surface and chrome ────────────────────────────────
 
-body.fomio-sidebar-active .d-header {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header {
   background: var(--fomio-bg);
   border-bottom: 1px solid var(--fomio-border-soft);
   box-shadow: none;
@@ -26,7 +26,7 @@ body.fomio-sidebar-active .d-header {
 // ── Wordmark — style the text fallback; logo image shows as-is ──
 
 // Style Discourse's text-logo fallback (when no logo image is configured)
-body.fomio-sidebar-active .d-header #site-text-logo {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header #site-text-logo {
   font-family: var(--fomio-font-serif);
   font-size: 1.2rem;
   font-weight: 700;
@@ -37,23 +37,23 @@ body.fomio-sidebar-active .d-header #site-text-logo {
 
 // When a topic is scrolled, Discourse minimizes the logo area.
 // Hide it entirely so topic info can own the full header width.
-body.fomio-sidebar-active .d-header .title--minimized {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .title--minimized {
   display: none;
 }
 
 // ── Topic title — typography when scrolled past the heading ──
 
-body.fomio-sidebar-active .d-header .extra-info-wrapper {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .extra-info-wrapper {
   flex: 1;
   min-width: 0;
   overflow: hidden;
 }
 
-body.fomio-sidebar-active .d-header .extra-info {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .extra-info {
   padding: 0;
 }
 
-body.fomio-sidebar-active .d-header .header-title {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .header-title {
   font-family: var(--fomio-font-serif);
   font-size: var(--fomio-text-base);
   font-weight: 600;
@@ -67,7 +67,7 @@ body.fomio-sidebar-active .d-header .header-title {
   text-overflow: ellipsis;
 }
 
-body.fomio-sidebar-active .d-header .header-title .topic-link {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .header-title .topic-link {
   color: var(--fomio-text);
   text-decoration: none;
 
@@ -80,20 +80,20 @@ body.fomio-sidebar-active .d-header .header-title .topic-link {
 }
 
 // Category badges and tags are too noisy in the header
-body.fomio-sidebar-active .d-header .categories-wrapper,
-body.fomio-sidebar-active .d-header .topic-header-extra,
-body.fomio-sidebar-active .d-header .topic-header-participants {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .categories-wrapper,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .topic-header-extra,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .topic-header-participants {
   display: none;
 }
 
 // ── Search icon ───────────────────────────────────────────────
 
-body.fomio-sidebar-active .d-header .search-dropdown .btn {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .search-dropdown .btn {
   color: var(--fomio-muted);
 }
 
-body.fomio-sidebar-active .d-header .search-dropdown:hover .btn,
-body.fomio-sidebar-active .d-header .search-dropdown.active .btn {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .search-dropdown:hover .btn,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .search-dropdown.active .btn {
   color: var(--fomio-text);
 }
 
@@ -101,7 +101,7 @@ body.fomio-sidebar-active .d-header .search-dropdown.active .btn {
 // On mobile the sidebar is off-screen by default; it slides in from the left
 // when body.fomio-mobile-sidebar-open is toggled by the hamburger button.
 
-body.fomio-sidebar-active .fomio-sidebar {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar {
   display: flex; // always in layout flow; kept off-screen via transform
   width: min(var(--fomio-sidebar-width), 88vw);
   transform: translateX(-100%);
@@ -113,18 +113,18 @@ body.fomio-sidebar-active .fomio-sidebar {
   }
 }
 
-body.fomio-mobile-sidebar-open.fomio-sidebar-active .fomio-sidebar {
+body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar {
   transform: translateX(0);
   box-shadow: 4px 0 24px var(--fomio-shadow);
 }
 
 // Show the mobile-only close button inside the sidebar
-body.fomio-sidebar-active .fomio-sidebar__mobile-close {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar__mobile-close {
   display: flex;
 }
 
 // Dark scrim behind the open sidebar (pseudo-element on body — no extra DOM)
-body.fomio-mobile-sidebar-open::before {
+body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode)::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -134,14 +134,14 @@ body.fomio-mobile-sidebar-open::before {
 }
 
 // Transparent click-catcher that closes the sidebar when tapping outside it
-body.fomio-mobile-sidebar-open .fomio-sidebar-backdrop {
+body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar-backdrop {
   display: block;
 }
 
 // ── Hamburger button — fixed in the d-header's left slot ──────
 // Positioned to sit flush with the header so it feels like a native header icon.
 
-body.fomio-sidebar-active .fomio-mobile-menu-btn {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-mobile-menu-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,19 +172,19 @@ body.fomio-sidebar-active .fomio-mobile-menu-btn {
 }
 
 // Hide the hamburger while the sidebar is open — the × inside takes over
-body.fomio-mobile-sidebar-open.fomio-sidebar-active .fomio-mobile-menu-btn {
+body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-mobile-menu-btn {
   display: none;
 }
 
 // Full-width header — remove Discourse's .wrap max-width and centering constraints
 // so the logo and icons fill the entire header edge-to-edge.
-body.fomio-sidebar-active .d-header .wrap {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .wrap {
   max-width: 100%;
   width: 100%;
   margin-inline: 0;
 }
 
-body.fomio-sidebar-active #reply-control {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control {
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
 
@@ -689,7 +689,7 @@ body.fomio-sidebar-active #reply-control {
 // Five-tab bar; hides on scroll-down, reappears on scroll-up.
 // Scroll tracking is handled by fomio-bottom-bar.gjs (toggles --hidden modifier).
 
-body.fomio-sidebar-active .fomio-bottom-bar {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar {
   display: flex;
   position: fixed;
   bottom: 0;
@@ -707,11 +707,11 @@ body.fomio-sidebar-active .fomio-bottom-bar {
   }
 }
 
-body.fomio-sidebar-active .fomio-bottom-bar--hidden {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar--hidden {
   transform: translateY(100%);
 }
 
-body.fomio-sidebar-active .fomio-bottom-bar__item {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar__item {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -742,7 +742,7 @@ body.fomio-sidebar-active .fomio-bottom-bar__item {
   }
 }
 
-body.fomio-sidebar-active .fomio-bottom-bar__item--create {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar__item--create {
   color: var(--fomio-primary);
 
   svg {
@@ -752,7 +752,7 @@ body.fomio-sidebar-active .fomio-bottom-bar__item--create {
 }
 
 // Push page content above the bar so nothing is hidden behind it
-body.fomio-sidebar-active #main-outlet-wrapper {
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet-wrapper {
   padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
 }
 

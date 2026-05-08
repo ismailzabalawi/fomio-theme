@@ -11,6 +11,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import Composer from "discourse/models/composer";
 import FlagModal from "discourse/components/modal/flag";
 import PostFlag from "discourse/lib/flag-targets/post-flag";
+import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 
 // ── SVG icon helpers ─────────────────────────────────────────
 
@@ -173,7 +174,10 @@ class FomioByteToolbar extends WithDismissMenu {
 
   @action
   async toggleLike() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      redirectToLoginWithIntent("save_interact_bytes", window.location.pathname);
+      return;
+    }
     const wasLiked = this.liked;
     this.liked = !wasLiked;
     this.likeCount = wasLiked
@@ -208,7 +212,10 @@ class FomioByteToolbar extends WithDismissMenu {
 
   @action
   async toggleBookmark() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      redirectToLoginWithIntent("save_interact_bytes", window.location.pathname);
+      return;
+    }
     const wasBookmarked = this.bookmarked;
     this.bookmarked = !wasBookmarked;
     try {
@@ -266,7 +273,7 @@ class FomioByteToolbar extends WithDismissMenu {
   @action
   openCompose() {
     if (!this.currentUser) {
-      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      redirectToLoginWithIntent("join_discussion", window.location.pathname);
       return;
     }
     this.composer.open({
@@ -483,10 +490,16 @@ class FomioCommentEntry extends Component {
   @action
   openCompose() {
     if (!this.currentUser) {
-      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      redirectToLoginWithIntent("join_discussion", window.location.pathname);
       return;
     }
     this.args.onReply?.();
+  }
+
+  @action
+  goToLogin(e) {
+    e.preventDefault();
+    redirectToLoginWithIntent("join_discussion", window.location.pathname);
   }
 
   get draftKey() {
@@ -514,8 +527,9 @@ class FomioCommentEntry extends Component {
     {{else}}
       <a
         class="fomio-comment-entry is-guest"
-        href="/login"
+        href="/login?fomio_web=1"
         role="button"
+        {{on "click" this.goToLogin}}
       >
         <span class="fomio-comment-entry__avatar is-empty" aria-hidden="true"></span>
         <span class="fomio-comment-entry__placeholder">
@@ -568,7 +582,10 @@ class FomioCommentActions extends WithDismissMenu {
 
   @action
   async toggleLike() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      redirectToLoginWithIntent("save_interact_bytes", window.location.pathname);
+      return;
+    }
     const wasLiked = this.liked;
     this.liked = !wasLiked;
     this.likeCount = wasLiked
@@ -598,7 +615,7 @@ class FomioCommentActions extends WithDismissMenu {
   @action
   reply() {
     if (!this.currentUser) {
-      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      redirectToLoginWithIntent("join_discussion", window.location.pathname);
       return;
     }
     this.composer.open({
@@ -765,7 +782,7 @@ export default class FomioPostInteractions extends Component {
   @action
   openReply() {
     if (!this.currentUser) {
-      window.location.href = `/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+      redirectToLoginWithIntent("join_discussion", window.location.pathname);
       return;
     }
     this.composer.open({

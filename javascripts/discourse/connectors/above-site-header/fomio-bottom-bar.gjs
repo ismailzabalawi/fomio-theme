@@ -6,6 +6,7 @@ import { service } from "@ember/service";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 
 // Keep in sync with fomio-sidebar.gjs and fomio-layout.gjs.
 // Discourse themes cannot share modules across files.
@@ -99,7 +100,7 @@ export default class FomioBottomBar extends Component {
     if (this.currentUser) {
       this.composer.openNewTopic();
     } else {
-      window.location.href = WEB_LOGIN_URL;
+      redirectToLoginWithIntent("create_byte", this.currentPath);
     }
   }
 

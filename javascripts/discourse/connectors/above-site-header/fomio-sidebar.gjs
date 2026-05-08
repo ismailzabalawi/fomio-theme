@@ -8,6 +8,7 @@ import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 
 // Keep in sync with fomio-layout.gjs. Discourse themes cannot share modules
 // across files, so this list is intentionally duplicated.
@@ -29,6 +30,7 @@ function isAuthPath(url) {
 }
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
+const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
 
 export default class FomioSidebar extends Component {
   @service router;
@@ -45,6 +47,29 @@ export default class FomioSidebar extends Component {
 
   get shouldRender() {
     return !isAuthPath(this.currentPath);
+  }
+
+  // ── Master context skeleton (Build Slice 3A) ───────────────────
+  // Sidebar is the master layer. For this slice we map current routing
+  // to a lightweight master context model without changing route behavior.
+  get activeMasterContext() {
+    if (this.isHubsActive) {
+      return "hubs";
+    }
+    if (this.isBookmarksActive) {
+      return "bookmarks";
+    }
+    if (this.isNotificationsActive) {
+      return "notifications";
+    }
+    if (this.isProfileActive) {
+      return "profile";
+    }
+    return "home";
+  }
+
+  get masterContexts() {
+    return MASTER_CONTEXTS;
   }
 
   // ── Active state getters ──────────────────────────────────────
@@ -69,6 +94,10 @@ export default class FomioSidebar extends Component {
 
   get isNotificationsActive() {
     return this.currentPath.startsWith("/notifications");
+  }
+
+  get isProfileActive() {
+    return this.currentPath.startsWith("/u/") || this.currentPath.startsWith("/my/");
   }
 
   // ── Hub/Teret active detection ────────────────────────────────
@@ -122,6 +151,44 @@ export default class FomioSidebar extends Component {
     return (this.site.categories || []).filter((c) => !c.parent_category_id).length > 10;
   }
 
+  get isRailOrTouchSurface() {
+    if (typeof document === "undefined") {
+      return false;
+    }
+    const classes = document.body?.classList;
+    return (
+      classes?.contains("fomio-surface-rail") ||
+      classes?.contains("fomio-surface-touch")
+    );
+  }
+
+  get isMasterPaneActive() {
+    if (typeof document === "undefined") {
+      return false;
+    }
+    const classes = document.body?.classList;
+    const isExpandedOrCompact =
+      classes?.contains("fomio-surface-expanded") ||
+      classes?.contains("fomio-surface-compact-desktop");
+    return (
+      this.activeMasterContext === "hubs" &&
+      Boolean(isExpandedOrCompact) &&
+      classes?.contains("fomio-sidebar-active") &&
+      !classes?.contains("fomio-auth-mode")
+    );
+  }
+
+  // Secondary Hub list is intentionally desktop-only for this skeleton.
+  // Rail stays symbolic and touch stays bottom-nav driven.
+  get showHubsSecondaryList() {
+    return (
+      this.activeMasterContext === "hubs" &&
+      !this.isMasterPaneActive &&
+      !this.isRailOrTouchSurface &&
+      this.hubsWithTerets.length > 0
+    );
+  }
+
   get bookmarksUrl() {
     return this.currentUser
       ? `/u/${this.currentUser.username}/activity/bookmarks`
@@ -138,6 +205,7 @@ export default class FomioSidebar extends Component {
 
   get ariaLabel()          { return i18n(themePrefix("sidebar.aria_label")); }
   get searchLabel()        { return i18n(themePrefix("sidebar.search_label")); }
+  get searchHint()         { return i18n(themePrefix("sidebar.search_hint")); }
   get latestLabel()        { return i18n(themePrefix("sidebar.latest")); }
   get hotLabel()           { return i18n(themePrefix("sidebar.hot")); }
   get hubsLabel()          { return i18n(themePrefix("sidebar.hubs")); }
@@ -156,7 +224,7 @@ export default class FomioSidebar extends Component {
     if (this.currentUser) {
       this.composer.openNewTopic();
     } else {
-      window.location.href = WEB_LOGIN_URL;
+      redirectToLoginWithIntent("create_byte", this.currentPath);
     }
   }
 
@@ -172,6 +240,7 @@ export default class FomioSidebar extends Component {
   onNavClick(e) {
     if (e.target.closest("a[href]")) {
       document.body.classList.remove("fomio-mobile-sidebar-open");
+      document.body.classList.remove("fomio-master-pane-rail-open");
     }
   }
 
@@ -179,6 +248,40 @@ export default class FomioSidebar extends Component {
   @action
   closeMobile() {
     document.body.classList.remove("fomio-mobile-sidebar-open");
+  }
+
+  @action
+  onHubsActivate(e) {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const classes = document.body?.classList;
+    const canOpenRailOverlay =
+      classes?.contains("fomio-surface-rail") &&
+      classes?.contains("fomio-sidebar-active") &&
+      !classes?.contains("fomio-auth-mode");
+
+    if (!canOpenRailOverlay) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (
+      typeof window !== "undefined" &&
+      window.localStorage?.getItem("fomio_debug_master_pane") === "1"
+    ) {
+      console.debug("[fomio-sidebar] dispatch open overlay", {
+        context: "hubs",
+        path: this.currentPath,
+      });
+    }
+    window.dispatchEvent(
+      new CustomEvent("fomio:master-pane:open", {
+        detail: { context: "hubs" },
+      })
+    );
   }
 
   <template>
@@ -192,7 +295,12 @@ export default class FomioSidebar extends Component {
         {{on "click" this.closeMobile}}
       ></div>
 
-      <nav class="fomio-sidebar" aria-label={{this.ariaLabel}} {{on "click" this.onNavClick}}>
+      <nav
+        class="fomio-sidebar"
+        data-fomio-master-context={{this.activeMasterContext}}
+        aria-label={{this.ariaLabel}}
+        {{on "click" this.onNavClick}}
+      >
 
         {{! ── Mobile close button — hidden on desktop via CSS ──────── }}
         <button
@@ -210,9 +318,17 @@ export default class FomioSidebar extends Component {
             <span class="fomio-sidebar__wordmark-text">Fomio</span>
           </a>
 
-          <a href="/search" class="fomio-sidebar__search-trigger" aria-label={{this.searchLabel}} title={{this.searchLabel}}>
+          <a
+            href="/search"
+            class="fomio-sidebar__search-trigger"
+            aria-label={{this.searchLabel}}
+            title={{this.searchLabel}}
+          >
             <span class="fomio-sidebar__icon">{{icon "magnifying-glass"}}</span>
-            <span class="fomio-sidebar__item-label">{{this.searchLabel}}</span>
+            <span class="fomio-sidebar__item-label">
+              <span class="fomio-sidebar__search-title">{{this.searchLabel}}</span>
+              <span class="fomio-sidebar__search-hint">{{this.searchHint}}</span>
+            </span>
           </a>
         </div>
 
@@ -220,7 +336,7 @@ export default class FomioSidebar extends Component {
         <div class="fomio-sidebar__zone fomio-sidebar__zone--core">
           <a
             href="/latest"
-            class="fomio-sidebar__item {{if this.isLatestActive 'is-active'}}"
+              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'home') 'is-active'}}"
             aria-current={{if this.isLatestActive "page"}}
             title={{this.latestLabel}}
           >
@@ -242,82 +358,85 @@ export default class FomioSidebar extends Component {
           <div class="fomio-sidebar__section">
             <a
               href="/categories"
-              class="fomio-sidebar__item {{if this.isHubsActive 'is-active'}}"
+              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'hubs') 'is-active'}}"
               aria-current={{if this.isHubsActive "page"}}
               title={{this.hubsLabel}}
+              {{on "click" this.onHubsActivate}}
             >
               <span class="fomio-sidebar__icon">{{icon "compass"}}</span>
               <span class="fomio-sidebar__item-label">{{this.hubsLabel}}</span>
             </a>
 
-            <ul class="fomio-sidebar__hub-list" aria-label={{this.hubsLabel}}>
-              {{#each this.hubsWithTerets as |entry|}}
-                {{#let entry.hub entry.terets as |hub terets|}}
-                  <li class="fomio-sidebar__hub-item">
+            {{#if this.showHubsSecondaryList}}
+              <ul class="fomio-sidebar__hub-list" aria-label={{this.hubsLabel}}>
+                {{#each this.hubsWithTerets as |entry|}}
+                  {{#let entry.hub entry.terets as |hub terets|}}
+                    <li class="fomio-sidebar__hub-item">
 
-                    {{! Hub row: name navigates, chevron toggles }}
-                    <div class="fomio-sidebar__hub-row {{if (eq this.activeHubId hub.id) 'is-active'}}">
-                      <a
-                        href="/c/{{hub.slug}}/{{hub.id}}"
-                        class="fomio-sidebar__hub-link"
-                        aria-current={{if (eq this.activeHubId hub.id) "page"}}
-                      >
-                        <span
-                          class="fomio-sidebar__hub-dot"
-                          style="background: #{{hub.color}}"
-                          aria-hidden="true"
-                        ></span>
-                        <span class="fomio-sidebar__hub-name">{{hub.name}}</span>
-                      </a>
-
-                      {{#if terets.length}}
-                        <button
-                          type="button"
-                          class="fomio-sidebar__hub-chevron {{if (eq this.expandedHubId hub.id) 'is-open'}}"
-                          aria-expanded={{if (eq this.expandedHubId hub.id) "true" "false"}}
-                          aria-label="{{hub.name}} terets"
-                          {{on "click" (fn this.toggleHub hub.id)}}
+                      {{! Hub row: name navigates, chevron toggles }}
+                      <div class="fomio-sidebar__hub-row {{if (eq this.activeHubId hub.id) 'is-active'}}">
+                        <a
+                          href="/c/{{hub.slug}}/{{hub.id}}"
+                          class="fomio-sidebar__hub-link"
+                          aria-current={{if (eq this.activeHubId hub.id) "page"}}
                         >
-                          {{icon "angle-right"}}
-                        </button>
+                          <span
+                            class="fomio-sidebar__hub-dot"
+                            style="background: #{{hub.color}}"
+                            aria-hidden="true"
+                          ></span>
+                          <span class="fomio-sidebar__hub-name">{{hub.name}}</span>
+                        </a>
+
+                        {{#if terets.length}}
+                          <button
+                            type="button"
+                            class="fomio-sidebar__hub-chevron {{if (eq this.expandedHubId hub.id) 'is-open'}}"
+                            aria-expanded={{if (eq this.expandedHubId hub.id) "true" "false"}}
+                            aria-label="{{hub.name}} terets"
+                            {{on "click" (fn this.toggleHub hub.id)}}
+                          >
+                            {{icon "angle-right"}}
+                          </button>
+                        {{/if}}
+                      </div>
+
+                      {{! Teret sub-list }}
+                      {{#if (eq this.expandedHubId hub.id)}}
+                        <ul class="fomio-sidebar__teret-list">
+                          {{#each terets as |teret|}}
+                            <li>
+                              <a
+                                href="/c/{{hub.slug}}/{{teret.slug}}/{{teret.id}}"
+                                class="fomio-sidebar__teret-link {{if (eq this.activeTeretId teret.id) 'is-active'}}"
+                                aria-current={{if (eq this.activeTeretId teret.id) "page"}}
+                              >
+                                <span class="fomio-sidebar__teret-name">{{teret.name}}</span>
+                              </a>
+                            </li>
+                          {{/each}}
+                        </ul>
                       {{/if}}
-                    </div>
 
-                    {{! Teret sub-list }}
-                    {{#if (eq this.expandedHubId hub.id)}}
-                      <ul class="fomio-sidebar__teret-list">
-                        {{#each terets as |teret|}}
-                          <li>
-                            <a
-                              href="/c/{{hub.slug}}/{{teret.slug}}/{{teret.id}}"
-                              class="fomio-sidebar__teret-link {{if (eq this.activeTeretId teret.id) 'is-active'}}"
-                              aria-current={{if (eq this.activeTeretId teret.id) "page"}}
-                            >
-                              <span class="fomio-sidebar__teret-name">{{teret.name}}</span>
-                            </a>
-                          </li>
-                        {{/each}}
-                      </ul>
-                    {{/if}}
+                    </li>
+                  {{/let}}
+                {{/each}}
 
+                {{#if this.hasMoreHubs}}
+                  <li>
+                    <a href="/categories" class="fomio-sidebar__hub-more">
+                      {{this.allHubsLabel}}
+                    </a>
                   </li>
-                {{/let}}
-              {{/each}}
-
-              {{#if this.hasMoreHubs}}
-                <li>
-                  <a href="/categories" class="fomio-sidebar__hub-more">
-                    {{this.allHubsLabel}}
-                  </a>
-                </li>
-              {{/if}}
-            </ul>
+                {{/if}}
+              </ul>
+            {{/if}}
           </div>
 
           {{#if this.currentUser}}
             <a
               href={{this.bookmarksUrl}}
-              class="fomio-sidebar__item {{if this.isBookmarksActive 'is-active'}}"
+              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'bookmarks') 'is-active'}}"
               aria-current={{if this.isBookmarksActive "page"}}
               title={{this.bookmarksLabel}}
             >
@@ -342,7 +461,7 @@ export default class FomioSidebar extends Component {
           {{#if this.currentUser}}
             <a
               href="/notifications"
-              class="fomio-sidebar__item {{if this.isNotificationsActive 'is-active'}}"
+              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'notifications') 'is-active'}}"
               aria-current={{if this.isNotificationsActive "page"}}
               title={{this.notificationsLabel}}
             >
@@ -350,12 +469,15 @@ export default class FomioSidebar extends Component {
               <span class="fomio-sidebar__item-label">{{this.notificationsLabel}}</span>
             </a>
 
-            <a href={{this.profileUrl}} class="fomio-sidebar__item fomio-sidebar__item--profile">
+            <a
+              href={{this.profileUrl}}
+              class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+            >
               <span class="fomio-sidebar__icon">{{icon "user"}}</span>
               <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
             </a>
           {{else}}
-            <a href={{this.profileUrl}} class="fomio-sidebar__item">
+            <a href={{this.profileUrl}} class="fomio-sidebar__item {{if (eq this.activeMasterContext 'profile') 'is-active'}}">
               <span class="fomio-sidebar__icon">{{icon "user"}}</span>
               <span class="fomio-sidebar__item-label">{{this.signInLabel}}</span>
             </a>

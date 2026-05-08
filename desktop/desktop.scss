@@ -3,15 +3,19 @@
 // Activated by body.fomio-sidebar-active (see fomio-layout.gjs).
 // ============================================================
 
-@media (min-width: 640px) {
-  // Show the sidebar
-  body.fomio-sidebar-active .fomio-sidebar {
+// Surface-driven shell behavior: expanded/compact/rail own the desktop shell.
+body.fomio-sidebar-active:not(.fomio-auth-mode):is(
+  .fomio-surface-expanded,
+  .fomio-surface-compact-desktop,
+  .fomio-surface-rail
+) {
+  .fomio-sidebar {
     display: flex;
   }
 
-  // Collapse the Discourse header — its UI is replaced by sidebar zones.
-  // Keeping it in the DOM at height:0 preserves internal Discourse references.
-  body.fomio-sidebar-active .d-header {
+  // Collapse Discourse desktop header only for non-touch shell surfaces.
+  // Touch keeps native mobile header behavior.
+  .d-header {
     height: 0;
     overflow: hidden;
     padding: 0;
@@ -19,18 +23,38 @@
     min-height: 0;
   }
 
-  // Shift content area right to clear the fixed sidebar
-  body.fomio-sidebar-active #main-outlet-wrapper {
-    padding-inline-start: var(--fomio-sidebar-width);
-    // Reset Discourse's sidebar grid — we own the layout now
+  // Reset Discourse's sidebar grid — Fomio shell owns layout reservation.
+  #main-outlet-wrapper {
     display: block;
   }
 
   // Buffer between sidebar edge and content. Without this, .full-width rows
   // sit flush against the left edge of the outlet and touch the sidebar rail
   // as the viewport compresses.
-  body.fomio-sidebar-active #main-outlet {
+  #main-outlet {
     padding-inline: 1.25rem 1rem;
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+  .fomio-sidebar {
+    width: var(--fomio-sidebar-width);
+    overflow-x: hidden;
+  }
+
+  // Search entry should read like a calm command entry, not a heavy button.
+  .fomio-sidebar__search-trigger {
+    padding-block: calc(var(--fomio-space-xs) + 1px);
+    border-color: var(--fomio-border-soft);
+    background: color-mix(in srgb, var(--fomio-surface) 82%, transparent);
+  }
+}
+
+// Fallback until resolver marks body as ready.
+@media (min-width: 640px) {
+  body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-ready) .fomio-sidebar {
+    display: flex;
   }
 }
 
@@ -151,175 +175,178 @@
 // entirely — the Hubs icon still links to /categories.
 // ============================================================
 
-@media (min-width: 640px) and (max-width: 1099px) {
-  body.fomio-sidebar-active {
-    // ── 1. Geometry ─────────────────────────────────────────
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
+  // Floating rail labels intentionally overflow the rail itself, but the page
+  // must never gain horizontal scroll because of those chips.
+  overflow-x: hidden;
 
-    .fomio-sidebar {
-      width: var(--fomio-sidebar-rail-width);
-      // overflow-x: hidden (from common.scss) clips the floating label chips.
-      // Rail has too few items to need vertical scroll, so safe to lift both.
-      overflow: visible;
+  // ── 1. Geometry ─────────────────────────────────────────
+
+  .fomio-sidebar {
+    width: var(--fomio-sidebar-rail-width);
+    // overflow-x: hidden (from common.scss) clips the floating label chips.
+    // Rail has too few items to need vertical scroll, so safe to lift both.
+    overflow: visible;
+  }
+
+  // ── 2. Remove text layers that don't belong in the rail ─
+
+  .fomio-sidebar__wordmark-text,
+  .fomio-sidebar__hub-list {
+    display: none;
+  }
+
+  // ── 3. Zone layout ───────────────────────────────────────
+
+  .fomio-sidebar__zone {
+    align-items: center;
+    padding-inline: var(--fomio-space-xs);
+  }
+
+  // zone--core has overflow-y:auto in common.scss which forces overflow-x:auto
+  // per CSS spec (visible + non-visible mix is coerced to auto/auto).
+  // Rail items are few; no scroll needed. Reset to visible so the zone doesn't
+  // become a scroll container that clips the floating label chips.
+  .fomio-sidebar__zone--core {
+    overflow: visible;
+  }
+
+  .fomio-sidebar__wordmark {
+    justify-content: center;
+    padding: var(--fomio-space-sm);
+  }
+
+  // ── 4. Items: icon-only, touch-safe, with hover reveal ──
+
+  .fomio-sidebar__item,
+  .fomio-sidebar__search-trigger {
+    position: relative;
+    justify-content: center;
+    padding: 0.5rem 0;
+    width: 100%;
+    min-height: 44px; // WCAG touch target minimum
+  }
+
+  // Scale glyphs down to feel precise rather than heavy in the narrow rail
+  .fomio-sidebar__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  // Active state: left-edge accent so location is clear without labels
+  .fomio-sidebar__item.is-active {
+    box-shadow: inset 3px 0 0 var(--fomio-primary);
+  }
+
+  // Icon micro-feedback on hover — scale only the glyph, not the background
+  @media (prefers-reduced-motion: no-preference) {
+    .fomio-sidebar__item:hover .fomio-sidebar__icon,
+    .fomio-sidebar__search-trigger:hover .fomio-sidebar__icon {
+      transform: scale(1.12);
+      transition: transform 120ms ease;
+    }
+  }
+
+  // ── 5. Floating label reveal ─────────────────────────────
+  // Labels leave normal flow and appear as a small chip to
+  // the right of the rail on hover/focus. They are invisible
+  // at rest so they never break the collapsed layout.
+
+  .fomio-sidebar__item-label {
+    position: absolute;
+    inset-inline-start: calc(100% + var(--fomio-space-sm));
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-sm);
+    padding: var(--fomio-space-xs) var(--fomio-space-sm);
+    font-size: var(--fomio-text-xs);
+    font-family: var(--fomio-font-ui);
+    font-weight: 500;
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-text);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 950;
+    box-shadow: 0 2px 8px var(--fomio-shadow);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity 100ms ease;
+    }
+  }
+
+  .fomio-sidebar__item:hover .fomio-sidebar__item-label,
+  .fomio-sidebar__item:focus-visible .fomio-sidebar__item-label,
+  .fomio-sidebar__item:focus-within .fomio-sidebar__item-label,
+  .fomio-sidebar__search-trigger:hover .fomio-sidebar__item-label,
+  .fomio-sidebar__search-trigger:focus-visible .fomio-sidebar__item-label,
+  .fomio-sidebar__search-trigger:focus-within .fomio-sidebar__item-label {
+    opacity: 1;
+  }
+
+  // ── 6. Search trigger: subtle tint keeps it distinct ────
+
+  .fomio-sidebar__search-trigger {
+    background: var(--fomio-surface);
+    border-color: transparent;
+    align-items: center;
+
+    &:hover {
+      border-color: var(--fomio-border);
+    }
+  }
+
+  .fomio-sidebar__search-hint {
+    display: none;
+  }
+
+  // ── 7. Reduced-motion: strip all rail animations ─────────
+  // Respects user OS setting; aligns with Fomio's calm ethos.
+
+  @media (prefers-reduced-motion: reduce) {
+    .fomio-sidebar__icon {
+      transform: none !important;
+      transition: none !important;
     }
 
-    #main-outlet-wrapper {
-      padding-inline-start: var(--fomio-sidebar-rail-width);
+    .fomio-sidebar__item-label {
+      transition: none !important;
     }
+  }
 
-    // ── 2. Remove text layers that don't belong in the rail ─
+  // ── 8. Create Byte: icon-only circle ─────────────────────
 
-    .fomio-sidebar__wordmark-text,
-    .fomio-sidebar__hub-list {
+  .fomio-sidebar__create-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    align-self: center;
+    margin-left: auto;
+    margin-right: auto;
+
+    span:not(.fomio-sidebar__icon) {
       display: none;
     }
 
-    // ── 3. Zone layout ───────────────────────────────────────
-
-    .fomio-sidebar__zone {
-      align-items: center;
-      padding-inline: var(--fomio-space-xs);
-    }
-
-    // zone--core has overflow-y:auto in common.scss which forces overflow-x:auto
-    // per CSS spec (visible + non-visible mix is coerced to auto/auto).
-    // Rail items are few; no scroll needed. Reset to visible so the zone doesn't
-    // become a scroll container that clips the floating label chips.
-    .fomio-sidebar__zone--core {
-      overflow: visible;
-    }
-
-    .fomio-sidebar__wordmark {
-      justify-content: center;
-      padding: var(--fomio-space-sm);
-    }
-
-    // ── 4. Items: icon-only, touch-safe, with hover reveal ──
-
-    .fomio-sidebar__item,
-    .fomio-sidebar__search-trigger {
-      position: relative;
-      justify-content: center;
-      padding: 0.5rem 0;
-      width: 100%;
-      min-height: 44px; // WCAG touch target minimum
-    }
-
-    // Scale glyphs down to feel precise rather than heavy in the narrow rail
     .fomio-sidebar__icon {
-      width: 20px;
-      height: 20px;
-    }
-
-    // Active state: left-edge accent so location is clear without labels
-    .fomio-sidebar__item.is-active {
-      box-shadow: inset 3px 0 0 var(--fomio-primary);
-    }
-
-    // Icon micro-feedback on hover — scale only the glyph, not the background
-    @media (prefers-reduced-motion: no-preference) {
-      .fomio-sidebar__item:hover .fomio-sidebar__icon,
-      .fomio-sidebar__search-trigger:hover .fomio-sidebar__icon {
-        transform: scale(1.12);
-        transition: transform 120ms ease;
-      }
-    }
-
-    // ── 5. Floating label reveal ─────────────────────────────
-    // Labels leave normal flow and appear as a small chip to
-    // the right of the rail on hover/focus. They are invisible
-    // at rest so they never break the collapsed layout.
-
-    .fomio-sidebar__item-label {
-      position: absolute;
-      inset-inline-start: calc(100% + var(--fomio-space-sm));
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--fomio-card);
-      border: 1px solid var(--fomio-border);
-      border-radius: var(--fomio-radius-sm);
-      padding: var(--fomio-space-xs) var(--fomio-space-sm);
-      font-size: var(--fomio-text-xs);
-      font-family: var(--fomio-font-ui);
-      font-weight: 500;
-      letter-spacing: var(--fomio-tracking-wide);
-      color: var(--fomio-text);
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 950;
-      box-shadow: 0 2px 8px var(--fomio-shadow);
-
-      @media (prefers-reduced-motion: no-preference) {
-        transition: opacity 100ms ease;
-      }
-    }
-
-    .fomio-sidebar__item:hover .fomio-sidebar__item-label,
-    .fomio-sidebar__item:focus-visible .fomio-sidebar__item-label,
-    .fomio-sidebar__item:focus-within .fomio-sidebar__item-label,
-    .fomio-sidebar__search-trigger:hover .fomio-sidebar__item-label,
-    .fomio-sidebar__search-trigger:focus-visible .fomio-sidebar__item-label,
-    .fomio-sidebar__search-trigger:focus-within .fomio-sidebar__item-label {
-      opacity: 1;
-    }
-
-    // ── 6. Search trigger: subtle tint keeps it distinct ────
-
-    .fomio-sidebar__search-trigger {
-      background: var(--fomio-surface);
-      border-color: transparent;
-
-      &:hover {
-        border-color: var(--fomio-border);
-      }
-    }
-
-    // ── 7. Reduced-motion: strip all rail animations ─────────
-    // Respects user OS setting; aligns with Fomio's calm ethos.
-
-    @media (prefers-reduced-motion: reduce) {
-      .fomio-sidebar__icon {
-        transform: none !important;
-        transition: none !important;
-      }
-
-      .fomio-sidebar__item-label {
-        transition: none !important;
-      }
-    }
-
-    // ── 8. Create Byte: icon-only circle ─────────────────────
-
-    .fomio-sidebar__create-btn {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border-radius: 50%;
-      align-self: center;
-      margin-left: auto;
-      margin-right: auto;
+    }
 
-      span:not(.fomio-sidebar__icon) {
-        display: none;
-      }
-
-      .fomio-sidebar__icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      // common.scss scopes the icon svg to 0.875rem without display:block,
-      // leaving it baseline-aligned. Override here to optical center.
-      .fomio-sidebar__icon svg {
-        display: block;
-        width: 1rem;
-        height: 1rem;
-      }
+    // common.scss scopes the icon svg to 0.875rem without display:block,
+    // leaving it baseline-aligned. Override here to optical center.
+    .fomio-sidebar__icon svg {
+      display: block;
+      width: 1rem;
+      height: 1rem;
     }
   }
 }
@@ -352,5 +379,120 @@
 @media (min-width: 900px) {
   .fomio-byte-actions {
     margin-top: 28px;
+  }
+}
+
+// ============================================================
+// SETTINGS DETAIL ALIGNMENT (Slice 6B)
+// Desktop only, and only when the Settings Master Pane is active:
+// [Sidebar OS] [Settings Master Pane] [Discourse detail surface]
+// ============================================================
+
+body.fomio-settings-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+  // Keep detail content calm and column-aligned with the rest of Fomio.
+  #main-outlet {
+    overflow-x: hidden;
+  }
+
+  .user-main,
+  .user-main .about,
+  .user-main .user-content,
+  .user-main .user-preferences {
+    width: min(100%, var(--fomio-column-w));
+    max-width: var(--fomio-column-w);
+  }
+
+  .user-main .about,
+  .user-main .user-content,
+  .user-main .user-preferences {
+    margin-inline: 0 auto;
+  }
+
+  // Master Pane owns settings navigation depth for this shell.
+  // Hide duplicate Discourse profile/settings nav rails and tabs.
+  .user-main .user-navigation,
+  .user-main .user-secondary-navigation,
+  .user-main .nav-pills.user-nav,
+  .user-main .preferences-nav,
+  .user-main .user-nav {
+    display: none !important;
+  }
+
+  // Soften oversized profile/settings headers without removing context.
+  .user-main .about .details,
+  .user-main .user-content h1,
+  .user-main .user-preferences h1 {
+    margin-top: 0;
+  }
+
+  .user-main .user-content h1,
+  .user-main .user-preferences h1 {
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.5rem, 1.35rem + 0.4vw, 1.8rem);
+    line-height: 1.2;
+    color: var(--fomio-text);
+    letter-spacing: var(--fomio-tracking-tight);
+    margin-bottom: 0.75rem;
+  }
+
+  // Light, readable form and panel framing while preserving native behavior.
+  .user-main .control-group,
+  .user-main .pref-control,
+  .user-main .pref-description,
+  .user-main .email-group,
+  .user-main .form-vertical .control-group {
+    margin-bottom: 0.95rem;
+  }
+
+  .user-main .form-vertical,
+  .user-main .user-preferences .pref-group,
+  .user-main .user-preferences .control-group,
+  .user-main .user-content .control-group,
+  .user-main .user-content .pref-control {
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-md);
+    padding: 0.8rem 0.95rem;
+  }
+
+  .user-main label,
+  .user-main .control-label,
+  .user-main .pref-title {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .user-main .pref-description,
+  .user-main .instructions,
+  .user-main .control-instructions {
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    line-height: 1.45;
+  }
+
+  .user-main input[type="text"],
+  .user-main input[type="email"],
+  .user-main input[type="password"],
+  .user-main input[type="number"],
+  .user-main textarea,
+  .user-main select,
+  .user-main .select-kit .select-kit-header {
+    background: var(--fomio-surface);
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-sm);
+    color: var(--fomio-text);
+  }
+
+  // Preserve visibility and usability of security/destructive actions.
+  .user-main .btn-danger,
+  .user-main .btn.btn-danger,
+  .user-main .user-preferences .controls .btn-danger {
+    opacity: 1;
+    filter: none;
   }
 }

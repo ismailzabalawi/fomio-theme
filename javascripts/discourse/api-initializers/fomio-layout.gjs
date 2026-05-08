@@ -52,6 +52,9 @@ export default apiInitializer("1.8.0", (api) => {
     // Close the mobile sidebar on every navigation so it doesn't stay open
     // after the user taps a link inside it.
     document.body.classList.remove("fomio-mobile-sidebar-open");
+    // Rail master pane overlay is transient UI and should never persist
+    // across route changes.
+    document.body.classList.remove("fomio-master-pane-rail-open");
   }
 
   syncLayoutClasses();

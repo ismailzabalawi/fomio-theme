@@ -124,6 +124,24 @@ Standard users see a calm, lightweight reading UI. Moderators and admins see con
 - **Persistent workspaces:** reading sessions, pinned contexts, focused modes
 - **Shared philosophy** across mobile, CLI, and web (implementations differ; principles do not)
 
+### Surface Adaptation Model (Required)
+
+See `docs/surface-adaptation-model.md`.
+
+Fomio adapts by changing interaction density and navigation behavior based on spatial context. It does not adapt by blindly shrinking or hiding UI.
+
+Required surface modes:
+- `expanded` (`>= 1280px`)
+- `compact-desktop` (`1024px-1279px`)
+- `rail` (`768px-1023px`)
+- `touch` (`< 768px`)
+
+Rules:
+- preserve shell continuity across transitions
+- degrade desktop to `rail` for narrow windows, not `touch`
+- treat foldables as dynamic spatial contexts, not static device types
+- keep composer state stable across resize, rotate, and fold transitions
+
 ### The Final Test
 
 > Fomio Web should never feel like "a themed Discourse forum."
