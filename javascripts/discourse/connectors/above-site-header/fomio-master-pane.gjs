@@ -26,6 +26,22 @@ function isAuthPath(url) {
   return AUTH_PATHS.some((p) => url.startsWith(p));
 }
 
+// Keep in sync with fomio-sidebar.gjs — Discourse user notification routes live
+// under /u/:username/notifications/* as well as /notifications and /my/notifications.
+function isNotificationsSectionPath(path) {
+  const p = path.split("?")[0];
+  if (p === "/notifications" || p.startsWith("/notifications/")) {
+    return true;
+  }
+  if (/^\/u\/[^/]+\/notifications(\/|$)/.test(p)) {
+    return true;
+  }
+  if (p.startsWith("/my/notifications")) {
+    return true;
+  }
+  return false;
+}
+
 export default class FomioMasterPane extends Component {
   @service router;
   @service site;
@@ -40,11 +56,11 @@ export default class FomioMasterPane extends Component {
     this._onKeydown = (event) => this.handleEscape(event);
     this._onResize = () => {
       this.syncRailOverlayEligibility();
-      this.syncSettingsDetailShellClass();
+      this.syncMasterDetailShellClasses();
     };
     this._onRouteDidChange = () => {
       this.closeRailOverlay("route-change");
-      this.syncSettingsDetailShellClass();
+      this.syncMasterDetailShellClasses();
     };
     if (typeof document !== "undefined") {
       window.addEventListener("fomio:master-pane:open", this._onOpenRequest);
@@ -55,7 +71,7 @@ export default class FomioMasterPane extends Component {
     if (typeof this.router?.on === "function") {
       this.router.on("routeDidChange", this._onRouteDidChange);
     }
-    this.syncSettingsDetailShellClass();
+    this.syncMasterDetailShellClasses();
   }
 
   willDestroy() {
@@ -69,6 +85,8 @@ export default class FomioMasterPane extends Component {
       }
       document.body.classList.remove("fomio-master-pane-rail-open");
       document.body.classList.remove("fomio-settings-master-active");
+      document.body.classList.remove("fomio-bookmarks-master-active");
+      document.body.classList.remove("fomio-notifications-master-active");
     }
     if (typeof document !== "undefined" && this._onKeydown) {
       document.removeEventListener("keydown", this._onKeydown);
@@ -133,7 +151,7 @@ export default class FomioMasterPane extends Component {
     if (p.includes("bookmarks")) {
       return "bookmarks";
     }
-    if (p.startsWith("/notifications")) {
+    if (isNotificationsSectionPath(p)) {
       return "notifications";
     }
     if (p.startsWith("/u/") || p.startsWith("/my/")) {
@@ -177,7 +195,8 @@ export default class FomioMasterPane extends Component {
     return (
       (this.activeMasterContext === "hubs" ||
         this.activeMasterContext === "profile" ||
-        this.activeMasterContext === "bookmarks") &&
+        this.activeMasterContext === "bookmarks" ||
+        this.activeMasterContext === "notifications") &&
       this.isExpandedOrCompactSurface
     );
   }
@@ -352,7 +371,7 @@ export default class FomioMasterPane extends Component {
     if (typeof document !== "undefined") {
       document.body.classList.remove("fomio-master-pane-rail-open");
     }
-    this.syncSettingsDetailShellClass();
+    this.syncMasterDetailShellClasses();
   }
 
   @action
@@ -369,7 +388,7 @@ export default class FomioMasterPane extends Component {
     if (typeof document !== "undefined") {
       document.body.classList.add("fomio-master-pane-rail-open");
     }
-    this.syncSettingsDetailShellClass();
+    this.syncMasterDetailShellClasses();
     if (
       typeof window !== "undefined" &&
       window.localStorage?.getItem("fomio_debug_master_pane") === "1"
@@ -391,18 +410,35 @@ export default class FomioMasterPane extends Component {
     }
   }
 
-  syncSettingsDetailShellClass() {
+  syncMasterDetailShellClasses() {
     if (typeof document === "undefined") {
       return;
     }
-    const isSettingsDesktopMasterPane =
-      this.activeMasterContext === "profile" &&
+    const desktopShell =
       this.isExpandedOrCompactSurface &&
       this.isShellActive &&
       !isAuthPath(this.currentPath);
+
+    const isSettingsDesktopMasterPane =
+      this.activeMasterContext === "profile" && desktopShell;
+
+    const isBookmarksDesktopMasterPane =
+      this.activeMasterContext === "bookmarks" && desktopShell;
+
+    const isNotificationsDesktopMasterPane =
+      this.activeMasterContext === "notifications" && desktopShell;
+
     document.body.classList.toggle(
       "fomio-settings-master-active",
       isSettingsDesktopMasterPane
+    );
+    document.body.classList.toggle(
+      "fomio-bookmarks-master-active",
+      isBookmarksDesktopMasterPane
+    );
+    document.body.classList.toggle(
+      "fomio-notifications-master-active",
+      isNotificationsDesktopMasterPane
     );
   }
 
@@ -434,6 +470,9 @@ export default class FomioMasterPane extends Component {
     if (this.activeMasterContext === "bookmarks") {
       return i18n(themePrefix("bookmarks_master_pane.title"));
     }
+    if (this.activeMasterContext === "notifications") {
+      return i18n(themePrefix("notifications_master_pane.title"));
+    }
     return i18n(themePrefix("hubs_index.title"));
   }
 
@@ -443,6 +482,9 @@ export default class FomioMasterPane extends Component {
     }
     if (this.activeMasterContext === "bookmarks") {
       return i18n(themePrefix("bookmarks_master_pane.description"));
+    }
+    if (this.activeMasterContext === "notifications") {
+      return i18n(themePrefix("notifications_master_pane.description"));
     }
     return i18n(themePrefix("hubs_index.description"));
   }
@@ -571,6 +613,127 @@ export default class FomioMasterPane extends Component {
     ];
   }
 
+  get notificationsLinks() {
+    const login = "/login?fomio_web=1";
+    const username = this.currentUser?.username;
+    if (!username) {
+      return [
+        {
+          key: "all",
+          label: i18n(themePrefix("notifications_master_pane.all")),
+          href: login,
+          isActive: false,
+        },
+        {
+          key: "replies",
+          label: i18n(themePrefix("notifications_master_pane.replies")),
+          href: login,
+          isActive: false,
+        },
+        {
+          key: "mentions",
+          label: i18n(themePrefix("notifications_master_pane.mentions")),
+          href: login,
+          isActive: false,
+        },
+        {
+          key: "likes",
+          label: i18n(themePrefix("notifications_master_pane.likes")),
+          href: login,
+          isActive: false,
+        },
+        {
+          key: "messages",
+          label: i18n(themePrefix("notifications_master_pane.messages")),
+          href: login,
+          isActive: false,
+        },
+        {
+          key: "settings",
+          label: i18n(themePrefix("notifications_master_pane.settings")),
+          href: login,
+          isActive: false,
+        },
+      ];
+    }
+
+    const u = `/u/${username}`;
+    const p = this.currentPath.replace(/\/+$/, "") || "/";
+
+    const allActive =
+      p === "/notifications" ||
+      p === `${u}/notifications` ||
+      p === "/my/notifications";
+
+    const repliesActive =
+      p === `${u}/notifications/responses` ||
+      p.startsWith(`${u}/notifications/responses/`) ||
+      p === "/my/notifications/responses" ||
+      p.startsWith("/my/notifications/responses/");
+
+    const mentionsActive =
+      p === `${u}/notifications/mentions` ||
+      p.startsWith(`${u}/notifications/mentions/`) ||
+      p === "/my/notifications/mentions" ||
+      p.startsWith("/my/notifications/mentions/");
+
+    const likesActive =
+      p === `${u}/notifications/likes-received` ||
+      p.startsWith(`${u}/notifications/likes-received/`) ||
+      p === "/my/notifications/likes-received" ||
+      p.startsWith("/my/notifications/likes-received/");
+
+    const messagesActive =
+      p === `${u}/messages` ||
+      p.startsWith(`${u}/messages/`) ||
+      p === "/my/messages" ||
+      p.startsWith("/my/messages/");
+
+    const settingsActive = this.isCurrentPath(
+      `${u}/preferences/notifications`,
+      "/my/preferences/notifications*"
+    );
+
+    return [
+      {
+        key: "all",
+        label: i18n(themePrefix("notifications_master_pane.all")),
+        href: "/notifications",
+        isActive: allActive,
+      },
+      {
+        key: "replies",
+        label: i18n(themePrefix("notifications_master_pane.replies")),
+        href: `${u}/notifications/responses`,
+        isActive: repliesActive,
+      },
+      {
+        key: "mentions",
+        label: i18n(themePrefix("notifications_master_pane.mentions")),
+        href: `${u}/notifications/mentions`,
+        isActive: mentionsActive,
+      },
+      {
+        key: "likes",
+        label: i18n(themePrefix("notifications_master_pane.likes")),
+        href: `${u}/notifications/likes-received`,
+        isActive: likesActive,
+      },
+      {
+        key: "messages",
+        label: i18n(themePrefix("notifications_master_pane.messages")),
+        href: `${u}/messages`,
+        isActive: messagesActive,
+      },
+      {
+        key: "settings",
+        label: i18n(themePrefix("notifications_master_pane.settings")),
+        href: `${u}/preferences/notifications`,
+        isActive: settingsActive,
+      },
+    ];
+  }
+
   <template>
     {{#if this.shouldRenderMasterPane}}
       {{#if this.shouldRenderRailBackdrop}}
@@ -610,6 +773,16 @@ export default class FomioMasterPane extends Component {
               {{/each}}
             {{else if (eq this.activeMasterContext "bookmarks")}}
               {{#each this.bookmarksLinks as |link|}}
+                <a
+                  href={{link.href}}
+                  class="fomio-master-pane__item {{if link.isActive 'is-active'}}"
+                  aria-current={{if link.isActive "page"}}
+                >
+                  <span class="fomio-master-pane__name">{{link.label}}</span>
+                </a>
+              {{/each}}
+            {{else if (eq this.activeMasterContext "notifications")}}
+              {{#each this.notificationsLinks as |link|}}
                 <a
                   href={{link.href}}
                   class="fomio-master-pane__item {{if link.isActive 'is-active'}}"

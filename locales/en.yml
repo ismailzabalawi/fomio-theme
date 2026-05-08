@@ -123,6 +123,18 @@ en:
     saved_bytes: "Saved Bytes"
     discussions: "Replies / Discussions"
     activity: "Activity / Reading"
+  notifications_master_pane:
+    title: "Notifications"
+    description: "Replies, mentions, and updates that need your attention."
+    all: "All Notifications"
+    replies: "Replies"
+    mentions: "Mentions"
+    likes: "Likes"
+    messages: "Messages"
+    settings: "Notification settings"
+  notifications_detail:
+    heading_title: "Notifications"
+    heading_description: "Replies, mentions, likes, and account activity."
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"

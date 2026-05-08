@@ -496,3 +496,196 @@ body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-
     filter: none;
   }
 }
+
+// ============================================================
+// BOOKMARKS DETAIL ALIGNMENT (Slice 7C)
+// Desktop only when Bookmarks Master Pane is active:
+// [Sidebar OS] [Bookmarks Master Pane] [Discourse bookmarks detail]
+// No verified PluginOutlet for a safe editorial heading — style only.
+// ============================================================
+
+body.fomio-bookmarks-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-bookmarks-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+  #main-outlet {
+    overflow-x: hidden;
+  }
+
+  .user-main,
+  .user-main .about,
+  .user-main .user-content {
+    width: min(100%, var(--fomio-column-w));
+    max-width: var(--fomio-column-w);
+  }
+
+  .user-main .about,
+  .user-main .user-content {
+    margin-inline: 0 auto;
+  }
+
+  // Master Pane lists bookmarks depth; hide duplicate profile/activity tab chrome.
+  .user-main .user-navigation,
+  .user-main .user-secondary-navigation,
+  .user-main .nav-pills.user-nav,
+  .user-main .user-nav {
+    display: none !important;
+  }
+
+  .user-main .about .details,
+  .user-main .user-content h1 {
+    margin-top: 0;
+  }
+
+  .user-main .user-content h1 {
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.45rem, 1.3rem + 0.35vw, 1.75rem);
+    line-height: 1.2;
+    color: var(--fomio-text);
+    letter-spacing: var(--fomio-tracking-tight);
+    margin-bottom: 0.65rem;
+  }
+
+  .user-main .user-content {
+    padding-top: 0.25rem;
+  }
+
+  // Calmer activity / bookmark stream rhythm (preserve links and controls).
+  .user-main .user-stream,
+  .user-main .user-stream-wrapper {
+    margin-top: 0.35rem;
+  }
+
+  .user-main .user-stream .item,
+  .user-main .user-stream .user-stream-item,
+  .user-main .user-stream .stream-item {
+    padding-block: 0.55rem;
+    border-bottom: 1px solid var(--fomio-border-soft);
+    margin-bottom: 0;
+  }
+
+  .user-main .user-stream .item:last-child,
+  .user-main .user-stream .user-stream-item:last-child,
+  .user-main .user-stream .stream-item:last-child {
+    border-bottom: none;
+  }
+
+  .user-main .user-stream a,
+  .user-main .user-stream .btn,
+  .user-main .user-stream button {
+    opacity: 1;
+  }
+
+  .user-main .btn-danger,
+  .user-main .btn.btn-danger {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+// ============================================================
+// NOTIFICATIONS DETAIL ALIGNMENT (Slice 9B)
+// Desktop only when Notifications Master Pane is active.
+// ============================================================
+
+body.fomio-notifications-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+  #main-outlet {
+    overflow-x: hidden;
+  }
+
+  .user-main,
+  .user-main .about,
+  .user-main .user-content {
+    width: min(100%, var(--fomio-column-w));
+    max-width: var(--fomio-column-w);
+  }
+
+  .user-main .about,
+  .user-main .user-content {
+    margin-inline: 0 auto;
+  }
+
+  // Master Pane owns notification section depth; hide duplicate profile tabs.
+  .user-main .user-navigation,
+  .user-main .user-secondary-navigation,
+  .user-main .nav-pills.user-nav,
+  .user-main .user-nav {
+    display: none !important;
+  }
+
+  .user-main .about .details,
+  .user-main .user-content h1 {
+    margin-top: 0;
+  }
+
+  .user-main .user-content h1 {
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.45rem, 1.3rem + 0.35vw, 1.75rem);
+    line-height: 1.2;
+    color: var(--fomio-text);
+    letter-spacing: var(--fomio-tracking-tight);
+    margin-bottom: 0.5rem;
+  }
+
+  .user-main .user-content {
+    padding-top: 0.25rem;
+  }
+
+  // Optional connector heading (user-notifications-above-filter); keep compact.
+  .fomio-notifications-detail-heading {
+    margin: 0 0 0.65rem;
+  }
+
+  .fomio-notifications-detail-heading__title {
+    margin: 0;
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.35rem, 1.2rem + 0.3vw, 1.6rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--fomio-text);
+    letter-spacing: var(--fomio-tracking-tight);
+  }
+
+  .fomio-notifications-detail-heading__description {
+    margin: 0.35rem 0 0;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.45;
+    color: var(--fomio-muted);
+  }
+
+  // Preserve filter + list behavior; add calm rhythm only.
+  .user-main .user-notifications-filter {
+    margin-bottom: 0.65rem;
+  }
+
+  .user-main .user-notifications-list {
+    margin-top: 0.25rem;
+  }
+
+  .user-main .user-notifications-list > li {
+    padding-block: 0.45rem;
+    border-bottom: 1px solid var(--fomio-border-soft);
+  }
+
+  // Spinner may follow items; last notification row is last li, not last child.
+  .user-main .user-notifications-list > li:last-of-type {
+    border-bottom: none;
+  }
+
+  .user-main .user-notifications-list a,
+  .user-main .user-notifications-list .btn,
+  .user-main .user-notifications-list button {
+    opacity: 1;
+  }
+
+  .user-main .alert.alert-info,
+  .user-main .item.error {
+    opacity: 1;
+  }
+
+  .user-main .btn-danger,
+  .user-main .btn.btn-danger {
+    opacity: 1;
+    filter: none;
+  }
+}

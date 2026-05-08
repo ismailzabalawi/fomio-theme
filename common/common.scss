@@ -5505,6 +5505,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   letter-spacing: normal;
 }
 
+// Notifications detail heading connector — scoped to desktop shell via body class.
+body:not(.fomio-notifications-master-active) .fomio-notifications-detail-heading {
+  display: none !important;
+}
+
 // ── Hub tree ─────────────────────────────────────────────────
 
 .fomio-sidebar__section {

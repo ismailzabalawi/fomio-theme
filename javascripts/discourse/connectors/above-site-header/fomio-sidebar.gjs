@@ -29,6 +29,21 @@ function isAuthPath(url) {
   return AUTH_PATHS.some((p) => url.startsWith(p));
 }
 
+// Keep in sync with fomio-master-pane.gjs
+function isNotificationsSectionPath(path) {
+  const p = path.split("?")[0];
+  if (p === "/notifications" || p.startsWith("/notifications/")) {
+    return true;
+  }
+  if (/^\/u\/[^/]+\/notifications(\/|$)/.test(p)) {
+    return true;
+  }
+  if (p.startsWith("/my/notifications")) {
+    return true;
+  }
+  return false;
+}
+
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
 
@@ -93,7 +108,7 @@ export default class FomioSidebar extends Component {
   }
 
   get isNotificationsActive() {
-    return this.currentPath.startsWith("/notifications");
+    return isNotificationsSectionPath(this.currentPath);
   }
 
   get isProfileActive() {
