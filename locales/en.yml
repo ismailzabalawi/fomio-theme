@@ -97,6 +97,8 @@ en:
     aria_label: "Fomio navigation"
     search_label: "Search"
     home: "Home"
+    latest: "Latest"
+    hot: "Hot"
     hubs: "Hubs"
     bookmarks: "Bookmarks"
     create_byte: "Create Byte"
@@ -105,6 +107,12 @@ en:
     all_hubs: "See all Hubs →"
     open_menu: "Open navigation"
     close_menu: "Close navigation"
+  bottom_bar:
+    latest: "Latest"
+    hot: "Hot"
+    new_byte: "New Byte"
+    hubs: "Hubs"
+    profile: "Profile"
   topic_list:
     published: "Published"
     min_read: "min read"

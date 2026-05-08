@@ -5035,9 +5035,7 @@ body.fomio-sidebar-active {
   // Breadcrumb, Latest/Hot/Categories pills, and inline New Topic — replaced
   // by Fomio sidebar (desktop) and bottom bar (mobile). Keep visible on auth
   // flows where fomio-sidebar-active is off.
-  .navigation-topics .navigation-container,
-  .navigation-categories .navigation-container,
-  .navigation-category .navigation-container {
+  .navigation-container {
     display: none !important;
   }
 }
@@ -5047,10 +5045,14 @@ body.fomio-sidebar-active {
   --fomio-sidebar-rail-width:  72px;
 }
 
-// The sidebar is injected at the above-site-header outlet (before .d-header)
-// and is position:fixed, so DOM order does not affect visual layout.
+// The sidebar and bottom bar are both injected at above-site-header and are
+// position:fixed. Each is hidden by default and enabled by the viewport stylesheet.
+.fomio-bottom-bar {
+  display: none; // mobile only — shown via mobile.scss
+}
+
 .fomio-sidebar {
-  display: none; // mobile: hidden — shown only via desktop.scss
+  display: none; // desktop only — shown via desktop.scss
   position: fixed;
   inset-block: 0;
   inset-inline-start: 0;

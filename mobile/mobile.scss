@@ -176,14 +176,12 @@ body.fomio-mobile-sidebar-open.fomio-sidebar-active .fomio-mobile-menu-btn {
   display: none;
 }
 
-// Shift the d-header's inner wrap so the logo doesn't sit under the hamburger
+// Full-width header — remove Discourse's .wrap max-width and centering constraints
+// so the logo and icons fill the entire header edge-to-edge.
 body.fomio-sidebar-active .d-header .wrap {
-  padding-inline-start: 52px;
-}
-
-// When sidebar is open the header is behind the scrim — no shift needed
-body.fomio-mobile-sidebar-open.fomio-sidebar-active .d-header .wrap {
-  padding-inline-start: 0;
+  max-width: 100%;
+  width: 100%;
+  margin-inline: 0;
 }
 
 body.fomio-sidebar-active #reply-control {
@@ -686,6 +684,77 @@ body.fomio-sidebar-active #reply-control {
   width: 100%;
 }
 
+
+// ── Retractable bottom navigation bar ────────────────────────
+// Five-tab bar; hides on scroll-down, reappears on scroll-up.
+// Scroll tracking is handled by fomio-bottom-bar.gjs (toggles --hidden modifier).
+
+body.fomio-sidebar-active .fomio-bottom-bar {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  align-items: stretch;
+  background: var(--fomio-bg);
+  border-top: 1px solid var(--fomio-border-soft);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  will-change: transform;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--fomio-dur-slow) var(--fomio-ease);
+  }
+}
+
+body.fomio-sidebar-active .fomio-bottom-bar--hidden {
+  transform: translateY(100%);
+}
+
+body.fomio-sidebar-active .fomio-bottom-bar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 4px;
+  min-height: 56px;
+  color: var(--fomio-muted);
+  text-decoration: none;
+  font-family: var(--fomio-font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: currentColor;
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+  }
+}
+
+body.fomio-sidebar-active .fomio-bottom-bar__item--create {
+  color: var(--fomio-primary);
+
+  svg {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+}
+
+// Push page content above the bar so nothing is hidden behind it
+body.fomio-sidebar-active #main-outlet-wrapper {
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}
 
 // ── Byte interaction system — mobile adjustments (0–767px) ─
 
