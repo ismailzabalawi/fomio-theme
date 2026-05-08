@@ -8,9 +8,9 @@ import { settings, themePrefix } from "virtual:theme";
  *
  * PURPOSE
  * -------
- * Detects mobile browsers (not the app webview) and redirects them to the
- * Fomio app via deep links at the right moment in the auth/signup flow.
- * Desktop browsers are never touched.
+ * Detects mobile browsers (not the app webview) and returns users to the
+ * Fomio app only at safe moments: after app-initiated signup activation completes,
+ * never on ordinary home/latest visits. Desktop browsers are never touched.
  *
  * DETECTION
  * ---------
@@ -60,16 +60,17 @@ import { settings, themePrefix } from "virtual:theme";
  *     → User clicks button (PUT /u/activate-account/:token.json)
  *     → Discourse JS does window.location.href = "/"
  *     → Browser lands on /
- *     → Theme fires → fomio://signin?autoAuth=true
- *     → App comes to foreground, user signs in
+ *     → Theme sets a short-lived sessionStorage expiry (app signup path only)
+ *     → Theme shows handoff overlay → fomio://signin?autoAuth=true
+ *     → App opens auth flow
  *
  *   No guards needed: signup browser never visits /login with redirectCount > 0,
- *   so sessionStorage flag is never set, and the home redirect fires correctly.
+ *   so sessionStorage flag is never set, and the post-activation home handoff fires.
  *
  * DIRECT /login TAP (email link on mobile)
  * -----------------------------------------
  *   User taps a link to meta.fomio.app/login in email or browser.
- *   redirectCount = 0 (direct navigation) → /login redirect fires → app sign-in.
+ *   Web login stays in-browser; use topic/footer CTAs or settings-driven links to open the app.
  *
  * ⚠️  DO NOT REMOVE THE GUARDS ⚠️
  *   Removing GUARD 1 breaks sign-in: auth session catches wrong deep link.
@@ -89,6 +90,9 @@ import { settings, themePrefix } from "virtual:theme";
  */
 export default apiInitializer("1.8.0", (api) => {
   const WEB_AUTH_INTENT_KEY = "fomio_web_auth_intent";
+  /** App-initiated signup only: set on /u/activate-account, consumed on next home visit. */
+  const POST_ACTIVATION_HANDOFF_EXPIRY_KEY = "fomio_post_activation_expires_at";
+  const ACTIVATION_HANDOFF_TTL_MS = 10 * 60 * 1000;
 
   /**
    * Strip Discourse base_path (subfolder) and trailing slashes so /forum/login → /login.
@@ -257,7 +261,10 @@ export default apiInitializer("1.8.0", (api) => {
       if (path.startsWith("/u/activate-account")) {
         if (sessionStorage.getItem("fomio_app_signup") === "1") {
           sessionStorage.removeItem("fomio_app_signup");
-          sessionStorage.setItem("fomio_activation_pending", "1");
+          sessionStorage.setItem(
+            POST_ACTIVATION_HANDOFF_EXPIRY_KEY,
+            String(Date.now() + ACTIVATION_HANDOFF_TTL_MS)
+          );
         }
       }
       return;
@@ -280,15 +287,10 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
-    // CASE 2: Home page -> redirect to app after signup or activation
-    // Discourse navigates here (via window.location.href="/") after:
-    //   a) successful account activation (activate-account.gjs:84)
-    //   b) any other completion that lands on home
-    // The user must complete the full web flow first:
-    //   /signup → /u/account-created → /u/activate-account/:token
-    //   → click "Activate Account" button → Discourse redirects to /
-    // Only THEN do we send them to the app.
-    // Guard: skip if we're mid sign-in auth flow (set on /login with redirectCount > 0).
+    // CASE 2: Home-like routes — auto-open app only after app-initiated signup activation.
+    // Discourse navigates to / (via window.location.href="/") after successful activation.
+    // Ordinary mobile visits to /, /latest, etc. stay on the web.
+    // Guard: skip if we're mid User API Key auth session (GUARD 1 / GUARD 2).
     const HOME_PATHS = new Set(["/", "/latest", "/new", "/top", "/categories"]);
     if (HOME_PATHS.has(path)) {
       if (sessionStorage.getItem("fomio_auth_flow") === "1") {
@@ -306,7 +308,19 @@ export default apiInitializer("1.8.0", (api) => {
         }
         return;
       }
-      showHandoffOverlay(`${appUrl}signin?autoAuth=true`);
+
+      const expiryRaw = sessionStorage.getItem(
+        POST_ACTIVATION_HANDOFF_EXPIRY_KEY
+      );
+      if (expiryRaw) {
+        const expiry = parseInt(expiryRaw, 10);
+        if (!Number.isNaN(expiry) && Date.now() <= expiry) {
+          sessionStorage.removeItem(POST_ACTIVATION_HANDOFF_EXPIRY_KEY);
+          showHandoffOverlay(`${appUrl}signin?autoAuth=true`);
+        } else {
+          sessionStorage.removeItem(POST_ACTIVATION_HANDOFF_EXPIRY_KEY);
+        }
+      }
       return;
     }
   }

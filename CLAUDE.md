@@ -90,6 +90,7 @@ apps/web/
         ├── post-links/fomio-post-interactions.gjs  # Per-post interaction bar
         ├── topic-list-main-link-bottom/fomio-topic-context.gjs
         ├── topic-title/fomio-topic-reading-meta.gjs
+        └── after-topic-footer-buttons/fomio-topic-app-handoff.gjs  # Mobile: Open in Fomio → byte deep link
 ```
 
 ## Composer Architecture
@@ -134,7 +135,7 @@ The native `#reply-control` is styled under `body.fomio-sidebar-active #reply-co
 
 This initializer runs on every Ember page change and on initial page load. It handles:
 
-1. **Mobile browser → app handoff** — detects mobile UA, shows overlay, deep-links to app
+1. **Scoped mobile handoff** — post app-initiated signup activation only (`fomio_post_activation_expires_at`); keeps auth-session GUARD 1/2 for User API Key sign-in
 2. **Signup password strength bar** — terracotta meter injected under `#new-account-password`
 3. **Forgot-password modal** — inline email validity hint, "Back to sign in" link, success-state reshape
 4. **2FA TOTP** — OTP grid styling, eyebrow/heading/code-label injection, backup/passkey switch links
@@ -188,34 +189,28 @@ The theme must NOT fire the `fomio://signin?autoAuth=true` redirect, or the auth
 
 **GUARD 2** (`theme-initializer.gjs` home handler):
 After the user logs in, Discourse redirects to `/` before proceeding to `/user-api-key/new`.
-The home handler checks for the `fomio_auth_flow` flag and skips the redirect, then clears the flag.
-Without this guard the home redirect fires, the auth session intercepts `fomio://signin?autoAuth=true` (wrong — no `payload`), and sign-in fails silently.
+The home handler checks for the `fomio_auth_flow` flag and skips **any** app handoff, then clears the flag.
+Without this guard, a home-page `fomio://signin?autoAuth=true` redirect could fire during the User API Key session; the session would intercept it (wrong URL, no `payload`) and sign-in would fail.
 
-### Sign-up flow
+### Sign-up flow (scoped auto-return)
 
 ```
 App calls openBrowserAsync(/signup?fomio=1)
-  → User fills signup form
-  → Discourse navigates to /u/account-created   ("check your email")
-  → User opens email, taps activation link
-  → Browser opens /u/activate-account/:token
-  → Discourse renders page with "Activate Account" button
-  → User taps button (PUT /u/activate-account/:token.json)
-  → Discourse JS: window.location.href = "/"   (activate-account.gjs:84)
+  → … account-created → /u/activate-account/:token
+  → Theme sets fomio_post_activation_expires_at (short TTL) when app-signup marker was present
+  → User activates; Discourse JS: window.location.href = "/"
   → Browser lands on /
-  → Theme fires → fomio://signin?autoAuth=true
-  → App comes to foreground, autoAuth triggers sign-in modal
+  → If expiry valid: showHandoffOverlay(`${fomio_app_url}signin?autoAuth=true`)
+  → Mobile opens auth modal
 ```
 
-No extra guards needed: the signup browser never visits `/login` with `redirectCount > 0`, so `sessionStorage['fomio_auth_flow']` is never set and the home redirect fires correctly.
+Ordinary mobile visits to `/`, `/latest`, etc. **do not** auto-open the app.
 
-**Do NOT add redirects at `/u/account-created` or `/u/activate-account/:token`.**
-The user must complete those Discourse steps in the browser. The only correct trigger is `/`.
+**Do NOT add redirects at `/u/account-created` or before the Activate Account action.**
 
 ### Direct `/login` tap (email link, mobile browser)
 
-A user taps `meta.fomio.app/login` directly in email or Safari.
-`redirectCount = 0` → theme fires `fomio://signin?autoAuth=true` → app sign-in.
+Web login stays in-browser. Use explicit CTAs (e.g. topic footer handoff) or sign in from the Fomio app.
 
 ### Paths that bypass handoff entirely
 
@@ -226,8 +221,8 @@ A user taps `meta.fomio.app/login` directly in email or Safari.
 
 | Deep link | Destination |
 |-----------|-------------|
-| `fomio://signin?autoAuth=true` | `app/(auth)/signin.tsx` — autoAuth triggers auth modal |
-| `fomio://byte/:id` | Specific Byte — from topic footer handoff button |
+| `fomio://signin?autoAuth=true` | `app/(auth)/auth-modal` — via `apps/mobile/lib/deep-linking.ts` |
+| `fomio://byte/:id` | Specific Byte — `connectors/after-topic-footer-buttons/fomio-topic-app-handoff.gjs` |
 
 All deep links are constructed from the `fomio_app_url` theme setting. Never hardcode `fomio://`.
 

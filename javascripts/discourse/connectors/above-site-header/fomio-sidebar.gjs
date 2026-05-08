@@ -28,7 +28,6 @@ function isAuthPath(url) {
   return AUTH_PATHS.some((p) => url.startsWith(p));
 }
 
-const HOME_URL_PREFIXES = ["/latest", "/new", "/top", "/unread"];
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 
 export default class FomioSidebar extends Component {
@@ -50,9 +49,13 @@ export default class FomioSidebar extends Component {
 
   // ── Active state getters ──────────────────────────────────────
 
-  get isHomeActive() {
+  get isLatestActive() {
     const p = this.currentPath;
-    return p === "/" || HOME_URL_PREFIXES.some((prefix) => p.startsWith(prefix));
+    return p === "/" || p.startsWith("/latest");
+  }
+
+  get isHotActive() {
+    return this.currentPath.startsWith("/hot");
   }
 
   get isHubsActive() {
@@ -135,7 +138,8 @@ export default class FomioSidebar extends Component {
 
   get ariaLabel()          { return i18n(themePrefix("sidebar.aria_label")); }
   get searchLabel()        { return i18n(themePrefix("sidebar.search_label")); }
-  get homeLabel()          { return i18n(themePrefix("sidebar.home")); }
+  get latestLabel()        { return i18n(themePrefix("sidebar.latest")); }
+  get hotLabel()           { return i18n(themePrefix("sidebar.hot")); }
   get hubsLabel()          { return i18n(themePrefix("sidebar.hubs")); }
   get bookmarksLabel()     { return i18n(themePrefix("sidebar.bookmarks")); }
   get createByteLabel()    { return i18n(themePrefix("sidebar.create_byte")); }
@@ -216,12 +220,22 @@ export default class FomioSidebar extends Component {
         <div class="fomio-sidebar__zone fomio-sidebar__zone--core">
           <a
             href="/latest"
-            class="fomio-sidebar__item {{if this.isHomeActive 'is-active'}}"
-            aria-current={{if this.isHomeActive "page"}}
-            title={{this.homeLabel}}
+            class="fomio-sidebar__item {{if this.isLatestActive 'is-active'}}"
+            aria-current={{if this.isLatestActive "page"}}
+            title={{this.latestLabel}}
           >
-            <span class="fomio-sidebar__icon">{{icon "house"}}</span>
-            <span class="fomio-sidebar__item-label">{{this.homeLabel}}</span>
+            <span class="fomio-sidebar__icon">{{icon "clock"}}</span>
+            <span class="fomio-sidebar__item-label">{{this.latestLabel}}</span>
+          </a>
+
+          <a
+            href="/hot"
+            class="fomio-sidebar__item {{if this.isHotActive 'is-active'}}"
+            aria-current={{if this.isHotActive "page"}}
+            title={{this.hotLabel}}
+          >
+            <span class="fomio-sidebar__icon">{{icon "fire"}}</span>
+            <span class="fomio-sidebar__item-label">{{this.hotLabel}}</span>
           </a>
 
           {{! ── Hub tree ── }}
