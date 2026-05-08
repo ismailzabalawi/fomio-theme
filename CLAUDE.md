@@ -38,6 +38,99 @@ There is no local build step — the theme is deployed by pushing to GitHub, whi
 | `discourse-theme-developer` | `/outlet`, `/transformer`, `/connector`, `/scss`, `/theme` |
 | `discourse-archeologist` | `/trace`, `/schema`, `/serialize` — when tracing what Discourse API returns |
 
+## Architecture Philosophy — Sidebar OS & Master–Detail System
+
+Fomio Web is **not** a traditional forum frontend or website. It is a persistent shell-based reading and discussion environment built on three foundational principles:
+
+**Sidebar OS + Master–Detail Navigation + Persistent Shell Architecture**
+
+Every UI, UX, and engineering decision must align with this model.
+
+### The Mental Model
+
+Traditional forums: `Page → Page → Page`
+
+Fomio Web:
+```
+Persistent Shell
+ ├── Navigation Layer (Master)  ← always visible
+ └── Content Surface (Detail)  ← updates contextually
+```
+
+The user should feel they remain inside a single environment. Only content changes — not the shell.
+
+### Shell Structure
+
+```
+<FomioShell>
+  <SidebarMaster />
+  <TopContextBar />
+  <DetailSurface />
+</FomioShell>
+```
+
+Only `<DetailSurface>` changes across navigation transitions. The shell persists.
+
+### The Sidebar Is the OS
+
+The sidebar is not a decorative nav element. It is the operating system of Fomio. It must feel persistent, stateful, and contextual — closer to Arc, Linear, Notion, or VSCode than to a forum sidebar or responsive nav drawer.
+
+The sidebar eventually owns: active route, expanded Hubs/Terets, recent Bytes, reading history, pinned content, drafts, unread states, notification summaries, search navigation, and command palette integration.
+
+### Navigation Depth → Sidebar Depth
+
+Complex routes (Settings → Account → Security → Sessions) become expandable sidebar trees — not deeper page stacks. The Detail Surface updates while the shell stays put.
+
+### Division of Responsibility
+
+| Layer | Owned by |
+|-------|----------|
+| Backend, permissions, sessions, moderation, posting, notifications | Discourse |
+| Experience, navigation, interaction philosophy, visual identity, information architecture | Fomio |
+
+Do not rebuild Discourse logic. Reshape the experience around it.
+
+### Reading-First
+
+The reading surface is the primary visual object. Navigation and controls are secondary. All UI must preserve calmness, focus, and editorial spacing. The interface must never resemble Reddit, traditional forums, or social-media engagement systems.
+
+### Progressive Disclosure
+
+Standard users see a calm, lightweight reading UI. Moderators and admins see contextual tools and expanded menus. Complexity is revealed gradually — never exposed to all users by default.
+
+### Product Goals
+
+- Eliminate traditional forum navigation fatigue
+- Reduce route-depth complexity
+- Preserve user context across navigation
+- Create a calm, reading-first environment
+- Support future multi-surface consistency (mobile, CLI, web)
+
+### Anti-Patterns — Never Build
+
+- Route-heavy navigation
+- Breadcrumb dependency
+- Full-page-reload feeling
+- Sidebar-as-drawer architecture
+- Reddit-like engagement systems
+- Visually noisy moderation systems
+- Authentication that feels like entering a different product
+
+### Future Expansion Targets
+
+- **Split view:** Sidebar | Feed | Preview — or — Sidebar | Byte | Comments
+- **Search as navigation:** command palette, routing, contextual discovery (Arc / Linear model)
+- **Persistent composer:** docked, floating, or side-sheet — never disconnects from reading context
+- **Persistent workspaces:** reading sessions, pinned contexts, focused modes
+- **Shared philosophy** across mobile, CLI, and web (implementations differ; principles do not)
+
+### The Final Test
+
+> Fomio Web should never feel like "a themed Discourse forum."
+> It should feel like a modern operating environment for reading and discussion.
+
+---
+
 ## Stack
 
 - **Components:** GJS (`.gjs`) only — no legacy widgets, no `.hbs`
@@ -83,10 +176,11 @@ apps/web/
         ├── above-site-header/fomio-bottom-bar.gjs # Mobile bottom navigation bar
         ├── above-site-header/fomio-composer.gjs   # INTENTIONALLY DISABLED — renders nothing
         ├── before-composer-fields/fomio-fullscreen-composer-fields.gjs  # Restores title/category/tags in fullscreen
+        ├── discovery-list-controls-above/fomio-hub-chrome.gjs  # Hub page chrome: breadcrumb, hero, Teret tabs, filter bar
+        ├── below-discovery-categories/fomio-categories.gjs     # /categories index: grid/list toggle, search, hub cards
+        ├── full-page-search-above-search-header/fomio-search-header.gjs  # Search page title header
         ├── login-header-bottom/fomio-login-subheader.gjs
-        ├── login-before-modal-body/  # Login modal body overrides
         ├── create-account-header-bottom/fomio-signup-subheader.gjs
-        ├── create-account-before-modal-body/  # Signup modal body overrides
         ├── post-links/fomio-post-interactions.gjs  # Per-post interaction bar
         ├── topic-list-main-link-bottom/fomio-topic-context.gjs
         ├── topic-title/fomio-topic-reading-meta.gjs
@@ -127,6 +221,35 @@ The native `#reply-control` is styled under `body.fomio-sidebar-active #reply-co
 1. **Direct ProseMirror package imports** (`import { TextSelection } from "prosemirror-state"`) fail — use extension params instead.
 2. **Unimported helpers in GJS templates** — strict-mode templates only see explicitly imported values; always import `hash`, `fn`, `eq`, etc.
 3. **Extension plugin errors cascade**: if the floating toolbar extension throws during editor setup, typing can stop entirely. Check theme JS errors before debugging input behavior.
+
+## Hub & Categories UI
+
+### `connectors/discovery-list-controls-above/fomio-hub-chrome.gjs`
+
+Renders the Hub page chrome above the topic list on any `/c/…` route. Does **not** render on `/categories` (where `category` arg is null). Includes:
+
+- **Breadcrumb** — "Hubs" → hub name
+- **Hero** — color swatch (first letter), hub name, description, byte/reply counts (`fmtK` rounds to `k`)
+- **Teret tabs** — "All" plus one tab per sub-category; active tab derived from current URL
+- **Filter bar** — Latest / Top / New, active state from `router.currentURL`
+
+Hub resolution: if the outlet passes a sub-category (Teret), the component walks up to `parent_category_id` to find the Hub, then lists the Hub's sibling Terets.
+
+### `connectors/below-discovery-categories/fomio-categories.gjs`
+
+Replaces the default `/categories` page body. Features:
+- Grid / List view toggle (tracked `@view`)
+- Live search (tracked `@searchQuery`) filtering hub name and description
+- **Grid:** `.fomio-hub-card` — color swatch, name, byte count, description, Teret pills
+- **List:** `.fomio-hub-row` — swatch, name + Teret names, description, byte count, chevron
+
+Only top-level categories (no `parent_category_id`) are shown as Hubs. Terets are derived from `site.categories` on the client — no extra API calls.
+
+### `connectors/full-page-search-above-search-header/fomio-search-header.gjs`
+
+Injects an `<h1>` title above the Discourse full-page search bar. Title string comes from `search_page.title` in `locales/en.yml`.
+
+---
 
 ## `theme-initializer.gjs` — Scope
 
