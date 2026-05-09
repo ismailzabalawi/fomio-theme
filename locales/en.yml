@@ -145,6 +145,8 @@ en:
     nav_aria: "Browse account preferences sections"
   invites_submenu:
     nav_aria: "Browse invites by status"
+  messages_submenu:
+    nav_aria: "Browse private messages by folder"
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"

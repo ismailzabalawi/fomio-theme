@@ -1,6 +1,6 @@
-# Fomio mobile web — Me second-level navigation (Phase M2-A)
+# Fomio mobile web — Me second-level navigation
 
-**Status:** planning only — no UI implementation in this phase.
+**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H** (below) is a **design/technical exploration** only — no implementation commitment. Section 1 below retains the original M2-A route and ownership model as reference.
 
 **Authority:** Discourse owns routes, data, permissions, and all leaf content. Fomio owns **navigation presentation** (how the Me stack reads and how second-level menus are styled or duplicated in the shell), without replacing Discourse logic or inventing rows.
 
@@ -400,3 +400,213 @@ Primary user nav (`UserNav`, `.user-navigation-primary`) appears across profile 
 - **Active state:** `router.currentURL` path match (`/invited` and `/invited/pending` both count as Pending).
 
 **Not changed:** invite lists, routes, permissions, Notifications, Activity, or Preferences.
+
+---
+
+## 15. Phase M2-F — Messages (implemented)
+
+**Shipped in theme (`apps/web/`):**
+
+| Piece | Location |
+|-------|----------|
+| Section menu component | `javascripts/discourse/components/fomio-messages-section-menu.gjs` |
+| Connector | `javascripts/discourse/connectors/top-notices/fomio-messages-section-menu.gjs` |
+| Scoped SCSS | `common/common.scss` — `body.user-messages-page:has(.fomio-messages-section-menu)` (block after M2-E) |
+| Aria label | `locales/en.yml` → `messages_submenu.nav_aria` |
+
+**Behavior:**
+
+- Same **top-notices** mount and **`router.currentURL`** gating as prior M2 phases (`/^\/u\/[^/]+\/messages(\/|$)/`, `/^\/my\/messages(\/|$)/`, or route name prefix `userPrivateMessages`). Never outlet `currentPath`.
+- **`in-element`** appends into `.user-navigation.user-navigation-secondary` with **`insertBefore=null`**; **`order: -1`** stacks the Fomio block above the native **MessagesDropdown** (`ol.category-breadcrumb`) and the pill strip.
+- **User inbox rows** (when URL is not a group inbox): Latest, Sent, New, Unread (only if `controller:user.viewingSelf`), Archive — hrefs use the same path prefix as the current URL (`/u/.../messages` or `/my/messages`).
+- **Group inbox rows** (`/messages/group/:name`): Latest; New, Unread, Archive only if **`viewingSelf`** — **no Sent** row (matches `user-private-messages/group.gjs`). Row order matches native.
+- **New / Unread labels** prefer **`user-private-messages/user`** or **`user-private-messages/group`** `newLinkText` / `unreadLinkText` (counts via `pmTopicTrackingState`), with **`user.messages.new` / `user.messages.unread`** fallbacks.
+- **Active state:** normalized path equality against each row’s target (Latest = inbox index only; PM tag routes under `/messages/tags/...` do not mark a core row active).
+- **Native suppression:** when `:has(.fomio-messages-section-menu)`, hide only enumerated core `li` classes (`user-nav__messages-*` and `user-nav__messages-group-*`). Hide **`nav.horizontal-overflow-nav`** only when **no** non-core `li` remains (plugin or extra pills still show the strip). **`MessagesDropdown`** and **`navigation-controls`** are **not** hidden — group, tag, and **`registerCustomUserNavMessagesDropdownRow`** access stays intact.
+
+**Limitations:**
+
+- PM **tag** inbox routes are not duplicated in the Fomio list; users rely on the native dropdown (or direct URLs). Core rows may show no active item on tag-only views.
+- If **`in-element`** never resolves after 36 animation frames, native pills stay visible.
+- A plugin-added pill `li` whose class matches one of the enumerated `user-nav__messages-*` / `user-nav__messages-group-*` names could be hidden incorrectly (same class-collision caveat as M2-B).
+
+**Not changed:** Notifications, Activity, Preferences, Invites, PM lists, routes, or permissions.
+
+---
+
+## 16. Phase M2-G — Stabilization (pattern, limits, testing)
+
+### 16.1 Implemented areas
+
+| Area | Component | Connector | SCSS block |
+|------|-----------|-----------|------------|
+| Notifications | `fomio-notifications-section-menu.gjs` | `connectors/top-notices/fomio-notifications-section-menu.gjs` | M2-B (`body.user-notifications-page`) |
+| Activity | `fomio-activity-section-menu.gjs` | `connectors/top-notices/fomio-activity-section-menu.gjs` | M2-C (`body.user-activity-page`) |
+| Preferences | `fomio-preferences-section-menu.gjs` | `connectors/top-notices/fomio-preferences-section-menu.gjs` | M2-D (`body.user-preferences-page`) |
+| Invites | `fomio-invites-section-menu.gjs` | `connectors/top-notices/fomio-invites-section-menu.gjs` | M2-E (`body.user-invites-page`) |
+| Messages | `fomio-messages-section-menu.gjs` | `connectors/top-notices/fomio-messages-section-menu.gjs` | M2-F (`body.user-messages-page`) |
+
+### 16.2 Shared implementation pattern (all five)
+
+1. **Outlet:** `top-notices` connector hosts the section component (see `discourse/.../application.gjs`).
+2. **Gate:** `currentUser` must exist; path detection uses **`router.currentURL`** (strip query). **`router.currentRouteName`** is used only as a **fallback** when the URL pattern alone is insufficient (e.g. transitional states). **Never** use the outlet’s `currentPath` / `outletArgs` for URL matching — it is Ember’s dot path, not `/u/...`.
+3. **DOM target:** `#main-outlet .user-main .user-navigation.user-navigation-secondary` with `:scope > nav.horizontal-overflow-nav` present (confirms native secondary nav has mounted). **No** dependency on `body` class timing before insertion; retries handle late layout.
+4. **Retry:** `requestAnimationFrame` loop, **36** attempts, same idea across menus.
+5. **Render:** `{{#in-element this.insertion.parent insertBefore=null}}` — **append only**; visual order uses **`order: -1`** on the Fomio `<nav>` inside a column flex container on `.user-navigation-secondary`.
+6. **Host span:** `didInsert` → `scheduleInsertion`; `__host` span in `#main-container` is **`display: none`** under the matching **`body.user-*-page`** (scoped per area).
+7. **Discourse ownership:** Routes, serializers, permissions, dismiss controls, dropdowns, forms, and lists stay native. Fomio only presents labeled links and scoped chrome suppression.
+8. **Forbidden in this system:** `fomio-mobile-web-mode`, body-class sync for nav state, render-time side effects that mutate non-local state (plugin row extraction runs in the scheduled action after DOM is found, not from template-driven getters).
+
+### 16.3 Route coverage (verification baseline)
+
+**Notifications:** `/u/:username/notifications`, `.../responses`, `.../likes-received`, `.../mentions` (if `enable_mentions`), `.../edits`, `.../links`; global `/notifications` supported with `usernameFallback` from `currentUser`.
+
+**Activity:** `/u/:username/activity`, `.../topics`, `.../replies`, `.../read`, `.../drafts`, `.../pending` (if count > 0), `.../likes-given`, `.../bookmarks`; conditional rows mirror `controller:user` / model fields.
+
+**Preferences:** `/my/preferences`, `.../account`, `.../security`, `.../profile`, `.../emails`, `.../notifications`, `.../tracking` (if `can_change_tracking_preferences`), `.../users`, `.../interface`, `.../navigation-menu`.
+
+**Invites:** `/u/:username/invited`, `.../pending`, `.../expired`, `.../redeemed`; Pending active for index and `/pending`.
+
+**Messages:** `/u/:username/messages` (+ `sent`, `new`, `unread`, `archive` when applicable), `/my/messages` (+ same suffixes); **group** `/u/.../messages/group/:name` (or `/my/messages/group/:name`) with native row set; **tag** and custom inbox paths remain **dropdown / native** only (see limitations).
+
+### 16.4 Plugin and dropdown strategy
+
+| Area | Strategy |
+|------|----------|
+| **Notifications** | Core `li.user-nav__notifications-*` hidden when Fomio mounts; `user-notifications-bottom` rows usually remain in native strip unless their `li` reuses a core class substring (document per plugin). |
+| **Activity** | Scan `ul.nav-pills` once nav exists; mirror non-core `li` into Fomio list; `--mirrored-plugins` hides duplicate native plugin `li`. Late-mounting plugins may only appear natively. |
+| **Preferences** | Core classes enumerated; plugin tabs (e.g. `user-nav__preferences-chat`) stay in native strip unless mirrored; `--mirrored-plugins` hides mirrored duplicates. |
+| **Invites** | No plugin outlet in core template; entire `horizontal-overflow-nav` hidden when Fomio mounts. |
+| **Messages** | **MessagesDropdown** (`ol.category-breadcrumb`), **navigation-controls**, and custom dropdown rows stay visible; only enumerated core pill `li` classes are hidden; `horizontal-overflow-nav` hidden only when no extra non-core pills remain. |
+
+### 16.5 Known limitations (non-exhaustive)
+
+- **Insertion:** If `.user-navigation-secondary` / `horizontal-overflow-nav` never appears within the retry window, the Fomio menu does not mount and native UI remains (by design).
+- **Class collisions:** Plugin `li` classes that reuse `user-nav__notifications-*`, `user-nav__activity-*`, or enumerated `user-nav__messages-*` / `user-nav__messages-group-*` names may be hidden incorrectly.
+- **Activity / Notifications:** Substring rules `[class*="user-nav__…"]` can mis-classify a badly named plugin; treat as site-specific.
+- **Preferences:** Outlet DOM that is not a normal `li` + `a[href]` under `ul.nav-pills` may not mirror.
+- **Messages:** PM **tag** routes and some deep paths do not map a Fomio “active” row; users use the native dropdown or bookmarks.
+- **Global `/notifications`:** Relies on `currentUser.username` for `/u/:username/notifications` hrefs.
+
+### 16.6 Testing checklist (manual)
+
+- [ ] Logged **out:** no Fomio section menus; native nav unchanged.
+- [ ] Each area: navigate every **core** route above; Fomio list shows correct **active** state; native leaf content unchanged.
+- [ ] **Notifications:** with `enable_mentions` on/off; plugin row (if any) still reachable.
+- [ ] **Activity:** Read/Drafts/Bookmarks/Pending visibility matches profile; plugin row (e.g. solved) if installed.
+- [ ] **Preferences:** Tracking tab respects `can_change_tracking_preferences`; plugin tab visible and/or mirrored.
+- [ ] **Invites:** only when `can_see_invite_details`; three filters and counts match native labels when controller present.
+- [ ] **Messages:** user inbox vs **group** inbox vs `/my/messages`; New/Unread only for **self**; dropdown opens for group/tag; no horizontal overflow on narrow viewport.
+- [ ] **Resize / soft nav:** no stray blank secondary strip when Fomio menu absent.
+
+### 16.7 Future refactor notes
+
+- **Shared helper extraction:** Optional **only** if kept tiny (e.g. `pathNoQuery(router)`, `scheduleSecondaryNavInsertion({ isRoute, onFound })`) — **not** recommended in this phase unless duplication becomes a maintenance burden. Do **not** introduce a generic “menu engine” or collapse plugin handling into one abstraction.
+
+---
+
+## 17. Phase M2-H — Expandable Level 2 shell exploration
+
+**Nature:** Exploration only. Do **not** fetch custom API data, rebuild native Discourse leaf screens, replace Activity / Notifications / Preferences / Invites / Messages content, or move forms or streams into custom data components.
+
+### 17.1 Concept
+
+Today (M2-B–F), **Level 1** is the Me landing; **Level 2** is a Fomio section menu stacked above native secondary chrome; **Level 3** is native Discourse content (lists, streams, forms) unchanged.
+
+**M2-H explores** a more premium **mobile-web** read: Level 2 becomes an **expandable** Fomio section list where the **selected row** feels like it **opens** the content beneath it — one continuous surface — while **Level 3 stays fully native** (same routes, same DOM, same behavior). The row **navigates** (canonical URL); the **route** renders the content; Fomio uses **layout and CSS** so the transition reads as “drawer from the row” rather than “menu, then another page.”
+
+### 17.2 Product rule
+
+- **Level 2 may expand** (presentation).
+- **Level 3 must remain native** (Discourse owns data, permissions, saves, pagination, dismiss controls, dropdowns).
+- **Source of truth for active section:** `router.currentURL` (path without query), with `router.currentRouteName` only as a **fallback** where URL alone is ambiguous — same rule as M2-G. **Do not** use outlet `currentPath` / `outletArgs` for URL matching.
+
+### 17.3 Why no API replacement
+
+Discourse already owns streams, filters, notification state, PM tracking, invite lists, and every preference form field. Duplicating that data in the theme would:
+
+- violate the **single source of truth** (stale counts, wrong gates, broken plugins),
+- multiply **permission and Guardian** edge cases,
+- break **plugin outlets** and custom rows that assume native templates,
+- and require ongoing maintenance for every Discourse upgrade.
+
+The exploration intentionally limits itself to **chrome and layout**, not parallel Level 3 screens.
+
+### 17.4 Proposed visual behavior
+
+1. **Active row expansion (accordion cue):** On the route that matches the active Level 2 link, the active item gets stronger hierarchy (e.g. larger label, tinted surface, optional chevron or left rail) and **vertical space** so it reads as a “header” for the content below. Inactive siblings stay as compact rows or chips (exact styling TBD in H1).
+2. **Visual attachment to native content:** Without reparenting, apply a **shared panel treatment**: matching background on the Fomio menu block and the native content region immediately below (`#main-outlet .user-main` subtree), **collapsed internal gaps** (negative margin or reduced padding on the boundary), and consistent **corner radius** only where it does not clip overflow lists. The native **list / topic body / form** stays in place; only **spacing and surfaces** align.
+3. **Route transitions:** Rely on normal Ember transitions; avoid hiding native content until the attachment illusion is stable (see risks). Prefer **opacity / background** continuity over animating the whole outlet if flashes appear.
+
+### 17.5 Screen-by-screen suitability
+
+| Area | Accordion-like expansion (strong “row opens content”) | Rationale |
+|------|--------------------------------------------------------|-----------|
+| **Activity** | **Suitable** | Stream-first; secondary nav is filter-like; fewer embedded controls in the nav band than Preferences. Plugin pills must remain reachable (mirrored or native strip). |
+| **Notifications** | **Suitable** | List + dismiss patterns; active filter maps cleanly to URL segments. Watch dismiss row and plugin `user-notifications-bottom` rows. |
+| **Invites** | **Suitable** | Three stable tabs; list content below. Low dropdown complexity. |
+| **Messages** | **Suitable with constraints** | Pills accordion well for **user** and **group** inboxes, but **MessagesDropdown** (group inboxes, tags, `registerCustomUserNavMessagesDropdownRow`) must stay **fully native and visible**. Do not treat the dropdown as “just another row” — expansion styling applies to the **Fomio list + attached panel**, not to replacing dropdown behavior. Tag-only routes may show **no** active Fomio row (existing M2-F limitation). |
+
+| Area | Softer “active section header + content panel” | Rationale |
+|------|-----------------------------------------------|-----------|
+| **Preferences** | **Prefer this over aggressive accordion** | Every sub-route is a **form** (save bars, validation, plugin tabs). Aggressive expansion or hiding chrome can imply the wrong **focus order** or **scroll containment**. Use a calm **active tab as section header** + single **content panel** rhythm; do not blindly apply the same motion/scale as Activity/Notifications. **Plugin tabs** (`user-preferences-nav*`) must not be collapsed away or duplicated incorrectly. |
+
+### 17.6 Technical constraints
+
+- **URLs:** Keep canonical paths (`/u/...`, `/my/preferences/...`, etc.); no parallel routes for the same content.
+- **No DOM reparenting in H1:** Do not move `#main-outlet` children or form roots in the first pass; attachment is **CSS-only** (wrappers already implied by Discourse structure may receive classes only if a safe outlet/transformer exists — prefer SCSS on known selectors).
+- **Native transitions:** Do not intercept `link-to` / router in ways that break back button, scroll restoration, or loading substates.
+- **Mobile-only:** Scope experimental layout under Discourse’s mobile stylesheet and/or `max-width` media queries so desktop shell assumptions stay intact.
+- **Active detection:** Match **href path segments** to `router.currentURL` (normalized, no query), consistent with existing `fomio-*-section-menu` components.
+
+### 17.7 Safest CSS hooks (initial)
+
+Use only **scoped** theme selectors (`fomio-` classes on Fomio-owned nodes; body/page classes for context). Starting points already in use or documented:
+
+| Concern | Hook |
+|---------|------|
+| **Page context** | `body.user-activity-page`, `body.user-notifications-page`, `body.user-preferences-page`, `body.user-invites-page`, `body.user-messages-page` |
+| **Fomio Level 2 root** | `.fomio-activity-section-menu`, `.fomio-notifications-section-menu`, `.fomio-preferences-section-menu`, `.fomio-invites-section-menu`, `.fomio-messages-section-menu` |
+| **Active row** | `.fomio-*-section-menu__link.is-active` (or equivalent `aria-current="page"` styling) — derive from same URL logic as today |
+| **Secondary nav stack** | `#main-outlet .user-main .user-navigation.user-navigation-secondary` (Fomio `in-element` parent + native overflow nav) |
+| **Native content / spacing collapse** | `.user-main` / `.user-content` / outlet children under `#main-outlet` — **verify per template** in `discourse/` before negative margins; avoid clipping `position: sticky` bars |
+| **Panel background** | Shared `--fomio-*` / `--d-*` tokens on Fomio nav + adjacent native wrapper (specific selector TBD per page after visual audit) |
+| **Mobile-only** | `mobile/mobile.scss` or `@media (max-width: …)` aligned with theme breakpoints |
+
+### 17.8 Risks
+
+| Risk | Notes |
+|------|------|
+| **Forms (Preferences)** | Save bars, in-form errors, and multi-section scroll; aggressive accordion can confuse **focus** or hide **unsaved** affordances. |
+| **Message dropdowns** | Group PMs, tags, custom rows; expansion must not **cover** or **disable** `MessagesDropdown` / `navigation-controls`. |
+| **Plugin rows** | Activity, Notifications, Preferences rely on outlets; mirrored rows can **lag**; hiding native rows without a mirror **breaks** access. |
+| **Late-rendered content** | `requestAnimationFrame` insertion already races; expansion CSS must not assume synchronous DOM for counts or plugin pills. |
+| **Pagination / infinite scroll** | Negative margins or overflow on list containers can clip **sentinels** or sticky headers — test long Activity / notification lists. |
+| **Route transition flashes** | Outlet re-render may briefly show **unstyled** gap between menu and content; may need transition-delayed background or **min-height** guard — validate on real devices. |
+| **Dismiss / bulk actions (Notifications)** | Secondary controls share the nav region; spacing collapse must not **obscure** dismiss UI. |
+| **Invites** | Low complexity but list empty states must remain **visible** when panel background wraps content. |
+
+### 17.9 Recommended implementation path
+
+| Phase | Scope |
+|-------|--------|
+| **H1** | **Visual expansion only:** active row styling + panel background / spacing attachment; native Level 3 DOM unchanged; prove illusion on one pilot area (e.g. Notifications or Invites) then roll forward. |
+| **H2** | **Compact inactive rows** after route load (density), still URL-driven; guard plugin and dropdown parity. |
+| **H3** | **Optional content-slot experiment** only if H1–H2 are stable — e.g. decorative wrapper via **safe** outlet — **not** moving forms or streams; abort if any save or scroll regression appears. |
+
+### 17.10 Do-not list (M2-H)
+
+- Do not fetch replacement API data or invent parallel Level 3 screens.
+- Do not reparent forms or streams in the first pass.
+- Do not hide native content before the attachment treatment is **proven** (no blank flash, no lost controls).
+- Do not break canonical URLs or native route transitions.
+- Do not break plugin rows or message dropdowns.
+- Do not break preference **save** behavior or validation UX.
+- Do not apply the **same** accordion expansion language to **Preferences** as to list-first areas without a softer panel variant.
+
+### 17.11 No-go areas (until explicitly re-scoped)
+
+- Replacing notification / activity / message / invite **streams** with theme-fetched data.
+- Inlining **preference forms** in custom components.
+- Removing or **visually masking** Messages **dropdown** or dismiss controls for the sake of a cleaner stack.
+- **Globally** hiding `.user-navigation-secondary` without `:has(.fomio-*-section-menu)` or equivalent safe guard (existing M2 pattern).

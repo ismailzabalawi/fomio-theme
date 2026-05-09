@@ -11777,6 +11777,148 @@ body.user-invites-page:has(.fomio-invites-section-menu) {
   }
 }
 
-#main-container .fomio-invites-section-menu__host {
+body.user-invites-page #main-container .fomio-invites-section-menu__host {
+  display: none !important;
+}
+
+// ------------------------------------------------------------------
+// Phase M2-F — Messages second-level menu (user + group inbox core pills only).
+// Native `MessagesDropdown` (ol.category-breadcrumb) stays visible for inbox / group /
+// tag / custom rows. Only duplicate core `DNavigationItem` pills are suppressed.
+// ------------------------------------------------------------------
+body.user-messages-page:has(.fomio-messages-section-menu) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    li.user-nav__messages-latest,
+    li.user-nav__messages-sent,
+    li.user-nav__messages-new,
+    li.user-nav__messages-unread,
+    li.user-nav__messages-archive,
+    li.user-nav__messages-group-latest,
+    li.user-nav__messages-group-new,
+    li.user-nav__messages-group-unread,
+    li.user-nav__messages-group-archive {
+      display: none !important;
+    }
+
+    nav.horizontal-overflow-nav:not(
+        :has(
+          ul.nav-pills
+            > li:not(
+              :is(
+                .user-nav__messages-latest,
+                .user-nav__messages-sent,
+                .user-nav__messages-new,
+                .user-nav__messages-unread,
+                .user-nav__messages-archive,
+                .user-nav__messages-group-latest,
+                .user-nav__messages-group-new,
+                .user-nav__messages-group-unread,
+                .user-nav__messages-group-archive
+              )
+            )
+        )
+      ) {
+      display: none !important;
+    }
+  }
+
+  #main-outlet .user-main .fomio-messages-section-menu {
+    order: -1;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  #main-outlet .user-main .fomio-messages-section-menu__title {
+    margin: 0 0 10px;
+    padding: 0 2px;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  #main-outlet .user-main .fomio-messages-section-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .fomio-messages-section-menu__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  #main-outlet .user-main .fomio-messages-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      border-color: color-mix(
+        in oklab,
+        var(--fomio-primary) 40%,
+        var(--fomio-border)
+      );
+      background: color-mix(
+        in oklab,
+        var(--fomio-primary) 10%,
+        var(--fomio-surface)
+      );
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+body.user-messages-page #main-container .fomio-messages-section-menu__host {
   display: none !important;
 }
