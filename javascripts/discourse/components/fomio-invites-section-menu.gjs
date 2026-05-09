@@ -8,6 +8,10 @@ import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
 import { themePrefix } from "virtual:theme";
+import {
+  fomioPathnameNoQuery,
+  fomioPathsEqual,
+} from "../lib/fomio-router-pathname";
 
 /**
  * Fomio second-level nav for Discourse user invites (Phase M2-E).
@@ -21,7 +25,7 @@ export default class FomioInvitesSectionMenu extends Component {
   @tracked insertion = null;
 
   get pathNoQuery() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioPathnameNoQuery(this.router.currentURL);
   }
 
   get invitedController() {
@@ -47,15 +51,17 @@ export default class FomioInvitesSectionMenu extends Component {
   }
 
   isActiveForFilter(filterId) {
-    const p = this.pathNoQuery.replace(/\/$/, "") || "/";
     const base = this.basePath;
     if (!base) {
       return false;
     }
     if (filterId === "pending") {
-      return p === base || p === `${base}/pending`;
+      return (
+        fomioPathsEqual(this.pathNoQuery, base) ||
+        fomioPathsEqual(this.pathNoQuery, `${base}/pending`)
+      );
     }
-    return p === `${base}/${filterId}`;
+    return fomioPathsEqual(this.pathNoQuery, `${base}/${filterId}`);
   }
 
   get rows() {
@@ -102,7 +108,7 @@ export default class FomioInvitesSectionMenu extends Component {
     const maxAttempts = 36;
 
     const tryRun = () => {
-      const url = (this.router.currentURL || "").split("?")[0];
+      const url = fomioPathnameNoQuery(this.router.currentURL);
       const onInvitedRoute =
         /^\/u\/[^/]+\/invited(\/|$)/.test(url) ||
         (this.router.currentRouteName || "").startsWith("userInvited");

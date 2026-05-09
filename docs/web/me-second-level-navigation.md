@@ -1,6 +1,6 @@
 # Fomio mobile web — Me second-level navigation
 
-**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H1** (visual expanded Level 2 shell, mobile) is **implemented** in `apps/web/common/common.scss` and the five `fomio-*-section-menu` components; **QA** is recorded in **§18**. Phase **M2-H3** in-place expansion **feasibility audit** is in **§19** (no implementation commitment). Phase **M2-H** (§17) remains the broader exploration / guardrails doc. Section 1 below retains the original M2-A route and ownership model as reference.
+**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H1** (visual expanded Level 2 shell, mobile) is **implemented** in `apps/web/common/common.scss` and the five `fomio-*-section-menu` components; **QA** is recorded in **§18**. Phase **M2-H3** in-place expansion **feasibility audit** is in **§19**. The additive plugin contract for future Option 3 work now lives in `plugins/discourse/discourse-fomio-user-shell/` as the monorepo source of truth and is summarized in **§20**. Phase **M2-H** (§17) remains the broader exploration / guardrails doc. Section 1 below retains the original M2-A route and ownership model as reference.
 
 **Authority:** Discourse owns routes, data, permissions, and all leaf content. Fomio owns **navigation presentation** (how the Me stack reads and how second-level menus are styled or duplicated in the shell), without replacing Discourse logic or inventing rows.
 
@@ -740,3 +740,54 @@ This query string **must be present** while judging the preview theme. SPA trans
 - Do not ship a **generic** reparenting engine across all Me sections without per-section audits.
 - Do not hide native content as a fallback for failed moves.
 - Do not break canonical URLs or router-owned transitions.
+
+---
+
+## 20. Fomio user shell plugin contract
+
+**Status:** Implemented as `plugins/discourse/discourse-fomio-user-shell/` in the Fomio monorepo, disabled by default. For local Discourse development, it may also be mirrored into `discourse/plugins/discourse-fomio-user-shell/`.
+
+### 20.1 Why the plugin exists
+
+- Core already renders the relevant Me leaf stack inside `.new-user-content-wrapper`.
+- What core does **not** provide is a Fomio-owned contract on that wrapper and its native children.
+- The plugin adds an additive contract without DOM reparenting, template replacement, or custom data fetching.
+
+### 20.2 What the plugin decorates
+
+On supported Me routes, and only when the site setting is enabled, the plugin decorates the existing native shell:
+
+| Element | Contract |
+|---------|----------|
+| `.new-user-content-wrapper` | `.fomio-user-shell`, `[data-fomio-user-shell="true"]`, `[data-fomio-user-section="activity|notifications|messages|preferences|invites"]` |
+| Native secondary nav | `[data-fomio-user-secondary-nav]`, `[data-fomio-user-section="..."]` |
+| Native leaf content root (`#user-content`) | `[data-fomio-user-content]`, `[data-fomio-user-section="..."]` |
+
+### 20.3 Route scope
+
+- `userActivity.*`
+- `userNotifications.*`
+- `userPrivateMessages.*`
+- `preferences.*`
+- `userInvited*`
+
+Fallback URL matching exists only for canonical transitional cases such as `/my/preferences/...` and message URLs where route state may lag briefly during navigation.
+
+### 20.4 Settings
+
+- `fomio_user_shell_enabled` — default `false`
+- `fomio_user_shell_mobile_only` — default `true`
+- `fomio_user_shell_debug` — default `false`
+
+### 20.5 What did not change
+
+- No core templates were overridden.
+- No Discourse routes, controllers, forms, streams, invite lists, or pagination logic were replaced.
+- Existing M2-B through M2-H1 section-menu behavior remains theme-owned and unchanged.
+- No manual DOM reparenting is used in production behavior.
+
+### 20.6 Option 3 impact
+
+- This plugin makes Option 3 **safer to proceed with** because the theme can target a stable Fomio contract instead of raw core selectors alone.
+- It does **not** by itself provide true Level 3 DOM containment inside an active card.
+- If future Option 3 work requires a new wrapper outlet or core template restructuring, that should still happen as a separate, explicit Discourse extension step.

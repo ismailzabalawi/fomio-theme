@@ -8,6 +8,10 @@ import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
 import { themePrefix } from "virtual:theme";
+import {
+  fomioPathnameNoQuery,
+  fomioPathsEqual,
+} from "../lib/fomio-router-pathname";
 
 const CORE_PREFERENCE_NAV_CLASSES = new Set([
   "user-nav__preferences-account",
@@ -37,12 +41,30 @@ function isCorePreferenceLi(li) {
  */
 export default class FomioPreferencesSectionMenu extends Component {
   @service router;
+  @service currentUser;
 
   @tracked insertion = null;
   @tracked pluginRows = [];
 
   get pathNoQuery() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioPathnameNoQuery(this.router.currentURL);
+  }
+
+  /** Active-state only: self-serve `/u/:username/preferences/…` ↔ `/my/preferences/…`. */
+  get preferencesActivePath() {
+    const p = this.pathNoQuery;
+    const username = this.currentUser?.username;
+    if (!username) {
+      return p;
+    }
+    const re = new RegExp(
+      `^/u/${username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/preferences(?=/|$)`,
+      "i"
+    );
+    if (!re.test(p)) {
+      return p;
+    }
+    return p.replace(re, "/my/preferences");
   }
 
   get preferencesController() {
@@ -71,19 +93,16 @@ export default class FomioPreferencesSectionMenu extends Component {
     return this.pluginRows.length > 0;
   }
 
-  normalizePath(path) {
-    const p = path.replace(/\/$/, "") || "/";
-    return p;
-  }
-
   isActivePath(fullPath) {
-    const p = this.normalizePath(this.pathNoQuery);
-    return p === this.normalizePath(fullPath);
+    return fomioPathsEqual(this.preferencesActivePath, fullPath);
   }
 
   isActiveAccount() {
-    const p = this.normalizePath(this.pathNoQuery);
-    return p === "/my/preferences" || p === "/my/preferences/account";
+    const ac = this.preferencesActivePath;
+    return (
+      fomioPathsEqual(ac, "/my/preferences") ||
+      fomioPathsEqual(ac, "/my/preferences/account")
+    );
   }
 
   isActiveSegment(segment) {
@@ -221,9 +240,11 @@ export default class FomioPreferencesSectionMenu extends Component {
     const maxAttempts = 36;
 
     const tryRun = () => {
-      const url = (this.router.currentURL || "").split("?")[0];
+      const url = fomioPathnameNoQuery(this.router.currentURL);
       const onPreferencesRoute =
-        url === "/my/preferences" || url.startsWith("/my/preferences/") ||
+        url === "/my/preferences" ||
+        url.startsWith("/my/preferences/") ||
+        /^\/u\/[^/]+\/preferences(\/|$)/.test(url) ||
         (this.router.currentRouteName || "").startsWith("preferences.");
 
       if (!onPreferencesRoute) {

@@ -7,6 +7,10 @@ import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
 import { themePrefix } from "virtual:theme";
+import {
+  fomioPathnameNoQuery,
+  fomioPathsEqual,
+} from "../lib/fomio-router-pathname";
 
 /**
  * Fomio second-level nav for Discourse user notifications (Phase M2-B).
@@ -20,7 +24,7 @@ export default class FomioNotificationsSectionMenu extends Component {
   @tracked insertion = null;
 
   get pathNoQuery() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioPathnameNoQuery(this.router.currentURL);
   }
 
   get username() {
@@ -55,11 +59,10 @@ export default class FomioNotificationsSectionMenu extends Component {
     if (!base) {
       return false;
     }
-    const p = this.pathNoQuery;
     if (suffix === "") {
-      return p === base || p === `${base}/`;
+      return fomioPathsEqual(this.pathNoQuery, base);
     }
-    return p === `${base}/${suffix}`;
+    return fomioPathsEqual(this.pathNoQuery, `${base}/${suffix}`);
   }
 
   get rows() {
@@ -127,7 +130,7 @@ export default class FomioNotificationsSectionMenu extends Component {
     const maxAttempts = 36;
 
     const tryRun = () => {
-      const url = (this.router.currentURL || "").split("?")[0];
+      const url = fomioPathnameNoQuery(this.router.currentURL);
       const onNotificationsRoute =
         /^\/u\/[^/]+\/notifications(\/|$)/.test(url) ||
         url === "/notifications" ||

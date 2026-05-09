@@ -8,6 +8,10 @@ import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
 import { themePrefix } from "virtual:theme";
+import {
+  fomioPathnameNoQuery,
+  fomioPathsEqual,
+} from "../lib/fomio-router-pathname";
 
 const CORE_ACTIVITY_NAV_CLASS = "user-nav__activity-";
 
@@ -23,7 +27,7 @@ export default class FomioActivitySectionMenu extends Component {
   @tracked pluginRows = [];
 
   get pathNoQuery() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioPathnameNoQuery(this.router.currentURL);
   }
 
   get userController() {
@@ -94,9 +98,7 @@ export default class FomioActivitySectionMenu extends Component {
   }
 
   isActivePath(fullPath) {
-    const p = this.pathNoQuery;
-    const norm = (x) => x.replace(/\/$/, "") || "/";
-    return norm(p) === norm(fullPath);
+    return fomioPathsEqual(this.pathNoQuery, fullPath);
   }
 
   isActiveForPath(suffix) {
@@ -238,7 +240,7 @@ export default class FomioActivitySectionMenu extends Component {
     const maxAttempts = 36;
 
     const tryRun = () => {
-      const url = (this.router.currentURL || "").split("?")[0];
+      const url = fomioPathnameNoQuery(this.router.currentURL);
       const onActivityRoute =
         /^\/u\/[^/]+\/activity(\/|$)/.test(url) ||
         (this.router.currentRouteName || "").startsWith("userActivity.");

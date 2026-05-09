@@ -8,6 +8,7 @@ import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
 import { themePrefix } from "virtual:theme";
+import { fomioPathnameNoQuery, fomioPathsEqual } from "../lib/fomio-router-pathname";
 
 /**
  * Fomio second-level nav for Discourse private messages (Phase M2-F).
@@ -20,7 +21,7 @@ export default class FomioMessagesSectionMenu extends Component {
   @tracked insertion = null;
 
   get pathNoQuery() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioPathnameNoQuery(this.router.currentURL);
   }
 
   get userController() {
@@ -104,20 +105,15 @@ export default class FomioMessagesSectionMenu extends Component {
     return i18n(themePrefix("messages_submenu.nav_aria"));
   }
 
-  normPath(path) {
-    return (path || "").replace(/\/$/, "") || "/";
-  }
-
   isActiveUserSuffix(suffix) {
     const base = this.messagesBasePath;
     if (!base || this.isGroupContext) {
       return false;
     }
-    const p = this.normPath(this.pathNoQuery);
     if (suffix === "") {
-      return p === this.normPath(base);
+      return fomioPathsEqual(this.pathNoQuery, base);
     }
-    return p === this.normPath(`${base}/${suffix}`);
+    return fomioPathsEqual(this.pathNoQuery, `${base}/${suffix}`);
   }
 
   isActiveGroupSuffix(suffix) {
@@ -125,11 +121,10 @@ export default class FomioMessagesSectionMenu extends Component {
     if (!base || !this.isGroupContext) {
       return false;
     }
-    const p = this.normPath(this.pathNoQuery);
     if (suffix === "") {
-      return p === this.normPath(base);
+      return fomioPathsEqual(this.pathNoQuery, base);
     }
-    return p === this.normPath(`${base}/${suffix}`);
+    return fomioPathsEqual(this.pathNoQuery, `${base}/${suffix}`);
   }
 
   get rows() {
@@ -225,7 +220,7 @@ export default class FomioMessagesSectionMenu extends Component {
     const maxAttempts = 36;
 
     const tryRun = () => {
-      const url = (this.router.currentURL || "").split("?")[0];
+      const url = fomioPathnameNoQuery(this.router.currentURL);
       const onMessagesRoute =
         /^\/u\/[^/]+\/messages(\/|$)/.test(url) ||
         /^\/my\/messages(\/|$)/.test(url) ||
