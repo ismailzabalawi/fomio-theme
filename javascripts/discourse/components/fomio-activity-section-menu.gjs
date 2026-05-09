@@ -227,6 +227,11 @@ export default class FomioActivitySectionMenu extends Component {
     return [...this.coreRows, ...plugins];
   }
 
+  /** Phase M2-H2: duplicate active row as card header on mobile (CSS hides list source). */
+  get activeRow() {
+    return this.rows.find((r) => r.isActive) ?? null;
+  }
+
   @action
   scheduleInsertion() {
     let attempts = 0;
@@ -269,13 +274,18 @@ export default class FomioActivitySectionMenu extends Component {
     {{#if (and this.insertion this.username)}}
       {{#in-element this.insertion.parent insertBefore=null}}
         <nav
-          class="fomio-activity-section-menu {{if this.hasMirroredPlugins 'fomio-activity-section-menu--mirrored-plugins'}}"
+          class="fomio-activity-section-menu fomio-section-menu--expanded-shell {{if this.hasMirroredPlugins 'fomio-activity-section-menu--mirrored-plugins'}}"
           aria-label={{this.navAriaLabel}}
         >
           <h2 class="fomio-activity-section-menu__title">{{this.sectionTitle}}</h2>
           <ul class="fomio-activity-section-menu__list">
             {{#each this.rows as |row|}}
-              <li class="fomio-activity-section-menu__item">
+              <li
+                class="fomio-activity-section-menu__item {{if
+                  row.isActive
+                  'fomio-section-menu__item--h2-active-card-source'
+                }}"
+              >
                 <a
                   href={{row.href}}
                   class="fomio-activity-section-menu__link {{if row.isActive 'is-active'}}"
@@ -286,6 +296,15 @@ export default class FomioActivitySectionMenu extends Component {
               </li>
             {{/each}}
           </ul>
+          {{#if this.activeRow}}
+            <div class="fomio-section-menu__active-card">
+              <a
+                href={{this.activeRow.href}}
+                class="fomio-section-menu__active-card-link"
+                aria-current="page"
+              >{{this.activeRow.label}}</a>
+            </div>
+          {{/if}}
         </nav>
       {{/in-element}}
     {{/if}}

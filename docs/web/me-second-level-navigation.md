@@ -1,6 +1,6 @@
 # Fomio mobile web — Me second-level navigation
 
-**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H** (below) is a **design/technical exploration** only — no implementation commitment. Section 1 below retains the original M2-A route and ownership model as reference.
+**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H1** (visual expanded Level 2 shell, mobile) is **implemented** in `apps/web/common/common.scss` and the five `fomio-*-section-menu` components; **QA** is recorded in **§18**. Phase **M2-H3** in-place expansion **feasibility audit** is in **§19** (no implementation commitment). Phase **M2-H** (§17) remains the broader exploration / guardrails doc. Section 1 below retains the original M2-A route and ownership model as reference.
 
 **Authority:** Discourse owns routes, data, permissions, and all leaf content. Fomio owns **navigation presentation** (how the Me stack reads and how second-level menus are styled or duplicated in the shell), without replacing Discourse logic or inventing rows.
 
@@ -610,3 +610,133 @@ Use only **scoped** theme selectors (`fomio-` classes on Fomio-owned nodes; body
 - Inlining **preference forms** in custom components.
 - Removing or **visually masking** Messages **dropdown** or dismiss controls for the sake of a cleaner stack.
 - **Globally** hiding `.user-navigation-secondary` without `:has(.fomio-*-section-menu)` or equivalent safe guard (existing M2 pattern).
+
+---
+
+## 18. M2-H1 QA — Preview theme validation
+
+Tested on `meta.fomio.app` at mobile width **390×844** as user **Soma** using:
+
+`?preview_theme_id=33`
+
+This query string **must be present** while judging the preview theme. SPA transitions **retained** the query string during this QA pass, but **server redirects may drop it**. In particular, `/my/preferences/account?preview_theme_id=33` redirected to `/u/Soma/preferences/account` **without** the preview parameter, so QA should prefer canonical **`/u/:username/preferences/...?preview_theme_id=33`** paths or **manually re-append** the parameter after redirects. (See also [Redirects on load remove URL parameters](https://meta.discourse.org/t/redirects-on-load-remove-url-parameters/282136) on Meta.)
+
+### 18.1 Validated priority areas
+
+- `/u/soma/notifications?preview_theme_id=33`
+- `/u/soma/activity?preview_theme_id=33`
+- `/u/soma/messages?preview_theme_id=33`
+- `/u/soma/preferences/account?preview_theme_id=33`
+- `/u/soma/invited/pending?preview_theme_id=33`
+
+### 18.2 Validated subroutes
+
+- `/u/soma/notifications/responses?preview_theme_id=33`
+- `/u/soma/activity/topics?preview_theme_id=33`
+- `/u/soma/activity/replies?preview_theme_id=33`
+- `/u/soma/messages/sent?preview_theme_id=33`
+- `/u/soma/preferences/security?preview_theme_id=33`
+- `/u/soma/preferences/profile?preview_theme_id=33`
+
+### 18.3 Observed result
+
+- Fomio **vertical section menus** rendered across all tested Me sub-areas.
+- **Active rows** matched the current route.
+- Native **core horizontal pills** were suppressed.
+- **Plugin rows** such as Votes / Calendar remained exposed where expected.
+- **Native content** remained usable.
+- **Bottom dock** remained present.
+- **Notifications** dismiss control, **Messages** inbox / new-message controls, **Invites** create action, and **Preferences** form actions remained available.
+- No obvious **horizontal overflow** was observed.
+- **Theme preview banner** was the only expected extra chrome.
+
+### 18.4 Recommendation
+
+**Keep M2-H1.** Do not proceed to **H2** until the same preview is reviewed visually by design. Tune only panel contrast, padding, active-row emphasis, and spacing if needed.
+
+---
+
+## 19. Phase M2-H3-Audit — In-place expansion feasibility
+
+**Nature:** Architecture audit only (no implementation in this phase). Goal: assess whether **native Level 3** can appear **inside** the active Level 2 “card” (Option 3) while Discourse still owns routes, controllers, data, and leaf templates.
+
+**Evidence:** Discourse templates under `discourse/frontend/discourse/app/templates/` as cited below (read-only).
+
+### 19.1 Wrapper outlets around the Me shell
+
+| Location | Outlets / structure | Wraps nav + `#user-content` together? |
+|----------|---------------------|----------------------------------------|
+| **`user.gjs`** | Many profile outlets (`above-user-profile`, `before-user-profile-avatar`, …); **`div.new-user-content-wrapper`** contains only `{{outlet}}` — **no** `PluginOutlet` around that wrapper or around the profile outlet stack + content. | **No** |
+| **`user-activity.gjs`** | `PluginOutlet @name="user-activity-navigation-wrapper"` wraps **only** `div.user-navigation.user-navigation-secondary` (default block). `section#user-content` is a **sibling after** the outlet closes. | **No** (nav-only wrapper) |
+| **`user-notifications.gjs`** | `PluginOutlet @name="user-notifications-bottom"` is **inside** the horizontal nav (`li` connectors). `section#user-content` is **outside** the nav `div`. `navigation-controls` (dismiss) sits **inside** `.user-navigation-secondary` between pills and content. | **No** |
+| **`user-invited.gjs`** | No `PluginOutlet`. Structure: optional `div.user-navigation-secondary` + **`{{outlet}}`** (child route renders invite UI). | **No** |
+| **`user-invited/show.gjs`** | Leaf: root is **`LoadMore`** with `@id="user-content"` and class `user-content`; holds controls, tables, empty states, pagination. | **No** theme outlet; content is one component root |
+| **`preferences.gjs`** | `PluginOutlet` names `user-preferences-nav-under-interface`, `user-preferences-nav`, `above-user-preferences` — all **inside** nav or **inside** `section#user-content`, not wrapping both. | **No** |
+| **`user/messages.gjs`** | `PluginOutlet @name="user-messages-above-navigation"` is **above** `.user-navigation-secondary` only. `section#user-content` follows the nav block (dropdown + pills + controls). | **No** |
+| **`user-private-messages/user.gjs`** | `MessagesSecondaryNav` + `{{outlet}}` (no shell outlet). Parent **`user/messages.gjs`** owns dropdown + layout. | **No** |
+| **`user-private-messages/group.gjs`** | `MessagesSecondaryNav` + `div.group-messages` + `{{outlet}}`. | **No** |
+
+**Conclusion:** Discourse core does **not** expose a **single supported outlet** that wraps `.new-user-content-wrapper`, `.user-navigation.user-navigation-secondary`, and `#user-content` in one composable boundary. The only nearby outlet, **`user-activity-navigation-wrapper`**, is explicitly **navigation-only**; content is intentionally **outside** it.
+
+### 19.2 True in-place expansion without reparenting?
+
+**Not with theme-only markup today.** Option 3 requires Level 3 DOM **inside** the active Level 2 row/card. Core templates keep **`#user-content` (or the invite `LoadMore` root)** as a **sibling** of `.user-navigation-secondary` (or as the outlet child of `user-invited`), not nested under a row.
+
+- **CSS-only “fake” nesting** (H1-style): already possible — sibling content visually attached; **not** true DOM containment.
+- **Theme `in-element`**: can inject **parallel** UI into an existing parent; it does **not** move Discourse’s `{{outlet}}` output into a Fomio row without **moving existing DOM nodes**.
+- **Without core/plugin template changes:** achieving **real** containment implies **manual DOM reparenting** (`appendChild` / `insertBefore`) of the live `#user-content` (or invite `LoadMore`) node into a Fomio card container.
+
+### 19.3 Manual reparenting — is it required for Option 3?
+
+**Yes**, for true in-place expansion as defined (L3 **inside** the active card), **unless** Discourse adds a wrapping outlet or restructures templates (plugin or core).
+
+### 19.4 Safest prototype section (ranked)
+
+| Rank | Section | Rationale |
+|------|---------|-----------|
+| **1** | **Invites** | No secondary dropdown; parent template is **nav + outlet**; leaf content is a **single `LoadMore`** root with `id="user-content"`. Fewer interaction surfaces than Messages/Notifications. |
+| **2** | **Notifications** | Clear nav/content split, but **dismiss** lives inside `.user-navigation-secondary`; reparenting only `#user-content` leaves dismiss **above** the “card” unless the whole nav column is restructured — higher UX/layout risk. |
+| **3** | **Activity** | `user-activity-navigation-wrapper` does not include content; infinite scroll + plugin pills; more moving parts. |
+| **4** | **Messages** | **MessagesDropdown**, group/tag contexts, controls — **do not** prototype reparenting here first (per product guardrails). |
+| **5** | **Preferences** | **Forms**, validation, save bars — **out of scope** for reparenting prototype (explicit do-not). |
+
+### 19.5 Reparenting risks (by section)
+
+| Section | Risks |
+|---------|--------|
+| **Invites** | Ember may **re-render** and **replace** the `LoadMore` root on route/filter change — reparented node may be **destroyed** or **duplicated**; **scroll / load-more sentinel** and observers may assume original parent geometry; **empty states** must remain inside the moved subtree; **focus** and **table** layout may reflow oddly inside a card. |
+| **Notifications** | Splitting dismiss from stream if only `#user-content` moves; route transitions and **dismiss** visibility; plugin `user-notifications-bottom` rows. |
+| **Activity** | Long lists, **LoadMore**, sticky headers, plugin rows; higher chance of **jank** or broken infinite scroll. |
+| **Messages** | Dropdown portals, **bulk select**, group tracking — high breakage probability. |
+| **Preferences** | Form lifecycle, rich editor, plugin tabs — **unacceptable** risk for first prototype. |
+
+### 19.6 Rollback rules (if a reparenting spike is attempted)
+
+1. If **source node** (`#user-content` / invite `LoadMore` root) is missing, **do nothing**.
+2. If **target** Fomio card body is missing, **do nothing**.
+3. On **route change** or **component teardown**, **restore** the node to its **documented original parent** or rely on full route re-render — **never** leave `#user-content` detached in the DOM.
+4. **Never** hide native content to mask a failed move.
+5. Prefer **idempotent** setup/teardown (e.g. `willDestroy` / router event) so navigation **always** returns to a valid state.
+
+### 19.7 Go / no-go recommendation
+
+| Question | Verdict |
+|----------|---------|
+| **Theme-only true in-place expansion (DOM inside active row) without reparenting or core change?** | **No-go** — no wrapper outlet spans nav + leaf content. |
+| **Optional R&D spike: manual reparent on one low-risk section behind a flag?** | **Conditional go** — **Invites only**, non-production, with rollback rules in §19.6 and acceptance tests for LoadMore, empty states, and route transitions. |
+| **Production Option 3 without hacks?** | **Go** only via **Discourse extension** (new `PluginOutlet` or template restructuring) so Glimmer owns the hierarchy — recommend **ADR + plugin or upstream** path rather than permanent theme `appendChild`. |
+
+### 19.8 Prototype scope (if conditional go)
+
+- **Single area:** **Invites** (`user-invited` + `user-invited/show`), mobile-only, feature-flagged.
+- **Move target:** the **invite `LoadMore` element** (`#user-content`) into a dedicated **Fomio card body** that is **not** recreated by Ember on every paint (stable wrapper).
+- **Out of scope:** Preferences, Messages, generic multi-section reparenting engine, hiding native UI, API duplication.
+
+### 19.9 Do-not list (M2-H3)
+
+- Do not fetch Discourse APIs for replacement data or duplicate leaf streams.
+- Do not start with **Preferences** or **Messages**.
+- Do not reparent **form** screens.
+- Do not ship a **generic** reparenting engine across all Me sections without per-section audits.
+- Do not hide native content as a fallback for failed moves.
+- Do not break canonical URLs or router-owned transitions.

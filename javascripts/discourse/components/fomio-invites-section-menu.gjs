@@ -91,6 +91,11 @@ export default class FomioInvitesSectionMenu extends Component {
     ];
   }
 
+  /** Phase M2-H2: duplicate active row as card header on mobile (CSS hides list source). */
+  get activeRow() {
+    return this.rows.find((r) => r.isActive) ?? null;
+  }
+
   @action
   scheduleInsertion() {
     let attempts = 0;
@@ -131,11 +136,19 @@ export default class FomioInvitesSectionMenu extends Component {
     ></span>
     {{#if (and this.insertion this.username)}}
       {{#in-element this.insertion.parent insertBefore=null}}
-        <nav class="fomio-invites-section-menu" aria-label={{this.navAriaLabel}}>
+        <nav
+          class="fomio-invites-section-menu fomio-section-menu--expanded-shell"
+          aria-label={{this.navAriaLabel}}
+        >
           <h2 class="fomio-invites-section-menu__title">{{this.sectionTitle}}</h2>
           <ul class="fomio-invites-section-menu__list">
             {{#each this.rows as |row|}}
-              <li class="fomio-invites-section-menu__item">
+              <li
+                class="fomio-invites-section-menu__item {{if
+                  row.isActive
+                  'fomio-section-menu__item--h2-active-card-source'
+                }}"
+              >
                 <a
                   href={{row.href}}
                   class="fomio-invites-section-menu__link {{if row.isActive 'is-active'}}"
@@ -146,6 +159,15 @@ export default class FomioInvitesSectionMenu extends Component {
               </li>
             {{/each}}
           </ul>
+          {{#if this.activeRow}}
+            <div class="fomio-section-menu__active-card">
+              <a
+                href={{this.activeRow.href}}
+                class="fomio-section-menu__active-card-link"
+                aria-current="page"
+              >{{this.activeRow.label}}</a>
+            </div>
+          {{/if}}
         </nav>
       {{/in-element}}
     {{/if}}

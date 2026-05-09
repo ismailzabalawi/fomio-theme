@@ -210,6 +210,11 @@ export default class FomioPreferencesSectionMenu extends Component {
     return [...this.coreRows, ...plugins];
   }
 
+  /** Phase M2-H2: duplicate active row as card header on mobile (CSS hides list source). */
+  get activeRow() {
+    return this.rows.find((r) => r.isActive) ?? null;
+  }
+
   @action
   scheduleInsertion() {
     let attempts = 0;
@@ -252,13 +257,18 @@ export default class FomioPreferencesSectionMenu extends Component {
     {{#if (and this.insertion)}}
       {{#in-element this.insertion.parent insertBefore=null}}
         <nav
-          class="fomio-preferences-section-menu {{if this.hasMirroredPlugins 'fomio-preferences-section-menu--mirrored-plugins'}}"
+          class="fomio-preferences-section-menu fomio-section-menu--expanded-shell {{if this.hasMirroredPlugins 'fomio-preferences-section-menu--mirrored-plugins'}}"
           aria-label={{this.navAriaLabel}}
         >
           <h2 class="fomio-preferences-section-menu__title">{{this.sectionTitle}}</h2>
           <ul class="fomio-preferences-section-menu__list">
             {{#each this.rows as |row|}}
-              <li class="fomio-preferences-section-menu__item">
+              <li
+                class="fomio-preferences-section-menu__item {{if
+                  row.isActive
+                  'fomio-section-menu__item--h2-active-card-source'
+                }}"
+              >
                 <a
                   href={{row.href}}
                   class="fomio-preferences-section-menu__link {{if row.isActive 'is-active'}}"
@@ -269,6 +279,17 @@ export default class FomioPreferencesSectionMenu extends Component {
               </li>
             {{/each}}
           </ul>
+          {{#if this.activeRow}}
+            <div
+              class="fomio-section-menu__active-card fomio-section-menu__active-card--preferences-soft"
+            >
+              <a
+                href={{this.activeRow.href}}
+                class="fomio-section-menu__active-card-link fomio-section-menu__active-card-link--preferences-soft"
+                aria-current="page"
+              >{{this.activeRow.label}}</a>
+            </div>
+          {{/if}}
         </nav>
       {{/in-element}}
     {{/if}}
