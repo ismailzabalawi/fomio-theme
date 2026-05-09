@@ -1,0 +1,153 @@
+import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
+import { getOwner } from "@ember/owner";
+import { service } from "@ember/service";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import getURL from "discourse/lib/get-url";
+import { i18n } from "discourse-i18n";
+import { and } from "discourse/truth-helpers";
+import { themePrefix } from "virtual:theme";
+
+/**
+ * Fomio second-level nav for Discourse user invites (Phase M2-E).
+ * Same insertion pattern as M2-B/C/D: append via `in-element` + flex `order: -1`.
+ * Mount only when native `.user-navigation-secondary` exists (gated by Discourse
+ * `can_see_invite_details` in `user-invited.gjs`).
+ */
+export default class FomioInvitesSectionMenu extends Component {
+  @service router;
+
+  @tracked insertion = null;
+
+  get pathNoQuery() {
+    return (this.router.currentURL || "").split("?")[0];
+  }
+
+  get invitedController() {
+    return getOwner(this).lookup("controller:user-invited");
+  }
+
+  get username() {
+    const m = /^\/u\/([^/]+)\/invited/.exec(this.pathNoQuery);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  get basePath() {
+    const u = this.username;
+    return u ? `/u/${u}/invited` : null;
+  }
+
+  get sectionTitle() {
+    return i18n("user.invited.title");
+  }
+
+  get navAriaLabel() {
+    return i18n(themePrefix("invites_submenu.nav_aria"));
+  }
+
+  isActiveForFilter(filterId) {
+    const p = this.pathNoQuery.replace(/\/$/, "") || "/";
+    const base = this.basePath;
+    if (!base) {
+      return false;
+    }
+    if (filterId === "pending") {
+      return p === base || p === `${base}/pending`;
+    }
+    return p === `${base}/${filterId}`;
+  }
+
+  get rows() {
+    const base = this.basePath;
+    if (!base) {
+      return [];
+    }
+
+    const ctrl = this.invitedController;
+    const pendingLabel = ctrl?.pendingLabel ?? i18n("user.invited.pending_tab");
+    const expiredLabel = ctrl?.expiredLabel ?? i18n("user.invited.expired_tab");
+    const redeemedLabel = ctrl?.redeemedLabel ?? i18n("user.invited.redeemed_tab");
+
+    return [
+      {
+        id: "pending",
+        href: getURL(`${base}/pending`),
+        label: pendingLabel,
+        isActive: this.isActiveForFilter("pending"),
+      },
+      {
+        id: "expired",
+        href: getURL(`${base}/expired`),
+        label: expiredLabel,
+        isActive: this.isActiveForFilter("expired"),
+      },
+      {
+        id: "redeemed",
+        href: getURL(`${base}/redeemed`),
+        label: redeemedLabel,
+        isActive: this.isActiveForFilter("redeemed"),
+      },
+    ];
+  }
+
+  @action
+  scheduleInsertion() {
+    let attempts = 0;
+    const maxAttempts = 36;
+
+    const tryRun = () => {
+      const url = (this.router.currentURL || "").split("?")[0];
+      const onInvitedRoute =
+        /^\/u\/[^/]+\/invited(\/|$)/.test(url) ||
+        (this.router.currentRouteName || "").startsWith("userInvited");
+
+      if (!onInvitedRoute) {
+        return;
+      }
+
+      const nav = document.querySelector(
+        "#main-outlet .user-main .user-navigation.user-navigation-secondary"
+      );
+      const horiz = nav?.querySelector(":scope > nav.horizontal-overflow-nav");
+      if (nav && horiz) {
+        this.insertion = { parent: nav };
+        return;
+      }
+      attempts += 1;
+      if (attempts < maxAttempts) {
+        requestAnimationFrame(tryRun);
+      }
+    };
+
+    requestAnimationFrame(tryRun);
+  }
+
+  <template>
+    <span
+      {{didInsert this.scheduleInsertion}}
+      class="fomio-invites-section-menu__host"
+      aria-hidden="true"
+    ></span>
+    {{#if (and this.insertion this.username)}}
+      {{#in-element this.insertion.parent insertBefore=null}}
+        <nav class="fomio-invites-section-menu" aria-label={{this.navAriaLabel}}>
+          <h2 class="fomio-invites-section-menu__title">{{this.sectionTitle}}</h2>
+          <ul class="fomio-invites-section-menu__list">
+            {{#each this.rows as |row|}}
+              <li class="fomio-invites-section-menu__item">
+                <a
+                  href={{row.href}}
+                  class="fomio-invites-section-menu__link {{if row.isActive 'is-active'}}"
+                  aria-current={{if row.isActive "page"}}
+                >
+                  {{row.label}}
+                </a>
+              </li>
+            {{/each}}
+          </ul>
+        </nav>
+      {{/in-element}}
+    {{/if}}
+  </template>
+}

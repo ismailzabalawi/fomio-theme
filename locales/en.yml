@@ -137,6 +137,14 @@ en:
   notifications_detail:
     heading_title: "Notifications"
     heading_description: "Replies, mentions, likes, and account activity."
+  notifications_submenu:
+    nav_aria: "Browse notifications by type"
+  activity_submenu:
+    nav_aria: "Browse activity by type"
+  preferences_submenu:
+    nav_aria: "Browse account preferences sections"
+  invites_submenu:
+    nav_aria: "Browse invites by status"
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"
@@ -178,10 +186,12 @@ en:
     discover_filter_close: "Close"
     me_hub_aria: "Your account"
     me_hub_aria_logged_out: "Account"
-    me_hub_section_account: "Account"
-    me_hub_section_preferences: "Preferences"
-    me_hub_section_support: "Support"
-    me_hub_section_session: "Session"
+    me_hub_primary_nav_aria: "Profile navigation"
+    me_hub_footer_aria: "Site and session"
+    me_hub_summary: "Summary"
+    me_hub_invites: "Invites"
+    me_hub_badges: "Badges"
+    me_hub_admin: "Manage user"
     me_hub_profile: "Profile"
     me_hub_activity: "Activity"
     me_hub_saved: "Saved"

@@ -12,9 +12,11 @@ import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import {
   aboutPath,
   activityPathForUser,
-  bookmarksPathForUser,
+  adminManageUserPathForUser,
+  badgesPathForUser,
+  invitedPathForUser,
   isAuthPath,
-  isMeHubSurfacePath,
+  isMeLandingSurfacePath,
   messagesPathForUser,
   notificationsPathForUser,
   preferencesPathForUser,
@@ -25,6 +27,7 @@ import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell"
 export default class FomioMeHub extends Component {
   @service router;
   @service currentUser;
+  @service siteSettings;
 
   @tracked isTouchShell = false;
   #unsubscribeTouch = null;
@@ -49,7 +52,7 @@ export default class FomioMeHub extends Component {
     if (!this.isTouchShell || isAuthPath(this.currentPath)) {
       return false;
     }
-    return isMeHubSurfacePath(this.currentPath, this.currentUser);
+    return isMeLandingSurfacePath(this.router.currentURL || "", this.currentUser);
   }
 
   get isLoggedInHub() {
@@ -57,9 +60,49 @@ export default class FomioMeHub extends Component {
   }
 
   /**
-   * Subfolder-safe document URL for Account group + summary (Phase 3C-1).
-   * Returns null if path invalid — omit chevron row.
+   * Mirrors `UserController` / `user-nav` gating. Hub only renders on own-profile landing (`viewingSelf`).
    */
+  get showActivityTab() {
+    const viewingSelf = true;
+    return (
+      viewingSelf ||
+      this.currentUser?.admin ||
+      !this.siteSettings?.hide_user_activity_tab
+    );
+  }
+
+  get showNotificationsTab() {
+    const viewingSelf = true;
+    return viewingSelf || this.currentUser?.admin;
+  }
+
+  get showPrivateMessages() {
+    const viewingSelf = true;
+    return Boolean(
+      this.currentUser?.can_send_private_messages &&
+        (viewingSelf || this.currentUser?.admin)
+    );
+  }
+
+  get canInviteToForum() {
+    return Boolean(this.currentUser?.can_invite_to_forum);
+  }
+
+  get showBadges() {
+    return Boolean(
+      this.siteSettings?.enable_badges &&
+        (this.currentUser?.badge_count ?? 0) > 0
+    );
+  }
+
+  get showPreferences() {
+    return this.currentUser?.can_edit !== false;
+  }
+
+  get showAdminManageUser() {
+    return Boolean(this.currentUser?.staff);
+  }
+
   toHubHref(internalPath) {
     if (
       !internalPath ||
@@ -71,7 +114,7 @@ export default class FomioMeHub extends Component {
     return getURL(internalPath);
   }
 
-  get profileSummaryHref() {
+  get summaryHref() {
     return this.toHubHref(profileSummaryPathForUser(this.currentUser));
   }
 
@@ -79,28 +122,36 @@ export default class FomioMeHub extends Component {
     return this.toHubHref(activityPathForUser(this.currentUser));
   }
 
-  get bookmarksHref() {
-    return this.toHubHref(bookmarksPathForUser(this.currentUser));
+  get notificationsHref() {
+    return this.toHubHref(notificationsPathForUser(this.currentUser));
   }
 
   get messagesHref() {
     return this.toHubHref(messagesPathForUser(this.currentUser));
   }
 
+  get invitedHref() {
+    return this.toHubHref(invitedPathForUser(this.currentUser));
+  }
+
+  get badgesHref() {
+    return this.toHubHref(badgesPathForUser(this.currentUser));
+  }
+
   get preferencesHref() {
     return this.toHubHref(preferencesPathForUser(this.currentUser));
   }
 
-  get notificationsHref() {
-    return this.toHubHref(notificationsPathForUser(this.currentUser));
+  get adminManageHref() {
+    return this.toHubHref(adminManageUserPathForUser(this.currentUser));
   }
 
   get aboutHref() {
     return this.toHubHref(aboutPath());
   }
 
-  get logoutUrl() {
-    return "/logout";
+  get logoutHref() {
+    return this.toHubHref("/logout");
   }
 
   get displayName() {
@@ -125,10 +176,6 @@ export default class FomioMeHub extends Component {
     return `@${u.username}`;
   }
 
-  get sessionSectionLabel() {
-    return i18n(themePrefix("mobile_nav.me_hub_section_session"));
-  }
-
   get ariaLabel() {
     if (this.currentUser) {
       return i18n(themePrefix("mobile_nav.me_hub_aria"));
@@ -145,12 +192,9 @@ export default class FomioMeHub extends Component {
     {{#if this.shouldRender}}
       {{#if this.isLoggedInHub}}
         <nav class="fomio-me-hub" aria-label={{this.ariaLabel}}>
-          {{#if this.profileSummaryHref}}
+          {{#if this.summaryHref}}
             <div class="fomio-me-hub__summary">
-              <a
-                href={{this.profileSummaryHref}}
-                class="fomio-me-hub__summary-link"
-              >
+              <a href={{this.summaryHref}} class="fomio-me-hub__summary-link">
                 <span class="fomio-me-hub__summary-avatar" aria-hidden="true">
                   {{avatar this.currentUser imageSize="large"}}
                 </span>
@@ -167,18 +211,15 @@ export default class FomioMeHub extends Component {
 
           <section
             class="fomio-me-hub__section"
-            aria-labelledby="fomio-me-hub-account-heading"
+            aria-label={{i18n (themePrefix "mobile_nav.me_hub_primary_nav_aria")}}
           >
-            <h2 id="fomio-me-hub-account-heading" class="fomio-me-hub__section-title">
-              {{i18n (themePrefix "mobile_nav.me_hub_section_account")}}
-            </h2>
             <div class="fomio-me-hub__section-body">
-              {{#if this.profileSummaryHref}}
-                <a class="fomio-me-hub__row" href={{this.profileSummaryHref}}>
+              {{#if this.summaryHref}}
+                <a class="fomio-me-hub__row" href={{this.summaryHref}}>
                   <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "user"}}</span>
                   <span class="fomio-me-hub__row-copy">
                     <span class="fomio-me-hub__row-label">{{i18n
-                        (themePrefix "mobile_nav.me_hub_profile")
+                        (themePrefix "mobile_nav.me_hub_summary")
                       }}</span>
                   </span>
                   <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
@@ -186,105 +227,139 @@ export default class FomioMeHub extends Component {
                     }}</span>
                 </a>
               {{/if}}
-              {{#if this.activityHref}}
-                <a class="fomio-me-hub__row" href={{this.activityHref}}>
-                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "list"}}</span>
-                  <span class="fomio-me-hub__row-copy">
-                    <span class="fomio-me-hub__row-label">{{i18n
-                        (themePrefix "mobile_nav.me_hub_activity")
+
+              {{#if this.showActivityTab}}
+                {{#if this.activityHref}}
+                  <a class="fomio-me-hub__row" href={{this.activityHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
+                        "bars-staggered"
                       }}</span>
-                  </span>
-                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
-                      "angle-right"
-                    }}</span>
-                </a>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_activity")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
               {{/if}}
-              {{#if this.bookmarksHref}}
-                <a class="fomio-me-hub__row" href={{this.bookmarksHref}}>
-                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
-                      "bookmark"
-                    }}</span>
-                  <span class="fomio-me-hub__row-copy">
-                    <span class="fomio-me-hub__row-label">{{i18n
-                        (themePrefix "mobile_nav.me_hub_saved")
+
+              {{#if this.showNotificationsTab}}
+                {{#if this.notificationsHref}}
+                  <a class="fomio-me-hub__row" href={{this.notificationsHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
+                        "bell"
                       }}</span>
-                  </span>
-                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
-                      "angle-right"
-                    }}</span>
-                </a>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_notifications")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
               {{/if}}
-              {{#if this.messagesHref}}
-                <a class="fomio-me-hub__row" href={{this.messagesHref}}>
-                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
-                      "envelope"
-                    }}</span>
-                  <span class="fomio-me-hub__row-copy">
-                    <span class="fomio-me-hub__row-label">{{i18n
-                        (themePrefix "mobile_nav.me_hub_messages")
+
+              {{#if this.showPrivateMessages}}
+                {{#if this.messagesHref}}
+                  <a class="fomio-me-hub__row" href={{this.messagesHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
+                        "envelope"
                       }}</span>
-                  </span>
-                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
-                      "angle-right"
-                    }}</span>
-                </a>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_messages")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
+              {{/if}}
+
+              {{#if this.canInviteToForum}}
+                {{#if this.invitedHref}}
+                  <a class="fomio-me-hub__row" href={{this.invitedHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
+                        "user-plus"
+                      }}</span>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_invites")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
+              {{/if}}
+
+              {{#if this.showBadges}}
+                {{#if this.badgesHref}}
+                  <a class="fomio-me-hub__row" href={{this.badgesHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
+                        "certificate"
+                      }}</span>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_badges")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
+              {{/if}}
+
+              {{#if this.showPreferences}}
+                {{#if this.preferencesHref}}
+                  <a class="fomio-me-hub__row" href={{this.preferencesHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "gear"}}</span>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_preferences")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
+              {{/if}}
+
+              {{#if this.showAdminManageUser}}
+                {{#if this.adminManageHref}}
+                  <a class="fomio-me-hub__row" href={{this.adminManageHref}}>
+                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "wrench"}}</span>
+                    <span class="fomio-me-hub__row-copy">
+                      <span class="fomio-me-hub__row-label">{{i18n
+                          (themePrefix "mobile_nav.me_hub_admin")
+                        }}</span>
+                    </span>
+                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                        "angle-right"
+                      }}</span>
+                  </a>
+                {{/if}}
               {{/if}}
             </div>
           </section>
 
           <section
-            class="fomio-me-hub__section"
-            aria-labelledby="fomio-me-hub-prefs-heading"
+            class="fomio-me-hub__section fomio-me-hub__section--footer"
+            aria-label={{i18n (themePrefix "mobile_nav.me_hub_footer_aria")}}
           >
-            <h2 id="fomio-me-hub-prefs-heading" class="fomio-me-hub__section-title">
-              {{i18n (themePrefix "mobile_nav.me_hub_section_preferences")}}
-            </h2>
             <div class="fomio-me-hub__section-body">
-              {{#if this.preferencesHref}}
-                <a class="fomio-me-hub__row" href={{this.preferencesHref}}>
-                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "gear"}}</span>
-                  <span class="fomio-me-hub__row-copy">
-                    <span class="fomio-me-hub__row-label">{{i18n
-                        (themePrefix "mobile_nav.me_hub_settings")
-                      }}</span>
-                    <span class="fomio-me-hub__row-meta">{{i18n
-                        (themePrefix "mobile_nav.me_hub_settings_meta")
-                      }}</span>
-                  </span>
-                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
-                      "angle-right"
-                    }}</span>
-                </a>
-              {{/if}}
-              {{#if this.notificationsHref}}
-                <a class="fomio-me-hub__row" href={{this.notificationsHref}}>
-                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "bell"}}</span>
-                  <span class="fomio-me-hub__row-copy">
-                    <span class="fomio-me-hub__row-label">{{i18n
-                        (themePrefix "mobile_nav.me_hub_notifications")
-                      }}</span>
-                  </span>
-                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
-                      "angle-right"
-                    }}</span>
-                </a>
-              {{/if}}
-            </div>
-          </section>
-
-          {{#if this.aboutHref}}
-            <section
-              class="fomio-me-hub__section"
-              aria-labelledby="fomio-me-hub-support-heading"
-            >
-              <h2 id="fomio-me-hub-support-heading" class="fomio-me-hub__section-title">
-                {{i18n (themePrefix "mobile_nav.me_hub_section_support")}}
-              </h2>
-              <div class="fomio-me-hub__section-body">
+              {{#if this.aboutHref}}
                 <a class="fomio-me-hub__row" href={{this.aboutHref}}>
-                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
-                      "book"
-                    }}</span>
+                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "book"}}</span>
                   <span class="fomio-me-hub__row-copy">
                     <span class="fomio-me-hub__row-label">{{i18n
                         (themePrefix "mobile_nav.me_hub_about")
@@ -294,32 +369,24 @@ export default class FomioMeHub extends Component {
                       "angle-right"
                     }}</span>
                 </a>
-              </div>
-            </section>
-          {{/if}}
-
-          <section
-            class="fomio-me-hub__section fomio-me-hub__section--footer"
-            aria-label={{this.sessionSectionLabel}}
-          >
-            <div class="fomio-me-hub__section-body">
-              <a
-                class="fomio-me-hub__row fomio-me-hub__row--muted"
-                href={{this.logoutUrl}}
-                rel="nofollow"
-              >
-                <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon
-                    "sign-out"
-                  }}</span>
-                <span class="fomio-me-hub__row-copy">
-                  <span class="fomio-me-hub__row-label">{{i18n
-                      (themePrefix "mobile_nav.me_hub_sign_out")
+              {{/if}}
+              {{#if this.logoutHref}}
+                <a
+                  class="fomio-me-hub__row fomio-me-hub__row--muted"
+                  href={{this.logoutHref}}
+                  rel="nofollow"
+                >
+                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "sign-out"}}</span>
+                  <span class="fomio-me-hub__row-copy">
+                    <span class="fomio-me-hub__row-label">{{i18n
+                        (themePrefix "mobile_nav.me_hub_sign_out")
+                      }}</span>
+                  </span>
+                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
+                      "angle-right"
                     }}</span>
-                </span>
-                <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon
-                    "angle-right"
-                  }}</span>
-              </a>
+                </a>
+              {{/if}}
             </div>
           </section>
         </nav>

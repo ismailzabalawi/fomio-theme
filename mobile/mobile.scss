@@ -756,6 +756,11 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet
   padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
 }
 
+// Activity leaf polish (Phase 3C-N1-Fix): authoritative rules live in
+// common/common.scss under `body.fomio-sidebar-active.fomio-surface-touch` +
+// `body.user-activity-page` so theme preview / common bundle always applies them.
+// Do not re-add required Activity behavior here — mobile.scss is not reliable alone.
+
 // ── Byte interaction system — mobile adjustments (0–767px) ─
 
 // Hide tooltips — tap targets are primary navigation on mobile

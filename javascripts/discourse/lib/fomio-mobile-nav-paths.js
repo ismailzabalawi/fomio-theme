@@ -63,13 +63,15 @@ export function activityPathForUser(user) {
 }
 
 /**
- * Private messages inbox. Discourse’s canonical route is `/my/messages`.
- * Avoid `/u/:username/messages` here — not all sites expose it the same way,
- * and it risks `/u/undefined/messages` if username is ever missing.
+ * Private messages inbox. Prefer per-user `/u/:username/messages` (matches user-nav);
+ * fall back to `/my/messages` if `username` is missing.
  */
 export function messagesPathForUser(user) {
   if (!user) {
     return null;
+  }
+  if (user.username) {
+    return `/u/${user.username}/messages`;
   }
   return "/my/messages";
 }
@@ -85,14 +87,52 @@ export function preferencesPathForUser(user) {
 }
 
 /**
- * Notifications index for the current user. Discourse exposes this at `/notifications`
- * (see also `/u/:username/notifications`; we use the session-scoped canonical path).
+ * User notifications (matches `user-nav` → `userNotifications`, `config/routes.rb`).
  */
 export function notificationsPathForUser(user) {
   if (!user) {
     return null;
   }
+  if (user.username) {
+    return `/u/${user.username}/notifications`;
+  }
   return "/notifications";
+}
+
+/**
+ * Invites (`/u/:username/invited`).
+ */
+export function invitedPathForUser(user) {
+  if (!user) {
+    return null;
+  }
+  if (user.username) {
+    return `/u/${user.username}/invited`;
+  }
+  return null;
+}
+
+/**
+ * Badges (`/u/:username/badges`).
+ */
+export function badgesPathForUser(user) {
+  if (!user) {
+    return null;
+  }
+  if (user.username) {
+    return `/u/${user.username}/badges`;
+  }
+  return null;
+}
+
+/**
+ * Staff “Manage user” in admin (`/admin/users/:id/:username`).
+ */
+export function adminManageUserPathForUser(user) {
+  if (!user?.staff || user.id == null || !user.username) {
+    return null;
+  }
+  return `/admin/users/${user.id}/${String(user.username).toLowerCase()}`;
 }
 
 /**
@@ -103,28 +143,54 @@ export function aboutPath() {
 }
 
 /**
- * Touch Me hub: show on own account routes, `/my/*`, and `/notifications` (logged in);
- * logged out: any Me tab territory except bookmarks (sign-in callout).
+ * Touch Me hub: only own profile landing surfaces (not native leaf routes).
+ * Logged-out: Me-tab territory sign-in CTA (`isMePath`), excluding about/logout/session notifications.
  */
-export function isMeHubSurfacePath(path, currentUser) {
-  const p = path.split("?")[0];
-  if (isAuthPath(p) || isSavedPath(path)) {
+export function isMeLandingSurfacePath(rawUrl, currentUser) {
+  const path = rawUrl.split("?")[0];
+  if (isAuthPath(path) || isSavedPath(path)) {
     return false;
   }
+  if (path === "/about" || path.startsWith("/about/")) {
+    return false;
+  }
+  if (path === "/logout") {
+    return false;
+  }
+  if (path === "/notifications" || path.startsWith("/notifications/")) {
+    return false;
+  }
+
   if (!currentUser) {
     return isMePath(path);
   }
-  if (p === "/notifications" || p.startsWith("/notifications/")) {
-    return true;
-  }
-  if (p === "/my" || p.startsWith("/my/")) {
-    return true;
-  }
-  const m = /^\/u\/([^/]+)/.exec(p);
-  if (!m || !currentUser.username) {
+
+  if (path === "/my/preferences" || path.startsWith("/my/preferences/")) {
     return false;
   }
-  return m[1].toLowerCase() === currentUser.username.toLowerCase();
+  if (path === "/my/messages" || path.startsWith("/my/messages/")) {
+    return false;
+  }
+  if (path === "/my" || path === "/my/summary") {
+    return true;
+  }
+  if (path.startsWith("/my/")) {
+    return false;
+  }
+
+  if (!currentUser.username) {
+    return false;
+  }
+  const slug = currentUser.username.toLowerCase();
+  const mSummary = /^\/u\/([^/]+)\/summary$/.exec(path);
+  if (mSummary && mSummary[1].toLowerCase() === slug) {
+    return true;
+  }
+  const mRoot = /^\/u\/([^/]+)$/.exec(path);
+  if (mRoot && mRoot[1].toLowerCase() === slug) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -178,19 +244,25 @@ export function isHomeFeedPath(path) {
   if (p.startsWith("/notifications")) {
     return false;
   }
+  if (p.startsWith("/top")) {
+    return false;
+  }
   return (
     p === "/" ||
     p.startsWith("/latest") ||
     p.startsWith("/hot") ||
     p.startsWith("/new") ||
-    p.startsWith("/unread") ||
-    p.startsWith("/top")
+    p.startsWith("/unread")
   );
 }
 
 export function isDiscoverPath(path) {
   const p = path.split("?")[0];
-  return p === "/categories" || p.startsWith("/c/");
+  return (
+    p === "/categories" ||
+    p.startsWith("/c/") ||
+    p.startsWith("/top")
+  );
 }
 
 export function isSavedPath(path) {

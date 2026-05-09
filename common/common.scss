@@ -5713,6 +5713,1088 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     }
   }
 
+  // Phase 3C-N1-Fix — Activity leaf polish lives in common (always bundled).
+  // Discourse `user-activity.gjs` adds `body.user-activity-page` and renders:
+  // - `.user-navigation.user-navigation-secondary` > `.horizontal-overflow-nav` > `ul.nav-pills.action-list`
+  // - primary row: `.user-navigation.user-navigation-primary` (same nav-pills pattern)
+  // Does not match summary / preferences / messages (no `user-activity-page`).
+  &.user-activity-page {
+    #main-outlet .user-main {
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+    }
+
+    #main-outlet .user-main .new-user-content-wrapper {
+      margin: 0 10px 12px;
+      padding: 10px 10px 12px;
+      background: var(--fomio-surface);
+      border: 1px solid var(--fomio-border-soft);
+      border-radius: 16px;
+      box-sizing: border-box;
+      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-primary {
+      margin: 0 10px 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--fomio-border-soft);
+      max-width: 100%;
+      box-sizing: border-box;
+
+      ul.nav-pills > li > a {
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        color: var(--fomio-muted);
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="page"] > a {
+        color: var(--fomio-text);
+      }
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      margin: 0 0 10px;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+
+      .horizontal-overflow-nav {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      .horizontal-overflow-nav__scroll-left,
+      .horizontal-overflow-nav__scroll-right {
+        flex: 0 0 auto;
+        align-self: center;
+      }
+
+      ul.nav-pills {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        gap: 8px;
+        margin: 0;
+        padding: 8px 4px 10px;
+        list-style: none;
+        box-sizing: border-box;
+        overflow-x: auto;
+        overflow-y: hidden;
+        // Visible, thin bar: clearer than hidden scroll (still width-contained above).
+        scrollbar-width: thin;
+        scrollbar-color: var(--fomio-muted) var(--fomio-border-soft);
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+      }
+
+      ul.nav-pills::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-track {
+        background: var(--fomio-border-soft);
+        border-radius: 999px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-thumb {
+        background: color-mix(in oklab, var(--fomio-muted) 70%, var(--fomio-border));
+        border-radius: 999px;
+      }
+
+      ul.nav-pills > li {
+        flex: 0 0 auto;
+        margin: 0;
+      }
+
+      ul.nav-pills > li > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--fomio-border);
+        background: var(--fomio-surface);
+        color: var(--fomio-muted);
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1.2;
+        -webkit-tap-highlight-color: transparent;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition:
+            color 0.15s ease,
+            background 0.15s ease,
+            border-color 0.15s ease;
+        }
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="location"] > a {
+        color: var(--fomio-primary);
+        border-color: color-mix(
+          in oklab,
+          var(--fomio-primary) 35%,
+          var(--fomio-border)
+        );
+        background: color-mix(
+          in oklab,
+          var(--fomio-primary) 8%,
+          var(--fomio-surface)
+        );
+      }
+    }
+
+    #main-outlet .user-main .user-stream,
+    #main-outlet .user-main .user-stream-wrapper {
+      margin-top: 0;
+      max-width: 100%;
+    }
+
+    #main-outlet .user-main .user-stream .item,
+    #main-outlet .user-main .user-stream .user-stream-item,
+    #main-outlet .user-main .user-stream .stream-item {
+      padding-block: 0.65rem;
+      border-bottom: 1px solid var(--fomio-border-soft);
+      margin-bottom: 0;
+      font-family: var(--fomio-font-ui);
+    }
+
+    #main-outlet .user-main .user-stream .item:last-child,
+    #main-outlet .user-main .user-stream .user-stream-item:last-child,
+    #main-outlet .user-main .user-stream .stream-item:last-child {
+      border-bottom: none;
+    }
+
+    #main-outlet .user-main .user-stream .excerpt,
+    #main-outlet .user-main .user-stream .category-name,
+    #main-outlet .user-main .user-stream .badge-category,
+    #main-outlet .user-main .user-stream .relative-date,
+    #main-outlet .user-main .user-stream .time,
+    #main-outlet .user-main .user-stream .post-date,
+    #main-outlet .user-main .user-stream .stream-topic-details {
+      color: var(--fomio-muted);
+      font-size: var(--fomio-text-xs);
+    }
+
+    #main-outlet .user-main .user-stream .title a,
+    #main-outlet .user-main .user-stream .stream-topic-title a,
+    #main-outlet .user-main .user-stream .topic-title a {
+      color: var(--fomio-text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    #main-outlet .user-main .empty-state,
+    #main-outlet .user-main .user-stream .empty-state,
+    #main-outlet .user-main .user-content .empty-state {
+      padding: 1.25rem 0.5rem 1.5rem;
+      box-sizing: border-box;
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+    }
+
+    #main-outlet .user-main .user-content .alert.alert-info {
+      border-radius: var(--fomio-radius-sm);
+      margin: 0.5rem 0 1rem;
+    }
+  }
+
+  // Phase 3C-N2 — Messages leaf (Discourse `user/messages.gjs` → `body.user-messages-page`).
+  // Secondary: `.user-navigation-secondary` + `HorizontalOverflowNav#user-navigation-secondary__horizontal-nav`
+  // + portaled `DNavigationItem` pills. List: `#user-content` topic list / EmptyState.
+  &.user-messages-page {
+    #main-outlet .user-main {
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+    }
+
+    #main-outlet .user-main .new-user-content-wrapper {
+      margin: 0 10px 12px;
+      padding: 10px 10px 12px;
+      background: var(--fomio-surface);
+      border: 1px solid var(--fomio-border-soft);
+      border-radius: 16px;
+      box-sizing: border-box;
+      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-primary {
+      margin: 0 10px 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--fomio-border-soft);
+      max-width: 100%;
+      box-sizing: border-box;
+
+      ul.nav-pills > li > a {
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        color: var(--fomio-muted);
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="page"] > a {
+        color: var(--fomio-text);
+      }
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0 0 12px;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+
+      .category-breadcrumb {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        max-width: 100%;
+        min-width: 0;
+
+        > li {
+          max-width: 100%;
+          min-width: 0;
+        }
+      }
+
+      .horizontal-overflow-nav {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      .horizontal-overflow-nav__scroll-left,
+      .horizontal-overflow-nav__scroll-right {
+        flex: 0 0 auto;
+        align-self: center;
+      }
+
+      ul.nav-pills {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        gap: 8px;
+        margin: 0;
+        padding: 8px 4px 10px;
+        list-style: none;
+        box-sizing: border-box;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: var(--fomio-muted) var(--fomio-border-soft);
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+      }
+
+      ul.nav-pills::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-track {
+        background: var(--fomio-border-soft);
+        border-radius: 999px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-thumb {
+        background: color-mix(in oklab, var(--fomio-muted) 70%, var(--fomio-border));
+        border-radius: 999px;
+      }
+
+      ul.nav-pills > li {
+        flex: 0 0 auto;
+        margin: 0;
+      }
+
+      ul.nav-pills > li > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--fomio-border);
+        background: var(--fomio-surface);
+        color: var(--fomio-muted);
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1.2;
+        -webkit-tap-highlight-color: transparent;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition:
+            color 0.15s ease,
+            background 0.15s ease,
+            border-color 0.15s ease;
+        }
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="location"] > a {
+        color: var(--fomio-primary);
+        border-color: color-mix(
+          in oklab,
+          var(--fomio-primary) 35%,
+          var(--fomio-border)
+        );
+        background: color-mix(
+          in oklab,
+          var(--fomio-primary) 8%,
+          var(--fomio-surface)
+        );
+      }
+
+      .navigation-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        min-width: 0;
+      }
+    }
+
+    #main-outlet .user-main #user-content {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .topic-list {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item {
+      border-bottom: 1px solid var(--fomio-border-soft);
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:last-child {
+      border-bottom: none;
+    }
+
+    #main-outlet .user-main #user-content .topic-list .main-link {
+      font-family: var(--fomio-font-ui);
+    }
+
+    #main-outlet .user-main #user-content .topic-list .main-link a.title,
+    #main-outlet .user-main #user-content .topic-list .main-link .topic-title a,
+    #main-outlet .user-main #user-content .topic-list .main-link .raw-topic-link {
+      color: var(--fomio-text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    #main-outlet .user-main #user-content .topic-list .num,
+    #main-outlet .user-main #user-content .topic-list .age,
+    #main-outlet .user-main #user-content .topic-list .activity,
+    #main-outlet .user-main #user-content .topic-list .posters a {
+      color: var(--fomio-muted);
+      font-size: var(--fomio-text-xs);
+    }
+
+    #main-outlet .user-main #user-content .paginated-topics-list {
+      padding-bottom: 0.5rem;
+    }
+
+    #main-outlet .user-main #user-content .empty-state,
+    #main-outlet .user-main .user-content .empty-state {
+      padding: 1.25rem 0.5rem 1.5rem;
+      box-sizing: border-box;
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+    }
+
+    #main-outlet .user-main .user-content .alert.alert-info,
+    #main-outlet .user-main #user-content .alert.alert-info {
+      border-radius: var(--fomio-radius-sm);
+      margin: 0 0 0.75rem;
+    }
+  }
+
+  // Phase 3C-N3 — Preferences leaf (`preferences.gjs` → `body.user-preferences-page`).
+  // Secondary: `.user-navigation-secondary` + `HorizontalOverflowNav` + `ul.nav-pills`.
+  // Content: `#user-content.user-preferences` (forms — keep interactive; no decorative cages).
+  &.user-preferences-page {
+    #main-outlet .user-main {
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+    }
+
+    #main-outlet .user-main .new-user-content-wrapper {
+      margin: 0 10px 12px;
+      padding: 10px 10px 12px;
+      background: var(--fomio-surface);
+      border: 1px solid var(--fomio-border-soft);
+      border-radius: 16px;
+      box-sizing: border-box;
+      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-primary {
+      margin: 0 10px 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--fomio-border-soft);
+      max-width: 100%;
+      box-sizing: border-box;
+
+      ul.nav-pills > li > a {
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        color: var(--fomio-muted);
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="page"] > a {
+        color: var(--fomio-text);
+      }
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      margin: 0 0 10px;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+
+      .horizontal-overflow-nav {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      .horizontal-overflow-nav__scroll-left,
+      .horizontal-overflow-nav__scroll-right {
+        flex: 0 0 auto;
+        align-self: center;
+      }
+
+      ul.nav-pills {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        gap: 8px;
+        margin: 0;
+        padding: 8px 4px 10px;
+        list-style: none;
+        box-sizing: border-box;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: var(--fomio-muted) var(--fomio-border-soft);
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+      }
+
+      ul.nav-pills::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-track {
+        background: var(--fomio-border-soft);
+        border-radius: 999px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-thumb {
+        background: color-mix(in oklab, var(--fomio-muted) 70%, var(--fomio-border));
+        border-radius: 999px;
+      }
+
+      ul.nav-pills > li {
+        flex: 0 0 auto;
+        margin: 0;
+      }
+
+      ul.nav-pills > li > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--fomio-border);
+        background: var(--fomio-surface);
+        color: var(--fomio-muted);
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1.2;
+        -webkit-tap-highlight-color: transparent;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition:
+            color 0.15s ease,
+            background 0.15s ease,
+            border-color 0.15s ease;
+        }
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="location"] > a {
+        color: var(--fomio-primary);
+        border-color: color-mix(
+          in oklab,
+          var(--fomio-primary) 35%,
+          var(--fomio-border)
+        );
+        background: color-mix(
+          in oklab,
+          var(--fomio-primary) 8%,
+          var(--fomio-surface)
+        );
+      }
+    }
+
+    #main-outlet .user-main #user-content.user-preferences {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      font-family: var(--fomio-font-ui);
+      padding-top: 2px;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences h1,
+    #main-outlet .user-main #user-content.user-preferences h2 {
+      font-family: var(--fomio-font-serif);
+      color: var(--fomio-text);
+      letter-spacing: var(--fomio-tracking-tight);
+      margin-top: 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences h1 {
+      font-size: clamp(1.25rem, 1.1rem + 0.45vw, 1.55rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.65rem;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences h2 {
+      font-size: var(--fomio-text-base);
+      font-weight: 600;
+      line-height: 1.25;
+      margin-bottom: 0.45rem;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .form-vertical,
+    #main-outlet .user-main #user-content.user-preferences form {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-group,
+    #main-outlet .user-main #user-content.user-preferences .pref-group {
+      margin-bottom: 1rem;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences label,
+    #main-outlet .user-main #user-content.user-preferences .control-label,
+    #main-outlet .user-main #user-content.user-preferences .pref-title {
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-description,
+    #main-outlet .user-main #user-content.user-preferences .instructions,
+    #main-outlet .user-main #user-content.user-preferences .control-instructions {
+      color: var(--fomio-muted);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      line-height: 1.45;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences input[type="text"],
+    #main-outlet .user-main #user-content.user-preferences input[type="email"],
+    #main-outlet .user-main #user-content.user-preferences input[type="password"],
+    #main-outlet .user-main #user-content.user-preferences input[type="number"],
+    #main-outlet .user-main #user-content.user-preferences input[type="url"],
+    #main-outlet .user-main #user-content.user-preferences input[type="search"],
+    #main-outlet .user-main #user-content.user-preferences textarea,
+    #main-outlet .user-main #user-content.user-preferences select {
+      max-width: 100%;
+      box-sizing: border-box;
+      background: var(--fomio-surface);
+      border: 1px solid var(--fomio-border);
+      border-radius: var(--fomio-radius-sm);
+      color: var(--fomio-text);
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .select-kit .select-kit-header {
+      background: var(--fomio-surface);
+      border: 1px solid var(--fomio-border);
+      border-radius: var(--fomio-radius-sm);
+      color: var(--fomio-text);
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .alert {
+      border-radius: var(--fomio-radius-sm);
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .controls.save-button .btn,
+    #main-outlet .user-main #user-content.user-preferences .save-button .btn,
+    #main-outlet .user-main #user-content.user-preferences .btn-primary {
+      min-height: 44px;
+    }
+  }
+
+  // Phase 3C-N4 — Notifications, Invites, Badges native leaves (Discourse templates).
+  // Notifications: `user-notifications.gjs` → `body.user-notifications-page`; list in
+  // `.user-notifications-list`, filter `.user-notifications-filter`, stream `.notification-history.user-stream`.
+  // Invites: `user-invited.gjs` / `user-invited/show.gjs` → `body.user-invites-page`; tabs in
+  // `.user-navigation-secondary`; tables `.user-invite-list.d-table`; controls `.user-additional-controls`.
+  // Badges: `user/badges.gjs` → `body.user-badges-page`; `#user-content` + `.badge-group-list` + `.badge-card`.
+  &.user-notifications-page,
+  &.user-invites-page,
+  &.user-badges-page {
+    #main-outlet .user-main {
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+    }
+
+    #main-outlet .user-main .new-user-content-wrapper {
+      margin: 0 10px 12px;
+      padding: 10px 10px 12px;
+      background: var(--fomio-surface);
+      border: 1px solid var(--fomio-border-soft);
+      border-radius: 16px;
+      box-sizing: border-box;
+      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-primary {
+      margin: 0 10px 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--fomio-border-soft);
+      max-width: 100%;
+      box-sizing: border-box;
+
+      ul.nav-pills > li > a {
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        color: var(--fomio-muted);
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="page"] > a {
+        color: var(--fomio-text);
+      }
+    }
+
+    #main-outlet .user-main .empty-state,
+    #main-outlet .user-main #user-content .empty-state,
+    #main-outlet .user-main .user-content .empty-state {
+      padding: 1.25rem 0.5rem 1.5rem;
+      box-sizing: border-box;
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+    }
+
+    #main-outlet .user-main .user-content .alert.alert-info,
+    #main-outlet .user-main #user-content .alert.alert-info {
+      border-radius: var(--fomio-radius-sm);
+      margin: 0 0 0.75rem;
+    }
+  }
+
+  &.user-notifications-page,
+  &.user-invites-page {
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0 0 12px;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+
+      .horizontal-overflow-nav {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      .horizontal-overflow-nav__scroll-left,
+      .horizontal-overflow-nav__scroll-right {
+        flex: 0 0 auto;
+        align-self: center;
+      }
+
+      ul.nav-pills {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        gap: 8px;
+        margin: 0;
+        padding: 8px 4px 10px;
+        list-style: none;
+        box-sizing: border-box;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: var(--fomio-muted) var(--fomio-border-soft);
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+      }
+
+      ul.nav-pills::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-track {
+        background: var(--fomio-border-soft);
+        border-radius: 999px;
+      }
+
+      ul.nav-pills::-webkit-scrollbar-thumb {
+        background: color-mix(in oklab, var(--fomio-muted) 70%, var(--fomio-border));
+        border-radius: 999px;
+      }
+
+      ul.nav-pills > li {
+        flex: 0 0 auto;
+        margin: 0;
+      }
+
+      ul.nav-pills > li > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--fomio-border);
+        background: var(--fomio-surface);
+        color: var(--fomio-muted);
+        font-family: var(--fomio-font-ui);
+        font-size: var(--fomio-text-sm);
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        line-height: 1.2;
+        -webkit-tap-highlight-color: transparent;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition:
+            color 0.15s ease,
+            background 0.15s ease,
+            border-color 0.15s ease;
+        }
+      }
+
+      ul.nav-pills > li.active > a,
+      ul.nav-pills > li > a.active,
+      ul.nav-pills > li[aria-current="location"] > a {
+        color: var(--fomio-primary);
+        border-color: color-mix(
+          in oklab,
+          var(--fomio-primary) 35%,
+          var(--fomio-border)
+        );
+        background: color-mix(
+          in oklab,
+          var(--fomio-primary) 8%,
+          var(--fomio-surface)
+        );
+      }
+
+      .navigation-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .navigation-controls .btn.dismiss-notifications {
+        min-height: 44px;
+      }
+    }
+  }
+
+  &.user-notifications-page {
+    #main-outlet .user-main #user-content {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main .user-notifications-filter {
+      margin-bottom: 12px;
+      max-width: 100%;
+      box-sizing: border-box;
+
+      .select-kit {
+        max-width: 100%;
+      }
+    }
+
+    #main-outlet .user-main #user-content .item.error {
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: var(--fomio-radius-sm);
+      font-family: var(--fomio-font-ui);
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main .user-notifications-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main .user-notifications-list > li {
+      padding: 10px 0;
+      margin: 0;
+      border-bottom: 1px solid var(--fomio-border-soft);
+    }
+
+    #main-outlet .user-main .user-notifications-list > li:last-child {
+      border-bottom: none;
+    }
+
+    #main-outlet .user-main .user-notifications-list > li > a {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--fomio-text);
+      text-decoration: none;
+      font-family: var(--fomio-font-ui);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #main-outlet .user-main .user-notifications-list .item-label {
+      font-weight: 600;
+      font-size: var(--fomio-text-sm);
+      line-height: 1.3;
+    }
+
+    #main-outlet .user-main .user-notifications-list .item-description {
+      display: block;
+      margin-top: 3px;
+      color: var(--fomio-muted);
+      font-size: var(--fomio-text-xs);
+      line-height: 1.35;
+    }
+
+    #main-outlet .user-main .notification-history.user-stream {
+      margin-top: 0;
+      max-width: 100%;
+    }
+  }
+
+  &.user-invites-page {
+    #main-outlet .user-main #user-content,
+    #main-outlet .user-main .user-content#user-content {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .user-additional-controls,
+    #main-outlet .user-main .user-content#user-content .user-additional-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-search input,
+    #main-outlet .user-main .user-content#user-content .user-invite-search input {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-buttons,
+    #main-outlet .user-main .user-content#user-content .user-invite-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-buttons .btn,
+    #main-outlet .user-main .user-content#user-content .user-invite-buttons .btn {
+      min-height: 44px;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-list,
+    #main-outlet .user-main .user-content#user-content .user-invite-list {
+      font-family: var(--fomio-font-ui);
+      max-width: 100%;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-list .d-table__header-cell,
+    #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__header-cell {
+      font-size: var(--fomio-text-xs);
+      font-weight: 600;
+      color: var(--fomio-muted);
+    }
+
+    #main-outlet .user-main #user-content .user-invite-list .d-table__cell,
+    #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__cell {
+      padding: 10px 8px;
+      vertical-align: top;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-list .d-table__row:not(:last-child) .d-table__cell,
+    #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__row:not(:last-child) .d-table__cell {
+      border-bottom: 1px solid var(--fomio-border-soft);
+    }
+
+    #main-outlet .user-main #user-content .user-invite-list .d-table__mobile-label,
+    #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__mobile-label {
+      color: var(--fomio-muted);
+      font-size: var(--fomio-text-xs);
+    }
+  }
+
+  &.user-badges-page {
+    #main-outlet .user-main #user-content {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      padding-top: 2px;
+    }
+
+    #main-outlet .user-main #user-content .favorite-count {
+      margin: 0 0 12px;
+      color: var(--fomio-muted);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      line-height: 1.4;
+    }
+
+    #main-outlet .user-main #user-content .badge-group-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .badge-card {
+      border: 1px solid var(--fomio-border-soft);
+      border-radius: 14px;
+      background: color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg));
+      box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .badge-card .badge-summary,
+    #main-outlet .user-main #user-content .badge-card .badge-granted {
+      color: var(--fomio-muted);
+      font-size: var(--fomio-text-xs);
+      line-height: 1.45;
+    }
+
+    #main-outlet .user-main #user-content .badge-card .badge-link {
+      color: var(--fomio-text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    #main-outlet .user-main #user-content .badge-card .favorite-btn {
+      min-height: 40px;
+    }
+  }
+
   // Me landing: hide native summary chrome only on real summary route + landing class.
   &.fomio-me-hub-landing.user-summary-page {
     .fomio-me-hub--landing {
@@ -10162,4 +11244,539 @@ html.fomio-color-dark {
     max-width: 100%;
     overflow-x: hidden;
   }
+}
+
+// ------------------------------------------------------------------
+// Phase M2-B — Notifications second-level menu (all viewports; not touch-gated).
+// Suppress native core pills only when the Fomio menu mounted (avoids empty nav if
+// `in-element` never finds its anchor). Plugin `user-notifications-bottom` rows stay
+// visible unless their `li` reuses `user-nav__notifications-*` class substrings.
+// ------------------------------------------------------------------
+body.user-notifications-page:has(.fomio-notifications-section-menu) {
+  // `in-element` appends the menu as last child; flex order pulls it above pills + dismiss.
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    li.user-nav__notifications-all,
+    li.user-nav__notifications-responses,
+    li.user-nav__notifications-likes,
+    li.user-nav__notifications-mentions,
+    li.user-nav__notifications-edits,
+    li.user-nav__notifications-links {
+      display: none !important;
+    }
+
+    nav.horizontal-overflow-nav:not(
+        :has(ul.nav-pills > li:not([class*="user-nav__notifications-"]))
+      ) {
+      display: none !important;
+    }
+  }
+
+  #main-outlet .user-main .fomio-notifications-section-menu {
+    order: -1;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  #main-outlet .user-main .fomio-notifications-section-menu__title {
+    margin: 0 0 10px;
+    padding: 0 2px;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  #main-outlet .user-main .fomio-notifications-section-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .fomio-notifications-section-menu__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  #main-outlet .user-main .fomio-notifications-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      border-color: color-mix(
+        in oklab,
+        var(--fomio-primary) 40%,
+        var(--fomio-border)
+      );
+      background: color-mix(
+        in oklab,
+        var(--fomio-primary) 10%,
+        var(--fomio-surface)
+      );
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+body.user-notifications-page #main-container .fomio-notifications-section-menu__host {
+  display: none !important;
+}
+
+// ------------------------------------------------------------------
+// Phase M2-C — Activity second-level menu (same pattern as M2-B notifications).
+// ------------------------------------------------------------------
+body.user-activity-page:has(.fomio-activity-section-menu) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    li.user-nav__activity-all,
+    li.user-nav__activity-topics,
+    li.user-nav__activity-replies,
+    li.user-nav__activity-read,
+    li.user-nav__activity-drafts,
+    li.user-nav__activity-pending,
+    li.user-nav__activity-likes,
+    li.user-nav__activity-bookmarks {
+      display: none !important;
+    }
+
+    nav.horizontal-overflow-nav:not(
+        :has(ul.nav-pills > li:not([class*="user-nav__activity-"]))
+      ) {
+      display: none !important;
+    }
+  }
+
+  #main-outlet .user-main .fomio-activity-section-menu {
+    order: -1;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  #main-outlet .user-main .fomio-activity-section-menu__title {
+    margin: 0 0 10px;
+    padding: 0 2px;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  #main-outlet .user-main .fomio-activity-section-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .fomio-activity-section-menu__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  #main-outlet .user-main .fomio-activity-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      border-color: color-mix(
+        in oklab,
+        var(--fomio-primary) 40%,
+        var(--fomio-border)
+      );
+      background: color-mix(
+        in oklab,
+        var(--fomio-primary) 10%,
+        var(--fomio-surface)
+      );
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+// When plugin rows were copied into the Fomio menu, suppress the native duplicates.
+body.user-activity-page:has(.fomio-activity-section-menu--mirrored-plugins) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    ul.nav-pills > li:not([class*="user-nav__activity-"]) {
+      display: none !important;
+    }
+  }
+}
+
+body.user-activity-page #main-container .fomio-activity-section-menu__host {
+  display: none !important;
+}
+
+// ------------------------------------------------------------------
+// Phase M2-D — Preferences second-level menu (same pattern as M2-B / M2-C).
+// Core `li` classes are explicit so plugin tabs (e.g. `user-nav__preferences-chat`) stay visible
+// unless mirrored into the Fomio list (`--mirrored-plugins`).
+// ------------------------------------------------------------------
+body.user-preferences-page:has(.fomio-preferences-section-menu) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    li.user-nav__preferences-account,
+    li.user-nav__preferences-security,
+    li.user-nav__preferences-profile,
+    li.user-nav__preferences-emails,
+    li.user-nav__preferences-notifications,
+    li.user-nav__preferences-tracking,
+    li.user-nav__preferences-users,
+    li.user-nav__preferences-interface,
+    li.user-nav__preferences-navigation-menu {
+      display: none !important;
+    }
+
+    nav.horizontal-overflow-nav:not(
+        :has(
+          ul.nav-pills
+            > li:not(
+              :is(
+                .user-nav__preferences-account,
+                .user-nav__preferences-security,
+                .user-nav__preferences-profile,
+                .user-nav__preferences-emails,
+                .user-nav__preferences-notifications,
+                .user-nav__preferences-tracking,
+                .user-nav__preferences-users,
+                .user-nav__preferences-interface,
+                .user-nav__preferences-navigation-menu
+              )
+            )
+        )
+      ) {
+      display: none !important;
+    }
+  }
+
+  #main-outlet .user-main .fomio-preferences-section-menu {
+    order: -1;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  #main-outlet .user-main .fomio-preferences-section-menu__title {
+    margin: 0 0 10px;
+    padding: 0 2px;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  #main-outlet .user-main .fomio-preferences-section-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .fomio-preferences-section-menu__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  #main-outlet .user-main .fomio-preferences-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      border-color: color-mix(
+        in oklab,
+        var(--fomio-primary) 40%,
+        var(--fomio-border)
+      );
+      background: color-mix(
+        in oklab,
+        var(--fomio-primary) 10%,
+        var(--fomio-surface)
+      );
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+body.user-preferences-page:has(.fomio-preferences-section-menu--mirrored-plugins) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    ul.nav-pills
+      > li:not(
+        :is(
+          .user-nav__preferences-account,
+          .user-nav__preferences-security,
+          .user-nav__preferences-profile,
+          .user-nav__preferences-emails,
+          .user-nav__preferences-notifications,
+          .user-nav__preferences-tracking,
+          .user-nav__preferences-users,
+          .user-nav__preferences-interface,
+          .user-nav__preferences-navigation-menu
+        )
+      ) {
+      display: none !important;
+    }
+  }
+}
+
+body.user-preferences-page #main-container .fomio-preferences-section-menu__host {
+  display: none !important;
+}
+
+// ------------------------------------------------------------------
+// Phase M2-E — Invites second-level menu (same pattern as M2-B / M2-C / M2-D).
+// Core invites use `NavItem` without `user-nav__*` classes; the native pill strip is a
+// single `horizontal-overflow-nav` with three items — hide it entirely when Fomio mounts.
+// ------------------------------------------------------------------
+body.user-invites-page:has(.fomio-invites-section-menu) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    nav.horizontal-overflow-nav {
+      display: none !important;
+    }
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu {
+    order: -1;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu__title {
+    margin: 0 0 10px;
+    padding: 0 2px;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      border-color: color-mix(
+        in oklab,
+        var(--fomio-primary) 40%,
+        var(--fomio-border)
+      );
+      background: color-mix(
+        in oklab,
+        var(--fomio-primary) 10%,
+        var(--fomio-surface)
+      );
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+#main-container .fomio-invites-section-menu__host {
+  display: none !important;
 }
