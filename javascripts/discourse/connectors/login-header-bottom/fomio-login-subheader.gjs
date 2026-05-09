@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import { consumeAuthIntent } from "../../lib/fomio-auth-intent";
+import { peekAuthIntent } from "../../lib/fomio-auth-intent";
 
 /** Dek below the login title — pairs with js.login.header_title → "Sign in". */
 export default class FomioLoginSubheader extends Component {
@@ -9,7 +9,7 @@ export default class FomioLoginSubheader extends Component {
 
   constructor(owner, args) {
     super(owner, args);
-    this._intent = consumeAuthIntent();
+    this._intent = peekAuthIntent();
   }
 
   get text() {
@@ -24,6 +24,10 @@ export default class FomioLoginSubheader extends Component {
         return i18n(themePrefix("auth_intent.join_discussion"));
       case "save_interact_bytes":
         return i18n(themePrefix("auth_intent.save_interact_bytes"));
+      case "view_saved":
+        return i18n(themePrefix("auth_intent.view_saved"));
+      case "view_profile":
+        return i18n(themePrefix("auth_intent.view_profile"));
       default:
         return null;
     }

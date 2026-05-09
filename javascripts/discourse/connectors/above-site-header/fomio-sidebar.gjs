@@ -9,6 +9,10 @@ import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
+import {
+  bookmarksPathForUser,
+  profileSummaryPathForUser,
+} from "../../lib/fomio-mobile-nav-paths";
 
 // Keep in sync with fomio-layout.gjs. Discourse themes cannot share modules
 // across files, so this list is intentionally duplicated.
@@ -205,15 +209,11 @@ export default class FomioSidebar extends Component {
   }
 
   get bookmarksUrl() {
-    return this.currentUser
-      ? `/u/${this.currentUser.username}/activity/bookmarks`
-      : WEB_LOGIN_URL;
+    return bookmarksPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
   }
 
   get profileUrl() {
-    return this.currentUser
-      ? `/u/${this.currentUser.username}/summary`
-      : WEB_LOGIN_URL;
+    return profileSummaryPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
   }
 
   // ── i18n getters ─────────────────────────────────────────────
@@ -237,7 +237,11 @@ export default class FomioSidebar extends Component {
   openNewByte() {
     document.body.classList.remove("fomio-mobile-sidebar-open");
     if (this.currentUser) {
-      this.composer.openNewTopic();
+      try {
+        this.composer.openNewTopic();
+      } catch (e) {
+        console.warn("[Fomio] composer.openNewTopic failed from sidebar", e);
+      }
     } else {
       redirectToLoginWithIntent("create_byte", this.currentPath);
     }

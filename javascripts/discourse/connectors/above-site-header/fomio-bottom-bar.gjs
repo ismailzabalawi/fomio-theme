@@ -7,27 +7,17 @@ import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
-
-// Keep in sync with fomio-sidebar.gjs and fomio-layout.gjs.
-// Discourse themes cannot share modules across files.
-const AUTH_PATHS = [
-  "/login",
-  "/signup",
-  "/session/",
-  "/user-api-key",
-  "/password-reset",
-  "/u/activate-account",
-  "/u/account-created",
-  "/invites",
-  "/u/confirm",
-  "/auth/",
-];
+import {
+  bookmarksPathForUser,
+  isAuthPath,
+  isDiscoverPath,
+  isHomeFeedPath,
+  isMePath,
+  isSavedPath,
+  profileSummaryPathForUser,
+} from "../../lib/fomio-mobile-nav-paths";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
-
-function isAuthPath(url) {
-  return AUTH_PATHS.some((p) => url.startsWith(p));
-}
 
 export default class FomioBottomBar extends Component {
   @service router;
@@ -65,42 +55,90 @@ export default class FomioBottomBar extends Component {
     return !isAuthPath(this.currentPath);
   }
 
-  get isLatestActive() {
-    const p = this.currentPath;
-    return p === "/" || p.startsWith("/latest");
+  get isHomeActive() {
+    return isHomeFeedPath(this.currentPath);
   }
 
-  get isHotActive() {
-    return this.currentPath.startsWith("/hot");
+  get isDiscoverActive() {
+    return isDiscoverPath(this.currentPath);
   }
 
-  get isHubsActive() {
-    const p = this.currentPath;
-    return p === "/categories" || p.startsWith("/c/");
+  get isSavedActive() {
+    return isSavedPath(this.currentPath);
   }
 
-  get isProfileActive() {
-    return this.currentPath.startsWith("/u/");
+  get isMeActive() {
+    return isMePath(this.currentPath);
+  }
+
+  get bookmarksUrl() {
+    return bookmarksPathForUser(this.currentUser);
   }
 
   get profileUrl() {
-    return this.currentUser
-      ? `/u/${this.currentUser.username}/summary`
-      : WEB_LOGIN_URL;
+    return profileSummaryPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
   }
 
-  get latestLabel()  { return i18n(themePrefix("bottom_bar.latest")); }
-  get hotLabel()     { return i18n(themePrefix("bottom_bar.hot")); }
-  get newByteLabel() { return i18n(themePrefix("bottom_bar.new_byte")); }
-  get hubsLabel()    { return i18n(themePrefix("bottom_bar.hubs")); }
-  get profileLabel() { return i18n(themePrefix("bottom_bar.profile")); }
+  get navAriaLabel() {
+    return i18n(themePrefix("mobile_nav.aria_nav"));
+  }
+
+  get homeLabel() {
+    return i18n(themePrefix("mobile_nav.home"));
+  }
+
+  get discoverLabel() {
+    return i18n(themePrefix("mobile_nav.discover"));
+  }
+
+  get createLabel() {
+    return i18n(themePrefix("mobile_nav.create"));
+  }
+
+  get savedLabel() {
+    return i18n(themePrefix("mobile_nav.saved"));
+  }
+
+  get meLabel() {
+    return i18n(themePrefix("mobile_nav.me"));
+  }
 
   @action
   openNewByte() {
     if (this.currentUser) {
-      this.composer.openNewTopic();
+      try {
+        this.composer.openNewTopic();
+      } catch (e) {
+        console.warn("[Fomio] composer.openNewTopic failed from bottom bar", e);
+      }
     } else {
       redirectToLoginWithIntent("create_byte", this.currentPath);
+    }
+  }
+
+  @action
+  goToSaved(e) {
+    e?.preventDefault();
+    if (this.currentUser) {
+      const url = bookmarksPathForUser(this.currentUser);
+      if (url) {
+        window.location.assign(url);
+      }
+    } else {
+      redirectToLoginWithIntent("view_saved", this.currentPath);
+    }
+  }
+
+  @action
+  goToMe(e) {
+    e?.preventDefault();
+    if (this.currentUser) {
+      const url = profileSummaryPathForUser(this.currentUser);
+      if (url) {
+        window.location.assign(url);
+      }
+    } else {
+      redirectToLoginWithIntent("view_profile", this.currentPath);
     }
   }
 
@@ -108,57 +146,82 @@ export default class FomioBottomBar extends Component {
     {{#if this.shouldRender}}
       <nav
         class="fomio-bottom-bar {{if this.isHidden 'fomio-bottom-bar--hidden'}}"
-        aria-label="Main navigation"
+        aria-label={{this.navAriaLabel}}
       >
         <a
           href="/latest"
-          class="fomio-bottom-bar__item {{if this.isLatestActive 'is-active'}}"
-          aria-current={{if this.isLatestActive "page"}}
-          title={{this.latestLabel}}
+          class="fomio-bottom-bar__item {{if this.isHomeActive 'is-active'}}"
+          aria-current={{if this.isHomeActive "page"}}
+          title={{this.homeLabel}}
         >
           {{icon "clock"}}
-          <span class="fomio-bottom-bar__label">{{this.latestLabel}}</span>
+          <span class="fomio-bottom-bar__label">{{this.homeLabel}}</span>
         </a>
 
         <a
-          href="/hot"
-          class="fomio-bottom-bar__item {{if this.isHotActive 'is-active'}}"
-          aria-current={{if this.isHotActive "page"}}
-          title={{this.hotLabel}}
+          href="/categories"
+          class="fomio-bottom-bar__item {{if this.isDiscoverActive 'is-active'}}"
+          aria-current={{if this.isDiscoverActive "page"}}
+          title={{this.discoverLabel}}
         >
-          {{icon "fire"}}
-          <span class="fomio-bottom-bar__label">{{this.hotLabel}}</span>
+          {{icon "compass"}}
+          <span class="fomio-bottom-bar__label">{{this.discoverLabel}}</span>
         </a>
 
         <button
           type="button"
           class="fomio-bottom-bar__item fomio-bottom-bar__item--create"
-          title={{this.newByteLabel}}
+          aria-label={{this.createLabel}}
+          title={{this.createLabel}}
           {{on "click" this.openNewByte}}
         >
           {{icon "pen-to-square"}}
-          <span class="fomio-bottom-bar__label">{{this.newByteLabel}}</span>
+          <span class="fomio-bottom-bar__label">{{this.createLabel}}</span>
         </button>
 
-        <a
-          href="/categories"
-          class="fomio-bottom-bar__item {{if this.isHubsActive 'is-active'}}"
-          aria-current={{if this.isHubsActive "page"}}
-          title={{this.hubsLabel}}
-        >
-          {{icon "compass"}}
-          <span class="fomio-bottom-bar__label">{{this.hubsLabel}}</span>
-        </a>
+        {{#if this.currentUser}}
+          <a
+            href={{this.bookmarksUrl}}
+            class="fomio-bottom-bar__item {{if this.isSavedActive 'is-active'}}"
+            aria-current={{if this.isSavedActive "page"}}
+            title={{this.savedLabel}}
+          >
+            {{icon "bookmark"}}
+            <span class="fomio-bottom-bar__label">{{this.savedLabel}}</span>
+          </a>
+        {{else}}
+          <button
+            type="button"
+            class="fomio-bottom-bar__item {{if this.isSavedActive 'is-active'}}"
+            title={{this.savedLabel}}
+            {{on "click" this.goToSaved}}
+          >
+            {{icon "bookmark"}}
+            <span class="fomio-bottom-bar__label">{{this.savedLabel}}</span>
+          </button>
+        {{/if}}
 
-        <a
-          href={{this.profileUrl}}
-          class="fomio-bottom-bar__item {{if this.isProfileActive 'is-active'}}"
-          aria-current={{if this.isProfileActive "page"}}
-          title={{this.profileLabel}}
-        >
-          {{icon "user"}}
-          <span class="fomio-bottom-bar__label">{{this.profileLabel}}</span>
-        </a>
+        {{#if this.currentUser}}
+          <a
+            href={{this.profileUrl}}
+            class="fomio-bottom-bar__item {{if this.isMeActive 'is-active'}}"
+            aria-current={{if this.isMeActive "page"}}
+            title={{this.meLabel}}
+          >
+            {{icon "user"}}
+            <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>
+          </a>
+        {{else}}
+          <button
+            type="button"
+            class="fomio-bottom-bar__item {{if this.isMeActive 'is-active'}}"
+            title={{this.meLabel}}
+            {{on "click" this.goToMe}}
+          >
+            {{icon "user"}}
+            <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>
+          </button>
+        {{/if}}
       </nav>
     {{/if}}
   </template>

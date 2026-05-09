@@ -1,7 +1,17 @@
+import { next } from "@ember/runloop";
 import { apiInitializer } from "discourse/lib/api";
 import { i18n } from "discourse-i18n";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
 import { settings, themePrefix } from "virtual:theme";
+import {
+  consumeAuthIntent,
+  consumeAuthReturnContext,
+  POST_LOGIN_OPEN_COMPOSER_KEY,
+} from "../lib/fomio-auth-intent";
+import {
+  bookmarksPathForUser,
+  profileSummaryPathForUser,
+} from "../lib/fomio-mobile-nav-paths";
 
 /**
  * theme-initializer.gjs — Mobile Web → App Handoff
@@ -152,6 +162,103 @@ export default apiInitializer("1.8.0", (api) => {
     );
   }
 
+  /**
+   * After Fomio web login (`fomio_web=1`), consume session intent + return context here
+   * (login UI uses peek only). `view_saved` → bookmarks; `view_profile` → profile summary;
+   * `create_byte` uses return path + optional composer open.
+   */
+  function applyFomioWebAuthResume() {
+    const intent = consumeAuthIntent();
+    const returnPath = consumeAuthReturnContext();
+    const router = api.container.lookup("service:router");
+    const composer = api.container.lookup("service:composer");
+    const user = api.getCurrentUser();
+
+    const current = router
+      ? (router.currentURL || "").split("?")[0]
+      : normalizeDiscoursePath(window.location.pathname);
+
+    if (intent === "view_saved") {
+      const bookmarksPath = bookmarksPathForUser(user);
+      if (bookmarksPath && bookmarksPath !== current) {
+        window.location.assign(getURL(bookmarksPath));
+      }
+      return;
+    }
+
+    if (intent === "view_profile") {
+      const profilePath = profileSummaryPathForUser(user);
+      if (profilePath && profilePath !== current) {
+        window.location.assign(getURL(profilePath));
+      }
+      return;
+    }
+
+    const openComposerIfNeeded = () => {
+      if (intent !== "create_byte" || !composer) {
+        return;
+      }
+      try {
+        composer.openNewTopic();
+      } catch (e) {
+        console.warn("[Fomio] composer.openNewTopic after web auth failed", e);
+      }
+    };
+
+    const target = returnPath ? returnPath.split("?")[0] : null;
+
+    if (target && target !== current) {
+      if (intent === "create_byte") {
+        try {
+          window.sessionStorage.setItem(POST_LOGIN_OPEN_COMPOSER_KEY, "1");
+        } catch {
+          // Ignore storage failures.
+        }
+      }
+      window.location.assign(getURL(returnPath));
+      return;
+    }
+
+    next(openComposerIfNeeded);
+  }
+
+  function drainPendingPostLoginComposer() {
+    if (!api.getCurrentUser()) {
+      return;
+    }
+
+    let shouldOpen = false;
+    try {
+      shouldOpen =
+        window.sessionStorage.getItem(POST_LOGIN_OPEN_COMPOSER_KEY) === "1";
+      if (shouldOpen) {
+        window.sessionStorage.removeItem(POST_LOGIN_OPEN_COMPOSER_KEY);
+      }
+    } catch {
+      return;
+    }
+
+    if (!shouldOpen) {
+      return;
+    }
+
+    const composer = api.container.lookup("service:composer");
+    if (!composer) {
+      return;
+    }
+
+    next(() => {
+      try {
+        composer.openNewTopic();
+      } catch (e) {
+        console.warn(
+          "[Fomio] composer.openNewTopic after web auth redirect failed",
+          e
+        );
+      }
+    });
+  }
+
   const HANDOFF_ROOT_ID = "fomio-mobile-handoff-root";
 
   function th(key) {
@@ -238,6 +345,8 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
+    drainPendingPostLoginComposer();
+
     const path = normalizeDiscoursePath(rawPath);
     const searchParams = new URLSearchParams(window.location.search);
     const hasWebAuthParam = searchParams.get("fomio_web") === "1";
@@ -246,6 +355,20 @@ export default apiInitializer("1.8.0", (api) => {
 
     if (hasWebAuthParam && (path === "/login" || path.startsWith("/signup"))) {
       setExplicitWebAuthIntent();
+    }
+
+    if (
+      explicitWebAuthIntent &&
+      api.getCurrentUser() &&
+      !isDiscourseAuthSupportingPath(path) &&
+      path !== "/login"
+    ) {
+      try {
+        window.localStorage.removeItem(WEB_AUTH_INTENT_KEY);
+      } catch {
+        // Ignore storage failures.
+      }
+      applyFomioWebAuthResume();
     }
 
     const appUrl = settings.fomio_app_url || "fomio://";
@@ -307,14 +430,6 @@ export default apiInitializer("1.8.0", (api) => {
         return;
       }
       if (explicitWebAuthIntent) {
-        const currentUser = api.getCurrentUser();
-        if (currentUser) {
-          try {
-            window.localStorage.removeItem(WEB_AUTH_INTENT_KEY);
-          } catch {
-            // Ignore storage failures.
-          }
-        }
         return;
       }
 

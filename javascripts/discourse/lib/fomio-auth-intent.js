@@ -3,6 +3,9 @@ const INTENT_KEY = "fomio_auth_intent";
 const INTENT_TS_KEY = "fomio_auth_intent_ts";
 const MAX_AGE_MS = 15 * 60 * 1000;
 
+/** Set when full-page navigation is needed before opening the native composer post-login. */
+export const POST_LOGIN_OPEN_COMPOSER_KEY = "fomio_post_login_open_composer";
+
 const BLOCKED_PREFIXES = ["/auth/", "/login", "/session/"];
 
 function now() {
@@ -65,7 +68,7 @@ export function storeAuthIntent(intent) {
   }
 }
 
-export function consumeAuthIntent() {
+function readIntentFromStorage(consume) {
   if (typeof window === "undefined") {
     return null;
   }
@@ -80,12 +83,26 @@ export function consumeAuthIntent() {
     }
 
     const intent = window.sessionStorage.getItem(INTENT_KEY);
-    window.sessionStorage.removeItem(INTENT_KEY);
-    window.sessionStorage.removeItem(INTENT_TS_KEY);
+    if (consume && intent) {
+      window.sessionStorage.removeItem(INTENT_KEY);
+      window.sessionStorage.removeItem(INTENT_TS_KEY);
+    }
     return intent;
   } catch {
     return null;
   }
+}
+
+/**
+ * Read auth intent for display on login/signup without consuming it.
+ * Consumption happens after successful auth (theme-initializer resume).
+ */
+export function peekAuthIntent() {
+  return readIntentFromStorage(false);
+}
+
+export function consumeAuthIntent() {
+  return readIntentFromStorage(true);
 }
 
 export function consumeAuthReturnContext() {

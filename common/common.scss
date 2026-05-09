@@ -5362,6 +5362,371 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   #main-outlet-wrapper {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
+
+  // Me hub — grouped account links on touch (above native profile content)
+  .fomio-me-hub {
+    margin: 0 12px 12px;
+    padding: 12px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .fomio-me-hub--logged-out .fomio-me-hub__section-body--cta {
+    align-items: stretch;
+    text-align: center;
+    gap: 12px;
+    padding: 16px 14px;
+  }
+
+  .fomio-me-hub__cta-text {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.45;
+    color: var(--fomio-ink-muted);
+  }
+
+  .fomio-me-hub__sign-in-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 1px solid var(--fomio-border-soft);
+    background: var(--fomio-primary);
+    color: var(--fomio-primary-fg, #fff);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  .fomio-me-hub__summary {
+    border-radius: 16px;
+    border: 1px solid var(--fomio-border-soft);
+    background: var(--fomio-surface);
+    overflow: hidden;
+  }
+
+  .fomio-me-hub__summary-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 56px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: var(--fomio-text);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: -2px;
+    }
+
+    &:active {
+      background: var(--fomio-card);
+    }
+  }
+
+  .fomio-me-hub__summary-avatar {
+    flex-shrink: 0;
+
+    img,
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+    }
+  }
+
+  .fomio-me-hub__summary-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fomio-me-hub__summary-name {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base, 1rem);
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .fomio-me-hub__summary-meta {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-ink-muted);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  .fomio-me-hub__summary-chevron {
+    flex-shrink: 0;
+    color: var(--fomio-muted);
+
+    .d-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .fomio-me-hub__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .fomio-me-hub__section-title {
+    margin: 0;
+    padding: 0 4px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fomio-ink-muted);
+  }
+
+  .fomio-me-hub__section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid var(--fomio-border-soft);
+    background: var(--fomio-surface);
+  }
+
+  .fomio-me-hub__section--footer .fomio-me-hub__section-body {
+    padding: 8px;
+  }
+
+  .fomio-me-hub__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 52px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    box-sizing: border-box;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      background: var(--fomio-card);
+    }
+  }
+
+  .fomio-me-hub__row--muted .fomio-me-hub__row-label {
+    color: var(--fomio-ink-muted);
+  }
+
+  .fomio-me-hub__row-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .d-icon {
+      width: 1.15rem;
+      height: 1.15rem;
+      color: var(--fomio-muted);
+    }
+  }
+
+  .fomio-me-hub__row-copy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fomio-me-hub__row-label {
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .fomio-me-hub__row-meta {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--fomio-ink-muted);
+  }
+
+  .fomio-me-hub__row-chevron {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    color: var(--fomio-muted);
+
+    .d-icon {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+
+  // Home / Discover contextual pills (below-site-header connectors)
+  .fomio-context-pills {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: var(--fomio-bg);
+    border-bottom: 1px solid var(--fomio-border-soft);
+  }
+
+  .fomio-context-pills__scroller {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 8px 12px 10px;
+  }
+
+  .fomio-context-pills__item {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--fomio-border);
+    background: var(--fomio-surface);
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &.is-active {
+      color: var(--fomio-primary);
+      border-color: color-mix(in oklab, var(--fomio-primary) 35%, var(--fomio-border));
+      background: color-mix(in oklab, var(--fomio-primary) 8%, var(--fomio-surface));
+    }
+  }
+
+  .fomio-ephemeral-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 940;
+    background: rgb(0 0 0 / 38%);
+  }
+
+  .fomio-ephemeral-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 950;
+    max-height: min(72vh, 520px);
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    background: var(--fomio-bg);
+    border-top: 1px solid var(--fomio-border);
+    border-radius: 20px 20px 0 0;
+    outline: none;
+    box-shadow: 0 -8px 32px var(--fomio-shadow);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fomio-ephemeral-sheet-in 0.22s var(--fomio-ease);
+    }
+  }
+
+  .fomio-ephemeral-sheet__inner {
+    padding-bottom: 12px;
+  }
+
+  .fomio-ephemeral-sheet__text {
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.55;
+    color: var(--fomio-muted);
+  }
+
+  .fomio-ephemeral-sheet__close {
+    width: 100%;
+    margin-top: 8px;
+    min-height: 48px;
+    border-radius: 12px;
+    border: 1px solid var(--fomio-border);
+    background: var(--fomio-surface);
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    font-size: var(--fomio-text-sm);
+    cursor: pointer;
+  }
+
+  @keyframes fomio-ephemeral-sheet-in {
+    from {
+      transform: translateY(12px);
+      opacity: 0.92;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  // Me landing: hide native summary chrome only on real summary route + landing class.
+  &.fomio-me-hub-landing.user-summary-page {
+    .fomio-me-hub--landing {
+      padding-bottom: 8px;
+      margin-bottom: 6px;
+    }
+
+    #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
+    #main-outlet .user-main > section.about,
+    #main-outlet .user-main .new-user-wrapper > .user-navigation,
+    #main-outlet .user-main .new-user-content-wrapper #user-content {
+      display: none !important;
+    }
+  }
 }
 
 // ── Zones ────────────────────────────────────────────────────
