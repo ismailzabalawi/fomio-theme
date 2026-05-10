@@ -1,6 +1,6 @@
 # Fomio mobile web — Me second-level navigation
 
-**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H1** (visual expanded Level 2 shell, mobile) is **implemented** in `apps/web/common/common.scss` and the five `fomio-*-section-menu` components; **QA** is recorded in **§18**. Phase **M2-H3** in-place expansion **feasibility audit** is in **§19**. The additive plugin contract for future Option 3 work now lives in `plugins/discourse/discourse-fomio-user-shell/` as the monorepo source of truth and is summarized in **§20**. Phase **M2-H** (§17) remains the broader exploration / guardrails doc. Section 1 below retains the original M2-A route and ownership model as reference.
+**Status:** Phases M2-B–M2-F **implemented** in `apps/web/` (Notifications, Activity, Preferences, Invites, Messages). Phase **M2-G** documents the stabilization pattern and limitations. Phase **M2-H1** (visual expanded Level 2 shell, mobile) is **implemented** in `apps/web/common/common.scss` and the five `fomio-*-section-menu` components; **QA** is recorded in **§18**. Phase **M2-H3** in-place expansion **feasibility audit** is in **§19**. The additive plugin contract for future Option 3 work lives in `plugins/discourse/discourse-fomio-user-shell/` (summarized in **§20**). **H4-B** (contract verification checklist, DevTools recipe, theme readiness, `mobileView` caveat) is in **§20.7** and in `apps/web/docs/web/fomio-user-shell-plugin-plan.md`. Phase **M2-H** (§17) remains the broader exploration / guardrails doc. Section 1 below retains the original M2-A route and ownership model as reference.
 
 **Authority:** Discourse owns routes, data, permissions, and all leaf content. Fomio owns **navigation presentation** (how the Me stack reads and how second-level menus are styled or duplicated in the shell), without replacing Discourse logic or inventing rows.
 
@@ -762,6 +762,7 @@ On supported Me routes, and only when the site setting is enabled, the plugin de
 | `.new-user-content-wrapper` | `.fomio-user-shell`, `[data-fomio-user-shell="true"]`, `[data-fomio-user-section="activity|notifications|messages|preferences|invites"]` |
 | Native secondary nav | `[data-fomio-user-secondary-nav]`, `[data-fomio-user-section="..."]` |
 | Native leaf content root (`#user-content`) | `[data-fomio-user-content]`, `[data-fomio-user-section="..."]` |
+| Invites-only fallback leaf root (`.user-content`) | If `#user-content` is absent on Invites, the direct-child `.user-content` root receives `[data-fomio-user-content]` and `[data-fomio-user-section="invites"]` |
 
 ### 20.3 Route scope
 
@@ -785,9 +786,54 @@ Fallback URL matching exists only for canonical transitional cases such as `/my/
 - No Discourse routes, controllers, forms, streams, invite lists, or pagination logic were replaced.
 - Existing M2-B through M2-H1 section-menu behavior remains theme-owned and unchanged.
 - No manual DOM reparenting is used in production behavior.
+- Invites is the only supported content-root exception: the plugin falls back from `#user-content` to direct-child `.user-content` for `section === "invites"` only.
 
 ### 20.6 Option 3 impact
 
 - This plugin makes Option 3 **safer to proceed with** because the theme can target a stable Fomio contract instead of raw core selectors alone.
 - It does **not** by itself provide true Level 3 DOM containment inside an active card.
 - If future Option 3 work requires a new wrapper outlet or core template restructuring, that should still happen as a separate, explicit Discourse extension step.
+
+### 20.7 H4-B — Contract verification and theme readiness (2026-05)
+
+**Goal:** Confirm on staging that `discourse-fomio-user-shell` is active on the client and that the Fomio theme can safely adopt the selector contract later (no Option 3 visuals in H4-B).
+
+**Settings used for QA:** `fomio_user_shell_enabled = true`, `fomio_user_shell_mobile_only = true`, `fomio_user_shell_debug = true` (then `false`). Theme: `?preview_theme_id=33` (or current Fomio theme id).
+
+**Pages to hit at mobile width (~390×844):**
+
+- `/u/soma/activity?preview_theme_id=33`
+- `/u/soma/activity/topics?preview_theme_id=33`
+- `/u/soma/notifications?preview_theme_id=33`
+- `/u/soma/notifications/responses?preview_theme_id=33`
+- `/u/soma/messages?preview_theme_id=33`
+- `/u/soma/messages/sent?preview_theme_id=33`
+- `/u/soma/invited/pending?preview_theme_id=33`
+- `/u/soma/invited/expired?preview_theme_id=33`
+- `/u/soma/preferences/account?preview_theme_id=33`
+- `/u/soma/preferences/security?preview_theme_id=33`
+
+Avoid `/my/preferences/...` during preview-only QA if Discourse drops `preview_theme_id` on redirect; prefer `/u/:username/preferences/...` as in **§18**.
+
+**DOM contract (when the plugin runs):**
+
+- `[data-fomio-user-shell="true"]` on `.new-user-content-wrapper`
+- `[data-fomio-user-section="activity|notifications|messages|preferences|invites"]` on wrapper, secondary nav, and `#user-content`
+- `[data-fomio-user-secondary-nav]` on the direct-child secondary `nav`
+- `[data-fomio-user-content]` on the direct-child `#user-content`
+
+**Native selectors must still exist:** `.new-user-content-wrapper`, `.user-navigation.user-navigation-secondary`, `#user-content`.
+
+**Confirmed attributes (monorepo / source):** The initializer in `plugins/discourse/discourse-fomio-user-shell/` matches the list above. **Live staging:** run the DevTools snippet in `fomio-user-shell-plugin-plan.md` (H4-B section); automated agents may not see `data-*` in accessibility trees alone.
+
+**`mobileView` caveat:** `fomio_user_shell_mobile_only` gates on **`site.mobileView`**, not on CSS viewport width. Narrow desktop windows may **not** decorate until Discourse is in mobile mode; see the plan doc for mitigation options.
+
+**M2 behavior:** The plugin is additive; it does not remove M2 menus or change routes. Regression checks: section menus render, active row, pill suppression, plugin rows, Messages dropdown, New Message, notification dismiss, preference save, invites actions, no horizontal overflow.
+
+**Debug:** Outline should appear only on the decorated wrapper when debug is on; unrelated routes should not show `[data-fomio-user-shell]`. Turn debug off and confirm no outline.
+
+**Theme readiness (`common.scss`):** M2-H1 blocks under `body.user-*-page:has(.fomio-*-section-menu)` and `#main-outlet .user-main .new-user-content-wrapper` can later gain **additive** compounds such as `[data-fomio-user-shell="true"]` and `[data-fomio-user-section="…"]` — do not remove the `:has(.fomio-…)` gates until Option 3 migration is intentional.
+
+**Next phase (product recommendation):** **H4-C** — small **Invites** Option 3 card prototype using `[data-fomio-user-shell]` after H4-B is signed off on staging. Do not jump to broad Option 3 until the DevTools contract passes on all rows in the table above.
+
+**H4-B agent result:** Spot-check on meta.fomio.app (activity + preview theme) showed M2 chrome still present; **full data-attribute confirmation** requires the DevTools snippet on an environment with the plugin enabled and correct `mobileView` behavior.
