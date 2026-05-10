@@ -12103,8 +12103,13 @@ body.user-messages-page #main-container .fomio-messages-section-menu__host {
     }
   }
 
-  // --- Invites (list) ---
-  body.user-invites-page:has(.fomio-invites-section-menu) {
+  // --- Invites (list) — M2-H1/H2 when shell+touch Option 3 is off (see H4-C below).
+  body.user-invites-page:has(.fomio-invites-section-menu):not(:has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    )),
+    body.user-invites-page:has(.fomio-invites-section-menu):has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    ):not(.fomio-surface-touch) {
     #main-outlet .user-main .new-user-content-wrapper {
       max-width: 100%;
       box-sizing: border-box;
@@ -12366,9 +12371,161 @@ body.user-messages-page #main-container .fomio-messages-section-menu__host {
   }
 }
 
+// ------------------------------------------------------------------
+// H4-C — Invites Option 3 (plugin shell contract + touch surface only).
+// CSS/layout join: active card in .fomio-invites-section-menu--option3-head, native leaf
+// on [data-fomio-user-content], inactive filters in .fomio-invites-section-menu__inactive-tail
+// appended after content. No DOM reparenting of Discourse nodes.
+// ------------------------------------------------------------------
+body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+  ) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px 12px;
+    background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
+    border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
+    border-radius: 14px;
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu--option3-head.fomio-section-menu--expanded-shell {
+    margin-bottom: 0;
+    padding-top: 4px;
+  }
+
+  #main-outlet
+    .user-main
+    .fomio-invites-section-menu--option3-head
+    .fomio-section-menu__active-card {
+    margin-top: 10px;
+    margin-bottom: 0;
+    padding: 16px 14px 14px 18px;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 12px 12px 0 0;
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 22%, var(--fomio-border));
+    border-bottom: none;
+    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
+    box-shadow:
+      inset 4px 0 0 0 var(--fomio-primary),
+      0 1px 0 color-mix(in oklab, var(--fomio-border) 25%, transparent);
+  }
+
+  #main-outlet
+    .user-main
+    .fomio-invites-section-menu--option3-head
+    .fomio-section-menu__active-card-link {
+    display: block;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base);
+    font-weight: 700;
+    color: var(--fomio-text);
+    text-decoration: none;
+    line-height: 1.35;
+    letter-spacing: var(--fomio-tracking-tight);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  // Native invite UI: card body (plugin marks leaf with data-fomio-user-content).
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    [data-fomio-user-content] {
+    margin-top: -1px;
+    padding-top: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 22%, var(--fomio-border));
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 28%, transparent);
+    border-radius: 0 0 12px 12px;
+    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu__inactive-tail {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .fomio-invites-section-menu__inactive-tail .fomio-invites-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    #main-outlet .user-main .new-user-content-wrapper {
+      padding: 5px 6px 10px;
+    }
+
+    #main-outlet
+      .user-main
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+      [data-fomio-user-content] {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+  }
+}
+
 // Phase M2-H2 — desktop / tablet: hide duplicate active card; list row remains canonical.
 @media (min-width: 768px) {
   #main-outlet .user-main .fomio-section-menu__active-card {
     display: none !important;
+  }
+
+  // H4-C: Invites Option 3 uses the active card as the real header on touch at any width.
+  body.fomio-surface-touch.user-invites-page:has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    )
+    #main-outlet
+    .user-main
+    .fomio-invites-section-menu--option3-head
+    .fomio-section-menu__active-card {
+    display: block !important;
   }
 }

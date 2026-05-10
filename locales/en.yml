@@ -145,6 +145,7 @@ en:
     nav_aria: "Browse account preferences sections"
   invites_submenu:
     nav_aria: "Browse invites by status"
+    inactive_aria: "Switch to another invite status"
   messages_submenu:
     nav_aria: "Browse private messages by folder"
   sidebar:
