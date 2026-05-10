@@ -12376,14 +12376,22 @@ body.user-messages-page #main-container .fomio-messages-section-menu__host {
 // CSS/layout join: active card in .fomio-invites-section-menu--option3-head, native leaf
 // on [data-fomio-user-content], inactive filters in .fomio-invites-section-menu__inactive-tail
 // appended after content. No DOM reparenting of Discourse nodes.
+// Body chain matches Phase 3C-N4 Me touch polish so overrides beat #user-content overflow.
 // ------------------------------------------------------------------
 body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+  ),
+  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-invites-page:has(
+    .fomio-invites-section-menu
+  ):has(
     .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
   ) {
   #main-outlet .user-main .new-user-content-wrapper {
     max-width: 100%;
     box-sizing: border-box;
-    padding: 6px 8px 12px;
+    padding: 8px 10px 14px;
+    min-width: 0;
+    overflow-x: clip;
     background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
     border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
     border-radius: 14px;
@@ -12391,26 +12399,26 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
 
   #main-outlet .user-main .fomio-invites-section-menu--option3-head.fomio-section-menu--expanded-shell {
     margin-bottom: 0;
-    padding-top: 4px;
+    padding-top: 2px;
   }
 
   #main-outlet
     .user-main
     .fomio-invites-section-menu--option3-head
     .fomio-section-menu__active-card {
-    margin-top: 10px;
+    margin-top: 8px;
     margin-bottom: 0;
-    padding: 16px 14px 14px 18px;
+    padding: 14px 14px 13px 17px;
     box-sizing: border-box;
     max-width: 100%;
     min-width: 0;
     border-radius: 12px 12px 0 0;
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 22%, var(--fomio-border));
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
     border-bottom: none;
     background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
     box-shadow:
       inset 4px 0 0 0 var(--fomio-primary),
-      0 1px 0 color-mix(in oklab, var(--fomio-border) 25%, transparent);
+      0 1px 0 color-mix(in oklab, var(--fomio-border) 22%, transparent);
   }
 
   #main-outlet
@@ -12432,32 +12440,97 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
   #main-outlet
     .user-main
     .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    [data-fomio-user-content] {
+    :is(#user-content, .user-content)[data-fomio-user-content] {
     margin-top: -1px;
-    padding-top: 12px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-bottom: 10px;
+    padding-top: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 12px;
     box-sizing: border-box;
     max-width: 100%;
     min-width: 0;
     overflow-x: auto;
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 22%, var(--fomio-border));
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 28%, transparent);
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 32%, transparent);
     border-radius: 0 0 12px 12px;
     background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
   }
 
+  // Intentional empty state + primary actions inside the card (no overflow: hidden on leaf).
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .empty-state {
+    padding: 1.5rem 0.75rem 1.75rem;
+    box-sizing: border-box;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .empty-state
+    .empty-state__title {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 20rem;
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .empty-state
+    .btn-primary {
+    min-height: 48px;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    font-weight: 700;
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .user-invite-buttons
+    .invite-button {
+    min-height: 48px;
+    font-weight: 700;
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--fomio-border) 35%, transparent);
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .user-invite-list
+    .d-table__header-cell,
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .user-invite-list
+    .d-table__cell {
+    padding: 12px 10px;
+  }
+
   #main-outlet .user-main .fomio-invites-section-menu__inactive-tail {
     list-style: none;
-    margin: 10px 0 0;
-    padding: 0;
+    margin: 14px 0 0;
+    padding: 14px 0 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
   }
 
   #main-outlet .user-main .fomio-invites-section-menu__inactive-tail .fomio-invites-section-menu__link {
@@ -12466,8 +12539,8 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    min-height: 44px;
-    padding: 10px 12px;
+    min-height: 46px;
+    padding: 11px 14px;
     border-radius: 12px;
     border: 1px solid transparent;
     background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
@@ -12497,7 +12570,21 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
     }
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 430px) {
+    #main-outlet .user-main .new-user-content-wrapper {
+      padding: 6px 8px 12px;
+    }
+
+    #main-outlet
+      .user-main
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+      :is(#user-content, .user-content)[data-fomio-user-content] {
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+  }
+
+  @media (max-width: 390px) {
     #main-outlet .user-main .new-user-content-wrapper {
       padding: 5px 6px 10px;
     }
@@ -12505,9 +12592,24 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
     #main-outlet
       .user-main
       .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-      [data-fomio-user-content] {
+      :is(#user-content, .user-content)[data-fomio-user-content] {
       padding-left: 4px;
       padding-right: 4px;
+    }
+
+    #main-outlet
+      .user-main
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+      :is(#user-content, .user-content)[data-fomio-user-content]
+      .user-invite-list
+      .d-table__header-cell,
+    #main-outlet
+      .user-main
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+      :is(#user-content, .user-content)[data-fomio-user-content]
+      .user-invite-list
+      .d-table__cell {
+      padding: 11px 8px;
     }
   }
 }
@@ -12520,6 +12622,13 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
 
   // H4-C: Invites Option 3 uses the active card as the real header on touch at any width.
   body.fomio-surface-touch.user-invites-page:has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+    )
+    #main-outlet
+    .user-main
+    .fomio-invites-section-menu--option3-head
+    .fomio-section-menu__active-card,
+  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-invites-page:has(
       .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
     )
     #main-outlet

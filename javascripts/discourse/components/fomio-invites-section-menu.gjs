@@ -155,6 +155,11 @@ export default class FomioInvitesSectionMenu extends Component {
         (this.router.currentRouteName || "").startsWith("userInvited");
 
       if (!onInvitedRoute) {
+        if (this.insertion || this.insertionAfterContent) {
+          this.insertion = null;
+          this.insertionAfterContent = null;
+          this.invitesLayoutVariant = "legacy";
+        }
         return;
       }
 
