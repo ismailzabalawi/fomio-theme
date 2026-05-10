@@ -139,6 +139,7 @@ en:
     heading_description: "Replies, mentions, likes, and account activity."
   notifications_submenu:
     nav_aria: "Browse notifications by type"
+    inactive_aria: "Switch to another notification type"
   activity_submenu:
     nav_aria: "Browse activity by type"
   preferences_submenu:

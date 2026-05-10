@@ -11931,8 +11931,13 @@ body.user-messages-page #main-container .fomio-messages-section-menu__host {
 // lighter menu/content seam; optional narrow-phone padding reduction.
 // ------------------------------------------------------------------
 @media (max-width: 767px) {
-  // --- Notifications (stream / list) ---
-  body.user-notifications-page:has(.fomio-notifications-section-menu) {
+  // --- Notifications (stream / list) — M2-H1/H2 when shell+touch Option 3 is off (see H4-D below).
+  body.user-notifications-page:has(.fomio-notifications-section-menu):not(:has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    )),
+    body.user-notifications-page:has(.fomio-notifications-section-menu):has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    ):not(.fomio-surface-touch) {
     #main-outlet .user-main .new-user-content-wrapper {
       max-width: 100%;
       box-sizing: border-box;
@@ -12614,6 +12619,196 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
   }
 }
 
+// ------------------------------------------------------------------
+// H4-D — Notifications Option 3 (plugin shell contract + touch surface only).
+// Mirrors H4-C Invites: option3 head + :is(#user-content, .user-content)[data-fomio-user-content]
+// card body + inactive tail after native content. No reparenting.
+// ------------------------------------------------------------------
+body.fomio-surface-touch.user-notifications-page:has(.fomio-notifications-section-menu):has(
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+  ),
+  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-notifications-page:has(
+    .fomio-notifications-section-menu
+  ):has(
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+  ) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px 14px;
+    min-width: 0;
+    overflow-x: clip;
+    background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
+    border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
+    border-radius: 14px;
+  }
+
+  #main-outlet
+    .user-main
+    .fomio-notifications-section-menu--option3-head.fomio-section-menu--expanded-shell {
+    margin-bottom: 0;
+    padding-top: 2px;
+  }
+
+  #main-outlet
+    .user-main
+    .fomio-notifications-section-menu--option3-head
+    .fomio-section-menu__active-card {
+    margin-top: 8px;
+    margin-bottom: 0;
+    padding: 14px 14px 13px 17px;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 12px 12px 0 0;
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
+    border-bottom: none;
+    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
+    box-shadow:
+      inset 4px 0 0 0 var(--fomio-primary),
+      0 1px 0 color-mix(in oklab, var(--fomio-border) 22%, transparent);
+  }
+
+  #main-outlet
+    .user-main
+    .fomio-notifications-section-menu--option3-head
+    .fomio-section-menu__active-card-link {
+    display: block;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base);
+    font-weight: 700;
+    color: var(--fomio-text);
+    text-decoration: none;
+    line-height: 1.35;
+    letter-spacing: var(--fomio-tracking-tight);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    :is(#user-content, .user-content)[data-fomio-user-content] {
+    margin-top: -1px;
+    padding-top: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 12px;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 32%, transparent);
+    border-radius: 0 0 12px 12px;
+    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .empty-state {
+    padding: 1.5rem 0.75rem 1.75rem;
+    box-sizing: border-box;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  #main-outlet
+    .user-main
+    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    :is(#user-content, .user-content)[data-fomio-user-content]
+    .user-notifications-list
+    > li {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  #main-outlet .user-main .fomio-notifications-section-menu__inactive-tail {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 14px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
+  }
+
+  #main-outlet
+    .user-main
+    .fomio-notifications-section-menu__inactive-tail
+    .fomio-notifications-section-menu__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 46px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    line-height: var(--fomio-leading-normal);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  @media (max-width: 430px) {
+    #main-outlet .user-main .new-user-content-wrapper {
+      padding: 6px 8px 12px;
+    }
+
+    #main-outlet
+      .user-main
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+      :is(#user-content, .user-content)[data-fomio-user-content] {
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+  }
+
+  @media (max-width: 390px) {
+    #main-outlet .user-main .new-user-content-wrapper {
+      padding: 5px 6px 10px;
+    }
+
+    #main-outlet
+      .user-main
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+      :is(#user-content, .user-content)[data-fomio-user-content] {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+  }
+}
+
 // Phase M2-H2 — desktop / tablet: hide duplicate active card; list row remains canonical.
 @media (min-width: 768px) {
   #main-outlet .user-main .fomio-section-menu__active-card {
@@ -12634,6 +12829,24 @@ body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
     #main-outlet
     .user-main
     .fomio-invites-section-menu--option3-head
+    .fomio-section-menu__active-card {
+    display: block !important;
+  }
+
+  // H4-D: Notifications Option 3 — same exception for wide touch viewports.
+  body.fomio-surface-touch.user-notifications-page:has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    )
+    #main-outlet
+    .user-main
+    .fomio-notifications-section-menu--option3-head
+    .fomio-section-menu__active-card,
+  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-notifications-page:has(
+      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
+    )
+    #main-outlet
+    .user-main
+    .fomio-notifications-section-menu--option3-head
     .fomio-section-menu__active-card {
     display: block !important;
   }
