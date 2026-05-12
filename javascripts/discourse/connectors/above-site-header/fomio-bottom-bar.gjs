@@ -16,6 +16,7 @@ import {
   isSavedPath,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
+import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 
@@ -135,11 +136,23 @@ export default class FomioBottomBar extends Component {
     if (this.currentUser) {
       const url = profileSummaryPathForUser(this.currentUser);
       if (url) {
+        armMeHubLandingForNextSummaryVisit();
         window.location.assign(url);
       }
     } else {
       redirectToLoginWithIntent("view_profile", this.currentPath);
     }
+  }
+
+  @action
+  armMeHubLanding(e) {
+    if (
+      e &&
+      (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0)
+    ) {
+      return;
+    }
+    armMeHubLandingForNextSummaryVisit();
   }
 
   <template>
@@ -207,6 +220,7 @@ export default class FomioBottomBar extends Component {
             class="fomio-bottom-bar__item {{if this.isMeActive 'is-active'}}"
             aria-current={{if this.isMeActive "page"}}
             title={{this.meLabel}}
+            {{on "click" this.armMeHubLanding}}
           >
             {{icon "user"}}
             <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>

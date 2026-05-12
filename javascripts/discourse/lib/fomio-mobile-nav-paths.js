@@ -222,6 +222,27 @@ export function isMeLandingPath(path, currentUser) {
 }
 
 /**
+ * Own profile routes that render Discourse's Summary (`body.user-summary-page`).
+ * Excludes `/u/:username` without `/summary` so redirects / activity layouts are not matched.
+ */
+export function isOwnUserSummarySurfacePath(path, currentUser) {
+  if (!currentUser) {
+    return false;
+  }
+  const p = path.split("?")[0];
+  if (p === "/my" || p === "/my/summary") {
+    return true;
+  }
+  const slug = currentUser.username;
+  if (!slug) {
+    return false;
+  }
+  const lower = slug.toLowerCase();
+  const mSummary = /^\/u\/([^/]+)\/summary$/.exec(p);
+  return Boolean(mSummary && mSummary[1].toLowerCase() === lower);
+}
+
+/**
  * Home tab + home feed pills: primary reading feeds.
  */
 export function isHomeFeedPath(path) {
@@ -281,4 +302,76 @@ export function isMePath(path) {
     return true;
   }
   return p.startsWith("/u/");
+}
+
+/**
+ * True only when the user is at the Me Hub landing screen:
+ * own-profile summary (/u/:me/summary or /u/:me) or /my/summary or /my.
+ * All leaf pages (activity, preferences, notifications, …) return false.
+ */
+export function isMeHubPath(path, currentUser) {
+  const p = path.split("?")[0];
+  if (isAuthPath(p) || isSavedPath(p)) {
+    return false;
+  }
+  if (p === "/my" || p === "/my/summary") {
+    return true;
+  }
+  if (!currentUser?.username) {
+    return false;
+  }
+  const lower = currentUser.username.toLowerCase();
+  const mSummary = /^\/u\/([^/]+)\/summary$/.exec(p);
+  if (mSummary && mSummary[1].toLowerCase() === lower) {
+    return true;
+  }
+  const mRoot = /^\/u\/([^/]+)$/.exec(p);
+  if (mRoot && mRoot[1].toLowerCase() === lower) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * True when the user is on a Me leaf page (not the hub landing).
+ * Used to show the Me stack header (← Me | Section Title).
+ */
+export function isMeStackPath(path, currentUser) {
+  return isMePath(path) && !isMeHubPath(path, currentUser);
+}
+
+/**
+ * Returns the i18n key suffix for the current Me section.
+ * Used by fomio-me-stack-header to show the section title.
+ * Returns null if the path is not a recognisable Me leaf.
+ */
+export function meSectionTitleKey(path) {
+  const p = path.split("?")[0];
+  if (/^\/u\/[^/]+\/activity(\/|$)/.test(p) || p.startsWith("/my/activity")) {
+    return "me_stack.activity";
+  }
+  if (
+    /^\/u\/[^/]+\/notifications(\/|$)/.test(p) ||
+    p === "/notifications" ||
+    p.startsWith("/notifications/") ||
+    p.startsWith("/my/notifications")
+  ) {
+    return "me_stack.notifications";
+  }
+  if (/^\/u\/[^/]+\/messages(\/|$)/.test(p) || p.startsWith("/my/messages")) {
+    return "me_stack.messages";
+  }
+  if (
+    /^\/u\/[^/]+\/preferences(\/|$)/.test(p) ||
+    p.startsWith("/my/preferences")
+  ) {
+    return "me_stack.preferences";
+  }
+  if (/^\/u\/[^/]+\/invited(\/|$)/.test(p)) {
+    return "me_stack.invites";
+  }
+  if (/^\/u\/[^/]+\/badges(\/|$)/.test(p)) {
+    return "me_stack.badges";
+  }
+  return null;
 }

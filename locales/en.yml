@@ -208,6 +208,14 @@ en:
     me_hub_sign_out: "Sign out"
     me_hub_sign_in_cta: "Sign in to personalize Fomio."
     me_hub_sign_in: "Sign in"
+  me_stack:
+    back: "Me"
+    activity: "Activity"
+    notifications: "Notifications"
+    messages: "Messages"
+    preferences: "Preferences"
+    invites: "Invites"
+    badges: "Badges"
   ephemeral_sheet:
     close_label: "Close"
   topic_list:

@@ -5593,6 +5593,84 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     }
   }
 
+  // ── Me Stack Header ────────────────────────────────────────────
+  // Renders on all Me leaf pages on touch: Activity, Preferences,
+  // Notifications, Messages, Invites, Badges.
+  // Shows a back-to-hub affordance + the current section title.
+
+  .fomio-me-stack-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    height: 44px;
+    padding: 0 4px 0 0;
+    background: var(--fomio-bg);
+    border-bottom: 1px solid var(--fomio-border-soft);
+    position: sticky;
+    top: var(--header-offset, 50px);
+    z-index: 100;
+  }
+
+  .fomio-me-stack-header__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 10px 0 6px;
+    min-height: 44px;
+    color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+
+    .d-icon {
+      width: 0.85rem;
+      height: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  .fomio-me-stack-header__back-label {
+    line-height: 1;
+  }
+
+  .fomio-me-stack-header__title {
+    flex: 1;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 700;
+    color: var(--fomio-text);
+    text-align: center;
+    // Offset right to optically center the title despite the back button on the left.
+    // Back button is approximately 72px; we mirror that on the right with padding-right.
+    padding-right: 72px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Suppress Discourse's primary user-nav on Me leaf pages on touch.
+  // The Me stack header (‹ Me) replaces that chrome; native secondary pills stay on the page.
+  // Mirrors what desktop.scss does via body.fomio-settings-master-active.
+  &.user-activity-page,
+  &.user-preferences-page,
+  &.user-notifications-page,
+  &.user-messages-page,
+  &.user-invites-page,
+  &.user-badges-page {
+    .user-main .user-navigation.user-navigation-primary,
+    .user-main .nav-pills.user-nav {
+      display: none !important;
+    }
+  }
+
   // Home / Discover contextual pills (below-site-header connectors)
   .fomio-context-pills {
     margin: 0;

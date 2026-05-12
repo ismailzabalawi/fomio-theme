@@ -17,11 +17,13 @@ import {
   invitedPathForUser,
   isAuthPath,
   isMeLandingSurfacePath,
+  isOwnUserSummarySurfacePath,
   messagesPathForUser,
   notificationsPathForUser,
   preferencesPathForUser,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
+import { clearMeHubLandingSession } from "../../lib/fomio-me-hub-landing";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 export default class FomioMeHub extends Component {
@@ -188,13 +190,32 @@ export default class FomioMeHub extends Component {
     redirectToLoginWithIntent("view_profile", this.currentPath);
   }
 
+  @action
+  revealNativeProfileSummary(e) {
+    if (
+      e &&
+      (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0)
+    ) {
+      return;
+    }
+    clearMeHubLandingSession();
+    document.body?.classList.remove("fomio-me-hub-landing");
+    if (isOwnUserSummarySurfacePath(this.currentPath, this.currentUser)) {
+      e?.preventDefault();
+    }
+  }
+
   <template>
     {{#if this.shouldRender}}
       {{#if this.isLoggedInHub}}
         <nav class="fomio-me-hub" aria-label={{this.ariaLabel}}>
           {{#if this.summaryHref}}
             <div class="fomio-me-hub__summary">
-              <a href={{this.summaryHref}} class="fomio-me-hub__summary-link">
+              <a
+                href={{this.summaryHref}}
+                class="fomio-me-hub__summary-link"
+                {{on "click" this.revealNativeProfileSummary}}
+              >
                 <span class="fomio-me-hub__summary-avatar" aria-hidden="true">
                   {{avatar this.currentUser imageSize="large"}}
                 </span>
@@ -215,7 +236,11 @@ export default class FomioMeHub extends Component {
           >
             <div class="fomio-me-hub__section-body">
               {{#if this.summaryHref}}
-                <a class="fomio-me-hub__row" href={{this.summaryHref}}>
+                <a
+                  class="fomio-me-hub__row"
+                  href={{this.summaryHref}}
+                  {{on "click" this.revealNativeProfileSummary}}
+                >
                   <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "user"}}</span>
                   <span class="fomio-me-hub__row-copy">
                     <span class="fomio-me-hub__row-label">{{i18n
