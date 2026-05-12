@@ -107,8 +107,8 @@ en:
     view_grid: "Grid view"
     view_list: "List view"
   settings_master_pane:
-    title: "Settings"
-    description: "Manage your profile, activity, and account preferences."
+    title: "Me"
+    description: "Profile, activity, messages, invites, and account settings."
     summary: "Profile / Summary"
     activity: "Activity"
     bookmarks: "Bookmarks"

@@ -7,6 +7,7 @@ import { service } from "@ember/service";
 import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import { getFomioCoreAccountSections } from "../../lib/fomio-account-sections";
 
 // Keep in sync with other shell connectors. Theme files cannot share modules.
 const AUTH_PATHS = [
@@ -46,6 +47,7 @@ export default class FomioMasterPane extends Component {
   @service router;
   @service site;
   @service currentUser;
+  @service siteSettings;
 
   @tracked railOverlayOpen = false;
   @tracked railOverlayContext = null;
@@ -494,13 +496,6 @@ export default class FomioMasterPane extends Component {
     return username ? `/u/${username}` : "/login?fomio_web=1";
   }
 
-  buildSettingsPath(path) {
-    if (!this.currentUser?.username) {
-      return "/login?fomio_web=1";
-    }
-    return `${this.profileBasePath}${path}`;
-  }
-
   isCurrentPath(...patterns) {
     const path = this.currentPath.replace(/\/+$/, "") || "/";
     return patterns.some((pattern) => {
@@ -514,67 +509,15 @@ export default class FomioMasterPane extends Component {
     });
   }
 
-  get settingsLinks() {
-    const base = this.profileBasePath;
-    return [
-      {
-        key: "summary",
-        label: i18n(themePrefix("settings_master_pane.summary")),
-        href: this.buildSettingsPath("/summary"),
-        isActive: this.isCurrentPath(`${base}/summary`, "/my/summary"),
-      },
-      {
-        key: "activity",
-        label: i18n(themePrefix("settings_master_pane.activity")),
-        href: this.buildSettingsPath("/activity"),
-        isActive: this.isCurrentPath(`${base}/activity`, "/my/activity*"),
-      },
-      {
-        key: "bookmarks",
-        label: i18n(themePrefix("settings_master_pane.bookmarks")),
-        href: this.buildSettingsPath("/activity/bookmarks"),
-        isActive: this.isCurrentPath(`${base}/activity/bookmarks`, "/my/activity/bookmarks*"),
-      },
-      {
-        key: "preferences",
-        label: i18n(themePrefix("settings_master_pane.preferences")),
-        href: this.buildSettingsPath("/preferences"),
-        isActive: this.isCurrentPath(`${base}/preferences`, "/my/preferences*"),
-      },
-      {
-        key: "account",
-        label: i18n(themePrefix("settings_master_pane.account")),
-        href: this.buildSettingsPath("/preferences/account"),
-        isActive: this.isCurrentPath(`${base}/preferences/account`, "/my/preferences/account*"),
-      },
-      {
-        key: "security",
-        label: i18n(themePrefix("settings_master_pane.security")),
-        href: this.buildSettingsPath("/preferences/security"),
-        isActive: this.isCurrentPath(`${base}/preferences/security`, "/my/preferences/security*"),
-      },
-      {
-        key: "emails",
-        label: i18n(themePrefix("settings_master_pane.emails")),
-        href: this.buildSettingsPath("/preferences/emails"),
-        isActive: this.isCurrentPath(`${base}/preferences/emails`, "/my/preferences/emails*"),
-      },
-      {
-        key: "notifications",
-        label: i18n(themePrefix("settings_master_pane.notifications")),
-        href: this.buildSettingsPath("/preferences/notifications"),
-        isActive: this.isCurrentPath(
-          `${base}/preferences/notifications`,
-          "/my/preferences/notifications*"
-        ),
-      },
-      {
-        key: "interface",
-        label: i18n(themePrefix("settings_master_pane.interface")),
-        href: this.buildSettingsPath("/preferences/interface"),
-        isActive: this.isCurrentPath(`${base}/preferences/interface`, "/my/preferences/interface*"),
-      },
-    ];
+  get profileSections() {
+    return getFomioCoreAccountSections({
+      currentUser: this.currentUser,
+      currentPath: this.currentPath,
+      siteSettings: this.siteSettings,
+    }).map((section) => ({
+      ...section,
+      label: i18n(themePrefix(section.labelKey)),
+    }));
   }
 
   get bookmarksBasePath() {
@@ -762,7 +705,7 @@ export default class FomioMasterPane extends Component {
             {{on "click" this.handleNavClick}}
           >
             {{#if (eq this.activeMasterContext "profile")}}
-              {{#each this.settingsLinks as |link|}}
+              {{#each this.profileSections as |link|}}
                 <a
                   href={{link.href}}
                   class="fomio-master-pane__item {{if link.isActive 'is-active'}}"
