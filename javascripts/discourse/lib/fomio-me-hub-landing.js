@@ -34,8 +34,6 @@ export function syncMeHubLandingBodyClass(path, currentUser) {
   if (typeof document === "undefined" || !document.body) {
     return;
   }
-  const shouldLand =
-    isMeHubLandingSessionArmed() &&
-    isOwnUserSummarySurfacePath(path, currentUser);
+  const shouldLand = isOwnUserSummarySurfacePath(path, currentUser);
   document.body.classList.toggle("fomio-me-hub-landing", shouldLand);
 }

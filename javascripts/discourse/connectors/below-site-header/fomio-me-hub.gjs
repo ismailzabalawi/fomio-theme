@@ -17,13 +17,11 @@ import {
   invitedPathForUser,
   isAuthPath,
   isMeLandingSurfacePath,
-  isOwnUserSummarySurfacePath,
   messagesPathForUser,
   notificationsPathForUser,
   preferencesPathForUser,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
-import { clearMeHubLandingSession } from "../../lib/fomio-me-hub-landing";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 export default class FomioMeHub extends Component {
@@ -32,6 +30,7 @@ export default class FomioMeHub extends Component {
   @service siteSettings;
 
   @tracked isTouchShell = false;
+  @tracked summaryOpen = false;
   #unsubscribeTouch = null;
 
   constructor(owner, args) {
@@ -43,6 +42,7 @@ export default class FomioMeHub extends Component {
 
   willDestroy() {
     this.#unsubscribeTouch?.();
+    document.body?.classList.remove("fomio-me-hub-summary-open");
     super.willDestroy();
   }
 
@@ -191,44 +191,66 @@ export default class FomioMeHub extends Component {
   }
 
   @action
-  revealNativeProfileSummary(e) {
+  openSummary(e) {
     if (
       e &&
       (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0)
     ) {
       return;
     }
-    clearMeHubLandingSession();
-    document.body?.classList.remove("fomio-me-hub-landing");
-    if (isOwnUserSummarySurfacePath(this.currentPath, this.currentUser)) {
-      e?.preventDefault();
-    }
+    e?.preventDefault();
+    this.summaryOpen = true;
+    document.body?.classList.add("fomio-me-hub-summary-open");
+  }
+
+  @action
+  closeSummary() {
+    this.summaryOpen = false;
+    document.body?.classList.remove("fomio-me-hub-summary-open");
   }
 
   <template>
     {{#if this.shouldRender}}
       {{#if this.isLoggedInHub}}
-        <nav class="fomio-me-hub" aria-label={{this.ariaLabel}}>
-          {{#if this.summaryHref}}
-            <div class="fomio-me-hub__summary">
-              <a
-                href={{this.summaryHref}}
-                class="fomio-me-hub__summary-link"
-                {{on "click" this.revealNativeProfileSummary}}
-              >
-                <span class="fomio-me-hub__summary-avatar" aria-hidden="true">
-                  {{avatar this.currentUser imageSize="large"}}
-                </span>
-                <span class="fomio-me-hub__summary-text">
-                  <span class="fomio-me-hub__summary-name">{{this.displayName}}</span>
-                  <span class="fomio-me-hub__summary-meta">{{this.statusLine}}</span>
-                </span>
-                <span class="fomio-me-hub__summary-chevron" aria-hidden="true">{{icon
-                    "angle-right"
-                  }}</span>
-              </a>
-            </div>
-          {{/if}}
+        {{! Back bar renders as a sibling to <nav>, not inside it.
+            Keeps it outside any stacking context the hub creates, so
+            position:fixed works correctly against the viewport. }}
+        {{#if this.summaryOpen}}
+          <div class="fomio-me-hub__summary-back-bar" role="navigation" aria-label="Back to Me">
+            <button
+              type="button"
+              class="fomio-me-hub__back-btn"
+              {{on "click" this.closeSummary}}
+            >
+              {{icon "chevron-left"}}
+              <span>{{i18n (themePrefix "me_stack.back")}}</span>
+            </button>
+            <span class="fomio-me-hub__summary-panel-title">
+              {{i18n (themePrefix "mobile_nav.me_hub_summary")}}
+            </span>
+          </div>
+        {{/if}}
+
+        <nav
+          class="fomio-me-hub {{if this.summaryOpen "fomio-me-hub--summary-open"}}"
+          aria-label={{this.ariaLabel}}
+        >
+          {{#unless this.summaryOpen}}
+            {{#if this.summaryHref}}
+              <div class="fomio-me-hub__summary">
+                <div
+                  class="fomio-me-hub__summary-link fomio-me-hub__summary-link--static"
+                >
+                  <span class="fomio-me-hub__summary-avatar" aria-hidden="true">
+                    {{avatar this.currentUser imageSize="large"}}
+                  </span>
+                  <span class="fomio-me-hub__summary-text">
+                    <span class="fomio-me-hub__summary-name">{{this.displayName}}</span>
+                    <span class="fomio-me-hub__summary-meta">{{this.statusLine}}</span>
+                  </span>
+                </div>
+              </div>
+            {{/if}}
 
           <section
             class="fomio-me-hub__section"
@@ -239,7 +261,7 @@ export default class FomioMeHub extends Component {
                 <a
                   class="fomio-me-hub__row"
                   href={{this.summaryHref}}
-                  {{on "click" this.revealNativeProfileSummary}}
+                  {{on "click" this.openSummary}}
                 >
                   <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon "user"}}</span>
                   <span class="fomio-me-hub__row-copy">
@@ -414,6 +436,7 @@ export default class FomioMeHub extends Component {
               {{/if}}
             </div>
           </section>
+          {{/unless}}
         </nav>
       {{else}}
         <div

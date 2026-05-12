@@ -177,15 +177,15 @@ No SCSS changes are required for H4-B. For **later** (e.g. H4-C Option 3), the f
 
 | Current gate (examples) | Future additive strengthener |
 |------------------------|------------------------------|
-| `body.user-activity-page:has(.fomio-activity-section-menu)` | …`[data-fomio-user-shell="true"][data-fomio-user-section="activity"]` on the same wrapper subtree, or an ancestor selector combining `body.user-activity-page` with `[data-fomio-user-section="activity"]` |
+| `body.user-activity-page` with plugin shell markers | …`[data-fomio-user-shell="true"][data-fomio-user-section="activity"]` on the same wrapper subtree, or an ancestor selector combining `body.user-activity-page` with `[data-fomio-user-section="activity"]` |
 | Same pattern for `user-notifications-page`, `user-messages-page`, `user-invites-page`, `user-preferences-page` | Matching `data-fomio-user-section` value |
-| `#main-outlet .user-main .new-user-content-wrapper` (M2-H1 blocks) | Same node will carry `data-fomio-user-shell` when the plugin ran; compound selectors reduce accidental matches if core adds another wrapper |
+| `#main-outlet .user-main .new-user-content-wrapper` (historical M2-H1 blocks) | Same node will carry `data-fomio-user-shell` when the plugin ran; compound selectors reduce accidental matches if core adds another wrapper |
 
-Prefer **additive** compound selectors (AND) over replacing body `:has(.fomio-*-section-menu)` until Option 3 is scoped, so M2 still works if the plugin is off.
+Prefer **additive** compound selectors (AND). **Note:** the old `:has(.fomio-*-section-menu)` theme gates were removed when Me navigation pivoted to native Discourse pills; see `apps/web/docs/web/me-navigation.md` and `_archive/me-second-level-navigation.md`.
 
 ### Known: `/my/preferences` and preview query
 
-Discourse may redirect `/my/preferences/...` and drop `preview_theme_id`. For theme preview QA, prefer **`/u/:username/preferences/...`** with the preview param, consistent with M2-H2 QA notes in `me-second-level-navigation.md`.
+Discourse may redirect `/my/preferences/...` and drop `preview_theme_id`. For theme preview QA, prefer **`/u/:username/preferences/...`** with the preview param (see archived route notes in `apps/web/docs/web/_archive/me-second-level-navigation.md`).
 
 ### H4-B verification result (agent session)
 
@@ -202,4 +202,4 @@ Discourse may redirect `/my/preferences/...` and drop `preview_theme_id`. For th
 ## Files touched by H4-B documentation
 
 - `apps/web/docs/web/fomio-user-shell-plugin-plan.md` (this file)
-- `apps/web/docs/web/me-second-level-navigation.md` (§20.7 cross-reference)
+- `apps/web/docs/web/me-navigation.md` (current Me IA); `_archive/me-second-level-navigation.md` (historical §20.7)

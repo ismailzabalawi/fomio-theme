@@ -134,21 +134,13 @@ en:
     likes: "Likes"
     messages: "Messages"
     settings: "Notification settings"
-  notifications_detail:
-    heading_title: "Notifications"
-    heading_description: "Replies, mentions, likes, and account activity."
-  notifications_submenu:
-    nav_aria: "Browse notifications by type"
-    inactive_aria: "Switch to another notification type"
-  activity_submenu:
-    nav_aria: "Browse activity by type"
-  preferences_submenu:
-    nav_aria: "Browse account preferences sections"
-  invites_submenu:
-    nav_aria: "Browse invites by status"
-    inactive_aria: "Switch to another invite status"
-  messages_submenu:
-    nav_aria: "Browse private messages by folder"
+  me_filter_chips:
+    notifications:
+      nav_aria: "Filter notifications list"
+      all: "All"
+      conversations: "Conversations"
+      reactions: "Reactions"
+      system: "System"
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"
@@ -208,6 +200,8 @@ en:
     me_hub_sign_out: "Sign out"
     me_hub_sign_in_cta: "Sign in to personalize Fomio."
     me_hub_sign_in: "Sign in"
+  user_profile:
+    summary_link_aria: "Open profile summary for %{name}"
   me_stack:
     back: "Me"
     activity: "Activity"

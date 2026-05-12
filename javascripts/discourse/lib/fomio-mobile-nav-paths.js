@@ -186,10 +186,6 @@ export function isMeLandingSurfacePath(rawUrl, currentUser) {
   if (mSummary && mSummary[1].toLowerCase() === slug) {
     return true;
   }
-  const mRoot = /^\/u\/([^/]+)$/.exec(path);
-  if (mRoot && mRoot[1].toLowerCase() === slug) {
-    return true;
-  }
   return false;
 }
 
@@ -212,10 +208,6 @@ export function isMeLandingPath(path, currentUser) {
   const lower = slug.toLowerCase();
   const mSummary = /^\/u\/([^/]+)\/summary$/.exec(p);
   if (mSummary && mSummary[1].toLowerCase() === lower) {
-    return true;
-  }
-  const mRoot = /^\/u\/([^/]+)$/.exec(p);
-  if (mRoot && mRoot[1].toLowerCase() === lower) {
     return true;
   }
   return false;
@@ -325,10 +317,6 @@ export function isMeHubPath(path, currentUser) {
   if (mSummary && mSummary[1].toLowerCase() === lower) {
     return true;
   }
-  const mRoot = /^\/u\/([^/]+)$/.exec(p);
-  if (mRoot && mRoot[1].toLowerCase() === lower) {
-    return true;
-  }
   return false;
 }
 
@@ -337,6 +325,17 @@ export function isMeHubPath(path, currentUser) {
  * Used to show the Me stack header (← Me | Section Title).
  */
 export function isMeStackPath(path, currentUser) {
+  const p = path.split("?")[0];
+  if (!currentUser?.username) {
+    return false;
+  }
+
+  const lower = currentUser.username.toLowerCase();
+  const mRoot = /^\/u\/([^/]+)$/.exec(p);
+  if (mRoot && mRoot[1].toLowerCase() === lower) {
+    return false;
+  }
+
   return isMePath(path) && !isMeHubPath(path, currentUser);
 }
 

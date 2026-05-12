@@ -5348,6 +5348,399 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
   }
 }
 
+// User profile — compact summary header (connector: before-user-profile-avatar).
+// Reuses me-hub summary tokens; applies on desktop and touch.
+.fomio-user-profile-summary {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .fomio-me-hub__summary {
+    border-radius: 16px;
+    border: 1px solid var(--fomio-border-soft);
+    background: var(--fomio-surface);
+    overflow: hidden;
+  }
+
+  .fomio-me-hub__summary-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 56px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: var(--fomio-text);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: -2px;
+    }
+
+    &:active {
+      background: var(--fomio-card);
+    }
+  }
+
+  .fomio-me-hub__summary-link--static {
+    cursor: default;
+
+    &:active {
+      background: transparent;
+    }
+  }
+
+  .fomio-me-hub__summary-avatar {
+    flex-shrink: 0;
+
+    img,
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+    }
+  }
+
+  .fomio-me-hub__summary-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fomio-me-hub__summary-name {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base, 1rem);
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .fomio-me-hub__summary-meta {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-ink-muted);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  .fomio-me-hub__summary-chevron {
+    flex-shrink: 0;
+    color: var(--fomio-muted);
+
+    .d-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+#main-outlet .user-main .about .primary .fomio-user-profile-summary ~ .user-profile-avatar,
+#main-outlet .user-main .about .primary .fomio-user-profile-summary ~ .primary-textual {
+  display: none !important;
+}
+
+// Unified profile card: compact summary + native Discourse actions (PM, mute/ignore, admin, expand).
+// Discourse `user.scss` (collapsed-info, mobile): `.primary` is flex-row; `.controls` is `flex: 1 1 25%`
+// and `.primary-textual` is `flex: 1 0 80%`. We hide textual/avatar but must reset flex so the card
+// uses full width instead of a narrow “collapsed” column.
+#main-outlet .user-main .about .details .primary:has(.fomio-user-profile-summary) {
+  margin-bottom: 12px;
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: 16px;
+  background: var(--fomio-surface);
+  // Visible so SelectKit / dropdown bodies from profile actions are not clipped.
+  overflow: visible;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  .fomio-user-profile-summary {
+  flex: 0 0 auto;
+  width: 100%;
+  align-self: stretch;
+}
+
+#main-outlet .user-main .about.collapsed-info .details:has(.primary .fomio-user-profile-summary) {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  .fomio-user-profile-summary
+  .fomio-me-hub__summary {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+#main-outlet .user-main .about:has(.fomio-user-profile-summary) .staff-counters {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--fomio-border-soft);
+  background: color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg));
+  box-sizing: border-box;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  line-height: 1.45;
+  color: var(--fomio-muted);
+
+  a {
+    color: var(--fomio-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls {
+  margin: 0;
+  padding: 10px 10px 12px;
+  border-top: 1px solid var(--fomio-border-soft);
+  background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
+  box-sizing: border-box;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  ul
+  > li {
+  margin: 0;
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+  // Discourse collapsed mobile: `flex: 1 1 45%` on `li` — leaves a narrow action strip.
+  flex: 1 1 auto !important;
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  .btn,
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  box-sizing: border-box;
+  cursor: pointer;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  .d-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .d-button-label {
+    white-space: nowrap;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
+  }
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  .btn.btn-primary {
+  background: var(--fomio-primary);
+  color: var(--fomio-primary-fg, #fff);
+  border: 1px solid color-mix(in oklab, var(--fomio-primary) 88%, #000);
+
+  &:hover {
+    filter: brightness(1.03);
+  }
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  .btn.btn-default,
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  a.btn.btn-default {
+  background: var(--fomio-card);
+  color: var(--fomio-text);
+  border: 1px solid var(--fomio-border);
+
+  &:hover {
+    background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg));
+    border-color: var(--fomio-border-soft);
+  }
+}
+
+// Mute / ignore / normal — DropdownSelectBox (user-notifications-dropdown)
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  .select-kit.user-notifications {
+  flex: 1 1 auto;
+  min-width: min(100%, 200px);
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  .select-kit.user-notifications
+  .select-kit-header {
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-card);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  color: var(--fomio-text);
+}
+
+#main-outlet
+  .user-main
+  .about
+  .details
+  .primary:has(.fomio-user-profile-summary)
+  section.controls
+  .select-kit.user-notifications
+  .select-kit-header
+  .caret-icon {
+  color: var(--fomio-muted);
+}
+
+// Expanded profile details (native CollapsedInfo / #collapsed-info-panel) — same card language.
+#main-outlet
+  .user-main
+  .about
+  .details:has(.primary .fomio-user-profile-summary)
+  .secondary#collapsed-info-panel {
+  margin: 0 0 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--fomio-border-soft);
+  background: var(--fomio-surface);
+  box-sizing: border-box;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  line-height: 1.45;
+  color: var(--fomio-text);
+
+  dl {
+    margin: 0;
+  }
+
+  dt {
+    margin: 0 0 2px;
+    color: var(--fomio-ink-muted);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0 0 12px;
+    color: var(--fomio-text);
+  }
+
+  .group-link {
+    color: var(--fomio-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .btn-danger.btn-delete-user {
+    min-height: 44px;
+    border-radius: 12px;
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    font-size: var(--fomio-text-sm);
+  }
+}
+
 // Authoritative touch surface behavior (works for phones, foldables, and
 // landscape touch contexts even when viewport width is desktop-like).
 body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
@@ -5361,6 +5754,56 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
   #main-outlet-wrapper {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  // User profile (touch): full-width column; horizontal inset = safe area + minimum gutter only.
+  #main-outlet .container:has(> .user-main) {
+    max-width: 100%;
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: max(12px, env(safe-area-inset-left, 0px))
+      max(12px, env(safe-area-inset-right, 0px));
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  // User profile: compact summary stacks above primary tab nav on touch (paint + layout).
+  #main-outlet .user-main .about .details .primary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #main-outlet .user-main .about .details .primary:has(.fomio-user-profile-summary) {
+    margin: 0 0 12px;
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: none;
+  }
+
+  #main-outlet .user-main .about:has(.fomio-user-profile-summary) .staff-counters {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #main-outlet
+    .user-main
+    .about
+    .details:has(.primary .fomio-user-profile-summary)
+    .secondary#collapsed-info-panel {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #main-outlet .user-main > .new-user-wrapper .user-navigation {
+    position: relative;
+    z-index: 2;
   }
 
   // Me hub — grouped account links on touch (above native profile content)
@@ -5439,6 +5882,14 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
     &:active {
       background: var(--fomio-card);
+    }
+  }
+
+  .fomio-me-hub__summary-link--static {
+    cursor: default;
+
+    &:active {
+      background: transparent;
     }
   }
 
@@ -5593,6 +6044,50 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     }
   }
 
+  // ── Me Summary Back Bar ────────────────────────────────────────
+  // Sibling to <nav class="fomio-me-hub">, rendered when summaryOpen = true.
+  // Styles here cover layout and interaction; positioning is in the
+  // fomio-me-hub-summary-open body-class block below.
+
+  .fomio-me-hub__back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px 0 10px;
+    min-height: 52px;
+    background: none;
+    border: none;
+    color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+
+    .d-icon {
+      width: 0.85rem;
+      height: 0.85rem;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  .fomio-me-hub__summary-panel-title {
+    flex: 1;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 700;
+    color: var(--fomio-text);
+    text-align: center;
+    padding-right: 72px; // optical balance against the back button width
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   // ── Me Stack Header ────────────────────────────────────────────
   // Renders on all Me leaf pages on touch: Activity, Preferences,
   // Notifications, Messages, Invites, Badges.
@@ -5672,6 +6167,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   }
 
   // Home / Discover contextual pills (below-site-header connectors)
+
   .fomio-context-pills {
     margin: 0;
     padding: 0;
@@ -6880,12 +7376,46 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
       margin-bottom: 6px;
     }
 
-    #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
-    #main-outlet .user-main > section.about,
-    #main-outlet .user-main .new-user-wrapper > .user-navigation,
-    #main-outlet .user-main .new-user-content-wrapper #user-content {
+    #main-outlet .container:has(> .user-main) {
       display: none !important;
     }
+  }
+
+  // Summary panel mode — matches the same sticky pattern as fomio-me-stack-header.
+  // Must come after the landing block so display:block !important wins the cascade.
+  &.fomio-me-hub-summary-open.user-summary-page {
+    // Hub <nav> is empty in summary mode — hide it so it takes no space.
+    .fomio-me-hub {
+      display: none;
+    }
+
+    // Back bar: sticky, same as fomio-me-stack-header. No position:fixed needed —
+    // sticky in below-site-header works because the page itself is the scroll container.
+    .fomio-me-hub__summary-back-bar {
+      position: sticky;
+      top: 0;
+      height: 52px;
+      z-index: 802;
+      display: flex;
+      align-items: center;
+      background: var(--fomio-bg);
+      border-bottom: 1px solid var(--fomio-border-soft);
+    }
+
+    // Show the container — overrides the landing hide.
+    #main-outlet .container:has(> .user-main) {
+      display: block !important;
+    }
+
+    // Hide native chrome — back bar replaces these.
+    #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
+    #main-outlet .user-main > section.about,
+    #main-outlet .user-main .new-user-wrapper > .user-navigation {
+      display: none !important;
+    }
+
+    // Content flows normally in the page — page scroll handles it.
+    // No position:fixed needed; the sticky back bar handles the chrome.
   }
 }
 
@@ -11324,1608 +11854,102 @@ html.fomio-color-dark {
   }
 }
 
-// ------------------------------------------------------------------
-// Phase M2-B — Notifications second-level menu (all viewports; not touch-gated).
-// Suppress native core pills only when the Fomio menu mounted (avoids empty nav if
-// `in-element` never finds its anchor). Plugin `user-notifications-bottom` rows stay
-// visible unless their `li` reuses `user-nav__notifications-*` class substrings.
-// ------------------------------------------------------------------
-body.user-notifications-page:has(.fomio-notifications-section-menu) {
-  // `in-element` appends the menu as last child; flex order pulls it above pills + dismiss.
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+// ── Me — in-page notification filter chips (state on body; no URL change) ──
+// Source: `discourse/.../lib/notification-types/base.js` — each `<li>` gets `.notification` plus
+// a hyphenated type class from `notificationName` (e.g. `.liked`, `.mentioned`).
+// Scoped under `.fomio-me-filter-chips` + `#user-content` so we never touch global Discourse lists.
 
-    li.user-nav__notifications-all,
-    li.user-nav__notifications-responses,
-    li.user-nav__notifications-likes,
-    li.user-nav__notifications-mentions,
-    li.user-nav__notifications-edits,
-    li.user-nav__notifications-links {
-      display: none !important;
-    }
+.fomio-me-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    nav.horizontal-overflow-nav:not(
-        :has(ul.nav-pills > li:not([class*="user-nav__notifications-"]))
-      ) {
-      display: none !important;
-    }
+.fomio-me-filter-chips__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--fomio-border) 70%, transparent);
+  background: color-mix(in oklab, var(--fomio-bg) 50%, var(--fomio-surface));
+  color: var(--fomio-text);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
   }
 
-  #main-outlet .user-main .fomio-notifications-section-menu {
-    order: -1;
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0 0 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
+  &:hover {
+    border-color: color-mix(in oklab, var(--fomio-primary) 28%, var(--fomio-border));
+    background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
   }
 
-  #main-outlet .user-main .fomio-notifications-section-menu__title {
-    margin: 0 0 10px;
-    padding: 0 2px;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-    line-height: var(--fomio-leading-snug);
+  &:focus-visible {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
   }
 
-  #main-outlet .user-main .fomio-notifications-section-menu__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  #main-outlet .user-main .fomio-notifications-section-menu__item {
-    margin: 0;
-    padding: 0;
-  }
-
-  #main-outlet .user-main .fomio-notifications-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-
-    &.is-active {
-      border-color: color-mix(
-        in oklab,
-        var(--fomio-primary) 40%,
-        var(--fomio-border)
-      );
-      background: color-mix(
-        in oklab,
-        var(--fomio-primary) 10%,
-        var(--fomio-surface)
-      );
-      color: var(--fomio-primary);
-    }
+  &--active {
+    border-color: color-mix(in oklab, var(--fomio-primary) 40%, var(--fomio-border));
+    background: color-mix(in oklab, var(--fomio-primary) 12%, var(--fomio-surface));
+    color: var(--fomio-primary);
   }
 }
 
-body.user-notifications-page #main-container .fomio-notifications-section-menu__host {
+body.user-notifications-page[data-fomio-me-notifications-filter="reactions"]
+  #user-content
+  .user-notifications-list
+  > li.notification:not(.liked):not(.liked-consolidated):not(.reaction) {
   display: none !important;
 }
 
-// ------------------------------------------------------------------
-// Phase M2-C — Activity second-level menu (same pattern as M2-B notifications).
-// ------------------------------------------------------------------
-body.user-activity-page:has(.fomio-activity-section-menu) {
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-
-    li.user-nav__activity-all,
-    li.user-nav__activity-topics,
-    li.user-nav__activity-replies,
-    li.user-nav__activity-read,
-    li.user-nav__activity-drafts,
-    li.user-nav__activity-pending,
-    li.user-nav__activity-likes,
-    li.user-nav__activity-bookmarks {
-      display: none !important;
-    }
-
-    nav.horizontal-overflow-nav:not(
-        :has(ul.nav-pills > li:not([class*="user-nav__activity-"]))
-      ) {
-      display: none !important;
-    }
-  }
-
-  #main-outlet .user-main .fomio-activity-section-menu {
-    order: -1;
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0 0 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  #main-outlet .user-main .fomio-activity-section-menu__title {
-    margin: 0 0 10px;
-    padding: 0 2px;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-    line-height: var(--fomio-leading-snug);
-  }
-
-  #main-outlet .user-main .fomio-activity-section-menu__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  #main-outlet .user-main .fomio-activity-section-menu__item {
-    margin: 0;
-    padding: 0;
-  }
-
-  #main-outlet .user-main .fomio-activity-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-
-    &.is-active {
-      border-color: color-mix(
-        in oklab,
-        var(--fomio-primary) 40%,
-        var(--fomio-border)
-      );
-      background: color-mix(
-        in oklab,
-        var(--fomio-primary) 10%,
-        var(--fomio-surface)
-      );
-      color: var(--fomio-primary);
-    }
-  }
-}
-
-// When plugin rows were copied into the Fomio menu, suppress the native duplicates.
-body.user-activity-page:has(.fomio-activity-section-menu--mirrored-plugins) {
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    ul.nav-pills > li:not([class*="user-nav__activity-"]) {
-      display: none !important;
-    }
-  }
-}
-
-body.user-activity-page #main-container .fomio-activity-section-menu__host {
+body.user-notifications-page[data-fomio-me-notifications-filter="conversations"]
+  #user-content
+  .user-notifications-list
+  > li.notification:not(.mentioned):not(.replied):not(.quoted):not(.group-mentioned):not(
+    .private-message
+  ):not(.invited-to-private-message):not(.invitee-accepted):not(.posted):not(.moved-post):not(
+    .linked
+  ):not(.watching-first-post):not(.group-message-summary):not(.invited-to-topic) {
   display: none !important;
 }
 
-// ------------------------------------------------------------------
-// Phase M2-D — Preferences second-level menu (same pattern as M2-B / M2-C).
-// Core `li` classes are explicit so plugin tabs (e.g. `user-nav__preferences-chat`) stay visible
-// unless mirrored into the Fomio list (`--mirrored-plugins`).
-// ------------------------------------------------------------------
-body.user-preferences-page:has(.fomio-preferences-section-menu) {
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-
-    li.user-nav__preferences-account,
-    li.user-nav__preferences-security,
-    li.user-nav__preferences-profile,
-    li.user-nav__preferences-emails,
-    li.user-nav__preferences-notifications,
-    li.user-nav__preferences-tracking,
-    li.user-nav__preferences-users,
-    li.user-nav__preferences-interface,
-    li.user-nav__preferences-navigation-menu {
-      display: none !important;
-    }
-
-    nav.horizontal-overflow-nav:not(
-        :has(
-          ul.nav-pills
-            > li:not(
-              :is(
-                .user-nav__preferences-account,
-                .user-nav__preferences-security,
-                .user-nav__preferences-profile,
-                .user-nav__preferences-emails,
-                .user-nav__preferences-notifications,
-                .user-nav__preferences-tracking,
-                .user-nav__preferences-users,
-                .user-nav__preferences-interface,
-                .user-nav__preferences-navigation-menu
-              )
-            )
-        )
-      ) {
-      display: none !important;
-    }
-  }
-
-  #main-outlet .user-main .fomio-preferences-section-menu {
-    order: -1;
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0 0 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  #main-outlet .user-main .fomio-preferences-section-menu__title {
-    margin: 0 0 10px;
-    padding: 0 2px;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-    line-height: var(--fomio-leading-snug);
-  }
-
-  #main-outlet .user-main .fomio-preferences-section-menu__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  #main-outlet .user-main .fomio-preferences-section-menu__item {
-    margin: 0;
-    padding: 0;
-  }
-
-  #main-outlet .user-main .fomio-preferences-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-
-    &.is-active {
-      border-color: color-mix(
-        in oklab,
-        var(--fomio-primary) 40%,
-        var(--fomio-border)
-      );
-      background: color-mix(
-        in oklab,
-        var(--fomio-primary) 10%,
-        var(--fomio-surface)
-      );
-      color: var(--fomio-primary);
-    }
-  }
-}
-
-body.user-preferences-page:has(.fomio-preferences-section-menu--mirrored-plugins) {
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    ul.nav-pills
-      > li:not(
-        :is(
-          .user-nav__preferences-account,
-          .user-nav__preferences-security,
-          .user-nav__preferences-profile,
-          .user-nav__preferences-emails,
-          .user-nav__preferences-notifications,
-          .user-nav__preferences-tracking,
-          .user-nav__preferences-users,
-          .user-nav__preferences-interface,
-          .user-nav__preferences-navigation-menu
-        )
-      ) {
-      display: none !important;
-    }
-  }
-}
-
-body.user-preferences-page #main-container .fomio-preferences-section-menu__host {
-  display: none !important;
-}
-
-// ------------------------------------------------------------------
-// Phase M2-E — Invites second-level menu (same pattern as M2-B / M2-C / M2-D).
-// Core invites use `NavItem` without `user-nav__*` classes; the native pill strip is a
-// single `horizontal-overflow-nav` with three items — hide it entirely when Fomio mounts.
-// ------------------------------------------------------------------
-body.user-invites-page:has(.fomio-invites-section-menu) {
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-
-    nav.horizontal-overflow-nav {
-      display: none !important;
-    }
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu {
-    order: -1;
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0 0 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu__title {
-    margin: 0 0 10px;
-    padding: 0 2px;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-    line-height: var(--fomio-leading-snug);
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu__item {
-    margin: 0;
-    padding: 0;
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-
-    &.is-active {
-      border-color: color-mix(
-        in oklab,
-        var(--fomio-primary) 40%,
-        var(--fomio-border)
-      );
-      background: color-mix(
-        in oklab,
-        var(--fomio-primary) 10%,
-        var(--fomio-surface)
-      );
-      color: var(--fomio-primary);
-    }
-  }
-}
-
-body.user-invites-page #main-container .fomio-invites-section-menu__host {
-  display: none !important;
-}
-
-// ------------------------------------------------------------------
-// Phase M2-F — Messages second-level menu (user + group inbox core pills only).
-// Native `MessagesDropdown` (ol.category-breadcrumb) stays visible for inbox / group /
-// tag / custom rows. Only duplicate core `DNavigationItem` pills are suppressed.
-// ------------------------------------------------------------------
-body.user-messages-page:has(.fomio-messages-section-menu) {
-  #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-
-    li.user-nav__messages-latest,
-    li.user-nav__messages-sent,
-    li.user-nav__messages-new,
-    li.user-nav__messages-unread,
-    li.user-nav__messages-archive,
-    li.user-nav__messages-group-latest,
-    li.user-nav__messages-group-new,
-    li.user-nav__messages-group-unread,
-    li.user-nav__messages-group-archive {
-      display: none !important;
-    }
-
-    nav.horizontal-overflow-nav:not(
-        :has(
-          ul.nav-pills
-            > li:not(
-              :is(
-                .user-nav__messages-latest,
-                .user-nav__messages-sent,
-                .user-nav__messages-new,
-                .user-nav__messages-unread,
-                .user-nav__messages-archive,
-                .user-nav__messages-group-latest,
-                .user-nav__messages-group-new,
-                .user-nav__messages-group-unread,
-                .user-nav__messages-group-archive
-              )
-            )
-        )
-      ) {
-      display: none !important;
-    }
-  }
-
-  #main-outlet .user-main .fomio-messages-section-menu {
-    order: -1;
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0 0 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  #main-outlet .user-main .fomio-messages-section-menu__title {
-    margin: 0 0 10px;
-    padding: 0 2px;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-    line-height: var(--fomio-leading-snug);
-  }
-
-  #main-outlet .user-main .fomio-messages-section-menu__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  #main-outlet .user-main .fomio-messages-section-menu__item {
-    margin: 0;
-    padding: 0;
-  }
-
-  #main-outlet .user-main .fomio-messages-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-
-    &.is-active {
-      border-color: color-mix(
-        in oklab,
-        var(--fomio-primary) 40%,
-        var(--fomio-border)
-      );
-      background: color-mix(
-        in oklab,
-        var(--fomio-primary) 10%,
-        var(--fomio-surface)
-      );
-      color: var(--fomio-primary);
-    }
-  }
-}
-
-body.user-messages-page #main-container .fomio-messages-section-menu__host {
-  display: none !important;
-}
-
-// ------------------------------------------------------------------
-// Phase M2-H1 — Visual expanded Level 2 shell (mobile web, presentation only).
-// Wraps profile outlet (`new-user-content-wrapper`) + stronger active row + attached
-// `#user-content`. Scoped: max-width 767px, existing body.user-*-page :has(...) guards.
-// M2-H1-QA: single outer radius (no inner radius on #user-content — avoids nested corners);
-// lighter menu/content seam; optional narrow-phone padding reduction.
-// ------------------------------------------------------------------
-@media (max-width: 767px) {
-  // --- Notifications (stream / list) — M2-H1/H2 when shell+touch Option 3 is off (see H4-D below).
-  body.user-notifications-page:has(.fomio-notifications-section-menu):not(:has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    )),
-    body.user-notifications-page:has(.fomio-notifications-section-menu):has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    ):not(.fomio-surface-touch) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      max-width: 100%;
-      box-sizing: border-box;
-      padding: 6px 8px 12px;
-      background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
-      border-radius: 14px;
-    }
-
-    #main-outlet .user-main .fomio-notifications-section-menu.fomio-section-menu--expanded-shell {
-      margin-bottom: 0;
-      padding-top: 4px;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-notifications-section-menu.fomio-section-menu--expanded-shell
-      .fomio-notifications-section-menu__link.is-active {
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    // Phase M2-H2 — active row as card header (duplicate in DOM; list source hidden).
-    #main-outlet
-      .user-main
-      .fomio-notifications-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__item--h2-active-card-source {
-      display: none !important;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-notifications-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card {
-      margin-top: 10px;
-      margin-bottom: 0;
-      padding: 14px 14px 12px 16px;
-      box-sizing: border-box;
-      max-width: 100%;
-      min-width: 0;
-      border-radius: 12px 12px 0 0;
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
-      border-bottom: none;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-notifications-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card-link {
-      display: block;
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      color: var(--fomio-text);
-      text-decoration: none;
-      line-height: 1.3;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper #user-content {
-      margin-top: 0;
-      padding-top: 10px;
-      padding-left: 4px;
-      padding-right: 4px;
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border) 30%, transparent);
-      border-radius: 0 0 12px 12px;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-    }
-
-    @media (max-width: 400px) {
-      #main-outlet .user-main .new-user-content-wrapper {
-        padding: 5px 6px 10px;
-      }
-
-      #main-outlet .user-main .new-user-content-wrapper #user-content {
-        padding-left: 2px;
-        padding-right: 2px;
-      }
-    }
-  }
-
-  // --- Activity (stream / list) ---
-  body.user-activity-page:has(.fomio-activity-section-menu) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      max-width: 100%;
-      box-sizing: border-box;
-      padding: 6px 8px 12px;
-      background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
-      border-radius: 14px;
-    }
-
-    #main-outlet .user-main .fomio-activity-section-menu.fomio-section-menu--expanded-shell {
-      margin-bottom: 0;
-      padding-top: 4px;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-activity-section-menu.fomio-section-menu--expanded-shell
-      .fomio-activity-section-menu__link.is-active {
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    // Phase M2-H2 — active row as card header (duplicate in DOM; list source hidden).
-    #main-outlet
-      .user-main
-      .fomio-activity-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__item--h2-active-card-source {
-      display: none !important;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-activity-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card {
-      margin-top: 10px;
-      margin-bottom: 0;
-      padding: 14px 14px 12px 16px;
-      box-sizing: border-box;
-      max-width: 100%;
-      min-width: 0;
-      border-radius: 12px 12px 0 0;
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
-      border-bottom: none;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-activity-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card-link {
-      display: block;
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      color: var(--fomio-text);
-      text-decoration: none;
-      line-height: 1.3;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper #user-content {
-      margin-top: 0;
-      padding-top: 10px;
-      padding-left: 4px;
-      padding-right: 4px;
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border) 30%, transparent);
-      border-radius: 0 0 12px 12px;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-    }
-
-    @media (max-width: 400px) {
-      #main-outlet .user-main .new-user-content-wrapper {
-        padding: 5px 6px 10px;
-      }
-
-      #main-outlet .user-main .new-user-content-wrapper #user-content {
-        padding-left: 2px;
-        padding-right: 2px;
-      }
-    }
-  }
-
-  // --- Invites (list) — M2-H1/H2 when shell+touch Option 3 is off (see H4-C below).
-  body.user-invites-page:has(.fomio-invites-section-menu):not(:has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    )),
-    body.user-invites-page:has(.fomio-invites-section-menu):has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    ):not(.fomio-surface-touch) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      max-width: 100%;
-      box-sizing: border-box;
-      padding: 6px 8px 12px;
-      background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
-      border-radius: 14px;
-    }
-
-    #main-outlet .user-main .fomio-invites-section-menu.fomio-section-menu--expanded-shell {
-      margin-bottom: 0;
-      padding-top: 4px;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-invites-section-menu.fomio-section-menu--expanded-shell
-      .fomio-invites-section-menu__link.is-active {
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    // Phase M2-H2 — active row as card header (duplicate in DOM; list source hidden).
-    #main-outlet
-      .user-main
-      .fomio-invites-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__item--h2-active-card-source {
-      display: none !important;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-invites-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card {
-      margin-top: 10px;
-      margin-bottom: 0;
-      padding: 14px 14px 12px 16px;
-      box-sizing: border-box;
-      max-width: 100%;
-      min-width: 0;
-      border-radius: 12px 12px 0 0;
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
-      border-bottom: none;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-invites-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card-link {
-      display: block;
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      color: var(--fomio-text);
-      text-decoration: none;
-      line-height: 1.3;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper #user-content {
-      margin-top: 0;
-      padding-top: 10px;
-      padding-left: 4px;
-      padding-right: 4px;
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border) 30%, transparent);
-      border-radius: 0 0 12px 12px;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-    }
-
-    @media (max-width: 400px) {
-      #main-outlet .user-main .new-user-content-wrapper {
-        padding: 5px 6px 10px;
-      }
-
-      #main-outlet .user-main .new-user-content-wrapper #user-content {
-        padding-left: 2px;
-        padding-right: 2px;
-      }
-    }
-  }
-
-  // --- Messages (stream; dropdown + controls stay native and visible) ---
-  body.user-messages-page:has(.fomio-messages-section-menu) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      max-width: 100%;
-      box-sizing: border-box;
-      padding: 6px 8px 12px;
-      background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
-      border-radius: 14px;
-    }
-
-    #main-outlet .user-main .fomio-messages-section-menu.fomio-section-menu--expanded-shell {
-      margin-bottom: 0;
-      padding-top: 4px;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-messages-section-menu.fomio-section-menu--expanded-shell
-      .fomio-messages-section-menu__link.is-active {
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    // Phase M2-H2 — active row as card header (duplicate in DOM; list source hidden).
-    // No overflow:hidden here — Messages dropdowns must not clip.
-    #main-outlet
-      .user-main
-      .fomio-messages-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__item--h2-active-card-source {
-      display: none !important;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-messages-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card {
-      margin-top: 10px;
-      margin-bottom: 0;
-      padding: 14px 14px 12px 16px;
-      box-sizing: border-box;
-      max-width: 100%;
-      min-width: 0;
-      border-radius: 12px 12px 0 0;
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
-      border-bottom: none;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-      box-shadow: inset 4px 0 0 0 var(--fomio-primary);
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-messages-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card-link {
-      display: block;
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-base);
-      font-weight: 700;
-      color: var(--fomio-text);
-      text-decoration: none;
-      line-height: 1.3;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper #user-content {
-      margin-top: 0;
-      padding-top: 10px;
-      padding-left: 4px;
-      padding-right: 4px;
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border) 30%, transparent);
-      border-radius: 0 0 12px 12px;
-      background: color-mix(in oklab, var(--fomio-bg) 35%, var(--fomio-surface));
-    }
-
-    @media (max-width: 400px) {
-      #main-outlet .user-main .new-user-content-wrapper {
-        padding: 5px 6px 10px;
-      }
-
-      #main-outlet .user-main .new-user-content-wrapper #user-content {
-        padding-left: 2px;
-        padding-right: 2px;
-      }
-    }
-  }
-
-  // --- Preferences (forms: softer panel + calmer active header) ---
-  body.user-preferences-page:has(.fomio-preferences-section-menu) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      max-width: 100%;
-      box-sizing: border-box;
-      padding: 8px 10px 14px;
-      background: color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg));
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 38%, transparent);
-      border-radius: 14px;
-    }
-
-    #main-outlet .user-main .fomio-preferences-section-menu.fomio-section-menu--expanded-shell {
-      margin-bottom: 0;
-      padding-top: 4px;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-preferences-section-menu.fomio-section-menu--expanded-shell
-      .fomio-preferences-section-menu__link.is-active {
-      font-size: var(--fomio-text-sm);
-      font-weight: 700;
-      box-shadow: inset 3px 0 0 0 color-mix(in oklab, var(--fomio-primary) 42%, var(--fomio-border));
-    }
-
-    // Phase M2-H2 — softer card header for long forms.
-    #main-outlet
-      .user-main
-      .fomio-preferences-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__item--h2-active-card-source {
-      display: none !important;
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-preferences-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card.fomio-section-menu__active-card--preferences-soft {
-      margin-top: 8px;
-      margin-bottom: 0;
-      padding: 12px 12px 10px 14px;
-      box-sizing: border-box;
-      max-width: 100%;
-      min-width: 0;
-      border-radius: 10px 10px 0 0;
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 32%, transparent);
-      border-bottom: none;
-      background: color-mix(in oklab, var(--fomio-bg) 28%, var(--fomio-surface));
-      box-shadow: inset 3px 0 0 0
-        color-mix(in oklab, var(--fomio-primary) 42%, var(--fomio-border));
-    }
-
-    #main-outlet
-      .user-main
-      .fomio-preferences-section-menu.fomio-section-menu--expanded-shell
-      .fomio-section-menu__active-card-link.fomio-section-menu__active-card-link--preferences-soft {
-      display: block;
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-sm);
-      font-weight: 600;
-      color: var(--fomio-text);
-      text-decoration: none;
-      line-height: 1.35;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper #user-content.user-preferences {
-      margin-top: 0;
-      padding-top: 14px;
-      padding-left: 6px;
-      padding-right: 6px;
-      padding-bottom: 8px;
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border) 28%, transparent);
-      border-radius: 0 0 10px 10px;
-      background: color-mix(in oklab, var(--fomio-bg) 28%, var(--fomio-surface));
-    }
-
-    @media (max-width: 400px) {
-      #main-outlet .user-main .new-user-content-wrapper {
-        padding: 6px 8px 12px;
-      }
-
-      #main-outlet .user-main .new-user-content-wrapper #user-content.user-preferences {
-        padding-left: 4px;
-        padding-right: 4px;
-        padding-top: 12px;
-      }
-    }
-  }
-}
-
-// ------------------------------------------------------------------
-// H4-C — Invites Option 3 (plugin shell contract + touch surface only).
-// CSS/layout join: active card in .fomio-invites-section-menu--option3-head, native leaf
-// on [data-fomio-user-content], inactive filters in .fomio-invites-section-menu__inactive-tail
-// appended after content. No DOM reparenting of Discourse nodes.
-// Body chain matches Phase 3C-N4 Me touch polish so overrides beat #user-content overflow.
-// ------------------------------------------------------------------
-body.fomio-surface-touch.user-invites-page:has(.fomio-invites-section-menu):has(
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-  ),
-  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-invites-page:has(
-    .fomio-invites-section-menu
-  ):has(
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
+body.user-notifications-page[data-fomio-me-notifications-filter="system"]
+  #user-content
+  .user-notifications-list
+  > li.notification:is(
+    .mentioned,
+    .replied,
+    .quoted,
+    .group-mentioned,
+    .private-message,
+    .invited-to-private-message,
+    .invitee-accepted,
+    .posted,
+    .moved-post,
+    .linked,
+    .watching-first-post,
+    .group-message-summary,
+    .invited-to-topic,
+    .liked,
+    .liked-consolidated,
+    .reaction
   ) {
-  #main-outlet .user-main .new-user-content-wrapper {
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 8px 10px 14px;
-    min-width: 0;
-    overflow-x: clip;
-    background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-    border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
-    border-radius: 14px;
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu--option3-head.fomio-section-menu--expanded-shell {
-    margin-bottom: 0;
-    padding-top: 2px;
-  }
-
-  #main-outlet
-    .user-main
-    .fomio-invites-section-menu--option3-head
-    .fomio-section-menu__active-card {
-    margin-top: 8px;
-    margin-bottom: 0;
-    padding: 14px 14px 13px 17px;
-    box-sizing: border-box;
-    max-width: 100%;
-    min-width: 0;
-    border-radius: 12px 12px 0 0;
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
-    border-bottom: none;
-    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
-    box-shadow:
-      inset 4px 0 0 0 var(--fomio-primary),
-      0 1px 0 color-mix(in oklab, var(--fomio-border) 22%, transparent);
-  }
-
-  #main-outlet
-    .user-main
-    .fomio-invites-section-menu--option3-head
-    .fomio-section-menu__active-card-link {
-    display: block;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-base);
-    font-weight: 700;
-    color: var(--fomio-text);
-    text-decoration: none;
-    line-height: 1.35;
-    letter-spacing: var(--fomio-tracking-tight);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  // Native invite UI: card body (plugin marks leaf with data-fomio-user-content).
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content] {
-    margin-top: -1px;
-    padding-top: 14px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-bottom: 12px;
-    box-sizing: border-box;
-    max-width: 100%;
-    min-width: 0;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 32%, transparent);
-    border-radius: 0 0 12px 12px;
-    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
-  }
-
-  // Intentional empty state + primary actions inside the card (no overflow: hidden on leaf).
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .empty-state {
-    padding: 1.5rem 0.75rem 1.75rem;
-    box-sizing: border-box;
-    text-align: center;
-    max-width: 100%;
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .empty-state
-    .empty-state__title {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 20rem;
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .empty-state
-    .btn-primary {
-    min-height: 48px;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    font-weight: 700;
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .user-invite-buttons
-    .invite-button {
-    min-height: 48px;
-    font-weight: 700;
-    box-shadow: 0 1px 0 color-mix(in oklab, var(--fomio-border) 35%, transparent);
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .user-invite-list
-    .d-table__header-cell,
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .user-invite-list
-    .d-table__cell {
-    padding: 12px 10px;
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu__inactive-tail {
-    list-style: none;
-    margin: 14px 0 0;
-    padding: 14px 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
-  }
-
-  #main-outlet .user-main .fomio-invites-section-menu__inactive-tail .fomio-invites-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 46px;
-    padding: 11px 14px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-  }
-
-  @media (max-width: 430px) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      padding: 6px 8px 12px;
-    }
-
-    #main-outlet
-      .user-main
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-      :is(#user-content, .user-content)[data-fomio-user-content] {
-      padding-left: 6px;
-      padding-right: 6px;
-    }
-  }
-
-  @media (max-width: 390px) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      padding: 5px 6px 10px;
-    }
-
-    #main-outlet
-      .user-main
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-      :is(#user-content, .user-content)[data-fomio-user-content] {
-      padding-left: 4px;
-      padding-right: 4px;
-    }
-
-    #main-outlet
-      .user-main
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-      :is(#user-content, .user-content)[data-fomio-user-content]
-      .user-invite-list
-      .d-table__header-cell,
-    #main-outlet
-      .user-main
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-      :is(#user-content, .user-content)[data-fomio-user-content]
-      .user-invite-list
-      .d-table__cell {
-      padding: 11px 8px;
-    }
-  }
+  display: none !important;
 }
 
-// ------------------------------------------------------------------
-// H4-D — Notifications Option 3 (plugin shell contract + touch surface only).
-// Mirrors H4-C Invites: option3 head + :is(#user-content, .user-content)[data-fomio-user-content]
-// card body + inactive tail after native content. No reparenting.
-// ------------------------------------------------------------------
-body.fomio-surface-touch.user-notifications-page:has(.fomio-notifications-section-menu):has(
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-  ),
-  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-notifications-page:has(
-    .fomio-notifications-section-menu
-  ):has(
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-  ) {
-  #main-outlet .user-main .new-user-content-wrapper {
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 8px 10px 14px;
-    min-width: 0;
-    overflow-x: clip;
-    background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-    border: 1px solid color-mix(in oklab, var(--fomio-border) 50%, transparent);
-    border-radius: 14px;
-  }
-
-  #main-outlet
-    .user-main
-    .fomio-notifications-section-menu--option3-head.fomio-section-menu--expanded-shell {
-    margin-bottom: 0;
-    padding-top: 2px;
-  }
-
-  #main-outlet
-    .user-main
-    .fomio-notifications-section-menu--option3-head
-    .fomio-section-menu__active-card {
-    margin-top: 8px;
-    margin-bottom: 0;
-    padding: 14px 14px 13px 17px;
-    box-sizing: border-box;
-    max-width: 100%;
-    min-width: 0;
-    border-radius: 12px 12px 0 0;
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
-    border-bottom: none;
-    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
-    box-shadow:
-      inset 4px 0 0 0 var(--fomio-primary),
-      0 1px 0 color-mix(in oklab, var(--fomio-border) 22%, transparent);
-  }
-
-  #main-outlet
-    .user-main
-    .fomio-notifications-section-menu--option3-head
-    .fomio-section-menu__active-card-link {
-    display: block;
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-base);
-    font-weight: 700;
-    color: var(--fomio-text);
-    text-decoration: none;
-    line-height: 1.35;
-    letter-spacing: var(--fomio-tracking-tight);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    :is(#user-content, .user-content)[data-fomio-user-content] {
-    margin-top: -1px;
-    padding-top: 14px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-bottom: 12px;
-    box-sizing: border-box;
-    max-width: 100%;
-    min-width: 0;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border));
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 32%, transparent);
-    border-radius: 0 0 12px 12px;
-    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .empty-state {
-    padding: 1.5rem 0.75rem 1.75rem;
-    box-sizing: border-box;
-    text-align: center;
-    max-width: 100%;
-  }
-
-  #main-outlet
-    .user-main
-    .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    :is(#user-content, .user-content)[data-fomio-user-content]
-    .user-notifications-list
-    > li {
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-
-  #main-outlet .user-main .fomio-notifications-section-menu__inactive-tail {
-    list-style: none;
-    margin: 14px 0 0;
-    padding: 14px 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border) 40%, transparent);
-  }
-
-  #main-outlet
-    .user-main
-    .fomio-notifications-section-menu__inactive-tail
-    .fomio-notifications-section-menu__link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-height: 46px;
-    padding: 11px 14px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: color-mix(in oklab, var(--fomio-bg) 55%, var(--fomio-surface));
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    line-height: var(--fomio-leading-normal);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-    }
-
-    &:hover {
-      background: color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface));
-      color: var(--fomio-text);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-  }
-
-  @media (max-width: 430px) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      padding: 6px 8px 12px;
-    }
-
-    #main-outlet
-      .user-main
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-      :is(#user-content, .user-content)[data-fomio-user-content] {
-      padding-left: 6px;
-      padding-right: 6px;
-    }
-  }
-
-  @media (max-width: 390px) {
-    #main-outlet .user-main .new-user-content-wrapper {
-      padding: 5px 6px 10px;
-    }
-
-    #main-outlet
-      .user-main
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-      :is(#user-content, .user-content)[data-fomio-user-content] {
-      padding-left: 4px;
-      padding-right: 4px;
-    }
-  }
-}
-
-// Phase M2-H2 — desktop / tablet: hide duplicate active card; list row remains canonical.
-@media (min-width: 768px) {
-  #main-outlet .user-main .fomio-section-menu__active-card {
-    display: none !important;
-  }
-
-  // H4-C: Invites Option 3 uses the active card as the real header on touch at any width.
-  body.fomio-surface-touch.user-invites-page:has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    )
-    #main-outlet
-    .user-main
-    .fomio-invites-section-menu--option3-head
-    .fomio-section-menu__active-card,
-  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-invites-page:has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="invites"]
-    )
-    #main-outlet
-    .user-main
-    .fomio-invites-section-menu--option3-head
-    .fomio-section-menu__active-card {
-    display: block !important;
-  }
-
-  // H4-D: Notifications Option 3 — same exception for wide touch viewports.
-  body.fomio-surface-touch.user-notifications-page:has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    )
-    #main-outlet
-    .user-main
-    .fomio-notifications-section-menu--option3-head
-    .fomio-section-menu__active-card,
-  body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-notifications-page:has(
-      .new-user-content-wrapper[data-fomio-user-shell="true"][data-fomio-user-section="notifications"]
-    )
-    #main-outlet
-    .user-main
-    .fomio-notifications-section-menu--option3-head
-    .fomio-section-menu__active-card {
-    display: block !important;
-  }
-}

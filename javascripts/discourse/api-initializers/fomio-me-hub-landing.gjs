@@ -1,4 +1,3 @@
-import { next } from "@ember/runloop";
 import { apiInitializer } from "discourse/lib/api";
 import { syncMeHubLandingBodyClass } from "../lib/fomio-me-hub-landing";
 
@@ -7,7 +6,7 @@ export default apiInitializer("1.8.0", (api) => {
     const router = api.container.lookup("service:router");
     const url = router?.currentURL || "";
     const user = api.getCurrentUser();
-    next(() => syncMeHubLandingBodyClass(url, user));
+    syncMeHubLandingBodyClass(url, user);
   }
 
   sync();
