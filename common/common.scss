@@ -7196,14 +7196,15 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     #main-outlet .user-main .new-user-content-wrapper {
       margin: 0 10px 12px;
       padding: 10px 10px 12px;
-      background: var(--fomio-surface);
-      border: 1px solid var(--fomio-border-soft);
-      border-radius: 16px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
       box-sizing: border-box;
       max-width: 100%;
       width: 100%;
       min-width: 0;
       overflow-x: clip;
+      box-shadow: none;
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-primary {
@@ -7365,6 +7366,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
       min-width: 0;
       overflow-x: hidden;
       box-sizing: border-box;
+    }
+
+    #main-outlet .user-main #user-content .paginated-topics-list,
+    #main-outlet .user-main #user-content .loading-container {
+      background: transparent;
     }
 
     #main-outlet .user-main #user-content .topic-list {
@@ -8347,45 +8353,6 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   }
 
   &.user-messages-page {
-    #main-outlet .user-main #user-content .topic-list {
-      border-collapse: separate;
-      border-spacing: 0 8px;
-    }
-
-    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item {
-      border-bottom: none;
-    }
-
-    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td {
-      background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-      padding-top: 12px;
-      padding-bottom: 12px;
-    }
-
-    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td:first-child {
-      border-inline-start: 1px solid color-mix(
-        in oklab,
-        var(--fomio-border-soft) 66%,
-        transparent
-      );
-      border-radius: 18px 0 0 18px;
-      padding-inline-start: 12px;
-    }
-
-    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td:last-child {
-      border-inline-end: 1px solid color-mix(
-        in oklab,
-        var(--fomio-border-soft) 66%,
-        transparent
-      );
-      border-radius: 0 18px 18px 0;
-      padding-inline-end: 12px;
-    }
-  }
-
-  &.user-notifications-page {
     #main-outlet .user-main .new-user-content-wrapper {
       padding: 16px 16px 18px;
     }
@@ -8396,33 +8363,35 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
-      gap: 4px;
+      gap: 5px;
       padding: 5px;
       border-radius: 20px;
       background:
         linear-gradient(
           180deg,
-          color-mix(in oklab, var(--fomio-bg) 36%, var(--fomio-surface)) 0%,
-          color-mix(in oklab, var(--fomio-bg) 52%, var(--fomio-surface)) 100%
+          color-mix(in oklab, var(--fomio-bg) 34%, var(--fomio-surface)) 0%,
+          color-mix(in oklab, var(--fomio-bg) 50%, var(--fomio-surface)) 100%
         );
-      border-color: color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 56%, transparent);
       box-shadow: inset 0 1px 0 rgb(255 255 255 / 44%);
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
       min-height: 38px;
-      padding: 8px 13px;
+      padding: 8px 14px;
       border-radius: 13px;
-      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
-    }
+      color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+      letter-spacing: -0.01em;
 
-    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a:hover {
-      background: color-mix(in oklab, var(--fomio-surface) 90%, #fff);
+      &:hover {
+        background: color-mix(in oklab, var(--fomio-surface) 91%, #fff);
+      }
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a {
+      color: var(--fomio-text);
       border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border-soft));
       background:
         linear-gradient(
@@ -8432,7 +8401,273 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
         );
       box-shadow:
         inset 0 1px 0 rgb(255 255 255 / 58%),
-        0 8px 20px rgb(17 24 39 / 5%);
+        0 8px 18px rgb(17 24 39 / 5%);
+    }
+
+    @media (min-width: 820px) {
+      #main-outlet .user-main .user-navigation.user-navigation-secondary {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "breadcrumb controls"
+          "pills pills";
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .category-breadcrumb {
+        grid-area: breadcrumb;
+        align-self: center;
+        margin: 0;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav,
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .category-breadcrumb,
+      #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+        min-width: 0;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+        grid-area: pills;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+        width: 100%;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+        gap: 4px;
+        padding: 4px;
+        margin: 0;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls {
+        grid-area: controls;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        justify-self: end;
+        align-self: center;
+        min-width: fit-content;
+        gap: 6px;
+      }
+
+      #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn {
+        min-height: 38px;
+      }
+    }
+
+    #main-outlet .user-main #user-content .topic-list {
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      width: 100%;
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item {
+      border-bottom: none;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: transform 0.16s ease;
+      }
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:hover,
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:focus-within {
+      transform: translateY(-1px);
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td {
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 89%, var(--fomio-bg)) 100%
+        );
+      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+      padding-top: 14px;
+      padding-bottom: 14px;
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 52%),
+        0 10px 24px rgb(17 24 39 / 4%);
+      vertical-align: middle;
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td:first-child {
+      border-inline-start: 1px solid color-mix(
+        in oklab,
+        var(--fomio-border-soft) 62%,
+        transparent
+      );
+      border-radius: 20px 0 0 20px;
+      padding-inline-start: 16px;
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td:last-child {
+      border-inline-end: 1px solid color-mix(
+        in oklab,
+        var(--fomio-border-soft) 62%,
+        transparent
+      );
+      border-radius: 0 20px 20px 0;
+      padding-inline-end: 16px;
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:hover td,
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:focus-within td {
+      border-top-color: color-mix(in oklab, var(--fomio-border) 74%, transparent);
+      border-bottom-color: color-mix(in oklab, var(--fomio-border) 74%, transparent);
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg)) 100%
+        );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 62%),
+        0 16px 32px rgb(17 24 39 / 5%);
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:hover td:first-child,
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:focus-within td:first-child {
+      border-inline-start-color: color-mix(in oklab, var(--fomio-border) 74%, transparent);
+    }
+
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:hover td:last-child,
+    #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item:focus-within td:last-child {
+      border-inline-end-color: color-mix(in oklab, var(--fomio-border) 74%, transparent);
+    }
+
+    #main-outlet .user-main #user-content .topic-list .main-link {
+      font-family: var(--fomio-font-ui);
+    }
+
+    #main-outlet .user-main #user-content .topic-list .main-link a.title,
+    #main-outlet .user-main #user-content .topic-list .main-link .topic-title a,
+    #main-outlet .user-main #user-content .topic-list .main-link .raw-topic-link {
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+      font-size: clamp(0.97rem, 0.92rem + 0.12vw, 1.02rem);
+      font-weight: 650;
+      letter-spacing: -0.018em;
+      line-height: 1.32;
+      text-decoration: none;
+    }
+
+    #main-outlet .user-main #user-content .topic-list .main-link .topic-excerpt,
+    #main-outlet .user-main #user-content .topic-list .link-bottom-line,
+    #main-outlet .user-main #user-content .topic-list .discourse-tags,
+    #main-outlet .user-main #user-content .topic-list .posters,
+    #main-outlet .user-main #user-content .topic-list .topic-category {
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+      font-size: var(--fomio-text-xs);
+      line-height: 1.45;
+    }
+
+    #main-outlet .user-main #user-content .topic-list .num,
+    #main-outlet .user-main #user-content .topic-list .age,
+    #main-outlet .user-main #user-content .topic-list .activity,
+    #main-outlet .user-main #user-content .topic-list .posters a {
+      color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    #main-outlet .user-main #user-content .topic-list .badge-notification.new-posts,
+    #main-outlet .user-main #user-content .topic-list .badge-notification.unread-posts {
+      border-radius: 999px;
+      padding-inline: 0.45rem;
+      background: color-mix(in oklab, var(--fomio-primary) 12%, var(--fomio-surface));
+      color: color-mix(in oklab, var(--fomio-primary) 86%, var(--fomio-text));
+    }
+
+    #main-outlet .user-main .empty-state,
+    #main-outlet .user-main #user-content .empty-state,
+    #main-outlet .user-main .user-content .empty-state {
+      padding: 24px 20px;
+      border-radius: 22px;
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 64%, transparent);
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-bg) 16%, var(--fomio-surface)) 100%
+        );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 62%),
+        0 18px 34px rgb(17 24 39 / 5%);
+    }
+
+    #main-outlet .user-main .empty-state .empty-state-title,
+    #main-outlet .user-main #user-content .empty-state .empty-state-title,
+    #main-outlet .user-main .user-content .empty-state .empty-state-title {
+      font-family: var(--fomio-font-serif);
+      font-size: clamp(1.08rem, 1rem + 0.18vw, 1.18rem);
+      line-height: 1.24;
+      letter-spacing: -0.016em;
+      color: var(--fomio-text);
+    }
+
+    #main-outlet .user-main .empty-state p,
+    #main-outlet .user-main #user-content .empty-state p,
+    #main-outlet .user-main .user-content .empty-state p {
+      max-width: 34ch;
+      margin-top: 0.45rem;
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    }
+  }
+
+  &.user-notifications-page {
+    #main-outlet .user-main .new-user-content-wrapper {
+      padding: 16px 16px 18px;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+      gap: 5px;
+      padding: 6px;
+      border-radius: 22px;
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-bg) 30%, var(--fomio-surface)) 0%,
+          color-mix(in oklab, var(--fomio-bg) 46%, var(--fomio-surface)) 100%
+        );
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 46%),
+        0 10px 22px rgb(17 24 39 / 4%);
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 14px;
+      color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a:hover {
+      background: color-mix(in oklab, var(--fomio-surface) 93%, #fff);
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a {
+      border-color: color-mix(in oklab, var(--fomio-primary) 16%, var(--fomio-border-soft));
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-primary) 4%, var(--fomio-surface)) 100%
+        );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 58%),
+        0 10px 22px rgb(17 24 39 / 5%);
     }
 
     #main-outlet .user-main .empty-state,
@@ -8479,101 +8714,205 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     }
 
     #main-outlet .user-main .user-notifications-list > li {
-      border-radius: 22px;
-      border-color: color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+      border-radius: 24px;
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
       background:
         linear-gradient(
           180deg,
-          color-mix(in oklab, var(--fomio-surface) 95%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg)) 100%
+          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 91%, var(--fomio-bg)) 100%
         );
       box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 48%),
-        0 12px 26px rgb(17 24 39 / 4%);
+        inset 0 1px 0 rgb(255 255 255 / 50%),
+        0 10px 24px rgb(17 24 39 / 3.5%);
     }
 
     #main-outlet .user-main .user-notifications-list > li.notification.unread,
     #main-outlet .user-main .user-notifications-list > li.notification.pending {
-      border-color: color-mix(in oklab, var(--fomio-primary) 16%, var(--fomio-border-soft));
+      border-color: color-mix(in oklab, var(--fomio-primary) 14%, var(--fomio-border-soft));
       background:
         linear-gradient(
           180deg,
           color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-primary) 5%, var(--fomio-surface)) 100%
+          color-mix(in oklab, var(--fomio-primary) 3%, var(--fomio-surface)) 100%
         );
       box-shadow:
         inset 0 1px 0 rgb(255 255 255 / 66%),
-        0 16px 32px rgb(17 24 39 / 5%);
+        0 14px 28px rgb(17 24 39 / 4%);
     }
 
     #main-outlet .user-main .user-notifications-list > li.notification.read,
     #main-outlet .user-main .user-notifications-list > li.read {
-      background: color-mix(in oklab, var(--fomio-surface) 82%, var(--fomio-bg));
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 32%);
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 42%, transparent);
+      background: color-mix(in oklab, var(--fomio-surface) 80%, var(--fomio-bg));
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 28%);
     }
 
     #main-outlet .user-main .user-notifications-list .item-label {
-      font-size: 0.875rem;
-      line-height: 1.38;
-      letter-spacing: -0.012em;
+      font-size: 0.92rem;
+      line-height: 1.34;
+      letter-spacing: -0.014em;
     }
 
     #main-outlet .user-main .user-notifications-list .item-description {
-      margin-top: 4px;
-      line-height: 1.48;
+      margin-top: 5px;
+      line-height: 1.52;
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    }
+
+    #main-outlet .user-main .user-notifications-list > li > a {
+      gap: 14px;
+      padding: 15px 16px 16px;
+    }
+
+    #main-outlet .user-main .user-notifications-list > li > a .d-icon {
+      margin-top: 3px;
+      color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
+    }
+
+    #main-outlet .user-main .user-notifications-list.show-avatars > li > a .icon-avatar {
+      width: 2.3rem;
+      height: 2.3rem;
+      margin: 0.05rem 1rem auto 0;
+    }
+
+    #main-outlet .user-main .user-notifications-list.show-avatars > li > a .icon-avatar__icon-wrapper {
+      width: 1.18rem;
+      height: 1.18rem;
+      box-shadow: 0 6px 14px rgb(17 24 39 / 8%);
+    }
+
+    #main-outlet .user-main .user-notifications-list > li:hover,
+    #main-outlet .user-main .user-notifications-list > li:focus-within {
+      border-color: color-mix(in oklab, var(--fomio-border) 64%, transparent);
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 93%, var(--fomio-bg)) 100%
+        );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 64%),
+        0 14px 30px rgb(17 24 39 / 4%);
     }
   }
 
   &.user-invites-page {
     #main-outlet .user-main #user-content .user-additional-controls,
     #main-outlet .user-main .user-content#user-content .user-additional-controls {
-      padding: 14px;
-      border-radius: 20px;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 70%, transparent);
-      background: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg));
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
+        );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 52%),
+        0 12px 26px rgb(17 24 39 / 4%);
     }
 
     #main-outlet .user-main #user-content .user-invite-list,
     #main-outlet .user-main .user-content#user-content .user-invite-list {
       border-collapse: separate;
-      border-spacing: 0 8px;
+      border-spacing: 0 10px;
     }
 
     #main-outlet .user-main #user-content .user-invite-list .d-table__header-cell,
     #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__header-cell {
-      padding-bottom: 2px;
-      letter-spacing: 0.08em;
+      padding-bottom: 3px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
+      color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
     }
 
     #main-outlet .user-main #user-content .user-invite-list .d-table__cell,
     #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__cell {
-      background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
-      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-      padding: 12px 10px;
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
+        );
+      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+      padding: 14px 12px;
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 52%),
+        0 10px 24px rgb(17 24 39 / 4%);
     }
 
     #main-outlet .user-main #user-content .user-invite-list .d-table__cell:first-child,
     #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__cell:first-child {
       border-inline-start: 1px solid color-mix(
         in oklab,
-        var(--fomio-border-soft) 66%,
+        var(--fomio-border-soft) 60%,
         transparent
       );
-      border-radius: 18px 0 0 18px;
-      padding-inline-start: 12px;
+      border-radius: 20px 0 0 20px;
+      padding-inline-start: 16px;
     }
 
     #main-outlet .user-main #user-content .user-invite-list .d-table__cell:last-child,
     #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__cell:last-child {
       border-inline-end: 1px solid color-mix(
         in oklab,
-        var(--fomio-border-soft) 66%,
+        var(--fomio-border-soft) 60%,
         transparent
       );
-      border-radius: 0 18px 18px 0;
-      padding-inline-end: 12px;
+      border-radius: 0 20px 20px 0;
+      padding-inline-end: 16px;
+    }
+
+    #main-outlet .user-main #user-content .user-invite-buttons .btn,
+    #main-outlet .user-main .user-content#user-content .user-invite-buttons .btn {
+      min-height: 44px;
+      padding-inline: 14px;
+      border-radius: 14px;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 34%);
+    }
+
+    #main-outlet .user-main #user-content .user-invite-search input,
+    #main-outlet .user-main .user-content#user-content .user-invite-search input {
+      min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 64%, transparent);
+      background: color-mix(in oklab, var(--fomio-surface) 95%, var(--fomio-bg));
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%);
+    }
+
+    #main-outlet .user-main #user-content .user-invite-list .d-table__mobile-label,
+    #main-outlet .user-main .user-content#user-content .user-invite-list .d-table__mobile-label {
+      color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    #main-outlet .user-main .empty-state,
+    #main-outlet .user-main #user-content .empty-state,
+    #main-outlet .user-main .user-content .empty-state {
+      padding: 24px 20px;
+      border-radius: 22px;
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 64%, transparent);
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-bg) 18%, var(--fomio-surface)) 100%
+        );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 62%),
+        0 18px 34px rgb(17 24 39 / 5%);
+    }
+
+    #main-outlet .user-main .empty-state p,
+    #main-outlet .user-main #user-content .empty-state p,
+    #main-outlet .user-main .user-content .empty-state p {
+      max-width: 34ch;
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
     }
   }
 
