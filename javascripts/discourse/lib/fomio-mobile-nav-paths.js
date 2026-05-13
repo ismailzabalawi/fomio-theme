@@ -119,6 +119,31 @@ export function notificationsPathForUser(user) {
   return "/notifications";
 }
 
+export function notificationsRepliesPathForUser(user) {
+  const base = notificationsPathForUser(user);
+  return base ? `${base}/responses` : null;
+}
+
+export function notificationsMentionsPathForUser(user) {
+  const base = notificationsPathForUser(user);
+  return base ? `${base}/mentions` : null;
+}
+
+export function notificationsLikesPathForUser(user) {
+  const base = notificationsPathForUser(user);
+  return base ? `${base}/likes-received` : null;
+}
+
+export function preferencesNotificationsPathForUser(user) {
+  if (!user) {
+    return null;
+  }
+  if (user.username) {
+    return `/u/${user.username}/preferences/notifications`;
+  }
+  return "/my/preferences/notifications";
+}
+
 /**
  * Invites (`/u/:username/invited`).
  */
@@ -414,4 +439,18 @@ export function isCoreActivityPath(path) {
 export function isActivityPath(path) {
   const p = path.split("?")[0];
   return /^\/u\/[^/]+\/activity(\/|$)/.test(p) || p.startsWith("/my/activity");
+}
+
+export function isNotificationsPath(path) {
+  const p = path.split("?")[0];
+  return (
+    /^\/u\/[^/]+\/notifications(\/|$)/.test(p) ||
+    /^\/u\/[^/]+\/messages(\/|$)/.test(p) ||
+    /^\/u\/[^/]+\/preferences\/notifications(\/|$)/.test(p) ||
+    p === "/notifications" ||
+    p.startsWith("/notifications/") ||
+    p.startsWith("/my/notifications") ||
+    p.startsWith("/my/messages") ||
+    p.startsWith("/my/preferences/notifications")
+  );
 }

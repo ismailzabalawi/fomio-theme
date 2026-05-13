@@ -10,7 +10,11 @@ import {
   invitedPathForUser,
   isCoreActivityPath,
   messagesPathForUser,
+  notificationsLikesPathForUser,
   notificationsPathForUser,
+  notificationsMentionsPathForUser,
+  notificationsRepliesPathForUser,
+  preferencesNotificationsPathForUser,
   preferencesPathForUser,
   profileSummaryPathForUser,
 } from "./fomio-mobile-nav-paths";
@@ -252,6 +256,74 @@ export function getFomioActivityChildSections(context) {
         currentPath,
         activityLikesGivenPathForUser(currentUser),
         "/my/activity/likes-given"
+      ),
+    },
+  ].filter((section) => section.href);
+}
+
+export function getFomioNotificationsChildSections(context) {
+  const { currentUser, currentPath } = context;
+
+  return [
+    {
+      key: "all",
+      labelKey: "notifications_master_pane.all",
+      href: notificationsPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        notificationsPathForUser(currentUser),
+        "/notifications",
+        "/my/notifications"
+      ),
+    },
+    {
+      key: "replies",
+      labelKey: "notifications_master_pane.replies",
+      href: notificationsRepliesPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        notificationsRepliesPathForUser(currentUser),
+        "/my/notifications/responses"
+      ),
+    },
+    {
+      key: "mentions",
+      labelKey: "notifications_master_pane.mentions",
+      href: notificationsMentionsPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        notificationsMentionsPathForUser(currentUser),
+        "/my/notifications/mentions"
+      ),
+    },
+    {
+      key: "likes",
+      labelKey: "notifications_master_pane.likes",
+      href: notificationsLikesPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        notificationsLikesPathForUser(currentUser),
+        "/my/notifications/likes-received"
+      ),
+    },
+    {
+      key: "messages",
+      labelKey: "notifications_master_pane.messages",
+      href: messagesPathForUser(currentUser),
+      isActive: matchesPath(
+        currentPath,
+        messagesPathForUser(currentUser),
+        "/my/messages*"
+      ),
+    },
+    {
+      key: "settings",
+      labelKey: "notifications_master_pane.settings",
+      href: preferencesNotificationsPathForUser(currentUser),
+      isActive: matchesPath(
+        currentPath,
+        preferencesNotificationsPathForUser(currentUser),
+        "/my/preferences/notifications*"
       ),
     },
   ].filter((section) => section.href);

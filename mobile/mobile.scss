@@ -742,6 +742,343 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-botto
   }
 }
 
+// ── Mobile notifications — match Activity shell hierarchy ───────────────────
+
+body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio-auth-mode) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    margin: 0 10px 16px;
+    padding-top: 10px;
+    padding-bottom: 14px;
+    padding-inline-start: max(12px, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(12px, env(safe-area-inset-right, 0px));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 36px auto;
+    grid-template-areas:
+      "chips filter dismiss"
+      "content content content";
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 10px;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  &:has(.fomio-me-stack-shell .fomio-me-activity-nav) {
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      grid-area: dismiss;
+      display: flex;
+      justify-content: flex-end;
+      margin: 0;
+      min-width: 0;
+      width: auto;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+      display: none;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls {
+      display: flex;
+      justify-content: flex-end;
+      width: auto;
+      min-width: 0;
+      padding-top: 0;
+    }
+  }
+
+  #main-outlet .user-main .user-content#user-content {
+    display: contents;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.dismiss-notifications {
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 11px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg));
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream {
+    display: contents;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips {
+    grid-area: chips;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    gap: 6px;
+    margin: 0;
+    padding: 0 1px 0 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 0 13px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%);
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    font-size: 0.8rem;
+    letter-spacing: -0.01em;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip--active {
+    border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border-soft));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-primary) 5%, var(--fomio-surface)) 100%
+      );
+    color: var(--fomio-text);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 58%),
+      0 6px 14px rgb(17 24 39 / 4%);
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .user-notifications-filter {
+    grid-area: filter;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter {
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-header.notifications-filter-header {
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg));
+    box-shadow: none;
+    justify-content: center;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-header.notifications-filter-header .select-kit-header-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .filter-text,
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .header-text {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .d-icon {
+    margin: 0;
+    font-size: 0.95rem;
+    color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-body {
+    min-width: 148px;
+    padding: 6px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg)) 100%
+      );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 56%),
+      0 16px 32px rgb(17 24 39 / 10%);
+    overflow: hidden;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-collection {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-row.dropdown-select-box-row {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 12px;
+    border-radius: 12px;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: transparent;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-row.dropdown-select-box-row .texts,
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-row.dropdown-select-box-row .name {
+    min-width: 0;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-row.dropdown-select-box-row:hover,
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-row.dropdown-select-box-row.is-highlighted {
+    background: color-mix(in oklab, var(--fomio-surface) 88%, #fff);
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-row.dropdown-select-box-row.is-selected {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-primary) 6%, var(--fomio-surface)) 100%
+      );
+    color: var(--fomio-text);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border-soft)),
+      inset 0 1px 0 rgb(255 255 255 / 54%);
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .user-notifications-list,
+  #main-outlet .user-main .notification-history.user-stream > .alert.alert-info,
+  #main-outlet .user-main .notification-history.user-stream > .empty-state,
+  #main-outlet .user-main .notification-history.user-stream > .item.error,
+  #main-outlet .user-main .notification-history.user-stream > .loading-container,
+  #main-outlet .user-main .notification-history.user-stream > .load-more-sentinel {
+    grid-area: content;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .empty-state,
+  #main-outlet .user-main #user-content .empty-state,
+  #main-outlet .user-main .user-content .empty-state,
+  #main-outlet .user-main #user-content .item.error,
+  #main-outlet .user-main #user-content .alert.alert-info {
+    padding: 18px 16px 20px;
+    border-radius: 20px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
+      );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 52%),
+      0 10px 24px rgb(17 24 39 / 4%);
+  }
+
+  #main-outlet .user-main .user-notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  #main-outlet .user-main .user-notifications-list > li {
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+    border-radius: 20px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
+      );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 52%),
+      0 10px 24px rgb(17 24 39 / 4%);
+  }
+
+  #main-outlet .user-main .user-notifications-list > li.notification.unread,
+  #main-outlet .user-main .user-notifications-list > li.notification.pending {
+    border-color: color-mix(in oklab, var(--fomio-primary) 14%, var(--fomio-border-soft));
+  }
+
+  #main-outlet .user-main .user-notifications-list > li > a {
+    gap: 12px;
+    padding: 13px 13px 14px;
+  }
+
+  #main-outlet .user-main .user-notifications-list > li > a .d-icon {
+    margin-top: 2px;
+    color: color-mix(in oklab, var(--fomio-muted) 80%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main .user-notifications-list > li.notification.unread > a .d-icon,
+  #main-outlet .user-main .user-notifications-list > li.notification.pending > a .d-icon {
+    color: color-mix(in oklab, var(--fomio-primary) 72%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main .user-notifications-list .item-label {
+    font-size: 0.98rem;
+    line-height: 1.32;
+    letter-spacing: -0.012em;
+  }
+
+  #main-outlet .user-main .user-notifications-list .item-description {
+    margin-top: 5px;
+    font-size: 0.88rem;
+    line-height: 1.42;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main .user-notifications-list > li.notification.read .item-label,
+  #main-outlet .user-main .user-notifications-list > li.read .item-label {
+    color: color-mix(in oklab, var(--fomio-text) 90%, var(--fomio-muted));
+  }
+
+  #main-outlet .user-main .user-notifications-list > li.notification.read .item-description,
+  #main-outlet .user-main .user-notifications-list > li.read .item-description {
+    color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main .user-notifications-list.show-avatars > li > a .icon-avatar {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.7rem;
+  }
+
+  #main-outlet .user-main .user-notifications-list.show-avatars > li > a .icon-avatar__icon-wrapper {
+    width: 1.15rem;
+    height: 1.15rem;
+    box-shadow: none;
+  }
+}
+
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar__item--create {
   color: var(--fomio-primary);
 

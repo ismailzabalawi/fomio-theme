@@ -8,12 +8,14 @@ import FomioMeActivityNav from "../../components/fomio-me-activity-nav";
 import FomioMeStackHeader from "../../components/fomio-me-stack-header";
 import {
   getFomioActivityChildSections,
+  getFomioNotificationsChildSections,
   isOwnedActivitySectionPath,
 } from "../../lib/fomio-account-sections";
 import {
   isAuthPath,
   isActivityPath,
   isMeStackPath,
+  isNotificationsPath,
   meSectionTitleKey,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
@@ -82,8 +84,27 @@ export default class FomioMeStackHeaderConnector extends Component {
     return isActivityPath(this.currentPath) && isOwnedActivitySectionPath(this.currentPath);
   }
 
-  get activitySections() {
-    return getFomioActivityChildSections({
+  get shouldRenderNotificationsNav() {
+    return isNotificationsPath(this.currentPath);
+  }
+
+  get shouldRenderChildNav() {
+    return this.shouldRenderActivityNav || this.shouldRenderNotificationsNav;
+  }
+
+  get childNavAriaLabel() {
+    if (this.shouldRenderNotificationsNav) {
+      return i18n(themePrefix("notifications_master_pane.title"));
+    }
+    return null;
+  }
+
+  get childSections() {
+    const builder = this.shouldRenderNotificationsNav
+      ? getFomioNotificationsChildSections
+      : getFomioActivityChildSections;
+
+    return builder({
       currentUser: this.currentUser,
       currentPath: this.currentPath,
     }).map((section) => ({
@@ -112,8 +133,11 @@ export default class FomioMeStackHeaderConnector extends Component {
           @onBackClick={{this.armMeHubLandingBeforeBack}}
         />
 
-        {{#if this.shouldRenderActivityNav}}
-          <FomioMeActivityNav @sections={{this.activitySections}} />
+        {{#if this.shouldRenderChildNav}}
+          <FomioMeActivityNav
+            @sections={{this.childSections}}
+            @ariaLabel={{this.childNavAriaLabel}}
+          />
         {{/if}}
       </div>
     {{/if}}

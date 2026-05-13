@@ -4,7 +4,7 @@ import { themePrefix } from "virtual:theme";
 
 export default class FomioMeActivityNav extends Component {
   get groupAriaLabel() {
-    return i18n(themePrefix("me_activity_nav.nav_aria"));
+    return this.args.ariaLabel || i18n(themePrefix("me_activity_nav.nav_aria"));
   }
 
   sectionClass = (isActive) => {

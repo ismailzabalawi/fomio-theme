@@ -655,21 +655,91 @@ body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-
 
   // Preserve filter + list behavior; add calm rhythm only.
   .user-main .user-notifications-filter {
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.55rem;
   }
 
   .user-main .user-notifications-list {
-    margin-top: 0.25rem;
+    gap: 0;
+    margin-top: 0.2rem;
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
   }
 
   .user-main .user-notifications-list > li {
-    padding-block: 0.45rem;
-    border-bottom: 1px solid var(--fomio-border-soft);
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
   }
 
   // Spinner may follow items; last notification row is last li, not last child.
   .user-main .user-notifications-list > li:last-of-type {
     border-bottom: none;
+  }
+
+  .user-main .user-notifications-list > li > a {
+    gap: 0.85rem;
+    padding: 0.9rem 0.2rem;
+  }
+
+  .user-main .user-notifications-list > li:hover,
+  .user-main .user-notifications-list > li:focus-within {
+    border-color: color-mix(in oklab, var(--fomio-border) 62%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 30%, transparent);
+  }
+
+  .user-main .user-notifications-list > li:hover > a,
+  .user-main .user-notifications-list > li:focus-within > a {
+    transform: none;
+  }
+
+  .user-main .user-notifications-list > li.notification.unread,
+  .user-main .user-notifications-list > li.notification.pending {
+    border-bottom-color: color-mix(
+      in oklab,
+      var(--fomio-primary) 12%,
+      var(--fomio-border-soft)
+    );
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--fomio-primary) 4%, transparent) 0,
+        transparent 28%
+      );
+  }
+
+  .user-main .user-notifications-list > li.notification.read,
+  .user-main .user-notifications-list > li.read {
+    background: transparent;
+  }
+
+  .user-main .user-notifications-list .item-label {
+    font-size: 0.9rem;
+    line-height: 1.34;
+    letter-spacing: -0.012em;
+  }
+
+  .user-main .user-notifications-list .item-description {
+    margin-top: 0.22rem;
+    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+    line-height: 1.42;
+  }
+
+  .user-main .user-notifications-list.show-avatars > li > a .icon-avatar {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.85rem;
+  }
+
+  .user-main .user-notifications-list.show-avatars > li > a .icon-avatar__icon-wrapper {
+    box-shadow: none;
+  }
+
+  .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.dismiss-notifications {
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 38%);
   }
 
   .user-main .user-notifications-list a,
