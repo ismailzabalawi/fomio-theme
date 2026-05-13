@@ -1,9 +1,14 @@
 import {
   aboutPath,
   activityPathForUser,
+  activityLikesGivenPathForUser,
+  activityReadPathForUser,
+  activityRepliesPathForUser,
+  activityTopicsPathForUser,
   adminManageUserPathForUser,
   badgesPathForUser,
   invitedPathForUser,
+  isCoreActivityPath,
   messagesPathForUser,
   notificationsPathForUser,
   preferencesPathForUser,
@@ -197,4 +202,61 @@ export function getFomioAuxiliaryMeSections(context) {
       isMuted: true,
     },
   ].filter((section) => section.isVisible && section.href);
+}
+
+export function getFomioActivityChildSections(context) {
+  const { currentUser, currentPath } = context;
+
+  return [
+    {
+      key: "all",
+      labelKey: "me_activity_nav.all",
+      href: activityPathForUser(currentUser),
+      isActive: matchesExactPath(currentPath, activityPathForUser(currentUser), "/my/activity"),
+    },
+    {
+      key: "topics",
+      labelKey: "me_activity_nav.topics",
+      href: activityTopicsPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        activityTopicsPathForUser(currentUser),
+        "/my/activity/topics"
+      ),
+    },
+    {
+      key: "replies",
+      labelKey: "me_activity_nav.replies",
+      href: activityRepliesPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        activityRepliesPathForUser(currentUser),
+        "/my/activity/replies"
+      ),
+    },
+    {
+      key: "read",
+      labelKey: "me_activity_nav.read",
+      href: activityReadPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        activityReadPathForUser(currentUser),
+        "/my/activity/read"
+      ),
+    },
+    {
+      key: "likes-given",
+      labelKey: "me_activity_nav.likes_given",
+      href: activityLikesGivenPathForUser(currentUser),
+      isActive: matchesExactPath(
+        currentPath,
+        activityLikesGivenPathForUser(currentUser),
+        "/my/activity/likes-given"
+      ),
+    },
+  ].filter((section) => section.href);
+}
+
+export function isOwnedActivitySectionPath(currentPath) {
+  return isCoreActivityPath(currentPath);
 }

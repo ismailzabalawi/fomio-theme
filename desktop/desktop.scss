@@ -689,3 +689,44 @@ body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-
     filter: none;
   }
 }
+
+body.fomio-settings-master-active.fomio-surface-expanded.user-activity-page:not(.fomio-auth-mode):not(.fomio-activity-master-active),
+body.fomio-settings-master-active.fomio-surface-compact-desktop.user-activity-page:not(.fomio-auth-mode):not(.fomio-activity-master-active) {
+  .user-main .user-navigation.user-navigation-secondary {
+    display: block !important;
+  }
+}
+
+body.fomio-activity-master-active.fomio-surface-expanded.user-activity-page:not(.fomio-auth-mode),
+body.fomio-activity-master-active.fomio-surface-compact-desktop.user-activity-page:not(.fomio-auth-mode) {
+  .fomio-me-activity-nav {
+    margin: 0 0 14px;
+  }
+
+  .fomio-me-activity-nav__inner {
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 18px;
+    border-color: color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+    background: color-mix(in oklab, var(--fomio-bg) 38%, var(--fomio-surface));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 55%),
+      0 10px 24px rgb(17 24 39 / 4%);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .fomio-me-activity-nav__inner::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fomio-me-activity-nav__link {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding-inline: 14px;
+    border-radius: 12px;
+    font-size: 0.8125rem;
+    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+  }
+}

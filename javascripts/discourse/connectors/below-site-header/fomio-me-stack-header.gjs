@@ -4,9 +4,15 @@ import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioMeActivityNav from "../../components/fomio-me-activity-nav";
 import FomioMeStackHeader from "../../components/fomio-me-stack-header";
 import {
+  getFomioActivityChildSections,
+  isOwnedActivitySectionPath,
+} from "../../lib/fomio-account-sections";
+import {
   isAuthPath,
+  isActivityPath,
   isMeStackPath,
   meSectionTitleKey,
   profileSummaryPathForUser,
@@ -72,6 +78,20 @@ export default class FomioMeStackHeaderConnector extends Component {
     return i18n(themePrefix(key));
   }
 
+  get shouldRenderActivityNav() {
+    return isActivityPath(this.currentPath) && isOwnedActivitySectionPath(this.currentPath);
+  }
+
+  get activitySections() {
+    return getFomioActivityChildSections({
+      currentUser: this.currentUser,
+      currentPath: this.currentPath,
+    }).map((section) => ({
+      ...section,
+      label: i18n(themePrefix(section.labelKey)),
+    }));
+  }
+
   @action
   armMeHubLandingBeforeBack(e) {
     if (
@@ -85,11 +105,17 @@ export default class FomioMeStackHeaderConnector extends Component {
 
   <template>
     {{#if this.shouldRender}}
-      <FomioMeStackHeader
-        @backHref={{this.backHref}}
-        @sectionTitle={{this.sectionTitle}}
-        @onBackClick={{this.armMeHubLandingBeforeBack}}
-      />
+      <div class="fomio-me-stack-shell">
+        <FomioMeStackHeader
+          @backHref={{this.backHref}}
+          @sectionTitle={{this.sectionTitle}}
+          @onBackClick={{this.armMeHubLandingBeforeBack}}
+        />
+
+        {{#if this.shouldRenderActivityNav}}
+          <FomioMeActivityNav @sections={{this.activitySections}} />
+        {{/if}}
+      </div>
     {{/if}}
   </template>
 }

@@ -62,6 +62,26 @@ export function activityPathForUser(user) {
   return "/my/activity";
 }
 
+export function activityTopicsPathForUser(user) {
+  const base = activityPathForUser(user);
+  return base ? `${base}/topics` : null;
+}
+
+export function activityRepliesPathForUser(user) {
+  const base = activityPathForUser(user);
+  return base ? `${base}/replies` : null;
+}
+
+export function activityReadPathForUser(user) {
+  const base = activityPathForUser(user);
+  return base ? `${base}/read` : null;
+}
+
+export function activityLikesGivenPathForUser(user) {
+  const base = activityPathForUser(user);
+  return base ? `${base}/likes-given` : null;
+}
+
 /**
  * Private messages inbox. Prefer per-user `/u/:username/messages` (matches user-nav);
  * fall back to `/my/messages` if `username` is missing.
@@ -373,4 +393,25 @@ export function meSectionTitleKey(path) {
     return "me_stack.badges";
   }
   return null;
+}
+
+export function isCoreActivityPath(path) {
+  const p = path.split("?")[0].replace(/\/+$/, "") || "/";
+  return [
+    /^\/u\/[^/]+\/activity$/,
+    /^\/u\/[^/]+\/activity\/topics$/,
+    /^\/u\/[^/]+\/activity\/replies$/,
+    /^\/u\/[^/]+\/activity\/read$/,
+    /^\/u\/[^/]+\/activity\/likes-given$/,
+    /^\/my\/activity$/,
+    /^\/my\/activity\/topics$/,
+    /^\/my\/activity\/replies$/,
+    /^\/my\/activity\/read$/,
+    /^\/my\/activity\/likes-given$/,
+  ].some((pattern) => pattern.test(p));
+}
+
+export function isActivityPath(path) {
+  const p = path.split("?")[0];
+  return /^\/u\/[^/]+\/activity(\/|$)/.test(p) || p.startsWith("/my/activity");
 }

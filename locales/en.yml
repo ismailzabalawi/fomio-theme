@@ -141,6 +141,13 @@ en:
       conversations: "Conversations"
       reactions: "Reactions"
       system: "System"
+  me_activity_nav:
+    nav_aria: "Activity sections"
+    all: "All Activity"
+    topics: "Topics"
+    replies: "Replies"
+    read: "Read"
+    likes_given: "Likes Given"
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"

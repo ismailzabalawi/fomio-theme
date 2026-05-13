@@ -7,7 +7,10 @@ import { service } from "@ember/service";
 import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import { getFomioCoreAccountSections } from "../../lib/fomio-account-sections";
+import {
+  getFomioCoreAccountSections,
+  isOwnedActivitySectionPath,
+} from "../../lib/fomio-account-sections";
 
 // Keep in sync with other shell connectors. Theme files cannot share modules.
 const AUTH_PATHS = [
@@ -89,6 +92,7 @@ export default class FomioMasterPane extends Component {
       document.body.classList.remove("fomio-settings-master-active");
       document.body.classList.remove("fomio-bookmarks-master-active");
       document.body.classList.remove("fomio-notifications-master-active");
+      document.body.classList.remove("fomio-activity-master-active");
     }
     if (typeof document !== "undefined" && this._onKeydown) {
       document.removeEventListener("keydown", this._onKeydown);
@@ -430,6 +434,11 @@ export default class FomioMasterPane extends Component {
     const isNotificationsDesktopMasterPane =
       this.activeMasterContext === "notifications" && desktopShell;
 
+    const isActivityDesktopMasterPane =
+      this.activeMasterContext === "profile" &&
+      desktopShell &&
+      isOwnedActivitySectionPath(this.currentPath);
+
     document.body.classList.toggle(
       "fomio-settings-master-active",
       isSettingsDesktopMasterPane
@@ -441,6 +450,10 @@ export default class FomioMasterPane extends Component {
     document.body.classList.toggle(
       "fomio-notifications-master-active",
       isNotificationsDesktopMasterPane
+    );
+    document.body.classList.toggle(
+      "fomio-activity-master-active",
+      isActivityDesktopMasterPane
     );
   }
 
