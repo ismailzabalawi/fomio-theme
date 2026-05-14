@@ -124,6 +124,7 @@ export function getFomioCoreAccountSections(context) {
       key: "notifications",
       icon: "bell",
       labelKey: "mobile_nav.me_hub_notifications",
+      metaKey: "mobile_nav.me_hub_notifications_meta",
       href: notificationsPathForUser(currentUser),
       isVisible: canShowNotifications(context),
       isActive: matchesPath(
@@ -158,6 +159,7 @@ export function getFomioCoreAccountSections(context) {
       key: "preferences",
       icon: "gear",
       labelKey: "mobile_nav.me_hub_preferences",
+      metaKey: "mobile_nav.me_hub_settings_meta",
       href: preferencesPathForUser(currentUser),
       isVisible: canShowPreferences(context),
       isActive: matchesPath(
@@ -173,6 +175,7 @@ export function getFomioCoreAccountSections(context) {
       href: manageUserPath,
       isVisible: canShowManageUser(context),
       isActive: matchesPath(currentPath, `${manageUserPath}*`),
+      isAdminSection: true,
     },
   ].filter((section) => section.isVisible && section.href);
 }

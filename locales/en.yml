@@ -141,6 +141,7 @@ en:
       conversations: "Conversations"
       reactions: "Reactions"
       system: "System"
+      empty: "No notifications in this category."
   me_activity_nav:
     nav_aria: "Activity sections"
     all: "All Activity"
@@ -191,7 +192,7 @@ en:
     me_hub_aria_logged_out: "Account"
     me_hub_primary_nav_aria: "Profile navigation"
     me_hub_footer_aria: "Site and session"
-    me_hub_summary: "Summary"
+    me_hub_summary: "Profile"
     me_hub_invites: "Invites"
     me_hub_badges: "Badges"
     me_hub_admin: "Manage user"
@@ -205,8 +206,11 @@ en:
     me_hub_about: "About"
     me_hub_messages: "Messages"
     me_hub_sign_out: "Sign out"
-    me_hub_sign_in_cta: "Sign in to personalize Fomio."
+    me_hub_sign_in_cta: "Your profile, activity, and messages live here."
     me_hub_sign_in: "Sign in"
+    me_hub_sign_up: "New to Fomio? Create an account"
+    me_hub_notifications_meta: "Replies, mentions, and likes"
+    me_hub_summary_back_bar_aria: "Back to profile"
   user_profile:
     summary_link_aria: "Open profile summary for %{name}"
   me_stack:

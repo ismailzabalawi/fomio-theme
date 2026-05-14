@@ -36,10 +36,12 @@ export default class FomioMeStackHeader extends Component {
         <span class="fomio-me-stack-header__back-label">{{this.backLabel}}</span>
       </a>
       {{#if @sectionTitle}}
-        <span class="fomio-me-stack-header__title" aria-hidden="true">
+        <span class="fomio-me-stack-header__title">
           {{@sectionTitle}}
         </span>
       {{/if}}
+      {{! Grid column 3 spacer — mirrors the back button width so title stays centred }}
+      <span aria-hidden="true"></span>
     </div>
   </template>
 }

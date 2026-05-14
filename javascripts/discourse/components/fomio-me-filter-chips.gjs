@@ -10,9 +10,19 @@ import { on } from "@ember/modifier";
 /**
  * In-screen filter chips: toggles `document.body` data-attribute only (no URL change).
  * Clears the attribute in `willDestroy` when the host connector unmounts (e.g. leaving the screen).
+ *
+ * Empty state: when a non-"all" filter is active and no visible list items remain,
+ * a status message is shown. Detected via MutationObserver on the list container.
+ *
+ * Known limitation: Discourse's "Load more" pagination fetches new rows without
+ * applying the CSS filter — this is an architectural constraint of CSS-only filtering.
  */
 export default class FomioMeFilterChips extends Component {
   @tracked activeId;
+  @tracked visibleCount = null;
+
+  #listObserver = null;
+  #listEl = null;
 
   constructor() {
     super(...arguments);
@@ -22,6 +32,7 @@ export default class FomioMeFilterChips extends Component {
 
   willDestroy() {
     super.willDestroy();
+    this.#teardownObserver();
     document.body.removeAttribute(this.args.dataAttributeName);
   }
 
@@ -34,8 +45,67 @@ export default class FomioMeFilterChips extends Component {
     }
   }
 
+  #findListEl() {
+    return (
+      document.querySelector(
+        `#user-content .user-notifications-list, #user-content .user-stream`
+      ) ?? null
+    );
+  }
+
+  #countVisible(listEl) {
+    if (!listEl) {
+      return null;
+    }
+    let count = 0;
+    for (const child of listEl.children) {
+      const style = window.getComputedStyle(child);
+      if (style.display !== "none" && style.visibility !== "hidden") {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  #setupObserver() {
+    this.#teardownObserver();
+    this.#listEl = this.#findListEl();
+    if (!this.#listEl) {
+      return;
+    }
+    this.visibleCount = this.#countVisible(this.#listEl);
+    this.#listObserver = new MutationObserver(() => {
+      this.visibleCount = this.#countVisible(this.#listEl);
+    });
+    this.#listObserver.observe(this.#listEl, {
+      childList: true,
+      subtree: false,
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
+  }
+
+  #teardownObserver() {
+    this.#listObserver?.disconnect();
+    this.#listObserver = null;
+    this.#listEl = null;
+    this.visibleCount = null;
+  }
+
+  get showEmptyState() {
+    return (
+      this.activeId !== "all" &&
+      this.visibleCount !== null &&
+      this.visibleCount === 0
+    );
+  }
+
   get groupAriaLabel() {
     return i18n(themePrefix(this.args.groupLabelKey));
+  }
+
+  get emptyStateLabel() {
+    return i18n(themePrefix("me_filter_chips.notifications.empty"));
   }
 
   chipLabel = (labelKey) => {
@@ -46,6 +116,11 @@ export default class FomioMeFilterChips extends Component {
   selectFilter(id) {
     this.activeId = id;
     this.#syncBody();
+    if (id === "all") {
+      this.#teardownObserver();
+    } else {
+      this.#setupObserver();
+    }
   }
 
   chipClass = (id) => {
@@ -66,5 +141,10 @@ export default class FomioMeFilterChips extends Component {
         </button>
       {{/each}}
     </div>
+    {{#if this.showEmptyState}}
+      <p class="fomio-me-filter-chips__empty" role="status">
+        {{this.emptyStateLabel}}
+      </p>
+    {{/if}}
   </template>
 }
