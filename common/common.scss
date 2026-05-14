@@ -13944,7 +13944,7 @@ body.user-notifications-page[data-fomio-me-notifications-filter="system"]
     transform-origin: bottom left;
   }
 
-  &--align-top&--align-end &__panel {
+  &--align-top.fomio-dropdown--align-end .fomio-dropdown__panel {
     transform-origin: bottom right;
   }
 
