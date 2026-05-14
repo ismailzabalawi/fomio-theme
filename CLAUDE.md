@@ -167,11 +167,26 @@ apps/web/
 ├── locales/en.yml                    # themePrefix() strings
 ├── common/
 │   ├── common.scss                   # --fomio-* tokens + all shared styles
-│   ├── body_tag.html                 # Trust line injection into /user-api-key/new
+│   ├── embedded.scss                 # Styles for Discourse embed widget (currently empty)
 │   ├── head_tag.html                 # Google Fonts preconnect + stylesheet link
-│   └── after_header.html
-├── desktop/desktop.scss
-├── mobile/mobile.scss
+│   ├── body_tag.html                 # Trust line injection into /user-api-key/new
+│   ├── header.html                   # Shared header injection (all surfaces)
+│   ├── after_header.html             # Shared after-header injection (all surfaces)
+│   └── footer.html                   # Shared footer injection (all surfaces)
+├── desktop/
+│   ├── desktop.scss                  # Desktop-only styles (768px+)
+│   ├── head_tag.html                 # Desktop-only <head> injections
+│   ├── body_tag.html                 # Desktop-only <body> injections
+│   ├── header.html                   # Desktop-only header markup
+│   ├── after_header.html             # Desktop-only after-header markup
+│   └── footer.html                   # Desktop-only footer markup
+├── mobile/
+│   ├── mobile.scss                   # Mobile-only styles (0–767px)
+│   ├── head_tag.html                 # Mobile-only <head> injections
+│   ├── body_tag.html                 # Mobile-only <body> injections
+│   ├── header.html                   # Mobile-only header markup
+│   ├── after_header.html             # Mobile-only after-header markup
+│   └── footer.html                   # Mobile-only footer markup
 ├── docs/
 │   ├── auth-ui-stitch-guide.md       # Design prompts for all 17 auth screens
 │   ├── manuscript-design-system.md  # Design system strategy reference
