@@ -1405,3 +1405,77 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet
   left: auto;
   min-width: 160px;
 }
+
+
+// ============================================================
+// PHASE 2 COMPONENT OVERRIDES — touch / mobile web
+// Applied by Discourse automatically on narrow viewports
+// (< 768px). Enforces 44px touch targets, iOS zoom fix, and
+// stacked form layout.
+// ============================================================
+
+// ── Touch targets — 44px minimum ─────────────────────────────
+.fomio-btn {
+  min-height: 44px;
+}
+
+.fomio-list__item {
+  min-height: 48px;
+}
+
+.fomio-switch {
+  min-height: 44px;
+}
+
+// ── iOS auto-zoom prevention (font-size must be >= 16px) ─────
+// Prevents the viewport from zooming in when an input is focused.
+.fomio-input__field,
+.fomio-textarea__field {
+  font-size: 16px;
+}
+
+// ── Form rows — always stacked on touch ──────────────────────
+.fomio-form__row {
+  flex-direction: column;
+}
+
+// ── Chips — taller touch target ──────────────────────────────
+.fomio-chip {
+  height: 36px;
+  padding: 0 var(--fomio-space-md);
+}
+
+// ── Tabs — full-width triggers ───────────────────────────────
+.fomio-tabs__trigger {
+  flex: 1;
+  justify-content: center;
+}
+
+// ── Dropdowns — full-width panel on narrow viewports ─────────
+.fomio-dropdown__panel {
+  min-width: unset;
+  width: max-content;
+  max-width: calc(100vw - var(--fomio-space-xl));
+}
+
+// ── Cards — remove hover lift on touch (no hover state) ──────
+.fomio-card--interactive:hover {
+  transform: none;
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--fomio-shadow) 50%, transparent);
+}
+
+// ── Inputs / Textareas — full width ──────────────────────────
+.fomio-input,
+.fomio-textarea {
+  width: 100%;
+}
+
+// ── Form actions — stack vertically on narrow screens ────────
+.fomio-form__actions {
+  flex-direction: column;
+
+  .fomio-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

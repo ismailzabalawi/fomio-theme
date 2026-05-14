@@ -1228,3 +1228,47 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-messages-page:not(.
     margin-top: 0.42rem;
   }
 }
+
+
+// ============================================================
+// PHASE 2 COMPONENT OVERRIDES — desktop / tablet
+// Scoped to Fomio surface-mode body classes (not raw viewport
+// queries) to match the Sidebar OS spatial context model.
+// ============================================================
+
+// ── Cards — subtler lift on compact and rail layouts ─────────
+body.fomio-surface-compact-desktop,
+body.fomio-surface-rail {
+  .fomio-card--interactive:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// ── Form rows — stack on rail (768–1023px) ───────────────────
+body.fomio-surface-rail,
+body.fomio-surface-touch {
+  .fomio-form__row {
+    flex-direction: column;
+  }
+}
+
+// ── Tabs — equal-width triggers on rail ──────────────────────
+body.fomio-surface-rail .fomio-tabs__trigger {
+  flex: 1;
+  justify-content: center;
+}
+
+// ── Chips — tighter padding on compact ───────────────────────
+body.fomio-surface-compact-desktop .fomio-chip {
+  padding: 0 var(--fomio-space-sm);
+}
+
+// ── Input / Textarea — full width inside narrow columns ──────
+body.fomio-surface-rail,
+body.fomio-surface-compact-desktop {
+  .fomio-input,
+  .fomio-textarea {
+    width: 100%;
+  }
+}
+}
