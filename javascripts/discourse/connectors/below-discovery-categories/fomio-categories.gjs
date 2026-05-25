@@ -1,13 +1,13 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { on } from "@ember/modifier";
-import { fn } from "@ember/helper";
 import { service } from "@ember/service";
 import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioSearchInput from "../../components/shared/fomio-search-input";
+import FomioSegmentedControl from "../../components/shared/fomio-segmented-control";
 
 function fmtK(n) {
   if (!n) return "0";
@@ -66,6 +66,22 @@ export default class FomioCategories extends Component {
   get viewGridLabel()     { return i18n(themePrefix("hubs_index.view_grid")); }
   get viewListLabel()     { return i18n(themePrefix("hubs_index.view_list")); }
   get bytesLabel()        { return i18n(themePrefix("hubs_index.bytes_label")); }
+  get viewOptions() {
+    return [
+      {
+        id: "grid",
+        icon: "table-cells",
+        ariaLabel: this.viewGridLabel,
+        isActive: this.view === "grid",
+      },
+      {
+        id: "list",
+        icon: "list",
+        ariaLabel: this.viewListLabel,
+        isActive: this.view === "list",
+      },
+    ];
+  }
 
   get isMasterPaneActive() {
     if (typeof document === "undefined") {
@@ -97,22 +113,13 @@ export default class FomioCategories extends Component {
           <p class="fomio-hubs__stat">{{this.statLine}}</p>
         </div>
         {{#unless this.isMasterPaneActive}}
-          <div class="fomio-hubs__view-toggle">
-            <button
-              type="button"
-              class="fomio-hubs__view-btn {{if (eq this.view 'grid') 'is-active'}}"
-              aria-label={{this.viewGridLabel}}
-              aria-pressed={{if (eq this.view "grid") "true" "false"}}
-              {{on "click" (fn this.setView "grid")}}
-            >{{icon "table-cells"}}</button>
-            <button
-              type="button"
-              class="fomio-hubs__view-btn {{if (eq this.view 'list') 'is-active'}}"
-              aria-label={{this.viewListLabel}}
-              aria-pressed={{if (eq this.view "list") "true" "false"}}
-              {{on "click" (fn this.setView "list")}}
-            >{{icon "list"}}</button>
-          </div>
+          <FomioSegmentedControl
+            @wrapperClass="fomio-hubs__view-toggle"
+            @buttonClass="fomio-hubs__view-btn"
+            @ariaLabel={{this.viewGridLabel}}
+            @options={{this.viewOptions}}
+            @onSelect={{this.setView}}
+          />
         {{/unless}}
       </div>
 
@@ -123,14 +130,14 @@ export default class FomioCategories extends Component {
         </section>
       {{else}}
         {{! ── Search ──────────────────────────────────────────── }}
-        <div class="fomio-hubs__search" {{on "input" this.updateSearch}}>
-          <span class="fomio-hubs__search-icon">{{icon "magnifying-glass"}}</span>
-          <input
-            type="search"
-            class="fomio-hubs__search-input"
-            placeholder={{this.searchPlaceholder}}
-          />
-        </div>
+        <FomioSearchInput
+          @wrapperClass="fomio-hubs__search"
+          @inputClass="fomio-hubs__search-input"
+          @placeholder={{this.searchPlaceholder}}
+          @value={{this.searchQuery}}
+          @ariaLabel={{this.searchPlaceholder}}
+          @onInput={{this.updateSearch}}
+        />
 
         {{! ── Grid ────────────────────────────────────────────── }}
         {{#if (eq this.view "grid")}}

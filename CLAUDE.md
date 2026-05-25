@@ -431,6 +431,10 @@ Dark palette is defined in `about.json` (`Fomio Dark` scheme) and Section **1B**
 | 768–899px | `desktop/desktop.scss` (tablet override) |
 | 900px+ | `desktop/desktop.scss` (full desktop) |
 
+Important: Discourse's stylesheet split is viewport-based, but Fomio's shell ownership is surface-based. Any behavior that must survive phone landscape, foldables, or coarse-touch devices wider than `767px` belongs in `common/common.scss` under `body.fomio-surface-touch`, not only in `mobile/mobile.scss`. Use `mobile/mobile.scss` for narrow-width refinements, not as the sole source of truth for the touch shell.
+
+Safe area follows the same rule. Define touch-safe insets and derived page gutters in the touch shell (`body.fomio-surface-touch`) and have homepage/feed/components consume those variables. Do not scatter raw `env(safe-area-inset-*)` math across individual mobile pages unless the case is truly component-specific.
+
 ## Studio Protocols
 
 All four protocols apply before any connector or component ships:

@@ -106,6 +106,20 @@
   --fomio-rule:      var(--fomio-border);         // was: #e0e0e0
   --fomio-ink-muted: var(--fomio-muted);          // was: rgba(26,26,26,0.5)
   --fomio-ink-ghost: var(--fomio-border-soft);    // was: rgba(26,26,26,0.06)
+
+  // ── Design-file canonical aliases (Fomio Buttons & Inputs handoff) ───────
+  // The design system HTML files use these shorthand names; map them to the
+  // canonical tokens already defined in Section 1 so both names resolve correctly.
+  --fomio-fg:          var(--fomio-text);
+  --fomio-fg-muted:    var(--fomio-muted);
+  --fomio-fg-secondary: var(--fomio-secondary);
+  --fomio-sans:        var(--fomio-font-ui);
+  --fomio-serif:       var(--fomio-font-serif);
+  --fomio-mono:        var(--fomio-font-mono);
+  --fomio-btn-sm:      var(--fomio-button-height-sm);   // 32px
+  --fomio-btn-md:      var(--fomio-button-height);      // 40px
+  --fomio-btn-lg:      var(--fomio-button-height-lg);   // 48px
+  --fomio-input-h:     var(--fomio-input-height);       // 40px
 }
 
 
@@ -565,8 +579,33 @@ h6 {
   height: 1.5rem;
 }
 
+.fomio-topic-context__author .fomio-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+}
+
+.fomio-topic-context__author .fomio-identity {
+  gap: 0.5rem;
+}
+
+.fomio-topic-context__author .fomio-identity__meta {
+  gap: 0;
+}
+
 .fomio-topic-context__author-name {
   letter-spacing: var(--fomio-tracking-wide);
+}
+
+.fomio-topic-context__author .fomio-identity__name {
+  letter-spacing: var(--fomio-tracking-wide);
+  font-size: inherit;
+  color: inherit;
+}
+
+.fomio-topic-context__author .fomio-identity__handle,
+.fomio-topic-context__author .fomio-identity__role {
+  display: none;
 }
 
 .fomio-topic-context__date {
@@ -776,6 +815,32 @@ body.has-sidebar-page.archetype-regular {
 .fomio-topic-reading-meta__author .avatar {
   width: 1.75rem;
   height: 1.75rem;
+}
+
+.fomio-topic-reading-meta__author .fomio-avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 0.8125rem;
+}
+
+.fomio-topic-reading-meta__author .fomio-identity {
+  gap: 0.5rem;
+}
+
+.fomio-topic-reading-meta__author .fomio-identity__meta {
+  gap: 0;
+}
+
+.fomio-topic-reading-meta__author .fomio-identity__name {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.fomio-topic-reading-meta__author .fomio-identity__handle,
+.fomio-topic-reading-meta__author .fomio-identity__role {
+  display: none;
 }
 
 .fomio-topic-reading-meta__date {
@@ -5553,6 +5618,13 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
     }
   }
 
+  button.fomio-me-hub__summary-link {
+    appearance: none;
+    border: none;
+    background: transparent;
+    text-align: left;
+  }
+
   .fomio-me-hub__summary-link--static {
     cursor: default;
 
@@ -6204,19 +6276,304 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 }
 
+// Tablet rail should keep the desktop summary/detail surface instead of
+// collapsing into the narrow mobile-like summary stack.
+body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 // Authoritative touch surface behavior (works for phones, foldables, and
 // landscape touch contexts even when viewport width is desktop-like).
 body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
+  --fomio-safe-top: env(safe-area-inset-top, 0px);
+  --fomio-safe-right: env(safe-area-inset-right, 0px);
+  --fomio-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --fomio-safe-left: env(safe-area-inset-left, 0px);
+  --fomio-page-pad-x: 12px;
+  --fomio-page-pad-top: max(12px, var(--fomio-safe-top));
+  --fomio-page-pad-bottom: max(16px, var(--fomio-safe-bottom));
+  --fomio-page-pad-inline-start: max(var(--fomio-page-pad-x), var(--fomio-safe-left));
+  --fomio-page-pad-inline-end: max(var(--fomio-page-pad-x), var(--fomio-safe-right));
+  --fomio-bottom-bar-height: 56px;
+  --fomio-bottom-bar-safe-height: calc(
+    var(--fomio-bottom-bar-height) + var(--fomio-safe-bottom)
+  );
+
   .fomio-sidebar {
     display: none !important;
   }
 
   .fomio-bottom-bar {
     display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    align-items: stretch;
+    background: var(--fomio-bg);
+    border-top: 1px solid var(--fomio-border-soft);
+    height: var(--fomio-bottom-bar-safe-height);
+    padding-bottom: var(--fomio-safe-bottom);
+    will-change: transform;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform var(--fomio-dur-slow) var(--fomio-ease);
+    }
+  }
+
+  .fomio-bottom-bar--hidden {
+    transform: translateY(100%);
+  }
+
+  .fomio-bottom-bar__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 9px 4px 8px;
+    min-height: 56px;
+    color: var(--fomio-muted);
+    text-decoration: none;
+    font-family: var(--fomio-font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      fill: currentColor;
+    }
+
+    &.is-active {
+      color: var(--fomio-primary);
+    }
+  }
+
+  .fomio-bottom-bar__label {
+    line-height: 1.15;
+  }
+
+  .d-header-icons .hamburger-dropdown,
+  .d-header .header-sidebar-toggle,
+  .d-header .btn-sidebar-toggle,
+  .d-header #current-user,
+  .d-header .header-buttons,
+  .d-header-icons .header-color-scheme-toggle,
+  .d-header-icons .language-switcher {
+    display: none !important;
+  }
+
+  .d-header {
+    position: relative;
+    background: var(--fomio-bg);
+    border-bottom: 1px solid var(--fomio-border-soft);
+    box-shadow: none;
+  }
+
+  .d-header > .wrap {
+    max-width: 100%;
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: var(--fomio-page-pad-inline-start) var(--fomio-page-pad-inline-end);
+  }
+
+  .d-header > .wrap .contents {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .d-header .home-logo-wrapper-outlet,
+  .d-header .title,
+  .d-header .title a,
+  .d-header .extra-info-wrapper,
+  .d-header .header-title,
+  .d-header .header-title .topic-link {
+    min-width: 0;
+  }
+
+  .d-header .home-logo-wrapper-outlet,
+  .d-header .extra-info-wrapper {
+    flex: 1 1 auto;
+  }
+
+  .d-header .home-logo-wrapper-outlet {
+    flex: 0 0 auto;
+  }
+
+  .d-header .panel {
+    margin-left: auto;
+    min-width: 0;
+  }
+
+  .d-header .home-logo-wrapper-outlet {
+    overflow: hidden;
+  }
+
+  .d-header .title {
+    width: 100%;
+  }
+
+  .d-header .title a {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .d-header .title picture {
+    display: block;
+    max-width: 100%;
+  }
+
+  .d-header #site-logo.logo-mobile {
+    display: block;
+    width: auto;
+    height: 28px;
+    max-width: min(150px, 42vw);
+    object-fit: contain;
+  }
+
+  .d-header #site-text-logo {
+    display: block;
+    max-width: min(150px, 42vw);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.08rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+    line-height: 1;
+  }
+
+  .d-header .title--minimized {
+    display: block;
+    width: auto;
+  }
+
+  .d-header .title--minimized a {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .d-header #site-logo.logo-small {
+    display: block;
+    width: auto;
+    height: 28px;
+    max-width: 36px;
+    object-fit: contain;
+  }
+
+  .d-header .extra-info-wrapper {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .d-header .extra-info-wrapper.two-rows {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .d-header .extra-info {
+    padding: 0;
+  }
+
+  .d-header .extra-info.two-rows {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .d-header .title-wrapper {
+    min-width: 0;
+  }
+
+  .d-header .header-title {
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-base);
+    font-weight: 600;
+    line-height: var(--fomio-leading-snug);
+    color: var(--fomio-text);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .d-header .header-title .topic-link {
+    color: var(--fomio-text);
+    text-decoration: none;
+    display: block;
+    min-width: 0;
+
+    span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .d-header .categories-wrapper,
+  .d-header .topic-header-extra,
+  .d-header .topic-header-participants {
+    display: none;
+  }
+
+  .d-header .search-dropdown .btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 44%);
+    color: var(--fomio-muted);
+  }
+
+  .d-header .panel,
+  .d-header .d-header-icons,
+  .d-header .d-header-icons > li {
+    display: flex;
+    align-items: center;
+  }
+
+  .d-header .d-header-icons {
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .d-header .d-header-icons > li {
+    margin: 0;
+  }
+
+  .d-header .search-dropdown,
+  .d-header .search-dropdown .btn {
+    flex-shrink: 0;
+  }
+
+  .d-header .search-dropdown:hover .btn,
+  .d-header .search-dropdown.active .btn {
+    border-color: color-mix(in oklab, var(--fomio-border) 80%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 97%, #fff);
+    color: var(--fomio-text);
   }
 
   #main-outlet-wrapper {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--fomio-bottom-bar-safe-height);
   }
 
   // User profile (touch): full-width column; horizontal inset = safe area + minimum gutter only.
@@ -6224,15 +6581,87 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     max-width: 100%;
     width: 100%;
     margin-inline: 0;
-    padding-inline: max(12px, env(safe-area-inset-left, 0px))
-      max(12px, env(safe-area-inset-right, 0px));
+    padding-inline: var(--fomio-page-pad-inline-start)
+      var(--fomio-page-pad-inline-end);
     box-sizing: border-box;
+  }
+
+  .navigation-topics #list-area,
+  .navigation-categories #list-area,
+  .navigation-category #list-area {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-inline: var(--fomio-page-pad-inline-start)
+      var(--fomio-page-pad-inline-end);
+  }
+
+  // Discourse mobile feed layout assumes a left avatar rail and a narrower
+  // inline-block main-link. Our touch-shell byte cards hide that chrome, so
+  // those inherited offsets create an asymmetric gutter on the feed.
+  .navigation-topics .topic-list-item.--fomio-discovery-item .topic-item-metadata.right,
+  .navigation-topics .topic-list-item.--fomio-fresh-byte-item .topic-item-metadata.right,
+  .navigation-categories .topic-list-item.--fomio-discovery-item .topic-item-metadata.right,
+  .navigation-categories .topic-list-item.--fomio-fresh-byte-item .topic-item-metadata.right,
+  .navigation-category .topic-list-item.--fomio-discovery-item .topic-item-metadata.right,
+  .navigation-category .topic-list-item.--fomio-fresh-byte-item .topic-item-metadata.right {
+    margin-left: 0;
+    width: 100%;
+    max-width: none;
+    float: none;
+  }
+
+  .navigation-topics .topic-list-item.--fomio-discovery-item td .main-link,
+  .navigation-topics .topic-list-item.--fomio-fresh-byte-item td .main-link,
+  .navigation-categories .topic-list-item.--fomio-discovery-item td .main-link,
+  .navigation-categories .topic-list-item.--fomio-fresh-byte-item td .main-link,
+  .navigation-category .topic-list-item.--fomio-discovery-item td .main-link,
+  .navigation-category .topic-list-item.--fomio-fresh-byte-item td .main-link {
+    width: 100%;
+    display: block;
+  }
+
+  .navigation-topics .topic-list-item.--fomio-discovery-item td.topic-list-data,
+  .navigation-topics .topic-list-item.--fomio-fresh-byte-item td.topic-list-data,
+  .navigation-categories .topic-list-item.--fomio-discovery-item td.topic-list-data,
+  .navigation-categories .topic-list-item.--fomio-fresh-byte-item td.topic-list-data,
+  .navigation-category .topic-list-item.--fomio-discovery-item td.topic-list-data,
+  .navigation-category .topic-list-item.--fomio-fresh-byte-item td.topic-list-data {
+    max-width: none;
   }
 
   #main-outlet .user-main {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+  }
+
+  // Topic reading shell: keep the prose rail, but make the title block and
+  // post bodies consume the same touch safe-area gutters as the rest of the app.
+  #topic-title.container {
+    width: 100%;
+    max-width: calc(
+      var(--fomio-column-w) + var(--fomio-page-pad-inline-start) +
+        var(--fomio-page-pad-inline-end)
+    );
+    padding-inline: var(--fomio-page-pad-inline-start)
+      var(--fomio-page-pad-inline-end);
+    box-sizing: border-box;
+  }
+
+  .regular .topic-body {
+    width: 100%;
+    max-width: calc(
+      var(--fomio-column-w) + var(--fomio-page-pad-inline-start) +
+        var(--fomio-page-pad-inline-end)
+    );
+    margin-inline: auto;
+    padding-inline: var(--fomio-page-pad-inline-start)
+      var(--fomio-page-pad-inline-end);
+    box-sizing: border-box;
+  }
+
+  .topic-post .topic-body {
+    min-width: 0;
   }
 
   // User profile: compact summary stacks above primary tab nav on touch (paint + layout).
@@ -6399,6 +6828,13 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     &:active {
       background: var(--fomio-card);
     }
+  }
+
+  button.fomio-me-hub__summary-link {
+    appearance: none;
+    border: none;
+    background: transparent;
+    text-align: left;
   }
 
   .fomio-me-hub__summary-link--static {
@@ -6839,7 +7275,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     max-width: 100%;
     box-sizing: border-box;
     min-width: 0;
-    padding: 8px 12px 10px;
+    padding:
+      8px
+      var(--fomio-page-pad-inline-end)
+      10px
+      var(--fomio-page-pad-inline-start);
   }
 
   .fomio-context-pills__item {
@@ -6889,7 +7329,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     bottom: 0;
     z-index: 950;
     max-height: min(72vh, 520px);
-    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    padding: 16px 16px calc(16px + var(--fomio-safe-bottom, 0px));
     background: var(--fomio-bg);
     border-top: 1px solid var(--fomio-border);
     border-radius: 20px 20px 0 0;
@@ -9085,8 +9525,20 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
       margin-bottom: 6px;
     }
 
-    #main-outlet .container:has(> .user-main) {
+    // Keep the native profile/about summary bar visible on touch so Me matches
+    // the canonical /u/:user/summary identity surface. Only suppress the deeper
+    // Discourse summary content below it; the Fomio Me hub owns that layer.
+    .fomio-me-hub .fomio-me-hub__summary {
+      display: none;
+    }
+
+    #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
+    #main-outlet .user-main .new-user-wrapper {
       display: none !important;
+    }
+
+    #main-outlet .user-main > section.about {
+      display: block !important;
     }
   }
 
@@ -9944,7 +10396,11 @@ body.fomio-sidebar-active.categories-list {
 
 @media (max-width: 767px) {
   .fomio-hubs {
-    padding: 24px 14px calc(82px + env(safe-area-inset-bottom, 0px));
+    padding:
+      24px
+      var(--fomio-page-pad-inline-end, 14px)
+      calc(82px + var(--fomio-safe-bottom, 0px))
+      var(--fomio-page-pad-inline-start, 14px);
   }
 
   .fomio-hubs__header {
@@ -11323,8 +11779,8 @@ html.fomio-color-dark .fomio-topic-context__thumb {
 
 // ============================================================
 // FOMIO BOTTOM BAR
-// Fixed mobile navigation dock — 0–767px only.
-// Shown via mobile.scss when body.fomio-sidebar-active.
+// Fixed mobile navigation dock. Base geometry lives here; touch-only
+// visibility and interaction states live in the authoritative touch block.
 // ============================================================
 
 .fomio-bottom-bar {
@@ -11332,8 +11788,11 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   position: fixed;
   inset-inline: 0;
   bottom: 0;
-  height: calc(56px + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: var(
+    --fomio-bottom-bar-safe-height,
+    calc(56px + env(safe-area-inset-bottom, 0px))
+  );
+  padding-bottom: var(--fomio-safe-bottom, env(safe-area-inset-bottom, 0px));
   background: var(--fomio-bg);
   border-top: 1px solid var(--fomio-border);
   z-index: 900;
@@ -11347,14 +11806,14 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   padding: var(--fomio-space-xs) var(--fomio-space-sm);
   text-decoration: none;
   color: var(--fomio-muted);
   font-family: var(--fomio-font-ui);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: var(--fomio-tracking-wide);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
   border: none;
   background: transparent;
@@ -11392,7 +11851,8 @@ html.fomio-color-dark .fomio-topic-context__thumb {
 }
 
 .fomio-bottom-bar__label {
-  line-height: 1;
+  line-height: 1.15;
+  text-wrap: nowrap;
 }
 
 // Create — visually emphasized center item
@@ -11400,13 +11860,13 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   .fomio-bottom-bar__icon {
     background: var(--fomio-primary);
     color: var(--fomio-on-primary);
-    border-radius: var(--fomio-radius-sm);
-    width: 2rem;
-    height: 2rem;
+    border-radius: 12px;
+    width: 1.9rem;
+    height: 1.9rem;
 
     svg {
-      width: 1rem;
-      height: 1rem;
+      width: 0.95rem;
+      height: 0.95rem;
     }
   }
 
@@ -11864,11 +12324,6 @@ html.fomio-color-dark .fomio-bottom-bar {
 // Hide Discourse's post header chrome for comment posts
 .topic-post:not([data-post-number="1"]) {
   .post-avatar,
-  .topic-avatar,
-  .names,
-  .post-info,
-  .post-date,
-  .user-title,
   .post-action-types,
   .embedded-posts,
   .post__topic-map,
@@ -11916,12 +12371,105 @@ html.fomio-color-dark .fomio-bottom-bar {
     margin: 0;
   }
 
-  // Inline poster meta injected above .cooked via Discourse's .names etc.
-  // Since we hide .names, we rely on CSS to show the avatar + username
-  // from the post's data-user-id if available. Most readable approach:
-  // let the FomioCommentActions connector sit beneath .cooked.
-  .topic-meta-data {
+  article.fomio-comment .row {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 8px;
+  }
+
+  article.fomio-comment .topic-avatar {
+    display: flex;
+    width: 22px;
+    min-width: 22px;
+    margin: 0;
+    padding-top: 2px;
+
+    .avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+    }
+  }
+
+  article.fomio-comment .topic-meta-data {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    color: var(--fomio-muted);
+  }
+
+  article.fomio-comment .topic-meta-data .names {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  article.fomio-comment .topic-meta-data .names .second,
+  article.fomio-comment .topic-meta-data .user-status-message-wrap,
+  article.fomio-comment .topic-meta-data .trigger-user-card > .poster-icon {
     display: none;
+  }
+
+  article.fomio-comment .topic-meta-data .names .first,
+  article.fomio-comment .topic-meta-data .names .first a {
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--fomio-text);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  article.fomio-comment .topic-meta-data .user-title,
+  article.fomio-comment .topic-meta-data .user-badge-buttons {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+  }
+
+  article.fomio-comment .topic-meta-data .user-title {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--fomio-primary) 12%, transparent);
+  }
+
+  article.fomio-comment .topic-meta-data .post-infos,
+  article.fomio-comment .topic-meta-data .post-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    font-style: italic;
+    color: var(--fomio-muted);
+  }
+
+  article.fomio-comment .topic-meta-data .post-info {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  article.fomio-comment .topic-meta-data .post-info.edits,
+  article.fomio-comment .topic-meta-data .post-info.read-state,
+  article.fomio-comment .topic-meta-data .post-info.reply-to-tab {
+    display: none;
+  }
+
+  article.fomio-comment .cooked {
+    padding-left: 0;
+    margin-bottom: 10px;
+    font-family: var(--fomio-font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--fomio-text);
   }
 }
 
@@ -11938,6 +12486,7 @@ html.fomio-color-dark .fomio-bottom-bar {
 // so they appear after .cooked. Ensure alignment matches prose width.
 .topic-post:not([data-post-number="1"]) .fomio-comment-actions {
   margin-top: 0.625rem;
+  margin-left: 30px;
   padding-bottom: 1.25rem;
 }
 
@@ -13346,7 +13895,10 @@ html.fomio-color-dark {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding:
+      12px
+      16px
+      calc(12px + var(--fomio-safe-bottom, 0px));
     background: color-mix(in oklab, var(--fomio-bg) 92%, transparent);
     backdrop-filter: blur(10px);
     border-top: 1px solid var(--fomio-border-soft);
@@ -15386,4 +15938,2035 @@ body.user-notifications-page[data-fomio-me-notifications-filter="system"]
     transition: none !important;
     animation: none !important;
   }
+}
+
+
+// ============================================================
+// CANONICAL DESIGN SYSTEM — Buttons & Inputs
+// Source: Fomio Buttons & Inputs.html (design handoff 2026-05)
+// These use the flat-modifier naming convention (.fomio-btn-primary)
+// that matches the design file exactly. The BEM variants above
+// (.fomio-btn--secondary) remain for legacy Discourse outlets.
+//
+// This block is the layer-1 source of truth for new and migrated theme UI.
+// Shared components in javascripts/discourse/components/shared should target
+// these primitives first; any feature-specific compatibility selectors belong
+// below this block, not in separate primitive files.
+// ============================================================
+
+
+// ── Button ────────────────────────────────────────────────────
+
+.fomio-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  font-family: var(--fomio-sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  height: var(--fomio-btn-md);
+  padding: 0 20px;
+  border-radius: var(--fomio-radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+  transition:
+    background var(--fomio-dur-med) var(--fomio-ease),
+    border-color var(--fomio-dur-med) var(--fomio-ease),
+    color var(--fomio-dur-med) var(--fomio-ease),
+    box-shadow var(--fomio-dur-med) var(--fomio-ease),
+    transform var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fomio-primary) 28%, transparent);
+  }
+
+  &:active:not(:disabled) { transform: scale(0.97); }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.fomio-btn-primary {
+  background: var(--fomio-primary);
+  color: #fff;
+  height: var(--fomio-btn-lg);
+  padding: 0 24px;
+  font-size: 15px;
+
+  &:hover:not(:disabled) { background: var(--fomio-primary-dark); }
+}
+
+.fomio-btn-secondary {
+  background: transparent;
+  color: var(--fomio-fg);
+  border: 1px solid var(--fomio-border);
+
+  &:hover:not(:disabled) {
+    border-color: var(--fomio-fg-muted);
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-btn-ghost {
+  background: transparent;
+  color: var(--fomio-primary);
+
+  &:hover:not(:disabled) { background: var(--fomio-primary-soft); }
+}
+
+.fomio-btn-danger {
+  background: var(--fomio-danger);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--fomio-danger) 82%, black);
+  }
+}
+
+// Size modifiers
+.fomio-btn--sm { height: var(--fomio-btn-sm); padding: 0 14px; font-size: 13px; }
+.fomio-btn--lg { height: var(--fomio-btn-lg); padding: 0 28px; font-size: 15px; }
+.fomio-btn--block { width: 100%; }
+
+// Icon-only
+.fomio-btn--icon {
+  width: var(--fomio-btn-md);
+  padding: 0;
+  border-radius: var(--fomio-radius-md);
+
+  &.fomio-btn--sm { width: var(--fomio-btn-sm); border-radius: var(--fomio-radius-sm); }
+
+  &.fomio-btn-primary,
+  &.fomio-btn--lg { width: var(--fomio-btn-lg); }
+
+  svg { width: 18px; height: 18px; }
+
+  &.fomio-btn--sm svg { width: 15px; height: 15px; }
+}
+
+// Loading spinner
+.fomio-btn.is-loading {
+  color: transparent !important;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: rgba(255, 255, 255, 0.9);
+    animation: fomio-btn-spin 550ms linear infinite;
+  }
+}
+
+.fomio-btn-secondary.is-loading::after,
+.fomio-btn-ghost.is-loading::after {
+  border-color: var(--fomio-border);
+  border-top-color: var(--fomio-primary);
+}
+
+@keyframes fomio-btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+
+// ── Input / Field ─────────────────────────────────────────────
+
+.fomio-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fomio-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fomio-fg-muted);
+
+  .req { color: var(--fomio-danger); margin-left: 3px; }
+}
+
+.fomio-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fomio-input:not(.fomio-input__field):not(.fomio-input__wrap *) {
+  width: 100%;
+  height: var(--fomio-input-h);
+  border-radius: var(--fomio-radius-md);
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-bg);
+  padding: 0 14px;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fomio-fg);
+  transition:
+    border-color 160ms var(--fomio-ease),
+    box-shadow 160ms var(--fomio-ease),
+    background 160ms var(--fomio-ease);
+  -webkit-appearance: none;
+  appearance: none;
+
+  &::placeholder { color: var(--fomio-fg-muted); opacity: 0.6; }
+
+  &:hover:not(:disabled):not(:focus) {
+    border-color: color-mix(in oklab, var(--fomio-fg) 22%, var(--fomio-border));
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+      inset 0 0 0 1px var(--fomio-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--fomio-surface);
+  }
+
+  &.is-error {
+    border-color: var(--fomio-danger);
+
+    &:focus {
+      box-shadow:
+        0 0 0 3px color-mix(in oklab, var(--fomio-danger) 18%, transparent),
+        inset 0 0 0 1px var(--fomio-danger);
+    }
+  }
+
+  &.is-success { border-color: var(--fomio-success); }
+
+  &.has-prefix { padding-left: 40px; }
+  &.has-suffix { padding-right: 40px; }
+}
+
+// The :not() guard above prevents double-styling BEM-flavoured children.
+// Provide a second flat selector for GJS templates that use .fomio-input directly
+// on input/select/textarea elements inside .fomio-input-wrap.
+.fomio-input-wrap .fomio-input,
+.fomio-field .fomio-input {
+  width: 100%;
+  height: var(--fomio-input-h);
+  border-radius: var(--fomio-radius-md);
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-bg);
+  padding: 0 14px;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fomio-fg);
+  transition:
+    border-color 160ms var(--fomio-ease),
+    box-shadow 160ms var(--fomio-ease),
+    background 160ms var(--fomio-ease);
+  -webkit-appearance: none;
+  appearance: none;
+
+  &::placeholder { color: var(--fomio-fg-muted); opacity: 0.6; }
+
+  &:hover:not(:disabled):not(:focus) {
+    border-color: color-mix(in oklab, var(--fomio-fg) 22%, var(--fomio-border));
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+      inset 0 0 0 1px var(--fomio-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--fomio-surface);
+  }
+
+  &.is-error {
+    border-color: var(--fomio-danger);
+
+    &:focus {
+      box-shadow:
+        0 0 0 3px color-mix(in oklab, var(--fomio-danger) 18%, transparent),
+        inset 0 0 0 1px var(--fomio-danger);
+    }
+  }
+
+  &.is-success { border-color: var(--fomio-success); }
+
+  &.has-prefix { padding-left: 40px; }
+  &.has-suffix { padding-right: 40px; }
+}
+
+textarea.fomio-input {
+  height: auto;
+  min-height: 104px;
+  padding: 10px 14px;
+  resize: vertical;
+  line-height: 1.6;
+  font-family: var(--fomio-serif);
+  font-size: 15px;
+}
+
+select.fomio-input {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%236B6B72' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+// Input icon overlays (prefix / suffix affordances)
+.fomio-input-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--fomio-radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--fomio-fg-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease);
+
+  &.prefix { left: 5px; }
+  &.suffix { right: 5px; }
+
+  svg { width: 15px; height: 15px; }
+
+  &:hover { color: var(--fomio-primary); background: var(--fomio-surface); }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-primary) 30%, transparent);
+  }
+
+  &.static {
+    cursor: default;
+    pointer-events: none;
+
+    &:hover { color: var(--fomio-fg-muted); background: transparent; }
+  }
+}
+
+// Search pill variant
+.fomio-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .fomio-input {
+    border-radius: var(--fomio-radius-pill);
+    padding-left: 40px;
+    background: var(--fomio-surface);
+    border-color: transparent;
+
+    &:focus { background: var(--fomio-card); border-color: var(--fomio-primary); }
+  }
+}
+
+.fomio-search-icon {
+  position: absolute;
+  left: 13px;
+  color: var(--fomio-fg-muted);
+  pointer-events: none;
+  display: flex;
+  width: 16px;
+  height: 16px;
+}
+
+// Field hint / validation message
+.fomio-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fomio-fg-muted);
+  letter-spacing: 0.01em;
+
+  &.is-error   { color: var(--fomio-danger); }
+  &.is-success { color: var(--fomio-success); }
+}
+
+
+// ── Badge (design-file flat variants) ────────────────────────
+// The BEM badges (.fomio-badge--primary etc.) remain above; these
+// flat variants (.fomio-badge.teret) match the design file exactly.
+
+.fomio-badge {
+  &.teret   { background: var(--fomio-primary-soft); color: var(--fomio-primary-dark); border: none; }
+  &.default { background: var(--fomio-surface); color: var(--fomio-fg-secondary); border: 1px solid var(--fomio-border); }
+  &.success { background: color-mix(in oklab, var(--fomio-success) 14%, transparent); color: color-mix(in oklab, var(--fomio-success) 65%, black); border: none; }
+  &.warning { background: color-mix(in oklab, var(--fomio-warning) 15%, transparent); color: color-mix(in oklab, var(--fomio-warning) 55%, black); border: none; }
+  &.danger  { background: color-mix(in oklab, var(--fomio-danger)  12%, transparent); color: var(--fomio-danger); border: none; }
+}
+
+
+// ── Filter chip (design-file .active class) ──────────────────
+
+.fomio-chip {
+  &.active {
+    background: var(--fomio-primary);
+    border-color: var(--fomio-primary);
+    color: #fff;
+  }
+}
+
+
+// ── Segmented control ─────────────────────────────────────────
+
+.fomio-seg {
+  display: inline-flex;
+  background: var(--fomio-surface);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.fomio-seg-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-family: var(--fomio-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 7px 18px;
+  border-radius: var(--fomio-radius-pill);
+  color: var(--fomio-fg-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover { color: var(--fomio-fg); }
+
+  &.active {
+    background: var(--fomio-card);
+    color: var(--fomio-fg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+html.fomio-color-dark .fomio-seg-btn.active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+
+// ── Reduced-motion extension for new components ───────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .fomio-btn.is-loading::after,
+  .fomio-seg-btn,
+  .fomio-chip.active {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+
+// ── Layer-1 compatibility bridge ─────────────────────────────
+// Transitional selectors for existing production surfaces that now consume
+// shared layer-1 components while preserving their established shell styles.
+
+.fomio-hubs__view-toggle.fomio-seg {
+  gap: 3px;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.fomio-hubs__view-btn.fomio-seg-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: var(--fomio-muted);
+
+  .d-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &.active,
+  &.is-active {
+    background: var(--fomio-card);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.fomio-hubs__search.fomio-search-wrap {
+  height: 38px;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 11px;
+  padding: 0 14px;
+  margin-bottom: 20px;
+  gap: 10px;
+
+  &:focus-within {
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+  }
+
+  .fomio-search-icon {
+    position: static;
+    left: auto;
+    width: auto;
+    height: auto;
+    color: var(--fomio-muted);
+    flex-shrink: 0;
+
+    .d-icon {
+      width: 15px;
+      height: 15px;
+    }
+  }
+}
+
+.fomio-hubs__search-input.fomio-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  color: var(--fomio-text);
+
+  &::placeholder {
+    color: var(--fomio-muted);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.fomio-cm-btn.fomio-btn {
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--fomio-radius-pill);
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  text-transform: none;
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    box-shadow: none;
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    transform: none;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.fomio-cm-btn--tertiary.fomio-btn {
+  color: var(--fomio-secondary);
+  background: transparent;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-cm-btn--secondary.fomio-btn {
+  color: var(--fomio-text);
+  background: var(--fomio-card);
+  border-color: var(--fomio-border);
+
+  &:hover:not(:disabled) {
+    border-color: var(--fomio-muted);
+    background: var(--fomio-card);
+  }
+}
+
+.fomio-cm-btn--primary.fomio-btn {
+  height: 44px;
+  padding: 0 22px;
+  background: var(--fomio-primary);
+  color: #fff;
+  font-weight: 700;
+
+  &:hover:not(:disabled) {
+    background: var(--fomio-primary-dark);
+  }
+}
+
+.fomio-action.fomio-btn {
+  background: transparent;
+  border: 0;
+  padding: 6px;
+  margin: 0;
+  gap: 6px;
+  color: var(--fomio-secondary);
+  opacity: 0.62;
+  min-width: 28px;
+  min-height: 28px;
+  width: auto;
+  height: auto;
+  border-radius: var(--fomio-radius-sm);
+  font: inherit;
+  letter-spacing: 0.01em;
+  line-height: 1;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    opacity: 1;
+    color: var(--fomio-primary);
+    background: transparent;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fomio-primary) 28%, transparent);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    opacity: 1;
+  }
+
+  &.share.is-active {
+    color: var(--fomio-success);
+  }
+
+  &.more.is-open {
+    color: var(--fomio-text);
+  }
+
+  &.has-count {
+    padding-right: 8px;
+    opacity: 0.78;
+  }
+
+  &.sm {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 4px 6px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.sm svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+
+// ============================================================
+// FOMIO AVATAR + IDENTITY COMPONENTS
+// Interaction Layer 03 — canonical design system components.
+// Five sizes, five colour palettes, badge overlay, identity rows,
+// avatar groups. Ported from Fomio Interaction Layer.html.
+// ============================================================
+
+.fomio-avatar {
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+  background: var(--fomio-primary);
+  color: #fff;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+// ── Sizes ────────────────────────────────────────────────────
+.fomio-avatar--xs  { width: 20px; height: 20px; font-size: 9px; }
+.fomio-avatar--sm  { width: 28px; height: 28px; font-size: 11px; }
+.fomio-avatar--md  { width: 40px; height: 40px; font-size: 15px; }
+.fomio-avatar--lg  { width: 56px; height: 56px; font-size: 20px; }
+.fomio-avatar--xl  { width: 72px; height: 72px; font-size: 26px; }
+
+// ── Colour palettes ─────────────────────────────────────────
+.fomio-avatar--terra  { background: var(--fomio-primary); color: #fff; }
+.fomio-avatar--violet { background: #7C6A9A; color: #fff; }
+.fomio-avatar--sage   { background: #4A8C6A; color: #fff; }
+.fomio-avatar--slate  { background: #3A7A9A; color: #fff; }
+.fomio-avatar--warm   { background: #D6C9A8; color: #5C4A1E; }
+
+// ── Badge wrapper ────────────────────────────────────────────
+.fomio-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+
+  .av-badge {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: var(--fomio-primary);
+    color: #fff;
+    font-family: var(--fomio-font-ui);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--fomio-card);
+    padding: 0 3px;
+
+    &.online {
+      width: 10px;
+      height: 10px;
+      min-width: 0;
+      padding: 0;
+      background: var(--fomio-success);
+    }
+  }
+}
+
+// ── Avatar group ─────────────────────────────────────────────
+.fomio-avatar-group {
+  display: flex;
+  align-items: center;
+
+  .fomio-avatar {
+    border: 2px solid var(--fomio-card);
+    margin-left: -8px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+
+  .av-overflow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--fomio-surface);
+    border: 2px solid var(--fomio-card);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--fomio-muted);
+    margin-left: -8px;
+  }
+}
+
+// ── Identity row ─────────────────────────────────────────────
+.fomio-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &--lg {
+    gap: 14px;
+  }
+}
+
+.fomio-identity__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fomio-identity__name {
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--fomio-text);
+  line-height: 1.2;
+
+  .fomio-identity--lg & {
+    font-size: 17px;
+  }
+}
+
+.fomio-identity__handle {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+.fomio-identity__role {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--fomio-radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+  align-self: flex-start;
+  margin-top: 1px;
+}
+
+
+// ============================================================
+// FOMIO COMMENT THREAD
+// Interaction Layer 03 — canonical CSS classes for the
+// discussion section. Each comment is a `.fomio-comment` block;
+// replies nest inside `.fomio-comment__thread`.
+// ============================================================
+
+.fomio-comments {
+  max-width: 42rem;
+}
+
+.fomio-comments__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.fomio-comments__title {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-comments__count {
+  font-family: var(--fomio-font-mono);
+  font-size: 12px;
+  color: var(--fomio-muted);
+  letter-spacing: 0.02em;
+}
+
+.fomio-comments__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-comment {
+  position: relative;
+  padding: 22px 0 18px;
+
+  & + .fomio-comment {
+    border-top: 1px solid var(--fomio-border-soft);
+  }
+
+  &.is-reply {
+    padding: 16px 0 12px;
+
+    & + .fomio-comment.is-reply {
+      border-top: 1px solid var(--fomio-border-soft);
+    }
+  }
+}
+
+.fomio-comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  color: var(--fomio-muted);
+}
+
+.fomio-comment-meta__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--fomio-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.fomio-comment-meta__author {
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--fomio-text);
+  text-transform: uppercase;
+}
+
+.fomio-comment-meta__badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fomio-primary);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--fomio-primary) 12%, transparent);
+}
+
+.fomio-comment-meta__sep {
+  opacity: 0.5;
+}
+
+.fomio-comment-meta__time {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  font-style: italic;
+  color: var(--fomio-muted);
+}
+
+.fomio-comment-body {
+  font-family: var(--fomio-font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--fomio-text);
+  margin-bottom: 10px;
+  padding-left: 30px;
+
+  p {
+    margin: 0;
+
+    & + p {
+      margin-top: 0.6em;
+    }
+  }
+}
+
+.fomio-comment__thread {
+  margin-top: 8px;
+  padding-left: 30px;
+  border-left: 1px solid var(--fomio-border-soft);
+  margin-left: 11px;
+}
+
+
+// ============================================================
+// FOMIO MASTHEAD  (Nav shell — Interaction Layer 03)
+// Used for top-level page headers on surfaces where the sidebar
+// is not present (mobile detail pages, standalone views).
+// ============================================================
+
+.fomio-masthead {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 60px;
+  padding: 0 28px;
+  background: var(--fomio-bg);
+  border-bottom: 1px solid var(--fomio-border);
+  position: relative;
+}
+
+.fomio-masthead__brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  img {
+    height: 20px;
+    width: auto;
+    display: block;
+  }
+}
+
+// ── Search ───────────────────────────────────────────────────
+.fomio-masthead__search {
+  flex: 1;
+  max-width: 280px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fomio-masthead__search-icon {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+  color: var(--fomio-muted);
+  display: flex;
+  width: 14px;
+  height: 14px;
+}
+
+.fomio-masthead__search input {
+  width: 100%;
+  height: 34px;
+  border-radius: var(--fomio-radius-pill);
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-surface);
+  padding: 0 14px 0 34px;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fomio-text);
+  letter-spacing: 0.01em;
+  -webkit-appearance: none;
+  appearance: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color 160ms var(--fomio-ease),
+      background 160ms var(--fomio-ease),
+      box-shadow 160ms var(--fomio-ease);
+  }
+
+  &::placeholder {
+    color: var(--fomio-muted);
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fomio-primary) 16%, transparent);
+  }
+}
+
+// ── Nav links ────────────────────────────────────────────────
+.fomio-masthead__nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.fomio-masthead__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--fomio-radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fomio-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  position: relative;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  &.active {
+    color: var(--fomio-text);
+  }
+
+  .unread-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--fomio-primary);
+    flex-shrink: 0;
+  }
+}
+
+// ── Right actions ────────────────────────────────────────────
+.fomio-masthead__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.fomio-masthead__icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--fomio-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--fomio-muted);
+  position: relative;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .badge-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--fomio-primary);
+    border: 1.5px solid var(--fomio-bg);
+  }
+}
+
+// ── User button ──────────────────────────────────────────────
+.fomio-masthead__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--fomio-radius-pill);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-masthead__user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fomio-text);
+  letter-spacing: 0.01em;
+}
+
+// ── Compose CTA ──────────────────────────────────────────────
+.fomio-masthead__compose {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary);
+  color: #fff;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    background: var(--fomio-primary-dark);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ── Mobile variant ───────────────────────────────────────────
+.fomio-masthead--mobile {
+  height: 52px;
+  padding: 0 16px;
+  gap: 12px;
+  justify-content: space-between;
+
+  .fomio-masthead__nav {
+    display: none;
+  }
+
+  .fomio-masthead__search {
+    max-width: none;
+    flex: 1;
+  }
+}
+
+
+// ============================================================
+// CONTENT LAYER  (Fomio Design System — Content Layer handoff, 2026-05)
+// §A  Byte card  ·  §B  Hero block  ·  §C  Hub / Teret list
+// ============================================================
+
+
+// ── §A. BYTE CARD ─────────────────────────────────────────────────────────
+// The canonical post card. Three display modes from one component:
+//   .byte                — standard: body + right thumbnail
+//   .byte--feature       — editorial hero: full-bleed image, body below
+//   .byte--no-thumb      — text-only: body fills full width
+//   .byte--compact       — compact row: teret | title+meta | timestamp
+//
+// Wrap each card (or list of cards) in .byte-slot to enable container queries.
+
+.byte-slot { container-type: inline-size; }
+
+.byte {
+  --byte-pad: 24px;
+  --byte-gap: 20px;
+  --byte-thumb-w: 180px;
+  --byte-thumb-h: 140px;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr var(--byte-thumb-w);
+  gap: var(--byte-gap);
+  align-items: start;
+
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  padding: var(--byte-pad);
+
+  font-family: var(--fomio-sans);
+  color: var(--fomio-fg);
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    border-color var(--fomio-dur-med) var(--fomio-ease),
+    box-shadow var(--fomio-dur-med) var(--fomio-ease);
+
+  &:hover {
+    border-color: color-mix(in oklab, var(--fomio-text) 22%, var(--fomio-border));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-primary) 25%, transparent);
+  }
+}
+
+.byte--no-thumb { grid-template-columns: 1fr; }
+
+.byte--compact {
+  --byte-pad: 14px 18px;
+  --byte-gap: 14px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+
+  .byte__body > .byte__excerpt,
+  .byte__hero { display: none; }
+}
+
+.byte--feature {
+  --byte-pad: 0;
+  grid-template-columns: 1fr;
+  gap: 0;
+  overflow: hidden;
+
+  .byte__hero {
+    width: 100%;
+    height: 220px;
+    border-radius: 0;
+  }
+
+  .byte__body { padding: 24px 28px 22px; }
+
+  .byte__title {
+    font-size: 28px;
+    -webkit-line-clamp: 3;
+  }
+
+  .byte__excerpt {
+    font-size: 16px;
+    -webkit-line-clamp: 3;
+  }
+}
+
+// ── Sub-elements ───────────────────────────────────────────────
+
+.byte__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.byte__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.byte__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-fg-muted);
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.byte__teret {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+  font-family: var(--fomio-sans);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.byte__pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fomio-fg-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.byte__title {
+  font-family: var(--fomio-serif);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--fomio-fg);
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-wrap: balance;
+}
+
+.byte__excerpt {
+  font-family: var(--fomio-serif);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fomio-fg-secondary);
+  margin: 0 0 18px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-wrap: pretty;
+}
+
+.byte__footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--fomio-fg-muted);
+  font-weight: 500;
+}
+
+.byte__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fomio-fg);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+.byte__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-sans);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #D6C9A8;
+  color: #5C4A1E;
+
+  &--b { background: #B8C7B0; color: #35472B; }
+  &--c { background: #C9BBD4; color: #4B3566; }
+  &--d { background: #E8C7B8; color: #7A3A27; }
+}
+
+.byte__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--fomio-fg-muted);
+  font-variant-numeric: tabular-nums;
+
+  svg { flex-shrink: 0; }
+}
+
+.byte__sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-fg-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.byte__time { color: var(--fomio-fg-muted); }
+
+.byte__unread {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fomio-primary);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.byte__hero {
+  width: var(--byte-thumb-w);
+  height: var(--byte-thumb-h);
+  border-radius: var(--fomio-radius-md);
+  background: var(--fomio-surface);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+
+  img,
+  .byte__placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .byte__placeholder {
+    background:
+      repeating-linear-gradient(135deg, rgba(26,26,26,0.045) 0 8px, transparent 8px 16px),
+      var(--fomio-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--fomio-mono);
+    font-size: 10px;
+    color: var(--fomio-fg-muted);
+    letter-spacing: 0.04em;
+  }
+}
+
+// ── Compact variant adjustments ────────────────────────────────
+
+.byte--compact {
+  .byte__title {
+    font-size: 16px;
+    -webkit-line-clamp: 1;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .byte__body {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .byte__meta { margin: 0; flex-wrap: nowrap; }
+
+  .byte__footer {
+    margin: 0;
+    gap: 12px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .byte__author { font-size: 12px; }
+  .byte__avatar { width: 20px; height: 20px; font-size: 9px; }
+}
+
+// ── Container query breakpoints ────────────────────────────────
+
+@container (max-width: 620px) {
+  .byte:not(.byte--feature):not(.byte--compact) {
+    --byte-thumb-w: 120px;
+    --byte-thumb-h: 110px;
+    --byte-pad: 20px;
+    --byte-gap: 16px;
+
+    .byte__title { font-size: 19px; }
+    .byte__excerpt { -webkit-line-clamp: 2; font-size: 14.5px; }
+  }
+}
+
+@container (max-width: 460px) {
+  .byte:not(.byte--feature):not(.byte--compact) {
+    grid-template-columns: 1fr;
+    --byte-pad: 18px;
+    --byte-gap: 14px;
+
+    .byte__hero {
+      order: -1;
+      width: 100%;
+      height: 180px;
+      border-radius: var(--fomio-radius-md);
+    }
+
+    .byte__title { font-size: 20px; }
+    .byte__excerpt { display: none; }
+    .byte__footer { gap: 10px; font-size: 12px; }
+  }
+
+  .byte--feature {
+    .byte__hero { height: 160px; }
+    .byte__body { padding: 18px 18px 16px; }
+    .byte__title { font-size: 22px; }
+    .byte__excerpt { font-size: 14.5px; -webkit-line-clamp: 2; }
+  }
+
+  .byte--compact { --byte-pad: 12px 14px; }
+}
+
+// ── Dark mode ──────────────────────────────────────────────────
+
+html.fomio-color-dark {
+  .byte:hover {
+    box-shadow: none;
+    border-color: var(--fomio-muted);
+  }
+
+  .byte__hero .byte__placeholder {
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 8px, transparent 8px 16px),
+      var(--fomio-surface);
+  }
+}
+
+
+// ============================================================
+// LAYER 3 CONSUMPTION BRIDGE
+// Canonical byte-card ownership for discovery + suggested lists.
+// Keep /categories on its existing hub-card grid.
+// ============================================================
+
+.topic-list-item.--fomio-discovery-item td.main-link,
+.topic-list-item.--fomio-fresh-byte-item td.main-link {
+  display: block !important;
+  grid-template-areas: none !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item td.main-link:focus-within,
+.topic-list-item.--fomio-fresh-byte-item td.main-link:focus-within,
+.topic-list-item.--fomio-discovery-item:hover td.main-link,
+.topic-list-item.--fomio-fresh-byte-item:hover td.main-link {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item .link-top-line,
+.topic-list-item.--fomio-fresh-byte-item .link-top-line,
+.topic-list-item.--fomio-discovery-item .link-bottom-line,
+.topic-list-item.--fomio-fresh-byte-item .link-bottom-line,
+.topic-list-item.--fomio-discovery-item .main-link > .topic-excerpt,
+.topic-list-item.--fomio-fresh-byte-item .main-link > .topic-excerpt {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link,
+.topic-list-item.--fomio-fresh-byte-item .main-link {
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte-slot,
+.topic-list-item.--fomio-fresh-byte-item .byte-slot {
+  display: block;
+  width: 100%;
+}
+
+.topic-list-item.--fomio-discovery-item .byte.fomio-topic-context,
+.topic-list-item.--fomio-fresh-byte-item .byte.fomio-topic-context {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__meta.fomio-topic-context__meta,
+.topic-list-item.--fomio-fresh-byte-item .byte__meta.fomio-topic-context__meta,
+.topic-list-item.--fomio-discovery-item .byte__excerpt.fomio-topic-context__text,
+.topic-list-item.--fomio-fresh-byte-item .byte__excerpt.fomio-topic-context__text,
+.topic-list-item.--fomio-discovery-item .byte__footer.fomio-topic-context__footer,
+.topic-list-item.--fomio-fresh-byte-item .byte__footer.fomio-topic-context__footer,
+.topic-list-item.--fomio-discovery-item .byte__hero.fomio-topic-context__thumb,
+.topic-list-item.--fomio-fresh-byte-item .byte__hero.fomio-topic-context__thumb {
+  grid-area: auto !important;
+  padding: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__title,
+.topic-list-item.--fomio-fresh-byte-item .byte__title {
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author,
+.topic-list-item.--fomio-fresh-byte-item .byte__author {
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author .fomio-identity__meta,
+.topic-list-item.--fomio-fresh-byte-item .byte__author .fomio-identity__meta {
+  gap: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author .fomio-identity__name,
+.topic-list-item.--fomio-fresh-byte-item .byte__author .fomio-identity__name {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author .fomio-avatar,
+.topic-list-item.--fomio-fresh-byte-item .byte__author .fomio-avatar {
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte {
+  --byte-pad: 0;
+  grid-template-columns: 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__hero {
+  width: 100%;
+  height: 220px;
+  border-radius: 0;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__body {
+  padding: 24px 28px 22px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__title {
+  font-size: 28px;
+  -webkit-line-clamp: 3;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__excerpt {
+  font-size: 16px;
+  -webkit-line-clamp: 3;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte {
+  --byte-pad: 14px 18px;
+  --byte-gap: 14px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__body {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__title {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: -0.005em;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__meta {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__excerpt,
+.topic-list-item.--fomio-fresh-byte-item .byte__hero,
+.topic-list-item.--fomio-fresh-byte-item .byte__author,
+.topic-list-item.--fomio-fresh-byte-item .byte__sep,
+.topic-list-item.--fomio-fresh-byte-item .byte__pin,
+.topic-list-item.--fomio-fresh-byte-item .byte__read-time,
+.topic-list-item.--fomio-fresh-byte-item .byte__dot,
+.topic-list-item.--fomio-fresh-byte-item .byte__unread {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__footer {
+  margin: 0;
+  gap: 12px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+
+// ── §B. HERO BLOCK ────────────────────────────────────────────────────────
+// Full-bleed editorial image header with overlay gradient and text.
+// Use .fomio-hero-block--hub for hub splash (240px instead of 400px).
+
+.fomio-hero-block {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: var(--fomio-radius-card);
+  overflow: hidden;
+  background: var(--fomio-surface);
+  display: flex;
+  align-items: flex-end;
+}
+
+.fomio-hero-block__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fomio-hero-block__placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(135deg, rgba(26,26,26,0.045) 0 10px, transparent 10px 20px),
+    linear-gradient(175deg, var(--fomio-surface) 0%, color-mix(in oklab, var(--fomio-surface) 50%, var(--fomio-fg)) 100%);
+}
+
+.fomio-hero-block__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12,9,6,0.86) 0%, rgba(12,9,6,0.28) 52%, transparent 100%);
+}
+
+.fomio-hero-block__content {
+  position: relative;
+  z-index: 1;
+  padding: 28px 32px 32px;
+  width: 100%;
+  max-width: 680px;
+}
+
+.fomio-hero-block__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  margin-bottom: 12px;
+  background: rgba(196, 69, 54, 0.92);
+  color: #fff;
+  border-radius: var(--fomio-radius-pill);
+  font-family: var(--fomio-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fomio-hero-block__title {
+  font-family: var(--fomio-serif);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 12px;
+  text-wrap: balance;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.28);
+}
+
+.fomio-hero-block__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fomio-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.68);
+  letter-spacing: 0.01em;
+
+  .sep { opacity: 0.45; }
+}
+
+.fomio-hero-block__author {
+  color: rgba(255,255,255,0.92);
+  font-weight: 600;
+}
+
+// Hub splash variant
+.fomio-hero-block--hub {
+  height: 240px;
+
+  .fomio-hero-block__title { font-size: 1.75rem; }
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 860px) {
+  .fomio-hero-block { height: 320px; }
+}
+
+@media (max-width: 640px) {
+  .fomio-hero-block { height: 240px; }
+  .fomio-hero-block--hub { height: 160px; }
+  .fomio-hero-block__content { padding: 18px 18px 22px; }
+  .fomio-hero-block__title { font-size: 1.35rem !important; }
+  .fomio-hero-block__eyebrow { margin-bottom: 8px; }
+  .fomio-hero-block__meta { font-size: 12px; gap: 7px; }
+}
+
+
+// ── §C. HUB / TERET LIST ──────────────────────────────────────────────────
+// Hub-with-teret-rows pattern: a hub header + inline teret listing in one card.
+// Distinct from the grid card variant (.fomio-hub-card) used on the /categories page.
+//
+// Structure:
+//   .fomio-hub-card
+//     .fomio-hub-header
+//       .fomio-hub-header__left
+//         .fomio-hub-dot
+//         div > .fomio-hub-name + .fomio-hub-desc
+//     .fomio-hub-total
+//     .fomio-teret-list
+//       a.fomio-teret-row[data-unread]
+//         .fomio-teret-dot
+//         .fomio-teret-name
+//         .fomio-teret-count
+//         .fomio-teret-time
+
+.fomio-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 16px;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  gap: 12px;
+}
+
+.fomio-hub-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.fomio-hub-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.fomio-hub-name {
+  font-family: var(--fomio-serif);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--fomio-fg);
+}
+
+.fomio-hub-desc {
+  font-family: var(--fomio-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fomio-fg-muted);
+  letter-spacing: 0.01em;
+}
+
+.fomio-hub-total {
+  font-family: var(--fomio-mono);
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.fomio-teret-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-teret-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 22px;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fomio-fg);
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  transition: background var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--fomio-surface); }
+}
+
+.fomio-teret-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fomio-teret-name {
+  font-weight: 600;
+  color: var(--fomio-fg);
+}
+
+.fomio-teret-count {
+  font-family: var(--fomio-mono);
+  font-size: 12.5px;
+  color: var(--fomio-fg-muted);
+  text-align: right;
+}
+
+.fomio-teret-time {
+  font-family: var(--fomio-sans);
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  font-style: italic;
+  white-space: nowrap;
+}
+
+// Unread indicator — terracotta dot before teret name
+.fomio-teret-row[data-unread="true"] .fomio-teret-name::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fomio-primary);
+  margin-right: 7px;
+  vertical-align: 1px;
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .fomio-hub-header {
+    padding: 14px 16px 12px;
+
+    .fomio-hub-desc { display: none; }
+  }
+
+  .fomio-teret-row {
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    padding: 11px 16px;
+  }
+
+  .fomio-teret-time { display: none; }
 }

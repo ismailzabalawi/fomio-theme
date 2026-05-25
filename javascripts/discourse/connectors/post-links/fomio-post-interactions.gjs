@@ -11,6 +11,8 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import Composer from "discourse/models/composer";
 import FlagModal from "discourse/components/modal/flag";
 import PostFlag from "discourse/lib/flag-targets/post-flag";
+import FomioButton from "../../components/shared/fomio-button";
+import FomioAvatar from "../../components/shared/fomio-avatar";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 
 // ── SVG icon helpers ─────────────────────────────────────────
@@ -345,9 +347,11 @@ class FomioByteToolbar extends WithDismissMenu {
       <div class="fomio-byte-primary-actions">
 
         {{! Like }}
-        <button
-          type="button"
-          class="fomio-action like {{if this.liked 'is-active'}}"
+        <FomioButton
+          @variant="ghost"
+          @iconOnly={{true}}
+          @isActive={{this.liked}}
+          @extraClass="fomio-action like"
           aria-pressed={{this.liked}}
           aria-label={{i18n (themePrefix "byte_toolbar.like_label")}}
           data-tip={{i18n (themePrefix "byte_toolbar.like_tip")}}
@@ -357,24 +361,27 @@ class FomioByteToolbar extends WithDismissMenu {
           {{#if this.likeCount}}
             <span class="fomio-action__count">{{this.likeCount}}</span>
           {{/if}}
-        </button>
+        </FomioButton>
 
         {{! Comment / discussion jump }}
-        <button
-          type="button"
-          class="fomio-action comment has-count"
+        <FomioButton
+          @variant="ghost"
+          @iconOnly={{true}}
+          @extraClass="fomio-action comment has-count"
           aria-label={{i18n (themePrefix "byte_toolbar.comment_label") count=this.commentCount}}
           data-tip={{i18n (themePrefix "byte_toolbar.comment_tip")}}
           {{on "click" this.jumpToComments}}
         >
           <IcoChat />
           <span class="fomio-action__count">{{this.commentCount}}</span>
-        </button>
+        </FomioButton>
 
         {{! Bookmark }}
-        <button
-          type="button"
-          class="fomio-action bookmark {{if this.bookmarked 'is-active'}}"
+        <FomioButton
+          @variant="ghost"
+          @iconOnly={{true}}
+          @isActive={{this.bookmarked}}
+          @extraClass="fomio-action bookmark"
           aria-pressed={{this.bookmarked}}
           aria-label={{if this.bookmarked
             (i18n (themePrefix "byte_toolbar.saved_label"))
@@ -387,12 +394,14 @@ class FomioByteToolbar extends WithDismissMenu {
           {{on "click" this.toggleBookmark}}
         >
           <IcoBookmark @filled={{this.bookmarked}} />
-        </button>
+        </FomioButton>
 
         {{! Share }}
-        <button
-          type="button"
-          class="fomio-action share {{if this.shared 'is-active'}}"
+        <FomioButton
+          @variant="ghost"
+          @iconOnly={{true}}
+          @isActive={{this.shared}}
+          @extraClass="fomio-action share"
           aria-label={{if this.shared
             (i18n (themePrefix "byte_toolbar.copied_label"))
             (i18n (themePrefix "byte_toolbar.share_label"))
@@ -408,7 +417,7 @@ class FomioByteToolbar extends WithDismissMenu {
           {{else}}
             <IcoShare />
           {{/if}}
-        </button>
+        </FomioButton>
 
       </div>
 
@@ -417,9 +426,11 @@ class FomioByteToolbar extends WithDismissMenu {
         class="fomio-byte-secondary-actions"
         {{on "keydown" this.handleMenuKeydown}}
       >
-        <button
-          type="button"
-          class="fomio-action more {{if this.menuOpen 'is-open'}}"
+        <FomioButton
+          @variant="ghost"
+          @iconOnly={{true}}
+          @isOpen={{this.menuOpen}}
+          @extraClass="fomio-action more"
           aria-haspopup="menu"
           aria-expanded={{this.menuOpen}}
           aria-label={{i18n (themePrefix "byte_toolbar.more_label")}}
@@ -427,7 +438,7 @@ class FomioByteToolbar extends WithDismissMenu {
           {{on "click" this.toggleMenu}}
         >
           <IcoMore />
-        </button>
+        </FomioButton>
 
         {{#if this.menuOpen}}
           <div class="fomio-byte-more-menu" role="menu">
@@ -515,11 +526,11 @@ class FomioCommentEntry extends Component {
         aria-label={{i18n (themePrefix "comment_entry.aria_label")}}
         {{on "click" this.openCompose}}
       >
-        <span
-          class="fomio-comment-entry__avatar"
-          style="background: var(--fomio-primary)"
-          aria-hidden="true"
-        >{{this.initial}}</span>
+        <FomioAvatar
+          @size="sm"
+          @initials={{this.initial}}
+          @extraClass="fomio-comment-entry__avatar"
+        />
         <span class="fomio-comment-entry__placeholder">
           {{i18n (themePrefix "comment_entry.placeholder")}}
         </span>
@@ -531,7 +542,11 @@ class FomioCommentEntry extends Component {
         role="button"
         {{on "click" this.goToLogin}}
       >
-        <span class="fomio-comment-entry__avatar is-empty" aria-hidden="true"></span>
+        <FomioAvatar
+          @size="sm"
+          @initials=""
+          @extraClass="fomio-comment-entry__avatar is-empty"
+        />
         <span class="fomio-comment-entry__placeholder">
           {{i18n (themePrefix "comment_entry.guest_placeholder")}}
         </span>
@@ -682,9 +697,12 @@ class FomioCommentActions extends WithDismissMenu {
   <template>
     <div class="fomio-comment-actions">
       {{! Like }}
-      <button
-        type="button"
-        class="fomio-action sm like {{if this.liked 'is-active'}}"
+      <FomioButton
+        @variant="ghost"
+        @iconOnly={{true}}
+        @size="sm"
+        @isActive={{this.liked}}
+        @extraClass="fomio-action sm like"
         aria-pressed={{this.liked}}
         aria-label={{i18n (themePrefix "comment_actions.like_label")}}
         {{on "click" this.toggleLike}}
@@ -693,12 +711,13 @@ class FomioCommentActions extends WithDismissMenu {
         {{#if this.likeCount}}
           <span class="fomio-action__count">{{this.likeCount}}</span>
         {{/if}}
-      </button>
+      </FomioButton>
 
       {{! Reply }}
-      <button
-        type="button"
-        class="fomio-action sm reply"
+      <FomioButton
+        @variant="ghost"
+        @size="sm"
+        @extraClass="fomio-action sm reply"
         aria-label={{i18n (themePrefix "comment_actions.reply_label")}}
         {{on "click" this.reply}}
       >
@@ -706,23 +725,26 @@ class FomioCommentActions extends WithDismissMenu {
         <span class="fomio-action__label">
           {{i18n (themePrefix "comment_actions.reply_text")}}
         </span>
-      </button>
+      </FomioButton>
 
       {{! More ⋯ }}
       <div
         class="fomio-comment-actions__more"
         {{on "keydown" this.handleMenuKeydown}}
       >
-        <button
-          type="button"
-          class="fomio-action sm more {{if this.menuOpen 'is-open'}}"
+        <FomioButton
+          @variant="ghost"
+          @iconOnly={{true}}
+          @size="sm"
+          @isOpen={{this.menuOpen}}
+          @extraClass="fomio-action sm more"
           aria-haspopup="menu"
           aria-expanded={{this.menuOpen}}
           aria-label={{i18n (themePrefix "comment_actions.more_label")}}
           {{on "click" this.toggleMenu}}
         >
           <IcoMore />
-        </button>
+        </FomioButton>
 
         {{#if this.menuOpen}}
           <div class="fomio-byte-more-menu is-end" role="menu">
@@ -804,16 +826,16 @@ export default class FomioPostInteractions extends Component {
 
       {{! Discussion anchor + header + comment entry }}
       <section
-        class="fomio-discussion"
+        class="fomio-discussion fomio-comments"
         id="fomio-discussion"
         aria-label={{i18n (themePrefix "discussion.aria_label")}}
       >
         {{#if this.discussionCount}}
-          <header class="fomio-discussion__header">
-            <h2 class="fomio-discussion__title">
+          <header class="fomio-discussion__header fomio-comments__header">
+            <h2 class="fomio-discussion__title fomio-comments__title">
               {{i18n (themePrefix "discussion.title")}}
             </h2>
-            <span class="fomio-discussion__count">
+            <span class="fomio-discussion__count fomio-comments__count">
               {{this.discussionCount}}
               {{if (eq this.discussionCount 1)
                 (i18n (themePrefix "discussion.reply_singular"))

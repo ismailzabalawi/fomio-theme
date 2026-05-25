@@ -187,6 +187,23 @@ export function aboutPath() {
   return "/about";
 }
 
+function ownUserPathMatcher(path, currentUser) {
+  if (!currentUser?.username) {
+    return null;
+  }
+
+  const slug = currentUser.username.toLowerCase();
+  const match = /^\/u\/([^/]+)(\/.*)?$/.exec(path);
+  if (!match || match[1].toLowerCase() !== slug) {
+    return null;
+  }
+
+  return {
+    isRoot: !match[2],
+    suffix: match[2] || "",
+  };
+}
+
 /**
  * Touch Me hub: only own profile landing surfaces (not native leaf routes).
  * Logged-out: Me-tab territory sign-in CTA (`isMePath`), excluding about/logout/session notifications.
@@ -207,7 +224,7 @@ export function isMeLandingSurfacePath(rawUrl, currentUser) {
   }
 
   if (!currentUser) {
-    return isMePath(path);
+    return isMePath(path, currentUser);
   }
 
   if (path === "/my/preferences" || path.startsWith("/my/preferences/")) {
@@ -223,15 +240,8 @@ export function isMeLandingSurfacePath(rawUrl, currentUser) {
     return false;
   }
 
-  if (!currentUser.username) {
-    return false;
-  }
-  const slug = currentUser.username.toLowerCase();
-  const mSummary = /^\/u\/([^/]+)\/summary$/.exec(path);
-  if (mSummary && mSummary[1].toLowerCase() === slug) {
-    return true;
-  }
-  return false;
+  const ownMatch = ownUserPathMatcher(path, currentUser);
+  return Boolean(ownMatch && (ownMatch.isRoot || ownMatch.suffix === "/summary"));
 }
 
 /**
@@ -246,16 +256,8 @@ export function isMeLandingPath(path, currentUser) {
   if (p === "/my" || p === "/my/summary") {
     return true;
   }
-  const slug = currentUser.username;
-  if (!slug) {
-    return false;
-  }
-  const lower = slug.toLowerCase();
-  const mSummary = /^\/u\/([^/]+)\/summary$/.exec(p);
-  if (mSummary && mSummary[1].toLowerCase() === lower) {
-    return true;
-  }
-  return false;
+  const ownMatch = ownUserPathMatcher(p, currentUser);
+  return Boolean(ownMatch && (ownMatch.isRoot || ownMatch.suffix === "/summary"));
 }
 
 /**
@@ -327,7 +329,7 @@ export function isSavedPath(path) {
   return path.split("?")[0].includes("bookmarks");
 }
 
-export function isMePath(path) {
+export function isMePath(path, currentUser) {
   const p = path.split("?")[0];
   if (p.includes("bookmarks")) {
     return false;
@@ -338,7 +340,7 @@ export function isMePath(path) {
   if (p === "/my" || p.startsWith("/my/")) {
     return true;
   }
-  return p.startsWith("/u/");
+  return Boolean(ownUserPathMatcher(p, currentUser));
 }
 
 /**
@@ -354,15 +356,8 @@ export function isMeHubPath(path, currentUser) {
   if (p === "/my" || p === "/my/summary") {
     return true;
   }
-  if (!currentUser?.username) {
-    return false;
-  }
-  const lower = currentUser.username.toLowerCase();
-  const mSummary = /^\/u\/([^/]+)\/summary$/.exec(p);
-  if (mSummary && mSummary[1].toLowerCase() === lower) {
-    return true;
-  }
-  return false;
+  const ownMatch = ownUserPathMatcher(p, currentUser);
+  return Boolean(ownMatch && (ownMatch.isRoot || ownMatch.suffix === "/summary"));
 }
 
 /**
@@ -375,13 +370,7 @@ export function isMeStackPath(path, currentUser) {
     return false;
   }
 
-  const lower = currentUser.username.toLowerCase();
-  const mRoot = /^\/u\/([^/]+)$/.exec(p);
-  if (mRoot && mRoot[1].toLowerCase() === lower) {
-    return false;
-  }
-
-  return isMePath(path) && !isMeHubPath(path, currentUser);
+  return isMePath(path, currentUser) && !isMeHubPath(path, currentUser);
 }
 
 /**
@@ -445,12 +434,8 @@ export function isNotificationsPath(path) {
   const p = path.split("?")[0];
   return (
     /^\/u\/[^/]+\/notifications(\/|$)/.test(p) ||
-    /^\/u\/[^/]+\/messages(\/|$)/.test(p) ||
-    /^\/u\/[^/]+\/preferences\/notifications(\/|$)/.test(p) ||
     p === "/notifications" ||
     p.startsWith("/notifications/") ||
-    p.startsWith("/my/notifications") ||
-    p.startsWith("/my/messages") ||
-    p.startsWith("/my/preferences/notifications")
+    p.startsWith("/my/notifications")
   );
 }

@@ -50,10 +50,24 @@ function hasNoHover() {
   return window.matchMedia("(hover: none)").matches;
 }
 
+function shortestViewportSide(width) {
+  return Math.min(width, window.innerHeight || width);
+}
+
 function resolveSurfaceMode(width) {
+  const coarseTouchDevice = hasCoarsePointer() && hasNoHover();
+  const shortSide = shortestViewportSide(width);
+
   // Authoritative Fomio surface resolver:
-  // on coarse touch contexts under 900px, touch behavior always wins.
-  if (hasCoarsePointer() && hasNoHover() && width < 900) {
+  // keep touch ownership on phone-class devices in both portrait and
+  // landscape. Tablet widths must stay on the rail/desktop shell so they
+  // don't fall back to native header behavior when Discourse is not applying
+  // the mobile theme surface.
+  if (coarseTouchDevice && shortSide < 640) {
+    return "touch";
+  }
+
+  if (width < 640) {
     return "touch";
   }
 
@@ -63,7 +77,7 @@ function resolveSurfaceMode(width) {
   if (width >= 1024) {
     return "compact-desktop";
   }
-  if (width >= 768) {
+  if (width >= 640) {
     return "rail";
   }
   return "touch";

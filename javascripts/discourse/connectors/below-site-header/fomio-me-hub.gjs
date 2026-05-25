@@ -3,12 +3,11 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { service } from "@ember/service";
-import avatar from "discourse/helpers/avatar";
 import icon from "discourse/helpers/d-icon";
 import getURL from "discourse/lib/get-url";
-import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioAvatar from "../../components/shared/fomio-avatar";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import {
   getFomioAuxiliaryMeSections,
@@ -85,6 +84,14 @@ export default class FomioMeHub extends Component {
     }));
   }
 
+  get summarySection() {
+    return this.coreSections.find((section) => section.key === "summary") ?? null;
+  }
+
+  get navigableCoreSections() {
+    return this.coreSections.filter((section) => section.key !== "summary");
+  }
+
   get auxiliarySections() {
     return getFomioAuxiliaryMeSections({
       currentUser: this.currentUser,
@@ -94,6 +101,7 @@ export default class FomioMeHub extends Component {
       ...section,
       href: this.toHubHref(section.href),
       label: i18n(themePrefix(section.labelKey)),
+      rel: section.key === "sign-out" ? "nofollow" : null,
     }));
   }
 
@@ -142,7 +150,11 @@ export default class FomioMeHub extends Component {
     return n > 99 ? "99+" : String(n);
   }
 
+  @action
   rowBadge(section) {
+    if (!section?.key) {
+      return null;
+    }
     if (section.key === "notifications") {
       return this.notificationsUnread;
     }
@@ -228,19 +240,24 @@ export default class FomioMeHub extends Component {
           aria-label={{this.ariaLabel}}
         >
           {{#unless this.summaryOpen}}
-            {{#if this.coreSections.length}}
+            {{#if this.summarySection}}
               <div class="fomio-me-hub__summary">
-                <div
-                  class="fomio-me-hub__summary-link fomio-me-hub__summary-link--static"
+                <button
+                  type="button"
+                  class="fomio-me-hub__summary-link"
+                  {{on "click" this.openSummary}}
                 >
                   <span class="fomio-me-hub__summary-avatar" aria-hidden="true">
-                    {{avatar this.currentUser imageSize="large"}}
+                    <FomioAvatar @user={{this.currentUser}} @size="lg" />
                   </span>
                   <span class="fomio-me-hub__summary-text">
                     <span class="fomio-me-hub__summary-name">{{this.displayName}}</span>
                     <span class="fomio-me-hub__summary-meta">{{this.statusLine}}</span>
                   </span>
-                </div>
+                  <span class="fomio-me-hub__summary-chevron" aria-hidden="true">
+                    {{icon "angle-right"}}
+                  </span>
+                </button>
               </div>
             {{/if}}
 
@@ -249,46 +266,29 @@ export default class FomioMeHub extends Component {
             aria-label={{i18n (themePrefix "mobile_nav.me_hub_primary_nav_aria")}}
           >
             <div class="fomio-me-hub__section-body">
-              {{#each this.coreSections as |section|}}
+              {{#each this.navigableCoreSections as |section|}}
                 {{#if section.isAdminSection}}
                   <hr class="fomio-me-hub__section-divider" aria-hidden="true" />
                 {{/if}}
-                {{#if (eq section.key "summary")}}
-                  <button
-                    type="button"
-                    class="fomio-me-hub__row {{if section.isActive "fomio-me-hub__row--active"}}"
-                    {{on "click" this.openSummary}}
-                  >
-                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon section.icon}}</span>
-                    <span class="fomio-me-hub__row-copy">
-                      <span class="fomio-me-hub__row-label">{{section.label}}</span>
-                      {{#if section.meta}}
-                        <span class="fomio-me-hub__row-meta">{{section.meta}}</span>
-                      {{/if}}
-                    </span>
-                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon "angle-right"}}</span>
-                  </button>
-                {{else}}
-                  <a
-                    class="fomio-me-hub__row {{if section.isActive "fomio-me-hub__row--active"}}"
-                    href={{section.href}}
-                  >
-                    <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon section.icon}}</span>
-                    <span class="fomio-me-hub__row-copy">
-                      <span class="fomio-me-hub__row-label">{{section.label}}</span>
-                      {{#if section.meta}}
-                        <span class="fomio-me-hub__row-meta">{{section.meta}}</span>
-                      {{/if}}
-                    </span>
-                    {{#if (this.rowBadge section)}}
-                      <span
-                        class="fomio-me-hub__row-badge"
-                        aria-label="{{this.rowBadge section}} unread"
-                      >{{this.rowBadge section}}</span>
+                <a
+                  class="fomio-me-hub__row {{if section.isActive "fomio-me-hub__row--active"}}"
+                  href={{section.href}}
+                >
+                  <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon section.icon}}</span>
+                  <span class="fomio-me-hub__row-copy">
+                    <span class="fomio-me-hub__row-label">{{section.label}}</span>
+                    {{#if section.meta}}
+                      <span class="fomio-me-hub__row-meta">{{section.meta}}</span>
                     {{/if}}
-                    <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon "angle-right"}}</span>
-                  </a>
-                {{/if}}
+                  </span>
+                  {{#if (this.rowBadge section)}}
+                    <span
+                      class="fomio-me-hub__row-badge"
+                      aria-label="{{this.rowBadge section}} unread"
+                    >{{this.rowBadge section}}</span>
+                  {{/if}}
+                  <span class="fomio-me-hub__row-chevron" aria-hidden="true">{{icon "angle-right"}}</span>
+                </a>
               {{/each}}
             </div>
           </section>
@@ -302,7 +302,7 @@ export default class FomioMeHub extends Component {
                 <a
                   class="fomio-me-hub__row {{if section.isMuted "fomio-me-hub__row--muted"}}"
                   href={{section.href}}
-                  rel={{if (eq section.key "sign-out") "nofollow"}}
+                  rel={{section.rel}}
                 >
                   <span class="fomio-me-hub__row-icon" aria-hidden="true">{{icon section.icon}}</span>
                   <span class="fomio-me-hub__row-copy">

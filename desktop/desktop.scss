@@ -52,7 +52,9 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
 }
 
 // Fallback until resolver marks body as ready.
-@media (min-width: 640px) {
+// Limit this to desktop-like pointer environments so landscape phones
+// never flash the desktop sidebar before touch mode is applied.
+@media (min-width: 640px) and (hover: hover) and (pointer: fine) {
   body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-ready) .fomio-sidebar {
     display: flex;
   }
@@ -349,6 +351,7 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
       height: 1rem;
     }
   }
+
 }
 
 @media (min-width: 900px) {
@@ -389,7 +392,8 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
 // ============================================================
 
 body.fomio-settings-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
-body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   // Keep detail content calm and column-aligned with the rest of Fomio.
   #main-outlet {
     overflow-x: hidden;
@@ -497,6 +501,19 @@ body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-
   }
 }
 
+body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-activity-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-messages-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-notifications-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-invited-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-preferences-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main .user-navigation.user-navigation-primary,
+  #main-outlet .user-main .nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.action-list.main-nav.nav.user-nav {
+    display: none !important;
+  }
+}
+
 // ============================================================
 // BOOKMARKS DETAIL ALIGNMENT (Slice 7C)
 // Desktop only when Bookmarks Master Pane is active:
@@ -505,7 +522,8 @@ body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-
 // ============================================================
 
 body.fomio-bookmarks-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
-body.fomio-bookmarks-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+body.fomio-bookmarks-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-bookmarks-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   #main-outlet {
     overflow-x: hidden;
   }
@@ -587,7 +605,8 @@ body.fomio-bookmarks-master-active.fomio-surface-compact-desktop:not(.fomio-auth
 // ============================================================
 
 body.fomio-notifications-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
-body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
+body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-notifications-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   #main-outlet {
     overflow-x: hidden;
   }
@@ -761,14 +780,16 @@ body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-
 }
 
 body.fomio-settings-master-active.fomio-surface-expanded.user-activity-page:not(.fomio-auth-mode):not(.fomio-activity-master-active),
-body.fomio-settings-master-active.fomio-surface-compact-desktop.user-activity-page:not(.fomio-auth-mode):not(.fomio-activity-master-active) {
+body.fomio-settings-master-active.fomio-surface-compact-desktop.user-activity-page:not(.fomio-auth-mode):not(.fomio-activity-master-active),
+body.fomio-settings-master-active.fomio-surface-rail.user-activity-page:not(.fomio-auth-mode):not(.fomio-activity-master-active) {
   .user-main .user-navigation.user-navigation-secondary {
     display: block !important;
   }
 }
 
 body.fomio-activity-master-active.fomio-surface-expanded.user-activity-page:not(.fomio-auth-mode),
-body.fomio-activity-master-active.fomio-surface-compact-desktop.user-activity-page:not(.fomio-auth-mode) {
+body.fomio-activity-master-active.fomio-surface-compact-desktop.user-activity-page:not(.fomio-auth-mode),
+body.fomio-activity-master-active.fomio-surface-rail.user-activity-page:not(.fomio-auth-mode) {
   .fomio-me-activity-nav {
     margin: 0 0 14px;
   }
@@ -803,7 +824,8 @@ body.fomio-activity-master-active.fomio-surface-compact-desktop.user-activity-pa
 
 body.user-messages-page.fomio-sidebar-active:not(.fomio-auth-mode),
 body.fomio-sidebar-active.fomio-surface-expanded.user-messages-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-compact-desktop.user-messages-page:not(.fomio-auth-mode) {
+body.fomio-sidebar-active.fomio-surface-compact-desktop.user-messages-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-messages-page:not(.fomio-auth-mode) {
   #main-outlet .user-main {
     background:
       radial-gradient(
@@ -1138,7 +1160,19 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-messages-page:not(.
     border-radius: 999px;
   }
 
+  #main-outlet .user-main #user-content .topic-list .fomio-topic-context__author .fomio-avatar {
+    width: 1.45rem;
+    height: 1.45rem;
+    font-size: 0.72rem;
+  }
+
   #main-outlet .user-main #user-content .topic-list .fomio-topic-context__author-name {
+    color: color-mix(in oklab, var(--fomio-muted) 72%, var(--fomio-text));
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .fomio-topic-context__author .fomio-identity__name {
     color: color-mix(in oklab, var(--fomio-muted) 72%, var(--fomio-text));
     font-size: 0.78rem;
     font-weight: 600;
@@ -1226,6 +1260,53 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-messages-page:not(.
   #main-outlet .user-main .user-content .empty-state p {
     max-width: 38ch;
     margin-top: 0.42rem;
+  }
+}
+
+// ============================================================
+// ACCOUNT DETAIL SHELL MIGRATION
+// Final-level desktop / rail account screens should use the Fomio shell.
+// Keep Discourse data surfaces, but remove the native account chrome that
+// duplicates rail/master-pane navigation.
+// ============================================================
+
+body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
+  &.user-summary-page,
+  &.user-activity-page,
+  &.user-messages-page,
+  &.user-notifications-page,
+  &.user-invited-page,
+  &.user-preferences-page,
+  &.user-badges-page {
+    #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
+    #main-outlet .user-main > .user-navigation.user-navigation-primary,
+    #main-outlet .user-main > .new-user-wrapper > .user-navigation.user-navigation-primary,
+    #main-outlet .user-main .nav-pills.user-nav,
+    #main-outlet .user-main ul.nav-pills.action-list.main-nav.nav.user-nav {
+      display: none !important;
+    }
+
+    #main-outlet .user-main > section.about {
+      margin-bottom: 18px;
+    }
+
+    #main-outlet .user-main > section.about .user-profile-image {
+      display: none;
+    }
+
+    #main-outlet .user-main > section.about .details {
+      padding-top: 0;
+    }
+
+    #main-outlet .user-main > section.about .primary-textual {
+      min-width: 0;
+    }
+
+    #main-outlet .user-main .new-user-wrapper {
+      padding-top: 0;
+    }
   }
 }
 

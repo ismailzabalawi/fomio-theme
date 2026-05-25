@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioAuthSubheader from "../../components/shared/fomio-auth-subheader";
 import { peekAuthIntent } from "../../lib/fomio-auth-intent";
 
 /** Dek below the login title — pairs with js.login.header_title → "Sign in". */
@@ -34,9 +35,10 @@ export default class FomioLoginSubheader extends Component {
   }
 
   <template>
-    {{#if this.intentMessage}}
-      <p class="fomio-auth-intent">{{this.intentMessage}}</p>
-    {{/if}}
-    <p class="fomio-login-subheader">{{this.text}}</p>
+    <FomioAuthSubheader
+      @intentMessage={{this.intentMessage}}
+      @bodyText={{this.text}}
+      @bodyClass="fomio-login-subheader"
+    />
   </template>
 }

@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import FomioMeActivityNav from "../../components/fomio-me-activity-nav";
+import FomioMeActivityNav from "../../components/shared/fomio-me-activity-nav";
 import {
   getFomioActivityChildSections,
   isOwnedActivitySectionPath,

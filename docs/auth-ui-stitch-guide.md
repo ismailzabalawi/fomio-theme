@@ -725,6 +725,10 @@ apps/web/mobile/mobile.scss   ← mobile-only overrides (0–767px)
 
 Discourse applies `mobile.scss` automatically on mobile breakpoints via its own stylesheet split — you don't add media queries for that split. Within `desktop.scss` you can use `@media` for tablet vs. desktop if needed.
 
+For Fomio shell work, do not assume `mobile.scss` is loaded on every phone state. Landscape phones and other coarse-touch layouts can remain on the Fomio touch surface while Discourse stops applying the narrow mobile stylesheet. Any touch-shell behavior that must persist across portrait/landscape belongs in `common.scss` under `body.fomio-surface-touch`; keep `mobile.scss` for narrow-width refinements only.
+
+Apply the same rule to safe area. Define canonical touch-shell safe-area variables once in `common.scss`, then consume those variables from homepage/feed/pills/components. Avoid page-local raw `env(safe-area-inset-*)` math except for cases that are genuinely component-specific.
+
 ### Token usage rule
 
 Never hardcode hex values in SCSS. Use the `--fomio-*` variables already defined in `common.scss` Section 1:

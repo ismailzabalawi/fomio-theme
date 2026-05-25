@@ -19,6 +19,10 @@ import {
 import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
+const HIDE_START_Y = 120;
+const HIDE_DELTA_Y = 18;
+const SHOW_DELTA_Y = 10;
+const MIN_SCROLLABLE_HEIGHT = 180;
 
 export default class FomioBottomBar extends Component {
   @service router;
@@ -33,11 +37,20 @@ export default class FomioBottomBar extends Component {
     super(owner, args);
     this.#scrollHandler = () => {
       const y = window.scrollY;
-      if (y > this.#lastScrollY && y > 50) {
+      const deltaY = y - this.#lastScrollY;
+      const scrollableHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      if (!this.shouldAutoHide || scrollableHeight < MIN_SCROLLABLE_HEIGHT) {
+        this.isHidden = false;
+      } else if (y <= HIDE_START_Y) {
+        this.isHidden = false;
+      } else if (deltaY >= HIDE_DELTA_Y) {
         this.isHidden = true;
-      } else {
+      } else if (deltaY <= -SHOW_DELTA_Y) {
         this.isHidden = false;
       }
+
       this.#lastScrollY = y;
     };
     window.addEventListener("scroll", this.#scrollHandler, { passive: true });
@@ -69,7 +82,11 @@ export default class FomioBottomBar extends Component {
   }
 
   get isMeActive() {
-    return isMePath(this.currentPath);
+    return isMePath(this.currentPath, this.currentUser);
+  }
+
+  get shouldAutoHide() {
+    return !this.isMeActive;
   }
 
   get bookmarksUrl() {

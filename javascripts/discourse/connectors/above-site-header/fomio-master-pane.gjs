@@ -25,6 +25,8 @@ const AUTH_PATHS = [
   "/u/confirm",
   "/auth/",
 ];
+const RAIL_OVERLAY_CONTEXTS = ["hubs", "profile", "bookmarks", "notifications"];
+const PENDING_RAIL_OVERLAY_KEY = "fomio_pending_rail_overlay_context";
 
 function isAuthPath(url) {
   return AUTH_PATHS.some((p) => url.startsWith(p));
@@ -58,6 +60,7 @@ export default class FomioMasterPane extends Component {
   constructor(...args) {
     super(...args);
     this._onOpenRequest = (event) => this.handleOpenRequest(event);
+    this._onToggleRequest = (event) => this.handleToggleRequest(event);
     this._onKeydown = (event) => this.handleEscape(event);
     this._onResize = () => {
       this.syncRailOverlayEligibility();
@@ -66,9 +69,11 @@ export default class FomioMasterPane extends Component {
     this._onRouteDidChange = () => {
       this.closeRailOverlay("route-change");
       this.syncMasterDetailShellClasses();
+      this.restorePendingRailOverlay();
     };
     if (typeof document !== "undefined") {
       window.addEventListener("fomio:master-pane:open", this._onOpenRequest);
+      window.addEventListener("fomio:master-pane:toggle", this._onToggleRequest);
       document.addEventListener("keydown", this._onKeydown);
       window.addEventListener("resize", this._onResize);
       window.addEventListener("orientationchange", this._onResize);
@@ -77,12 +82,16 @@ export default class FomioMasterPane extends Component {
       this.router.on("routeDidChange", this._onRouteDidChange);
     }
     this.syncMasterDetailShellClasses();
+    this.restorePendingRailOverlay();
   }
 
   willDestroy() {
     if (typeof document !== "undefined") {
       if (this._onOpenRequest) {
         window.removeEventListener("fomio:master-pane:open", this._onOpenRequest);
+      }
+      if (this._onToggleRequest) {
+        window.removeEventListener("fomio:master-pane:toggle", this._onToggleRequest);
       }
       if (this._onResize) {
         window.removeEventListener("resize", this._onResize);
@@ -212,7 +221,7 @@ export default class FomioMasterPane extends Component {
     // It reuses the same Hub/Teret list structure as the desktop master pane.
     return (
       this.railOverlayOpen &&
-      this.railOverlayContext === "hubs" &&
+      RAIL_OVERLAY_CONTEXTS.includes(this.railOverlayContext) &&
       this.isRailSurface &&
       this.isShellActive &&
       !isAuthPath(this.currentPath)
@@ -383,14 +392,14 @@ export default class FomioMasterPane extends Component {
   @action
   handleOpenRequest(event) {
     const context = event?.detail?.context;
-    if (context !== "hubs") {
+    if (!RAIL_OVERLAY_CONTEXTS.includes(context)) {
       return;
     }
     if (!this.isRailSurface || !this.isShellActive || isAuthPath(this.currentPath)) {
       return;
     }
     this.railOverlayOpen = true;
-    this.railOverlayContext = "hubs";
+    this.railOverlayContext = context;
     if (typeof document !== "undefined") {
       document.body.classList.add("fomio-master-pane-rail-open");
     }
@@ -403,6 +412,60 @@ export default class FomioMasterPane extends Component {
         context,
         path: this.currentPath,
       });
+    }
+  }
+
+  @action
+  handleToggleRequest(event) {
+    const context = event?.detail?.context;
+    if (!RAIL_OVERLAY_CONTEXTS.includes(context)) {
+      return;
+    }
+    if (!this.isRailSurface || !this.isShellActive || isAuthPath(this.currentPath)) {
+      return;
+    }
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      window.sessionStorage.removeItem(PENDING_RAIL_OVERLAY_KEY);
+    }
+
+    if (this.railOverlayOpen && this.railOverlayContext === context) {
+      this.closeRailOverlay("toggle");
+      return;
+    }
+
+    this.railOverlayOpen = true;
+    this.railOverlayContext = context;
+    if (typeof document !== "undefined") {
+      document.body.classList.add("fomio-master-pane-rail-open");
+    }
+    this.syncMasterDetailShellClasses();
+  }
+
+  restorePendingRailOverlay() {
+    if (
+      typeof window === "undefined" ||
+      !window.sessionStorage ||
+      !this.isRailSurface ||
+      !this.isShellActive ||
+      isAuthPath(this.currentPath)
+    ) {
+      return;
+    }
+
+    const pendingContext = window.sessionStorage.getItem(PENDING_RAIL_OVERLAY_KEY);
+    if (!RAIL_OVERLAY_CONTEXTS.includes(pendingContext)) {
+      return;
+    }
+
+    if (pendingContext !== this.activeMasterContext) {
+      return;
+    }
+
+    window.sessionStorage.removeItem(PENDING_RAIL_OVERLAY_KEY);
+    this.railOverlayOpen = true;
+    this.railOverlayContext = pendingContext;
+    if (typeof document !== "undefined") {
+      document.body.classList.add("fomio-master-pane-rail-open");
     }
   }
 

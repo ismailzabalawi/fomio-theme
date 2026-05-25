@@ -10,6 +10,7 @@ import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import Composer from "discourse/models/composer";
 import FomioBlockEditor from "../../components/fomio-block-editor";
+import FomioButton from "../../components/shared/fomio-button";
 
 // ── Icons ─────────────────────────────────────────────────────
 
@@ -300,26 +301,53 @@ class ComposerActions extends Component {
         <span><kbd class="fomio-cm-key">/</kbd> {{i18n (themePrefix "composer.hint_blocks")}}</span>
         <span><kbd class="fomio-cm-key">esc</kbd> {{i18n (themePrefix "composer.hint_close")}}</span>
       </div>
-      <button type="button" class="fomio-cm-btn fomio-cm-btn--tertiary" {{on "click" @onClose}}>
+      <FomioButton
+        @variant="ghost"
+        @extraClass="fomio-cm-btn fomio-cm-btn--tertiary"
+        {{on "click" @onClose}}
+      >
         {{i18n (themePrefix "composer.cancel")}}
-      </button>
+      </FomioButton>
       {{#if (eq @mode "create")}}
-        <button type="button" class="fomio-cm-btn fomio-cm-btn--secondary" {{on "click" @onSaveDraft}}>
+        <FomioButton
+          @variant="secondary"
+          @extraClass="fomio-cm-btn fomio-cm-btn--secondary"
+          {{on "click" @onSaveDraft}}
+        >
           {{i18n (themePrefix "composer.save_draft")}}
-        </button>
+        </FomioButton>
       {{/if}}
-      <button type="button" class="fomio-cm-btn fomio-cm-btn--primary" disabled={{@isSaving}} {{on "click" @onPublish}}>
+      <FomioButton
+        @variant="primary"
+        @size="lg"
+        @isLoading={{@isSaving}}
+        @extraClass="fomio-cm-btn fomio-cm-btn--primary"
+        {{on "click" @onPublish}}
+      >
         {{this.publishLabel}} <IcoArrow />
-      </button>
+      </FomioButton>
     </div>
 
     <div class="fomio-cm-mobile-bar">
-      <button type="button" class="fomio-cm-btn fomio-cm-btn--tertiary" style="height:36px;padding:0 12px" {{on "click" @onClose}}>
+      <FomioButton
+        @variant="ghost"
+        @extraClass="fomio-cm-btn fomio-cm-btn--tertiary"
+        style="height:36px;padding:0 12px"
+        {{on "click" @onClose}}
+      >
         {{i18n (themePrefix "composer.cancel")}}
-      </button>
-      <button type="button" class="fomio-cm-btn fomio-cm-btn--primary" style="flex:1;height:44px" disabled={{@isSaving}} {{on "click" @onPublish}}>
+      </FomioButton>
+      <FomioButton
+        @variant="primary"
+        @size="lg"
+        @block={{true}}
+        @isLoading={{@isSaving}}
+        @extraClass="fomio-cm-btn fomio-cm-btn--primary"
+        style="flex:1;height:44px"
+        {{on "click" @onPublish}}
+      >
         {{this.publishLabel}}
-      </button>
+      </FomioButton>
     </div>
   </template>
 }
@@ -592,12 +620,23 @@ class FomioComposerShell extends Component {
                         </span>
                       </div>
                       <div class="fomio-cm-reply-actions">
-                        <button type="button" class="fomio-cm-btn fomio-cm-btn--tertiary" style="height:36px;padding:0 14px" {{on "click" this.onClose}}>
+                        <FomioButton
+                          @variant="ghost"
+                          @extraClass="fomio-cm-btn fomio-cm-btn--tertiary"
+                          style="height:36px;padding:0 14px"
+                          {{on "click" this.onClose}}
+                        >
                           {{i18n (themePrefix "composer.cancel")}}
-                        </button>
-                        <button type="button" class="fomio-cm-btn fomio-cm-btn--primary" style="height:36px;padding:0 18px" disabled={{this.isSaving}} {{on "click" this.onPublish}}>
+                        </FomioButton>
+                        <FomioButton
+                          @variant="primary"
+                          @isLoading={{this.isSaving}}
+                          @extraClass="fomio-cm-btn fomio-cm-btn--primary"
+                          style="height:36px;padding:0 18px"
+                          {{on "click" this.onPublish}}
+                        >
                           {{i18n (themePrefix "composer.action_reply")}}
-                        </button>
+                        </FomioButton>
                       </div>
                     </div>
                   </div>

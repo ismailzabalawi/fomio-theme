@@ -4,8 +4,8 @@ import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import FomioMeActivityNav from "../../components/fomio-me-activity-nav";
-import FomioMeStackHeader from "../../components/fomio-me-stack-header";
+import FomioMeActivityNav from "../../components/shared/fomio-me-activity-nav";
+import FomioMeStackHeader from "../../components/shared/fomio-me-stack-header";
 import {
   getFomioActivityChildSections,
   getFomioNotificationsChildSections,

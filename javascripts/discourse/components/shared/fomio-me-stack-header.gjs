@@ -25,10 +25,10 @@ export default class FomioMeStackHeader extends Component {
   }
 
   <template>
-    <div class="fomio-me-stack-header" aria-label={{@sectionTitle}}>
+    <div class="fomio-me-stack-header fomio-masthead fomio-masthead--mobile" aria-label={{@sectionTitle}}>
       <a
         href={{@backHref}}
-        class="fomio-me-stack-header__back"
+        class="fomio-me-stack-header__back fomio-masthead__icon-btn"
         aria-label={{this.backLabel}}
         {{on "click" this.handleBackClick}}
       >
@@ -36,7 +36,7 @@ export default class FomioMeStackHeader extends Component {
         <span class="fomio-me-stack-header__back-label">{{this.backLabel}}</span>
       </a>
       {{#if @sectionTitle}}
-        <span class="fomio-me-stack-header__title">
+        <span class="fomio-me-stack-header__title fomio-masthead__brand">
           {{@sectionTitle}}
         </span>
       {{/if}}

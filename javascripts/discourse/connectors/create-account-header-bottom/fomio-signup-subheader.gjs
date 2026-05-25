@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioAuthSubheader from "../../components/shared/fomio-auth-subheader";
 import { peekAuthIntent } from "../../lib/fomio-auth-intent";
 
 /** Eyebrow + dek — Stitch Screen 3. Wrapper uses display:contents via SCSS for flex order. */
@@ -38,12 +39,13 @@ export default class FomioSignupSubheader extends Component {
   }
 
   <template>
-    <div class="fomio-signup-header-stack">
-      {{#if this.intentMessage}}
-        <p class="fomio-auth-intent">{{this.intentMessage}}</p>
-      {{/if}}
-      <p class="fomio-signup-eyebrow">{{this.eyebrowText}}</p>
-      <p class="fomio-signup-subheader">{{this.subheaderText}}</p>
-    </div>
+    <FomioAuthSubheader
+      @stackClass="fomio-signup-header-stack"
+      @intentMessage={{this.intentMessage}}
+      @eyebrowText={{this.eyebrowText}}
+      @eyebrowClass="fomio-signup-eyebrow"
+      @bodyText={{this.subheaderText}}
+      @bodyClass="fomio-signup-subheader"
+    />
   </template>
 }

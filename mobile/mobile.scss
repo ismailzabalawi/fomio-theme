@@ -1,189 +1,3 @@
-// ============================================================
-// FOMIO MOBILE HEADER
-// Restyle Discourse's d-header — preserve all behavior, replace appearance.
-// Only hide visually; never remove structural elements.
-// Auth pages are excluded via body.fomio-sidebar-active guard.
-// ============================================================
-
-// ── Suppress noise — hide visually, not structurally ─────────
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header-icons .hamburger-dropdown,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header #current-user,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .header-buttons,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header-icons .header-color-scheme-toggle,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header-icons .language-switcher {
-  display: none !important;
-}
-
-// ── Shell — surface and chrome ────────────────────────────────
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header {
-  background: var(--fomio-bg);
-  border-bottom: 1px solid var(--fomio-border-soft);
-  box-shadow: none;
-}
-
-// ── Wordmark — style the text fallback; logo image shows as-is ──
-
-// Style Discourse's text-logo fallback (when no logo image is configured)
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header #site-text-logo {
-  font-family: var(--fomio-font-serif);
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: var(--fomio-tracking-tight);
-  color: var(--fomio-text);
-  line-height: 1;
-}
-
-// When a topic is scrolled, Discourse minimizes the logo area.
-// Hide it entirely so topic info can own the full header width.
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .title--minimized {
-  display: none;
-}
-
-// ── Topic title — typography when scrolled past the heading ──
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .extra-info-wrapper {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .extra-info {
-  padding: 0;
-}
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .header-title {
-  font-family: var(--fomio-font-serif);
-  font-size: var(--fomio-text-base);
-  font-weight: 600;
-  line-height: var(--fomio-leading-snug);
-  color: var(--fomio-text);
-  margin: 0;
-
-  // Truncate long titles to single line
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .header-title .topic-link {
-  color: var(--fomio-text);
-  text-decoration: none;
-
-  span {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-// Category badges and tags are too noisy in the header
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .categories-wrapper,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .topic-header-extra,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .topic-header-participants {
-  display: none;
-}
-
-// ── Search icon ───────────────────────────────────────────────
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .search-dropdown .btn {
-  color: var(--fomio-muted);
-}
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .search-dropdown:hover .btn,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .search-dropdown.active .btn {
-  color: var(--fomio-text);
-}
-
-// ── Mobile sidebar — slide-in drawer ──────────────────────────
-// On mobile the sidebar is off-screen by default; it slides in from the left
-// when body.fomio-mobile-sidebar-open is toggled by the hamburger button.
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar {
-  display: flex; // always in layout flow; kept off-screen via transform
-  width: min(var(--fomio-sidebar-width), 88vw);
-  transform: translateX(-100%);
-  box-shadow: none;
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition: transform var(--fomio-dur-slow) var(--fomio-ease),
-                box-shadow var(--fomio-dur-slow) var(--fomio-ease);
-  }
-}
-
-body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar {
-  transform: translateX(0);
-  box-shadow: 4px 0 24px var(--fomio-shadow);
-}
-
-// Show the mobile-only close button inside the sidebar
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar__mobile-close {
-  display: flex;
-}
-
-// Dark scrim behind the open sidebar (pseudo-element on body — no extra DOM)
-body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode)::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 897;
-  pointer-events: none; // clicks are caught by .fomio-sidebar-backdrop below
-}
-
-// Transparent click-catcher that closes the sidebar when tapping outside it
-body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-sidebar-backdrop {
-  display: block;
-}
-
-// ── Hamburger button — fixed in the d-header's left slot ──────
-// Positioned to sit flush with the header so it feels like a native header icon.
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-mobile-menu-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  inset-inline-start: 0;
-  width: 52px;
-  // Match Discourse's default mobile header height (--header-offset is JS-set;
-  // use a fallback that works before JS runs)
-  height: var(--header-offset, 50px);
-  z-index: 910; // above d-header (~1000 in Discourse, but we're inside it visually)
-  background: transparent;
-  border: none;
-  color: var(--fomio-text);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    fill: currentColor;
-  }
-
-  &:hover,
-  &:active {
-    color: var(--fomio-primary);
-  }
-}
-
-// Hide the hamburger while the sidebar is open — the × inside takes over
-body.fomio-mobile-sidebar-open.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-mobile-menu-btn {
-  display: none;
-}
-
-// Full-width header — remove Discourse's .wrap max-width and centering constraints
-// so the logo and icons fill the entire header edge-to-edge.
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .d-header .wrap {
-  max-width: 100%;
-  width: 100%;
-  margin-inline: 0;
-}
-
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control {
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
@@ -193,8 +7,10 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   }
 
   .reply-area {
-    padding: max(0.85rem, env(safe-area-inset-top, 0px)) 0.85rem
-      max(0.85rem, env(safe-area-inset-bottom, 0px));
+    padding:
+      max(0.85rem, var(--fomio-safe-top, 0px))
+      var(--fomio-page-pad-x, 0.85rem)
+      max(0.85rem, var(--fomio-safe-bottom, 0px));
   }
 
   .reply-to {
@@ -287,6 +103,17 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
 
 .topic-list.--fomio-discovery-list {
   border-spacing: 0 0.75rem;
+}
+
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
+  .navigation-topics .topic-list.--fomio-discovery-list,
+  .navigation-topics .topic-list.--fomio-fresh-bytes-list,
+  .navigation-categories .topic-list.--fomio-discovery-list,
+  .navigation-categories .topic-list.--fomio-fresh-bytes-list,
+  .navigation-category .topic-list.--fomio-discovery-list,
+  .navigation-category .topic-list.--fomio-fresh-bytes-list {
+    margin-bottom: max(1rem, var(--fomio-page-pad-bottom, 16px));
+  }
 }
 
 // ── Mobile td: strip padding from all tds ──────────────────────
@@ -423,6 +250,26 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   height: 20px;
 }
 
+.fomio-topic-context__author .fomio-avatar {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+.fomio-topic-context__author .fomio-identity {
+  gap: 0.45rem;
+}
+
+.fomio-topic-context__author .fomio-identity__meta {
+  gap: 0;
+}
+
+.fomio-topic-context__author .fomio-identity__name {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 600;
+}
+
 #topic-title.container {
   margin-top: 1.25rem;
 }
@@ -450,6 +297,26 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   flex-wrap: wrap;
   gap: 0.5rem 0.75rem;
   margin-bottom: 1.75rem;
+}
+
+.fomio-topic-reading-meta__author .fomio-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.72rem;
+}
+
+.fomio-topic-reading-meta__author .fomio-identity {
+  gap: 0.45rem;
+}
+
+.fomio-topic-reading-meta__author .fomio-identity__meta {
+  gap: 0;
+}
+
+.fomio-topic-reading-meta__author .fomio-identity__name {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
 .fomio-topic-reading-meta__read-time {
@@ -612,6 +479,154 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   font-variant-numeric: tabular-nums;
 }
 
+// ============================================================
+// LAYER 3 CONSUMPTION BRIDGE
+// Mobile uses a different topic-list DOM wrapper than desktop.
+// Keep the same byte markup contract; only adapt the wrappers.
+// ============================================================
+
+.topic-list-item.--fomio-discovery-item td.topic-list-data:not(.main-link),
+.topic-list-item.--fomio-fresh-byte-item td.topic-list-data:not(.main-link) {
+  padding: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+
+.topic-list-item.--fomio-discovery-item div.main-link,
+.topic-list-item.--fomio-fresh-byte-item div.main-link {
+  display: block;
+  padding: 0;
+  min-width: 0;
+  overflow: visible;
+}
+
+.topic-list-item.--fomio-discovery-item .link-top-line,
+.topic-list-item.--fomio-fresh-byte-item .link-top-line,
+.topic-list-item.--fomio-discovery-item .link-bottom-line,
+.topic-list-item.--fomio-fresh-byte-item .link-bottom-line,
+.topic-list-item.--fomio-discovery-item div.main-link > .topic-excerpt,
+.topic-list-item.--fomio-fresh-byte-item div.main-link > .topic-excerpt {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item div.main-link > a.title,
+.topic-list-item.--fomio-discovery-item div.main-link > a.raw-topic-link,
+.topic-list-item.--fomio-fresh-byte-item div.main-link > a.title,
+.topic-list-item.--fomio-fresh-byte-item div.main-link > a.raw-topic-link,
+.topic-list-item.--fomio-discovery-item .link-top-line > a.title,
+.topic-list-item.--fomio-discovery-item .link-top-line > a.raw-topic-link,
+.topic-list-item.--fomio-fresh-byte-item .link-top-line > a.title,
+.topic-list-item.--fomio-fresh-byte-item .link-top-line > a.raw-topic-link {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item .byte-slot,
+.topic-list-item.--fomio-fresh-byte-item .byte-slot {
+  display: block;
+  width: 100%;
+}
+
+.topic-list-item.--fomio-discovery-item .byte.fomio-topic-context,
+.topic-list-item.--fomio-fresh-byte-item .byte.fomio-topic-context {
+  display: grid;
+  margin: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte {
+  grid-template-columns: 1fr;
+  --byte-pad: 18px;
+  --byte-gap: 14px;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__hero.fomio-topic-context__thumb {
+  order: -1;
+  width: 100%;
+  height: 180px;
+  margin: 0 0 14px;
+  border-radius: var(--fomio-radius-md);
+}
+
+.topic-list-item.--fomio-discovery-item .byte__title {
+  font-size: 20px;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__excerpt {
+  display: none;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte {
+  --byte-pad: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__hero.fomio-topic-context__thumb {
+  height: 160px;
+  margin: 0;
+  border-radius: 0;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__body {
+  padding: 18px 18px 16px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__title {
+  font-size: 22px;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte {
+  --byte-pad: 12px 14px;
+  --byte-gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__body {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__meta {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__excerpt,
+.topic-list-item.--fomio-fresh-byte-item .byte__hero,
+.topic-list-item.--fomio-fresh-byte-item .byte__author,
+.topic-list-item.--fomio-fresh-byte-item .byte__sep,
+.topic-list-item.--fomio-fresh-byte-item .byte__pin,
+.topic-list-item.--fomio-fresh-byte-item .byte__read-time,
+.topic-list-item.--fomio-fresh-byte-item .byte__dot,
+.topic-list-item.--fomio-fresh-byte-item .byte__unread {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__footer {
+  margin: 0;
+  gap: 10px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
 .with-topic-progress,
 #topic-progress-wrapper,
 .container.posts .topic-navigation,
@@ -685,63 +700,6 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
 }
 
 
-// ── Retractable bottom navigation bar ────────────────────────
-// Five-tab bar; hides on scroll-down, reappears on scroll-up.
-// Scroll tracking is handled by fomio-bottom-bar.gjs (toggles --hidden modifier).
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar {
-  display: flex;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 900;
-  align-items: stretch;
-  background: var(--fomio-bg);
-  border-top: 1px solid var(--fomio-border-soft);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  will-change: transform;
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition: transform var(--fomio-dur-slow) var(--fomio-ease);
-  }
-}
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar--hidden {
-  transform: translateY(100%);
-}
-
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar__item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 10px 4px;
-  min-height: 56px;
-  color: var(--fomio-muted);
-  text-decoration: none;
-  font-family: var(--fomio-font-ui);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  svg {
-    width: 1.2rem;
-    height: 1.2rem;
-    fill: currentColor;
-  }
-
-  &.is-active {
-    color: var(--fomio-primary);
-  }
-}
-
 // ── Mobile notifications — match Activity shell hierarchy ───────────────────
 
 body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio-auth-mode) {
@@ -749,8 +707,8 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
     margin: 0 10px 16px;
     padding-top: 10px;
     padding-bottom: 14px;
-    padding-inline-start: max(12px, env(safe-area-inset-left, 0px));
-    padding-inline-end: max(12px, env(safe-area-inset-right, 0px));
+    padding-inline-start: var(--fomio-page-pad-inline-start, 12px);
+    padding-inline-end: var(--fomio-page-pad-inline-end, 12px);
     display: grid;
     grid-template-columns: minmax(0, 1fr) 36px auto;
     grid-template-areas:
@@ -1231,16 +1189,11 @@ body.fomio-surface-touch.user-messages-page.fomio-sidebar-active:not(.fomio-auth
     border-spacing: 0 10px;
   }
 
-  #main-outlet .user-main #user-content .topic-list thead,
-  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data,
-  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data,
-  #main-outlet .user-main #user-content .topic-list .views.topic-list-data,
-  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data {
+  #main-outlet .user-main #user-content .topic-list thead {
     display: none;
   }
 
   #main-outlet .user-main #user-content .topic-list tbody,
-  #main-outlet .user-main #user-content .topic-list tr.topic-list-item,
   #main-outlet .user-main #user-content .topic-list td.main-link.topic-list-data {
     display: block;
     width: 100%;
@@ -1248,14 +1201,101 @@ body.fomio-surface-touch.user-messages-page.fomio-sidebar-active:not(.fomio-auth
 
   #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item {
     margin: 0;
+    display: block;
   }
 
   #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td.main-link.topic-list-data {
+    display: block;
     padding: 14px 14px 15px;
     border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
     border-radius: 18px;
     background: color-mix(in oklab, var(--fomio-surface) 76%, var(--fomio-bg));
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 26%);
+    margin-bottom: 0.55rem;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data {
+    display: flex;
+    min-width: 0;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+    border-radius: 16px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 94%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-surface) 82%, var(--fomio-bg)) 100%
+      );
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 34%);
+    color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data {
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 0.875rem;
+    margin-bottom: 0.55rem;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data::before,
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data::before,
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data::before,
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data::before {
+    display: block;
+    color: color-mix(in oklab, var(--fomio-muted) 74%, var(--fomio-text));
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data::before {
+    content: "Participants";
+    flex: 0 0 auto;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.35rem;
+    width: calc((100% - 1.1rem) / 3);
+    padding: 0.65rem 0.75rem;
+    box-sizing: border-box;
+    vertical-align: top;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data {
+    margin-inline-end: 0.55rem;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data::before {
+    content: "Replies";
+  }
+
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data::before {
+    content: "Views";
+  }
+
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data::before {
+    content: "Latest";
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data a {
+    color: inherit;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data .avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
   }
 
   #main-outlet .user-main #user-content .topic-list .link-top-line {
@@ -1273,13 +1313,20 @@ body.fomio-surface-touch.user-messages-page.fomio-sidebar-active:not(.fomio-auth
     text-decoration: none;
   }
 
-  #main-outlet .user-main #user-content .topic-list .link-bottom-line,
-  #main-outlet .user-main #user-content .topic-list .fomio-topic-context__meta {
+  #main-outlet .user-main #user-content .topic-list .link-bottom-line {
     display: none;
   }
 
   #main-outlet .user-main #user-content .topic-list .fomio-topic-context {
     margin-top: 0.5rem;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .fomio-topic-context__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    margin-bottom: 0.45rem;
   }
 
   #main-outlet .user-main #user-content .topic-list .fomio-topic-context__footer {
@@ -1307,7 +1354,19 @@ body.fomio-surface-touch.user-messages-page.fomio-sidebar-active:not(.fomio-auth
     border-radius: 999px;
   }
 
+  #main-outlet .user-main #user-content .topic-list .fomio-topic-context__author .fomio-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.72rem;
+  }
+
   #main-outlet .user-main #user-content .topic-list .fomio-topic-context__author-name {
+    color: color-mix(in oklab, var(--fomio-muted) 72%, var(--fomio-text));
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .fomio-topic-context__author .fomio-identity__name {
     color: color-mix(in oklab, var(--fomio-muted) 72%, var(--fomio-text));
     font-size: 0.78rem;
     font-weight: 600;
@@ -1334,20 +1393,41 @@ body.fomio-surface-touch.user-messages-page.fomio-sidebar-active:not(.fomio-auth
     height: 0.75rem;
     opacity: 0.68;
   }
+
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data .badge-posts,
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data .number,
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data .relative-date {
+    color: var(--fomio-text);
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data .badge-posts,
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data .post-activity {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) .fomio-bottom-bar__item--create {
   color: var(--fomio-primary);
 
   svg {
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 }
 
 // Push page content above the bar so nothing is hidden behind it
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet-wrapper {
-  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(
+    --fomio-bottom-bar-safe-height,
+    calc(56px + env(safe-area-inset-bottom, 0px))
+  );
 }
 
 // Activity leaf polish (Phase 3C-N1-Fix): authoritative rules live in
@@ -1390,6 +1470,12 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet
   gap: 10px;
 }
 
+.fomio-comment-entry .fomio-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
 .fomio-comment-entry__placeholder {
   font-size: var(--fomio-text-sm);
 }
@@ -1397,6 +1483,18 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet
 // Discussion section — reduce top padding slightly
 .fomio-discussion {
   padding-top: 2rem;
+}
+
+.fomio-comments__header {
+  margin-bottom: 18px;
+}
+
+.fomio-comments__title {
+  font-size: 11px;
+}
+
+.fomio-comments__count {
+  font-size: 11px;
 }
 
 // Ensure more menu doesn't clip on small screens

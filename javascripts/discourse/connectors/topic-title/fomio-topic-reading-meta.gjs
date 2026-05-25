@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import UserLink from "discourse/components/user-link";
-import avatar from "discourse/helpers/avatar";
 import formatDate from "discourse/helpers/format-date";
+import FomioIdentity from "../../components/shared/fomio-identity";
 
 export default class FomioTopicReadingMeta extends Component {
   get topic() {
@@ -64,10 +64,12 @@ export default class FomioTopicReadingMeta extends Component {
       {{#if this.author}}
         <div class="fomio-topic-reading-meta">
           <UserLink @user={{this.author}} class="fomio-topic-reading-meta__author">
-            {{avatar this.author imageSize="small"}}
-            <span class="fomio-topic-reading-meta__author-name">
-              {{this.author.username}}
-            </span>
+            <FomioIdentity
+              @user={{this.author}}
+              @name={{this.author.username}}
+              @showHandle={{false}}
+              @avatarSize="sm"
+            />
           </UserLink>
 
           <span class="fomio-topic-reading-meta__date">

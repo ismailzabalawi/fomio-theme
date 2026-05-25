@@ -9,6 +9,7 @@ import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
+import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 import {
   bookmarksPathForUser,
   profileSummaryPathForUser,
@@ -50,6 +51,7 @@ function isNotificationsSectionPath(path) {
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
+const PENDING_RAIL_OVERLAY_KEY = "fomio_pending_rail_overlay_context";
 
 export default class FomioSidebar extends Component {
   @service router;
@@ -59,13 +61,27 @@ export default class FomioSidebar extends Component {
 
   // null = follow active Hub; set to a Hub ID to manually expand/collapse
   @tracked _expandedHubId = null;
+  @tracked isTouchSurface = false;
+  #unsubscribeTouchShell = null;
+
+  constructor(owner, args) {
+    super(owner, args);
+    this.#unsubscribeTouchShell = subscribeFomioTouchShell((isTouchSurface) => {
+      this.isTouchSurface = isTouchSurface;
+    });
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.#unsubscribeTouchShell?.();
+  }
 
   get currentPath() {
     return (this.router.currentURL || "").split("?")[0];
   }
 
   get shouldRender() {
-    return !isAuthPath(this.currentPath);
+    return !isAuthPath(this.currentPath) && !this.isTouchSurface;
   }
 
   // ── Master context skeleton (Build Slice 3A) ───────────────────
@@ -270,7 +286,7 @@ export default class FomioSidebar extends Component {
   }
 
   @action
-  onHubsActivate(e) {
+  toggleRailOverlay(context, e) {
     if (typeof document === "undefined") {
       return;
     }
@@ -285,22 +301,39 @@ export default class FomioSidebar extends Component {
       return;
     }
 
-    e.preventDefault();
-    e.stopPropagation();
-    if (
-      typeof window !== "undefined" &&
-      window.localStorage?.getItem("fomio_debug_master_pane") === "1"
-    ) {
-      console.debug("[fomio-sidebar] dispatch open overlay", {
-        context: "hubs",
-        path: this.currentPath,
-      });
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      window.sessionStorage.setItem(PENDING_RAIL_OVERLAY_KEY, context);
     }
-    window.dispatchEvent(
-      new CustomEvent("fomio:master-pane:open", {
-        detail: { context: "hubs" },
-      })
-    );
+
+    if (this.activeMasterContext === context) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.dispatchEvent(
+        new CustomEvent("fomio:master-pane:toggle", {
+          detail: { context },
+        })
+      );
+    }
+  }
+
+  @action
+  onHubsActivate(e) {
+    this.toggleRailOverlay("hubs", e);
+  }
+
+  @action
+  onBookmarksActivate(e) {
+    this.toggleRailOverlay("bookmarks", e);
+  }
+
+  @action
+  onNotificationsActivate(e) {
+    this.toggleRailOverlay("notifications", e);
+  }
+
+  @action
+  onProfileActivate(e) {
+    this.toggleRailOverlay("profile", e);
   }
 
   <template>
@@ -458,6 +491,7 @@ export default class FomioSidebar extends Component {
               class="fomio-sidebar__item {{if (eq this.activeMasterContext 'bookmarks') 'is-active'}}"
               aria-current={{if this.isBookmarksActive "page"}}
               title={{this.bookmarksLabel}}
+              {{on "click" this.onBookmarksActivate}}
             >
               <span class="fomio-sidebar__icon">{{icon "bookmark"}}</span>
               <span class="fomio-sidebar__item-label">{{this.bookmarksLabel}}</span>
@@ -483,6 +517,7 @@ export default class FomioSidebar extends Component {
               class="fomio-sidebar__item {{if (eq this.activeMasterContext 'notifications') 'is-active'}}"
               aria-current={{if this.isNotificationsActive "page"}}
               title={{this.notificationsLabel}}
+              {{on "click" this.onNotificationsActivate}}
             >
               <span class="fomio-sidebar__icon">{{icon "bell"}}</span>
               <span class="fomio-sidebar__item-label">{{this.notificationsLabel}}</span>
@@ -491,12 +526,17 @@ export default class FomioSidebar extends Component {
             <a
               href={{this.profileUrl}}
               class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+              {{on "click" this.onProfileActivate}}
             >
               <span class="fomio-sidebar__icon">{{icon "user"}}</span>
               <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
             </a>
           {{else}}
-            <a href={{this.profileUrl}} class="fomio-sidebar__item {{if (eq this.activeMasterContext 'profile') 'is-active'}}">
+            <a
+              href={{this.profileUrl}}
+              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+              {{on "click" this.onProfileActivate}}
+            >
               <span class="fomio-sidebar__icon">{{icon "user"}}</span>
               <span class="fomio-sidebar__item-label">{{this.signInLabel}}</span>
             </a>

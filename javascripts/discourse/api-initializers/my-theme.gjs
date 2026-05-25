@@ -5,6 +5,20 @@ import { themePrefix } from "virtual:theme";
 export default apiInitializer("1.8.0", (api) => {
   api.disableDefaultKeyboardShortcuts(["="]);
 
+  api.addPostClassesCallback((post) => {
+    if ((post?.post_number ?? 0) > 1) {
+      return ["fomio-comment-post"];
+    }
+  });
+
+  api.registerValueTransformer("post-article-class", ({ value: classes, context }) => {
+    if ((context.post?.post_number ?? 0) > 1) {
+      classes.push("fomio-comment", "is-reply");
+    }
+
+    return classes;
+  });
+
   api.registerValueTransformer("topic-list-class", ({ value: classes, context }) => {
     if (context.listContext === "discovery") {
       classes.push("--fomio-discovery-list");
