@@ -4,6 +4,9 @@ import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
 import { service } from "@ember/service";
+import FomioGlobalSearch from "../../components/shared/fomio-global-search";
+import FomioSearchSheet from "../../components/shared/fomio-search-sheet";
+import getURL from "discourse/lib/get-url";
 import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
@@ -58,10 +61,14 @@ export default class FomioSidebar extends Component {
   @service currentUser;
   @service site;
   @service composer;
+  @service session;
+  @service siteSettings;
+  @service interfaceColor;
 
   // null = follow active Hub; set to a Hub ID to manually expand/collapse
   @tracked _expandedHubId = null;
   @tracked isTouchSurface = false;
+  @tracked isSearchSheetOpen = false;
   #unsubscribeTouchShell = null;
 
   constructor(owner, args) {
@@ -69,15 +76,30 @@ export default class FomioSidebar extends Component {
     this.#unsubscribeTouchShell = subscribeFomioTouchShell((isTouchSurface) => {
       this.isTouchSurface = isTouchSurface;
     });
+    this._onRouteDidChange = () => this.closeSearchSheet();
+    if (typeof this.router?.on === "function") {
+      this.router.on("routeDidChange", this._onRouteDidChange);
+    }
   }
 
   willDestroy() {
     super.willDestroy(...arguments);
     this.#unsubscribeTouchShell?.();
+    if (typeof this.router?.off === "function" && this._onRouteDidChange) {
+      this.router.off("routeDidChange", this._onRouteDidChange);
+    }
   }
 
   get currentPath() {
     return (this.router.currentURL || "").split("?")[0];
+  }
+
+  get isRailSurface() {
+    if (typeof document === "undefined") {
+      return false;
+    }
+
+    return document.body?.classList.contains("fomio-surface-rail");
   }
 
   get shouldRender() {
@@ -247,6 +269,79 @@ export default class FomioSidebar extends Component {
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
   get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
 
+  get darkMediaQuery() {
+    if (this.interfaceColor.darkModeForced) {
+      return "all";
+    }
+
+    if (this.interfaceColor.lightModeForced) {
+      return "none";
+    }
+
+    return "(prefers-color-scheme: dark)";
+  }
+
+  get logoTitle() {
+    return this.siteSettings.title;
+  }
+
+  get logoUrl() {
+    return this.logoResolver("logo");
+  }
+
+  get logoUrlDark() {
+    return this.logoResolver("logo", { dark: this.session.darkModeAvailable });
+  }
+
+  get logoSmallUrl() {
+    return this.logoResolver("logo_small");
+  }
+
+  get logoSmallUrlDark() {
+    return this.logoResolver("logo_small", {
+      dark: this.session.darkModeAvailable,
+    });
+  }
+
+  get showCompactLogo() {
+    return this.isRailSurface;
+  }
+
+  get showFullLogo() {
+    return !this.showCompactLogo && Boolean(this.logoUrl);
+  }
+
+  get showSmallLogo() {
+    return this.showCompactLogo && Boolean(this.logoSmallUrl);
+  }
+
+  get hasDistinctDarkFullLogo() {
+    return Boolean(this.logoUrlDark && this.logoUrlDark !== this.logoUrl);
+  }
+
+  get hasDistinctDarkSmallLogo() {
+    return Boolean(
+      this.logoSmallUrlDark && this.logoSmallUrlDark !== this.logoSmallUrl
+    );
+  }
+
+  logoResolver(name, opts = {}) {
+    let url;
+
+    if (opts.dark) {
+      url = this.siteSettings[`site_${name}_dark_url`];
+    } else if (this.session.defaultColorSchemeIsDark) {
+      url =
+        this.siteSettings[`site_${name}_dark_url`] ||
+        this.siteSettings[`site_${name}_url`] ||
+        "";
+    } else {
+      url = this.siteSettings[`site_${name}_url`] || "";
+    }
+
+    return url;
+  }
+
   // ── Actions ──────────────────────────────────────────────────
 
   @action
@@ -283,6 +378,16 @@ export default class FomioSidebar extends Component {
   @action
   closeMobile() {
     document.body.classList.remove("fomio-mobile-sidebar-open");
+  }
+
+  @action
+  openSearchSheet() {
+    this.isSearchSheetOpen = true;
+  }
+
+  @action
+  closeSearchSheet() {
+    this.isSearchSheetOpen = false;
   }
 
   @action
@@ -366,23 +471,90 @@ export default class FomioSidebar extends Component {
 
         {{! ── Zone A — Top (logo + search) ──────────────── }}
         <div class="fomio-sidebar__zone fomio-sidebar__zone--top">
-          <a href="/latest" class="fomio-sidebar__wordmark" aria-label="Fomio">
-            <span class="fomio-sidebar__wordmark-text">Fomio</span>
+          <a
+            href="/latest"
+            class="fomio-sidebar__wordmark"
+            aria-label={{this.logoTitle}}
+          >
+            {{#if this.showSmallLogo}}
+              {{#if this.hasDistinctDarkSmallLogo}}
+                <picture class="fomio-sidebar__logo-picture">
+                  <source
+                    srcset={{getURL this.logoSmallUrlDark}}
+                    media={{this.darkMediaQuery}}
+                  />
+                  <img
+                    class="fomio-sidebar__logo-image fomio-sidebar__logo-image--small"
+                    src={{getURL this.logoSmallUrl}}
+                    alt={{this.logoTitle}}
+                  />
+                </picture>
+              {{else}}
+                <img
+                  class="fomio-sidebar__logo-image fomio-sidebar__logo-image--small"
+                  src={{getURL this.logoSmallUrl}}
+                  alt={{this.logoTitle}}
+                />
+              {{/if}}
+            {{else if this.showFullLogo}}
+              {{#if this.hasDistinctDarkFullLogo}}
+                <picture class="fomio-sidebar__logo-picture">
+                  <source
+                    srcset={{getURL this.logoUrlDark}}
+                    media={{this.darkMediaQuery}}
+                  />
+                  <img
+                    class="fomio-sidebar__logo-image fomio-sidebar__logo-image--full"
+                    src={{getURL this.logoUrl}}
+                    alt={{this.logoTitle}}
+                  />
+                </picture>
+              {{else}}
+                <img
+                  class="fomio-sidebar__logo-image fomio-sidebar__logo-image--full"
+                  src={{getURL this.logoUrl}}
+                  alt={{this.logoTitle}}
+                />
+              {{/if}}
+            {{else if this.showCompactLogo}}
+              <span class="fomio-sidebar__wordmark-fallback-icon" aria-hidden="true">
+                {{icon "house"}}
+              </span>
+            {{else}}
+              <span class="fomio-sidebar__wordmark-text">{{this.logoTitle}}</span>
+            {{/if}}
           </a>
 
-          <a
-            href="/search"
-            class="fomio-sidebar__search-trigger"
-            aria-label={{this.searchLabel}}
-            title={{this.searchLabel}}
-          >
-            <span class="fomio-sidebar__icon">{{icon "magnifying-glass"}}</span>
-            <span class="fomio-sidebar__item-label">
-              <span class="fomio-sidebar__search-title">{{this.searchLabel}}</span>
-              <span class="fomio-sidebar__search-hint">{{this.searchHint}}</span>
-            </span>
-          </a>
+          {{#if this.isRailSurface}}
+            <button
+              type="button"
+              class="fomio-sidebar__search-trigger"
+              aria-label={{this.searchLabel}}
+              title={{this.searchLabel}}
+              {{on "click" this.openSearchSheet}}
+            >
+              <span class="fomio-sidebar__icon">{{icon "magnifying-glass"}}</span>
+              <span class="fomio-sidebar__item-label">
+                <span class="fomio-sidebar__search-title">{{this.searchLabel}}</span>
+                <span class="fomio-sidebar__search-hint">{{this.searchHint}}</span>
+              </span>
+            </button>
+          {{else}}
+            <div class="fomio-sidebar__search-shell">
+              <FomioGlobalSearch
+                @variant="sidebar"
+                @searchInputId="fomio-sidebar-search-input"
+              />
+            </div>
+          {{/if}}
         </div>
+
+        <FomioSearchSheet
+          @isOpen={{this.isSearchSheetOpen}}
+          @onClose={{this.closeSearchSheet}}
+          @variant="rail"
+          @searchInputId="fomio-rail-search-input"
+        />
 
         {{! ── Zone B — Core navigation ───────────────────── }}
         <div class="fomio-sidebar__zone fomio-sidebar__zone--core">

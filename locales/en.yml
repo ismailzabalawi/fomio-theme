@@ -223,6 +223,10 @@ en:
     badges: "Badges"
   ephemeral_sheet:
     close_label: "Close"
+  search_sheet:
+    aria_label: "Search Fomio"
+    title: "Search"
+    subtitle: "Find Bytes, Hubs, people, and threads without leaving the page."
   topic_list:
     published: "Published"
     min_read: "min read"

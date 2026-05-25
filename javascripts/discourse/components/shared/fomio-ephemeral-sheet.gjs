@@ -39,7 +39,7 @@ export default class FomioEphemeralSheet extends Component {
         {{on "click" this.onBackdropClick}}
       ></div>
       <div
-        class="fomio-ephemeral-sheet"
+        class="fomio-ephemeral-sheet {{@extraClass}}"
         role="dialog"
         aria-modal="true"
         aria-label={{@ariaLabel}}
