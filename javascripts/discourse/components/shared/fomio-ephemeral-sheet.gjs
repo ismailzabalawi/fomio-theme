@@ -34,9 +34,8 @@ export default class FomioEphemeralSheet extends Component {
   <template>
     {{#if @isOpen}}
       <div
-        class="fomio-ephemeral-sheet-backdrop"
+        class="fomio-ephemeral-sheet-backdrop {{@backdropClass}}"
         aria-hidden="true"
-        style={{@backdropStyle}}
         {{on "click" this.onBackdropClick}}
       ></div>
       <div
@@ -45,7 +44,6 @@ export default class FomioEphemeralSheet extends Component {
         aria-modal="true"
         aria-label={{@ariaLabel}}
         tabindex="-1"
-        style={{@panelStyle}}
         {{on "keydown" this.onKeydown}}
       >
         <div class="fomio-ephemeral-sheet__inner">

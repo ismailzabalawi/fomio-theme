@@ -11,47 +11,48 @@ import { themePrefix } from "virtual:theme";
 import Composer from "discourse/models/composer";
 import FomioBlockEditor from "../../components/fomio-block-editor";
 import FomioButton from "../../components/shared/fomio-button";
+import FomioPhIcon from "../../components/shared/fomio-ph-icon";
 
 // ── Icons ─────────────────────────────────────────────────────
 
 const IcoBack = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+  <FomioPhIcon @name="fomio-ph-caret-left" @size={{14}} />
 </template>;
 
 const IcoSource = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4l-5 8 5 8M15 4l5 8-5 8" /></svg>
+  <FomioPhIcon @name="fomio-ph-code-simple" @size={{14}} />
 </template>;
 
 const IcoClose = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+  <FomioPhIcon @name="fomio-ph-x" @size={{14}} />
 </template>;
 
 const IcoArrow = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+  <FomioPhIcon @name="fomio-ph-arrow-line-right" @size={{14}} />
 </template>;
 
 const IcoEdit = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16zM14 5l4 4" /></svg>
+  <FomioPhIcon @name="fomio-ph-note-pencil" @size={{14}} />
 </template>;
 
 const IcoPlus = <template>
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+  <FomioPhIcon @name="fomio-ph-plus" @size={{16}} />
 </template>;
 
 const IcoCheck = <template>
-  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 7" /></svg>
+  <FomioPhIcon @name="fomio-ph-check" @size={{10}} />
 </template>;
 
 const IcoChev = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+  <FomioPhIcon @name="fomio-ph-caret-down" @size={{14}} />
 </template>;
 
 const IcoHome = <template>
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12l9-9 9 9M5 10v10h14V10" /></svg>
+  <FomioPhIcon @name="fomio-ph-house-simple" @size={{16}} />
 </template>;
 
 const IcoLatest = <template>
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h12M3 18h18" /></svg>
+  <FomioPhIcon @name="fomio-ph-rows" @size={{16}} />
 </template>;
 
 // ── Sidebar ───────────────────────────────────────────────────

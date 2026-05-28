@@ -68,11 +68,11 @@ export default class FomioDesktopSearchPalette extends Component {
         return;
       }
 
-      if (!(event.metaKey || event.ctrlKey) || event.altKey) {
+      if (event.key !== "/") {
         return;
       }
 
-      if (event.code !== "Slash") {
+      if (event.metaKey || event.ctrlKey || event.altKey) {
         return;
       }
 

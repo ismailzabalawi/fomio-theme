@@ -51,6 +51,39 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
   }
 }
 
+html.fomio-color-dark {
+  body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode),
+  body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+  body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
+    .fomio-sidebar {
+      background: color-mix(in oklab, var(--fomio-surface) 18%, var(--fomio-bg));
+      border-inline-end-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+    }
+
+    .fomio-sidebar__search-trigger {
+      border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+      background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-surface));
+      color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+    }
+
+    .fomio-sidebar__search-trigger:hover,
+    .fomio-sidebar__search-trigger:focus-visible,
+    .fomio-sidebar__search-trigger:focus-within {
+      border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border));
+      background: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-surface));
+      color: var(--fomio-text);
+    }
+  }
+
+  .user-main .user-notifications-list > li,
+  #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td {
+    border-color: color-mix(in oklab, var(--fomio-border) 72%, transparent);
+    background: color-mix(in oklab, var(--fomio-card) 76%, var(--fomio-surface));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+  }
+}
+
 // Fallback until resolver marks body as ready.
 // Limit this to desktop-like pointer environments so landscape phones
 // never flash the desktop sidebar before touch mode is applied.

@@ -7,55 +7,40 @@ import { service } from "@ember/service";
 import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioPhIcon from "./shared/fomio-ph-icon";
 
 // ── Icons ─────────────────────────────────────────────────────
 
 const IcoPlus = <template>
-  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M12 5v14M5 12h14" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-plus" @size={{11}} />
 </template>;
 
 const IcoH2 = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 6v12M14 6v12M4 12h10M18 8a3 3 0 0 1 6 0c0 4-6 5-6 10h6" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-text-h-two" @size={{14}} />
 </template>;
 
 const IcoQuote = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M7 7h4v6H7V7zM13 7h4v6h-4V7zM7 13c0 4 2 5 4 5M13 13c0 4 2 5 4 5" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-quotes" @size={{14}} />
 </template>;
 
 const IcoDivider = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M5 12h14" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-minus" @size={{14}} />
 </template>;
 
 const IcoImage = <template>
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M3 5h18v14H3zM3 16l5-5 4 4 3-3 6 6" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-image" @size={{14}} />
 </template>;
 
 const IcoBold = <template>
-  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M7 4h6a4 4 0 0 1 0 8H7zM7 12h7a4 4 0 0 1 0 8H7z" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-text-b" @size={{13}} />
 </template>;
 
 const IcoItalic = <template>
-  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M11 4h8M5 20h8M14 4l-4 16" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-text-italic" @size={{13}} />
 </template>;
 
 const IcoLink = <template>
-  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1.5 1.5M14 10a4 4 0 0 1-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1.5-1.5" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-link-simple" @size={{13}} />
 </template>;
 
 // ── Block model ───────────────────────────────────────────────

@@ -227,9 +227,6 @@ en:
   ephemeral_sheet:
     close_label: "Close"
   search_sheet:
-    aria_label: "Search Fomio"
-    title: "Search"
-    subtitle: "Find Bytes, Hubs, people, and threads without leaving the page."
     see_all_results: "See all results"
   topic_list:
     published: "Published"

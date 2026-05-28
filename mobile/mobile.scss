@@ -713,6 +713,49 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
   width: 100%;
 }
 
+html.fomio-color-dark body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
+  .d-header {
+    background: color-mix(in oklab, var(--fomio-surface) 10%, var(--fomio-bg));
+    border-bottom-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+  }
+
+  .d-header .search-dropdown .btn {
+    border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 5%);
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+  }
+
+  .d-header .search-dropdown:hover .btn,
+  .d-header .search-dropdown.active .btn {
+    border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border));
+    background: color-mix(in oklab, var(--fomio-card) 98%, var(--fomio-surface));
+    color: var(--fomio-text);
+  }
+
+  .topic-list-item.--fomio-fresh-byte-item td.topic-list-data:not(.main-link),
+  .topic-list-item.--fomio-discovery-item td.main-link,
+  #main-outlet .user-main #user-content .topic-list tbody tr.topic-list-item td.main-link.topic-list-data {
+    border-color: color-mix(in oklab, var(--fomio-border) 78%, transparent);
+    background: color-mix(in oklab, var(--fomio-card) 82%, var(--fomio-surface));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+  }
+
+  #main-outlet .user-main #user-content .topic-list .posters.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .posts.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .views.topic-list-data,
+  #main-outlet .user-main #user-content .topic-list .activity.topic-list-data {
+    border-color: color-mix(in oklab, var(--fomio-border) 74%, transparent);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface)) 0%,
+        color-mix(in oklab, var(--fomio-surface) 82%, var(--fomio-bg)) 100%
+      );
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+  }
+}
+
 
 // ── Mobile notifications — match Activity shell hierarchy ───────────────────
 

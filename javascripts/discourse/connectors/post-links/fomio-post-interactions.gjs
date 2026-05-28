@@ -13,75 +13,52 @@ import FlagModal from "discourse/components/modal/flag";
 import PostFlag from "discourse/lib/flag-targets/post-flag";
 import FomioButton from "../../components/shared/fomio-button";
 import FomioAvatar from "../../components/shared/fomio-avatar";
+import FomioPhIcon from "../../components/shared/fomio-ph-icon";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 
 // ── SVG icon helpers ─────────────────────────────────────────
 
 const IcoHeart = <template>
   {{#if @filled}}
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path fill="currentColor" d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
-    </svg>
+    <FomioPhIcon @name="fomio-ph-heart-fill" @size={{18}} />
   {{else}}
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
-    </svg>
+    <FomioPhIcon @name="fomio-ph-heart" @size={{18}} />
   {{/if}}
 </template>;
 
 const IcoChat = <template>
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M21 11.5a8.5 8.5 0 0 1-12.9 7.3L3 20l1.3-4.4A8.5 8.5 0 1 1 21 11.5Z" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-chat-circle" @size={{18}} />
 </template>;
 
 const IcoBookmark = <template>
   {{#if @filled}}
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path fill="currentColor" d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1Z" />
-    </svg>
+    <FomioPhIcon @name="fomio-ph-bookmark-fill" @size={{18}} />
   {{else}}
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1Z" />
-    </svg>
+    <FomioPhIcon @name="fomio-ph-bookmark" @size={{18}} />
   {{/if}}
 </template>;
 
 const IcoShare = <template>
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M12 14V4m0 0-3.5 3.5M12 4l3.5 3.5M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-share" @size={{18}} />
 </template>;
 
 const IcoCheck = <template>
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="m5 12 5 5L20 7" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-check" @size={{18}} />
 </template>;
 
 const IcoMore = <template>
-  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-    <circle cx="5"  cy="12" r="1.5" fill="currentColor" />
-    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    <circle cx="19" cy="12" r="1.5" fill="currentColor" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-dots-three" @size={{18}} />
 </template>;
 
 const IcoReply = <template>
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M9 17 4 12l5-5M4 12h11a5 5 0 0 1 5 5v3" />
-  </svg>
+  <FomioPhIcon @name="fomio-ph-arrow-bend-up-left" @size={{16}} />
 </template>;
 
 const IcoHeartSm = <template>
   {{#if @filled}}
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-      <path fill="currentColor" d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
-    </svg>
+    <FomioPhIcon @name="fomio-ph-heart-fill" @size={{16}} />
   {{else}}
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 20.5S4.5 15.9 2.5 11.3C1.1 7.7 3.4 4.5 6.7 4.5c2 0 3.5 1 4.3 2.4.2.4.7.4.9 0 .8-1.4 2.3-2.4 4.3-2.4 3.3 0 5.6 3.2 4.2 6.8C19.5 15.9 12 20.5 12 20.5Z" />
-    </svg>
+    <FomioPhIcon @name="fomio-ph-heart" @size={{16}} />
   {{/if}}
 </template>;
 

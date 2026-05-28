@@ -7,7 +7,6 @@ import { service } from "@ember/service";
 import getURL from "discourse/lib/get-url";
 import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
-import { translateModKey } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
@@ -303,7 +302,7 @@ export default class FomioSidebar extends Component {
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
   get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
   get searchShortcutLabel() {
-    return `${translateModKey("Meta")} /`;
+    return "/";
   }
 
   get darkMediaQuery() {

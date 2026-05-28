@@ -2,7 +2,42 @@ import { apiInitializer } from "discourse/lib/api";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 
+const PHOSPHOR_ICON_REPLACEMENTS = {
+  "angle-right": "fomio-ph-caret-right",
+  "bars-staggered": "fomio-ph-rows",
+  bell: "fomio-ph-bell",
+  bold: "fomio-ph-text-b",
+  book: "fomio-ph-book",
+  bookmark: "fomio-ph-bookmark",
+  certificate: "fomio-ph-certificate",
+  "chevron-left": "fomio-ph-caret-left",
+  clock: "fomio-ph-clock",
+  comment: "fomio-ph-chat-circle",
+  compass: "fomio-ph-compass",
+  envelope: "fomio-ph-envelope",
+  fire: "fomio-ph-fire",
+  gear: "fomio-ph-gear",
+  heart: "fomio-ph-heart",
+  house: "fomio-ph-house",
+  italic: "fomio-ph-text-italic",
+  link: "fomio-ph-link-simple",
+  list: "fomio-ph-list-bullets",
+  "magnifying-glass": "fomio-ph-magnifying-glass",
+  "pen-to-square": "fomio-ph-plus",
+  "sign-out": "fomio-ph-sign-out",
+  "table-cells": "fomio-ph-table",
+  thumbtack: "fomio-ph-push-pin",
+  user: "fomio-ph-user",
+  "user-plus": "fomio-ph-user-plus",
+  wrench: "fomio-ph-wrench",
+  xmark: "fomio-ph-x",
+};
+
 export default apiInitializer("1.8.0", (api) => {
+  for (const [source, target] of Object.entries(PHOSPHOR_ICON_REPLACEMENTS)) {
+    api.replaceIcon(source, target);
+  }
+
   api.disableDefaultKeyboardShortcuts(["="]);
 
   api.addPostClassesCallback((post) => {
