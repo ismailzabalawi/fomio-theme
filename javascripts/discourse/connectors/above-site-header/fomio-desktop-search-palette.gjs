@@ -38,6 +38,7 @@ export default class FomioDesktopSearchPalette extends Component {
   #unsubscribeTouch = null;
   #unsubscribePalette = null;
   #keydownHandler = null;
+  #prevFocusEl = null;
 
   constructor(owner, args) {
     super(owner, args);
@@ -50,9 +51,13 @@ export default class FomioDesktopSearchPalette extends Component {
     });
 
     this.#unsubscribePalette = subscribeDesktopSearchPalette((isOpen) => {
+      const wasOpen = this.isSearchSheetOpen;
       this.isSearchSheetOpen = isOpen;
       if (isOpen) {
         this.focusSearchInput();
+      } else if (wasOpen) {
+        this.#prevFocusEl?.focus?.();
+        this.#prevFocusEl = null;
       }
     });
 
@@ -87,6 +92,7 @@ export default class FomioDesktopSearchPalette extends Component {
       if (this.isSearchSheetOpen) {
         this.focusSearchInput();
       } else {
+        this.#prevFocusEl = document.activeElement;
         openDesktopSearchPalette();
       }
     };

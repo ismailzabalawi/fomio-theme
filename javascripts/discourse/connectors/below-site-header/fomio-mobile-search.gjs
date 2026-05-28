@@ -13,6 +13,7 @@ export default class FomioMobileSearch extends Component {
   @tracked isSearchSheetOpen = false;
   #unsubscribeTouch = null;
   #searchButtonClickHandler = null;
+  #prevFocusEl = null;
 
   constructor(owner, args) {
     super(owner, args);
@@ -38,6 +39,7 @@ export default class FomioMobileSearch extends Component {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
+      this.#prevFocusEl = trigger;
       this.openSearchSheet();
     };
 
@@ -48,8 +50,15 @@ export default class FomioMobileSearch extends Component {
 
   willDestroy() {
     this.#unsubscribeTouch?.();
-    if (typeof document !== "undefined" && this.#searchButtonClickHandler) {
-      document.removeEventListener("click", this.#searchButtonClickHandler, true);
+    if (typeof document !== "undefined") {
+      if (this.#searchButtonClickHandler) {
+        document.removeEventListener(
+          "click",
+          this.#searchButtonClickHandler,
+          true
+        );
+      }
+      document.body.style.overflow = "";
     }
     if (typeof this.router?.off === "function" && this._onRouteDidChange) {
       this.router.off("routeDidChange", this._onRouteDidChange);
@@ -73,11 +82,19 @@ export default class FomioMobileSearch extends Component {
   openSearchSheet(event) {
     event?.preventDefault();
     this.isSearchSheetOpen = true;
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "hidden";
+    }
   }
 
   @action
   closeSearchSheet() {
     this.isSearchSheetOpen = false;
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "";
+    }
+    this.#prevFocusEl?.focus?.();
+    this.#prevFocusEl = null;
   }
 
   <template>

@@ -4,6 +4,9 @@ import { on } from "@ember/modifier";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 
+const FOCUSABLE_SELECTORS =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 /**
  * Ephemeral sheet: backdrop + panel. Parent owns open state; when closed,
  * do not render (keeps content out of the accessibility tree).
@@ -23,6 +26,33 @@ export default class FomioEphemeralSheet extends Component {
     if (event.key === "Escape") {
       event.preventDefault();
       this.args.onClose?.();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      const sheet = event.currentTarget;
+      const focusable = [
+        ...sheet.querySelectorAll(FOCUSABLE_SELECTORS),
+      ].filter((el) => getComputedStyle(el).display !== "none");
+      if (!focusable.length) {
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey) {
+        if (
+          document.activeElement === first ||
+          document.activeElement === sheet
+        ) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     }
   }
 
