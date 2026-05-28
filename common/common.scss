@@ -10218,11 +10218,15 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
 }
 
 body:not(.fomio-surface-touch) .fomio-ephemeral-sheet-backdrop {
+  position: fixed;
+  inset: 0;
   background: rgb(248 246 242 / 72%);
   backdrop-filter: blur(8px);
 }
 
 body:not(.fomio-surface-touch) .fomio-search-sheet__backdrop {
+  position: fixed;
+  inset: 0;
   background: rgb(0 0 0 / 22%);
   backdrop-filter: blur(2px);
   z-index: 1980;
@@ -10241,6 +10245,7 @@ body:not(.fomio-surface-touch) .fomio-search-sheet__backdrop {
 }
 
 body:not(.fomio-surface-touch) .fomio-search-sheet--desktop.fomio-ephemeral-sheet {
+  position: fixed;
   top: clamp(6rem, 20vh, 14rem);
   left: calc(50vw + (var(--fomio-surface-sidebar-offset) / 2));
   right: auto;
