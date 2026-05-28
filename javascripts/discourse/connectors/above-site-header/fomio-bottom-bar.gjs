@@ -8,15 +8,18 @@ import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import {
-  bookmarksPathForUser,
   isAuthPath,
   isDiscoverPath,
   isHomeFeedPath,
   isMePath,
-  isSavedPath,
+  isNotificationsPath,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
 import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
+import {
+  FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
+  openFomioNotificationsMenu,
+} from "../../lib/fomio-notifications-menu";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 const HIDE_START_Y = 120;
@@ -30,8 +33,10 @@ export default class FomioBottomBar extends Component {
   @service composer;
 
   @tracked isHidden = false;
+  @tracked notificationsMenuOpen = false;
   #lastScrollY = 0;
   #scrollHandler = null;
+  #notificationsMenuStateHandler = null;
 
   constructor(owner, args) {
     super(owner, args);
@@ -54,11 +59,22 @@ export default class FomioBottomBar extends Component {
       this.#lastScrollY = y;
     };
     window.addEventListener("scroll", this.#scrollHandler, { passive: true });
+    this.#notificationsMenuStateHandler = (event) => {
+      this.notificationsMenuOpen = Boolean(event?.detail?.open);
+    };
+    window.addEventListener(
+      FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
+      this.#notificationsMenuStateHandler
+    );
   }
 
   willDestroy() {
     super.willDestroy();
     window.removeEventListener("scroll", this.#scrollHandler);
+    window.removeEventListener(
+      FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
+      this.#notificationsMenuStateHandler
+    );
   }
 
   get currentPath() {
@@ -77,8 +93,8 @@ export default class FomioBottomBar extends Component {
     return isDiscoverPath(this.currentPath);
   }
 
-  get isSavedActive() {
-    return isSavedPath(this.currentPath);
+  get isNotificationsActive() {
+    return isNotificationsPath(this.currentPath) || this.notificationsMenuOpen;
   }
 
   get isMeActive() {
@@ -87,10 +103,6 @@ export default class FomioBottomBar extends Component {
 
   get shouldAutoHide() {
     return !this.isMeActive;
-  }
-
-  get bookmarksUrl() {
-    return bookmarksPathForUser(this.currentUser);
   }
 
   get profileUrl() {
@@ -113,8 +125,8 @@ export default class FomioBottomBar extends Component {
     return i18n(themePrefix("mobile_nav.create"));
   }
 
-  get savedLabel() {
-    return i18n(themePrefix("mobile_nav.saved"));
+  get notificationsLabel() {
+    return i18n(themePrefix("mobile_nav.notifications"));
   }
 
   get meLabel() {
@@ -134,16 +146,22 @@ export default class FomioBottomBar extends Component {
     }
   }
 
+  get notificationsBadge() {
+    const count = this.currentUser?.all_unread_notifications_count;
+    if (!count || count <= 0) {
+      return null;
+    }
+
+    return count > 99 ? "99+" : String(count);
+  }
+
   @action
-  goToSaved(e) {
+  openNotifications(e) {
     e?.preventDefault();
     if (this.currentUser) {
-      const url = bookmarksPathForUser(this.currentUser);
-      if (url) {
-        window.location.assign(url);
-      }
+      openFomioNotificationsMenu("mobile");
     } else {
-      redirectToLoginWithIntent("view_saved", this.currentPath);
+      redirectToLoginWithIntent("view_profile", this.currentPath);
     }
   }
 
@@ -210,24 +228,30 @@ export default class FomioBottomBar extends Component {
         </button>
 
         {{#if this.currentUser}}
-          <a
-            href={{this.bookmarksUrl}}
-            class="fomio-bottom-bar__item {{if this.isSavedActive 'is-active'}}"
-            aria-current={{if this.isSavedActive "page"}}
-            title={{this.savedLabel}}
+          <button
+            type="button"
+            class="fomio-bottom-bar__item {{if this.isNotificationsActive 'is-active'}}"
+            aria-current={{if this.isNotificationsActive "page"}}
+            title={{this.notificationsLabel}}
+            {{on "click" this.openNotifications}}
           >
-            {{icon "bookmark"}}
-            <span class="fomio-bottom-bar__label">{{this.savedLabel}}</span>
-          </a>
+            <span class="fomio-bottom-bar__icon">
+              {{icon "bell"}}
+              {{#if this.notificationsBadge}}
+                <span class="fomio-bottom-bar__badge">{{this.notificationsBadge}}</span>
+              {{/if}}
+            </span>
+            <span class="fomio-bottom-bar__label">{{this.notificationsLabel}}</span>
+          </button>
         {{else}}
           <button
             type="button"
-            class="fomio-bottom-bar__item {{if this.isSavedActive 'is-active'}}"
-            title={{this.savedLabel}}
-            {{on "click" this.goToSaved}}
+            class="fomio-bottom-bar__item {{if this.isNotificationsActive 'is-active'}}"
+            title={{this.notificationsLabel}}
+            {{on "click" this.openNotifications}}
           >
-            {{icon "bookmark"}}
-            <span class="fomio-bottom-bar__label">{{this.savedLabel}}</span>
+            <span class="fomio-bottom-bar__icon">{{icon "bell"}}</span>
+            <span class="fomio-bottom-bar__label">{{this.notificationsLabel}}</span>
           </button>
         {{/if}}
 

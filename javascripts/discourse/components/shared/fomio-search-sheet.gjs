@@ -29,12 +29,39 @@ export default class FomioSearchSheet extends Component {
     return `fomio-search-sheet fomio-search-sheet--${this.variant}`;
   }
 
+  get panelStyle() {
+    if (this.variant !== "desktop") {
+      return null;
+    }
+
+    return [
+      "top: clamp(4.5rem, 10vh, 7.25rem)",
+      "left: calc(50vw + (var(--fomio-surface-sidebar-offset) / 2))",
+      "right: auto",
+      "bottom: auto",
+      "transform: translateX(-50%)",
+      "width: min(39rem, calc(100vw - var(--fomio-surface-sidebar-offset) - 2.5rem))",
+      "max-height: min(76vh, 44rem)",
+      "z-index: 1990",
+    ].join("; ");
+  }
+
+  get backdropStyle() {
+    if (this.variant !== "desktop") {
+      return null;
+    }
+
+    return "z-index: 1980";
+  }
+
   <template>
     <FomioEphemeralSheet
       @isOpen={{@isOpen}}
       @onClose={{@onClose}}
       @ariaLabel={{this.ariaLabel}}
       @extraClass={{this.sheetClass}}
+      @panelStyle={{this.panelStyle}}
+      @backdropStyle={{this.backdropStyle}}
     >
       <div class="fomio-search-sheet__header">
         <p class="fomio-search-sheet__eyebrow">{{this.title}}</p>

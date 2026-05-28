@@ -4,14 +4,21 @@ import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
 import { service } from "@ember/service";
-import FomioGlobalSearch from "../../components/shared/fomio-global-search";
-import FomioSearchSheet from "../../components/shared/fomio-search-sheet";
 import getURL from "discourse/lib/get-url";
 import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
+import { translateModKey } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
+import {
+  openDesktopSearchPalette,
+  subscribeDesktopSearchPalette,
+} from "../../lib/fomio-desktop-search-palette";
+import {
+  FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
+  openFomioNotificationsMenu,
+} from "../../lib/fomio-notifications-menu";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 import {
   bookmarksPathForUser,
@@ -69,25 +76,36 @@ export default class FomioSidebar extends Component {
   @tracked _expandedHubId = null;
   @tracked isTouchSurface = false;
   @tracked isSearchSheetOpen = false;
+  @tracked notificationsMenuOpen = false;
   #unsubscribeTouchShell = null;
+  #unsubscribeSearchPalette = null;
+  #notificationsMenuStateHandler = null;
 
   constructor(owner, args) {
     super(owner, args);
     this.#unsubscribeTouchShell = subscribeFomioTouchShell((isTouchSurface) => {
       this.isTouchSurface = isTouchSurface;
     });
-    this._onRouteDidChange = () => this.closeSearchSheet();
-    if (typeof this.router?.on === "function") {
-      this.router.on("routeDidChange", this._onRouteDidChange);
-    }
+    this.#unsubscribeSearchPalette = subscribeDesktopSearchPalette((isOpen) => {
+      this.isSearchSheetOpen = isOpen;
+    });
+    this.#notificationsMenuStateHandler = (event) => {
+      this.notificationsMenuOpen = Boolean(event?.detail?.open);
+    };
+    window.addEventListener(
+      FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
+      this.#notificationsMenuStateHandler
+    );
   }
 
   willDestroy() {
     super.willDestroy(...arguments);
     this.#unsubscribeTouchShell?.();
-    if (typeof this.router?.off === "function" && this._onRouteDidChange) {
-      this.router.off("routeDidChange", this._onRouteDidChange);
-    }
+    this.#unsubscribeSearchPalette?.();
+    window.removeEventListener(
+      FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
+      this.#notificationsMenuStateHandler
+    );
   }
 
   get currentPath() {
@@ -100,6 +118,14 @@ export default class FomioSidebar extends Component {
     }
 
     return document.body?.classList.contains("fomio-surface-rail");
+  }
+
+  get isCompactDesktopSurface() {
+    if (typeof document === "undefined") {
+      return false;
+    }
+
+    return document.body?.classList.contains("fomio-surface-compact-desktop");
   }
 
   get shouldRender() {
@@ -150,7 +176,7 @@ export default class FomioSidebar extends Component {
   }
 
   get isNotificationsActive() {
-    return isNotificationsSectionPath(this.currentPath);
+    return isNotificationsSectionPath(this.currentPath) || this.notificationsMenuOpen;
   }
 
   get isProfileActive() {
@@ -265,9 +291,20 @@ export default class FomioSidebar extends Component {
   get bookmarksLabel()     { return i18n(themePrefix("sidebar.bookmarks")); }
   get createByteLabel()    { return i18n(themePrefix("sidebar.create_byte")); }
   get notificationsLabel() { return i18n(themePrefix("sidebar.notifications")); }
+  get notificationsBadge() {
+    const count = this.currentUser?.all_unread_notifications_count;
+    if (!count || count <= 0) {
+      return null;
+    }
+
+    return count > 99 ? "99+" : String(count);
+  }
   get signInLabel()        { return i18n(themePrefix("sidebar.sign_in")); }
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
   get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
+  get searchShortcutLabel() {
+    return `${translateModKey("Meta")} /`;
+  }
 
   get darkMediaQuery() {
     if (this.interfaceColor.darkModeForced) {
@@ -304,25 +341,39 @@ export default class FomioSidebar extends Component {
   }
 
   get showCompactLogo() {
-    return this.isRailSurface;
+    return this.isRailSurface || this.isCompactDesktopSurface;
   }
 
-  get showFullLogo() {
-    return !this.showCompactLogo && Boolean(this.logoUrl);
+  get currentLogoUrl() {
+    return this.showCompactLogo ? this.logoSmallUrl : this.logoUrl;
   }
 
-  get showSmallLogo() {
-    return this.showCompactLogo && Boolean(this.logoSmallUrl);
+  get currentLogoUrlDark() {
+    return this.showCompactLogo ? this.logoSmallUrlDark : this.logoUrlDark;
   }
 
-  get hasDistinctDarkFullLogo() {
-    return Boolean(this.logoUrlDark && this.logoUrlDark !== this.logoUrl);
+  get currentLogoClass() {
+    return this.showCompactLogo
+      ? "fomio-sidebar__logo-image fomio-sidebar__logo-image--small"
+      : "fomio-sidebar__logo-image fomio-sidebar__logo-image--full";
   }
 
-  get hasDistinctDarkSmallLogo() {
+  get hasCurrentLogo() {
+    return Boolean(this.currentLogoUrl);
+  }
+
+  get hasDistinctDarkCurrentLogo() {
     return Boolean(
-      this.logoSmallUrlDark && this.logoSmallUrlDark !== this.logoSmallUrl
+      this.currentLogoUrlDark && this.currentLogoUrlDark !== this.currentLogoUrl
     );
+  }
+
+  get showTextLogoFallback() {
+    return !this.showCompactLogo && !this.hasCurrentLogo;
+  }
+
+  get showCompactIconFallback() {
+    return this.showCompactLogo && !this.hasCurrentLogo;
   }
 
   logoResolver(name, opts = {}) {
@@ -381,13 +432,10 @@ export default class FomioSidebar extends Component {
   }
 
   @action
-  openSearchSheet() {
-    this.isSearchSheetOpen = true;
-  }
-
-  @action
-  closeSearchSheet() {
-    this.isSearchSheetOpen = false;
+  toggleSearchSheet(event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    openDesktopSearchPalette();
   }
 
   @action
@@ -433,7 +481,17 @@ export default class FomioSidebar extends Component {
 
   @action
   onNotificationsActivate(e) {
-    this.toggleRailOverlay("notifications", e);
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    if (!this.currentUser) {
+      redirectToLoginWithIntent("view_profile", this.currentPath);
+      return;
+    }
+
+    document.body.classList.remove("fomio-mobile-sidebar-open");
+    document.body.classList.remove("fomio-master-pane-rail-open");
+    openFomioNotificationsMenu("desktop", e?.currentTarget?.getBoundingClientRect?.());
   }
 
   @action
@@ -476,51 +534,31 @@ export default class FomioSidebar extends Component {
             class="fomio-sidebar__wordmark"
             aria-label={{this.logoTitle}}
           >
-            {{#if this.showSmallLogo}}
-              {{#if this.hasDistinctDarkSmallLogo}}
+            {{#if this.hasCurrentLogo}}
+              {{#if this.hasDistinctDarkCurrentLogo}}
                 <picture class="fomio-sidebar__logo-picture">
                   <source
-                    srcset={{getURL this.logoSmallUrlDark}}
+                    srcset={{getURL this.currentLogoUrlDark}}
                     media={{this.darkMediaQuery}}
                   />
                   <img
-                    class="fomio-sidebar__logo-image fomio-sidebar__logo-image--small"
-                    src={{getURL this.logoSmallUrl}}
+                    class={{this.currentLogoClass}}
+                    src={{getURL this.currentLogoUrl}}
                     alt={{this.logoTitle}}
                   />
                 </picture>
               {{else}}
                 <img
-                  class="fomio-sidebar__logo-image fomio-sidebar__logo-image--small"
-                  src={{getURL this.logoSmallUrl}}
+                  class={{this.currentLogoClass}}
+                  src={{getURL this.currentLogoUrl}}
                   alt={{this.logoTitle}}
                 />
               {{/if}}
-            {{else if this.showFullLogo}}
-              {{#if this.hasDistinctDarkFullLogo}}
-                <picture class="fomio-sidebar__logo-picture">
-                  <source
-                    srcset={{getURL this.logoUrlDark}}
-                    media={{this.darkMediaQuery}}
-                  />
-                  <img
-                    class="fomio-sidebar__logo-image fomio-sidebar__logo-image--full"
-                    src={{getURL this.logoUrl}}
-                    alt={{this.logoTitle}}
-                  />
-                </picture>
-              {{else}}
-                <img
-                  class="fomio-sidebar__logo-image fomio-sidebar__logo-image--full"
-                  src={{getURL this.logoUrl}}
-                  alt={{this.logoTitle}}
-                />
-              {{/if}}
-            {{else if this.showCompactLogo}}
+            {{else if this.showCompactIconFallback}}
               <span class="fomio-sidebar__wordmark-fallback-icon" aria-hidden="true">
                 {{icon "house"}}
               </span>
-            {{else}}
+            {{else if this.showTextLogoFallback}}
               <span class="fomio-sidebar__wordmark-text">{{this.logoTitle}}</span>
             {{/if}}
           </a>
@@ -531,7 +569,9 @@ export default class FomioSidebar extends Component {
               class="fomio-sidebar__search-trigger"
               aria-label={{this.searchLabel}}
               title={{this.searchLabel}}
-              {{on "click" this.openSearchSheet}}
+              aria-haspopup="dialog"
+              aria-expanded={{if this.isSearchSheetOpen "true" "false"}}
+              {{on "click" this.toggleSearchSheet}}
             >
               <span class="fomio-sidebar__icon">{{icon "magnifying-glass"}}</span>
               <span class="fomio-sidebar__item-label">
@@ -540,21 +580,27 @@ export default class FomioSidebar extends Component {
               </span>
             </button>
           {{else}}
-            <div class="fomio-sidebar__search-shell">
-              <FomioGlobalSearch
-                @variant="sidebar"
-                @searchInputId="fomio-sidebar-search-input"
-              />
-            </div>
+            <button
+              type="button"
+              class="fomio-sidebar__search-launcher"
+              aria-label={{this.searchLabel}}
+              aria-haspopup="dialog"
+              aria-expanded={{if this.isSearchSheetOpen "true" "false"}}
+              {{on "click" this.toggleSearchSheet}}
+            >
+              <span class="fomio-sidebar__search-launcher-icon" aria-hidden="true">
+                {{icon "magnifying-glass"}}
+              </span>
+              <span class="fomio-sidebar__search-launcher-body">
+                <span class="fomio-sidebar__search-launcher-title">{{this.searchLabel}}</span>
+                <span class="fomio-sidebar__search-launcher-hint">{{this.searchHint}}</span>
+              </span>
+              <span class="fomio-sidebar__search-launcher-shortcut">
+                {{this.searchShortcutLabel}}
+              </span>
+            </button>
           {{/if}}
         </div>
-
-        <FomioSearchSheet
-          @isOpen={{this.isSearchSheetOpen}}
-          @onClose={{this.closeSearchSheet}}
-          @variant="rail"
-          @searchInputId="fomio-rail-search-input"
-        />
 
         {{! ── Zone B — Core navigation ───────────────────── }}
         <div class="fomio-sidebar__zone fomio-sidebar__zone--core">
@@ -684,16 +730,19 @@ export default class FomioSidebar extends Component {
         {{! ── Zone C — Bottom (sticky) ───────────────────── }}
         <div class="fomio-sidebar__zone fomio-sidebar__zone--bottom">
           {{#if this.currentUser}}
-            <a
-              href="/notifications"
+            <button
+              type="button"
               class="fomio-sidebar__item {{if (eq this.activeMasterContext 'notifications') 'is-active'}}"
               aria-current={{if this.isNotificationsActive "page"}}
               title={{this.notificationsLabel}}
               {{on "click" this.onNotificationsActivate}}
             >
               <span class="fomio-sidebar__icon">{{icon "bell"}}</span>
+              {{#if this.notificationsBadge}}
+                <span class="fomio-sidebar__badge">{{this.notificationsBadge}}</span>
+              {{/if}}
               <span class="fomio-sidebar__item-label">{{this.notificationsLabel}}</span>
-            </a>
+            </button>
 
             <a
               href={{this.profileUrl}}

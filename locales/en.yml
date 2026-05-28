@@ -33,6 +33,8 @@ en:
     save_interact_bytes: "Sign in to save and interact with Bytes."
     view_saved: "Sign in to open Saved."
     view_profile: "Sign in to open your profile."
+  notifications_overlay:
+    aria_label: "Notifications menu"
   auth_password_reset:
     valid_hint: "We'll look for your account"
     spam_note: "Check your spam folder if the email doesn't arrive."
@@ -175,6 +177,7 @@ en:
     home: "Home"
     discover: "Discover"
     create: "Create Byte"
+    notifications: "Notifications"
     saved: "Saved"
     me: "Me"
     home_pills_aria: "Home feed modes"
@@ -227,6 +230,7 @@ en:
     aria_label: "Search Fomio"
     title: "Search"
     subtitle: "Find Bytes, Hubs, people, and threads without leaving the page."
+    see_all_results: "See all results"
   topic_list:
     published: "Published"
     min_read: "min read"

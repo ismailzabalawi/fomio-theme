@@ -1,24 +1,33 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import UserMenu from "discourse/components/user-menu/menu";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import {
-  closeFomioNotificationsMenu,
   FOMIO_NOTIFICATIONS_MENU_CLASS,
   FOMIO_NOTIFICATIONS_MENU_CLOSE_EVENT,
   FOMIO_NOTIFICATIONS_MENU_OPEN_EVENT,
+  publishFomioNotificationsMenuState,
 } from "../../lib/fomio-notifications-menu";
 
 export default class FomioNotificationsMenu extends Component {
+  DESKTOP_GAP = 12;
+  DESKTOP_MARGIN = 16;
+  DESKTOP_WIDTH = 368;
+  DESKTOP_MAX_HEIGHT = 704;
+
   @service currentUser;
   @service router;
 
   @tracked isOpen = false;
   @tracked source = "desktop";
+  @tracked anchorRect = null;
+  @tracked measuredHeight = 0;
+  @tracked measuredFooterHeight = 0;
 
   constructor(owner, args) {
     super(owner, args);
@@ -28,9 +37,18 @@ export default class FomioNotificationsMenu extends Component {
         return;
       }
 
-      this.source = event?.detail?.source === "mobile" ? "mobile" : "desktop";
+      const nextSource =
+        event?.detail?.source === "mobile" ? "mobile" : "desktop";
+      if (this.isOpen && this.source === nextSource) {
+        this.close();
+        return;
+      }
+
+      this.source = nextSource;
+      this.anchorRect = event?.detail?.anchorRect ?? null;
       this.isOpen = true;
       document.body?.classList.add(FOMIO_NOTIFICATIONS_MENU_CLASS);
+      publishFomioNotificationsMenuState(true, this.source);
     };
 
     this.#handleClose = () => this.close();
@@ -66,11 +84,13 @@ export default class FomioNotificationsMenu extends Component {
 
     this.router.off("routeDidChange", this.#onRouteDidChange);
     document.body?.classList.remove(FOMIO_NOTIFICATIONS_MENU_CLASS);
+    publishFomioNotificationsMenuState(false, this.source);
   }
 
   #handleOpen;
   #handleClose;
   #onRouteDidChange;
+  #panelResizeObserver;
 
   get panelClass() {
     return `fomio-notifications-menu fomio-notifications-menu--${this.source}`;
@@ -80,10 +100,72 @@ export default class FomioNotificationsMenu extends Component {
     return i18n(themePrefix("notifications_overlay.aria_label"));
   }
 
+  get shouldRender() {
+    return Boolean(this.currentUser && this.isOpen);
+  }
+
+  get panelStyle() {
+    if (this.source !== "desktop" || !this.anchorRect || typeof window === "undefined") {
+      return null;
+    }
+
+    const sidebarRight =
+      document.querySelector(".fomio-sidebar")?.getBoundingClientRect?.().right ??
+      null;
+    const preferredLeft =
+      sidebarRight != null
+        ? sidebarRight + this.DESKTOP_GAP
+        : this.anchorRect.right - this.DESKTOP_WIDTH;
+    const maxWidth = Math.min(
+      this.DESKTOP_WIDTH,
+      Math.max(
+        280,
+        window.innerWidth - preferredLeft - this.DESKTOP_MARGIN
+      )
+    );
+    const left = Math.max(
+      this.DESKTOP_MARGIN,
+      Math.min(preferredLeft, window.innerWidth - maxWidth - this.DESKTOP_MARGIN)
+    );
+    const menuHeight =
+      this.measuredHeight > 0
+        ? this.measuredHeight
+        : Math.min(
+            this.DESKTOP_MAX_HEIGHT,
+            Math.round(window.innerHeight * 0.78)
+          );
+    const belowTop = this.anchorRect.bottom + this.DESKTOP_GAP;
+    const aboveTop = this.anchorRect.top - menuHeight - this.DESKTOP_GAP;
+    const maxTop = window.innerHeight - menuHeight - this.DESKTOP_MARGIN;
+
+    let top;
+    if (sidebarRight != null && this.measuredFooterHeight > 0) {
+      const triggerCenter = this.anchorRect.top + this.anchorRect.height / 2;
+      const footerCenterOffset =
+        menuHeight - this.measuredFooterHeight / 2;
+      top = triggerCenter - footerCenterOffset;
+    } else {
+      top = belowTop;
+      if (belowTop + menuHeight > window.innerHeight - this.DESKTOP_MARGIN) {
+        top = aboveTop;
+      }
+    }
+    top = Math.max(this.DESKTOP_MARGIN, Math.min(top, maxTop));
+
+    return `top:${Math.round(top)}px;left:${Math.round(left)}px;width:${Math.round(
+      maxWidth
+    )}px;`;
+  }
+
   @action
   close() {
     this.isOpen = false;
+    this.anchorRect = null;
+    this.measuredHeight = 0;
+    this.measuredFooterHeight = 0;
+    this.#panelResizeObserver?.disconnect();
     document.body?.classList.remove(FOMIO_NOTIFICATIONS_MENU_CLASS);
+    publishFomioNotificationsMenuState(false, this.source);
   }
 
   @action
@@ -102,12 +184,27 @@ export default class FomioNotificationsMenu extends Component {
   }
 
   @action
-  focusPanel(element) {
+  setupPanel(element) {
     element.focus();
+
+    const measure = () => {
+      this.measuredHeight = Math.round(element.getBoundingClientRect().height);
+      this.measuredFooterHeight = Math.round(
+        element.querySelector(".panel-body-bottom")?.getBoundingClientRect()
+          ?.height ?? 0
+      );
+    };
+
+    measure();
+    this.#panelResizeObserver?.disconnect();
+    if (typeof ResizeObserver !== "undefined") {
+      this.#panelResizeObserver = new ResizeObserver(() => measure());
+      this.#panelResizeObserver.observe(element);
+    }
   }
 
   <template>
-    {{#if (and this.currentUser this.isOpen)}}
+    {{#if this.shouldRender}}
       <div
         class="fomio-notifications-menu-shell"
         role="presentation"
@@ -115,11 +212,12 @@ export default class FomioNotificationsMenu extends Component {
       >
         <div
           class={{this.panelClass}}
+          style={{this.panelStyle}}
           role="dialog"
           aria-modal="true"
           aria-label={{this.ariaLabel}}
           tabindex="-1"
-          {{didInsert this.focusPanel}}
+          {{didInsert this.setupPanel}}
           {{on "keydown" this.handleKeydown}}
         >
           <UserMenu @closeUserMenu={{this.close}} />

@@ -1,11 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import icon from "discourse/helpers/d-icon";
-import { i18n } from "discourse-i18n";
-import { themePrefix } from "virtual:theme";
 import FomioSearchSheet from "../../components/shared/fomio-search-sheet";
 import { isAuthPath } from "../../lib/fomio-mobile-nav-paths";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
@@ -16,20 +12,45 @@ export default class FomioMobileSearch extends Component {
   @tracked isTouchShell = false;
   @tracked isSearchSheetOpen = false;
   #unsubscribeTouch = null;
+  #searchButtonClickHandler = null;
 
   constructor(owner, args) {
     super(owner, args);
     this.#unsubscribeTouch = subscribeFomioTouchShell((v) => {
       this.isTouchShell = v;
     });
-    this._onRouteDidChange = () => this.closeSearchSheet();
+    this._onRouteDidChange = () => {
+      this.closeSearchSheet();
+    };
     if (typeof this.router?.on === "function") {
       this.router.on("routeDidChange", this._onRouteDidChange);
+    }
+    this.#searchButtonClickHandler = (event) => {
+      if (!this.shouldRender) {
+        return;
+      }
+
+      const trigger = event.target?.closest?.("#search-button");
+      if (!trigger) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      this.openSearchSheet();
+    };
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("click", this.#searchButtonClickHandler, true);
     }
   }
 
   willDestroy() {
     this.#unsubscribeTouch?.();
+    if (typeof document !== "undefined" && this.#searchButtonClickHandler) {
+      document.removeEventListener("click", this.#searchButtonClickHandler, true);
+    }
     if (typeof this.router?.off === "function" && this._onRouteDidChange) {
       this.router.off("routeDidChange", this._onRouteDidChange);
     }
@@ -48,16 +69,9 @@ export default class FomioMobileSearch extends Component {
     );
   }
 
-  get searchLabel() {
-    return i18n(themePrefix("sidebar.search_label"));
-  }
-
-  get searchHint() {
-    return i18n(themePrefix("sidebar.search_hint"));
-  }
-
   @action
-  openSearchSheet() {
+  openSearchSheet(event) {
+    event?.preventDefault();
     this.isSearchSheetOpen = true;
   }
 
@@ -68,29 +82,12 @@ export default class FomioMobileSearch extends Component {
 
   <template>
     {{#if this.shouldRender}}
-      <div class="fomio-mobile-search-row">
-        <button
-          type="button"
-          class="fomio-mobile-search-launcher"
-          aria-label={{this.searchLabel}}
-          {{on "click" this.openSearchSheet}}
-        >
-          <span class="fomio-mobile-search-launcher__icon" aria-hidden="true">
-            {{icon "magnifying-glass"}}
-          </span>
-          <span class="fomio-mobile-search-launcher__body">
-            <span class="fomio-mobile-search-launcher__title">{{this.searchLabel}}</span>
-            <span class="fomio-mobile-search-launcher__hint">{{this.searchHint}}</span>
-          </span>
-        </button>
-
-        <FomioSearchSheet
-          @isOpen={{this.isSearchSheetOpen}}
-          @onClose={{this.closeSearchSheet}}
-          @variant="mobile"
-          @searchInputId="fomio-mobile-search-input"
-        />
-      </div>
+      <FomioSearchSheet
+        @isOpen={{this.isSearchSheetOpen}}
+        @onClose={{this.closeSearchSheet}}
+        @variant="mobile"
+        @searchInputId="fomio-mobile-search-input"
+      />
     {{/if}}
   </template>
 }
