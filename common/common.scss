@@ -1525,7 +1525,7 @@ body.has-sidebar-page.archetype-regular {
   align-items: center;
   gap: 0.9rem;
   width: 100%;
-  box-sizing: border-box;
+  box-sizing: content-box;
   border: 1px solid var(--fomio-border);
   border-radius: var(--fomio-radius-card);
   background: var(--fomio-card);
@@ -5672,12 +5672,17 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
 
   .fomio-me-hub__summary-chevron {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
     color: color-mix(in oklab, var(--fomio-muted) 80%, var(--fomio-text));
     opacity: 0.72;
 
     .d-icon {
       width: 0.95rem;
       height: 0.95rem;
+      display: block;
     }
   }
 }
@@ -6884,12 +6889,17 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
   .fomio-me-hub__summary-chevron {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
     color: color-mix(in oklab, var(--fomio-muted) 80%, var(--fomio-text));
     opacity: 0.72;
 
     .d-icon {
       width: 0.95rem;
       height: 0.95rem;
+      display: block;
     }
   }
 
@@ -7079,6 +7089,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 0;
     width: 32px;
     height: 32px;
     border-radius: 11px;
@@ -7092,6 +7103,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     .d-icon {
       width: 0.95rem;
       height: 0.95rem;
+      display: block;
       color: color-mix(in oklab, var(--fomio-muted) 76%, var(--fomio-text));
     }
   }
@@ -7127,12 +7139,15 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     flex-shrink: 0;
     display: flex;
     align-items: center;
+    justify-content: center;
+    line-height: 0;
     color: color-mix(in oklab, var(--fomio-muted) 72%, var(--fomio-text));
     opacity: 0.74;
 
     .d-icon {
       width: 0.82rem;
       height: 0.82rem;
+      display: block;
     }
   }
 
@@ -7329,7 +7344,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     bottom: 0;
     z-index: 990;
     max-height: min(72vh, 520px);
-    padding: 16px 16px calc(16px + var(--fomio-safe-bottom, 0px));
+    padding:
+      16px
+      var(--fomio-page-pad-inline-end, 16px)
+      calc(max(16px, var(--fomio-safe-bottom, 0px)) + var(--fomio-safe-bottom, 0px))
+      var(--fomio-page-pad-inline-start, 16px);
     background: var(--fomio-bg);
     border-top: 1px solid var(--fomio-border);
     border-radius: 20px 20px 0 0;
@@ -7342,6 +7361,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   }
 
   .fomio-ephemeral-sheet__inner {
+    padding-inline: 0;
     padding-bottom: 12px;
   }
 
@@ -9711,12 +9731,14 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 0;
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
     color: currentColor;
 
     svg {
+      display: block;
       width: 1rem;
       height: 1rem;
       fill: currentColor;
@@ -9747,26 +9769,33 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 // ── Search trigger specifics ─────────────────────────────────
 
 .fomio-sidebar__search-trigger {
-  background: var(--fomio-surface);
-  border: 1px solid var(--fomio-border);
-  border-radius: var(--fomio-radius-sm);
-  color: var(--fomio-muted);
-  align-items: flex-start;
+  min-height: 42px;
+  padding: 0.6rem 0.7rem;
+  background: color-mix(in oklab, var(--fomio-surface) 94%, #fff);
+  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 78%, transparent);
+  border-radius: 14px;
+  color: var(--fomio-text);
+  align-items: center;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 48%),
+    0 8px 18px rgb(17 24 39 / 4%);
 
   &:hover {
-    border-color: var(--fomio-primary-soft);
-    color: var(--fomio-text);
+    border-color: color-mix(in oklab, var(--fomio-border) 90%, transparent);
+    background: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-surface));
   }
 
   &:focus-visible {
-    border-color: var(--fomio-primary);
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
+    border-color: color-mix(in oklab, var(--fomio-primary) 24%, var(--fomio-border));
   }
 }
 
 html.fomio-color-dark .fomio-sidebar__search-trigger {
   background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-surface));
   border-color: color-mix(in oklab, var(--fomio-border) 84%, transparent);
-  color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+  color: var(--fomio-text);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
 
   &:hover,
@@ -9781,32 +9810,22 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  min-height: 52px;
-  padding: 0.8rem 0.95rem;
+  gap: 0.65rem;
+  min-height: 42px;
+  padding: 0.55rem 0.7rem;
   border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 78%, transparent);
-  border-radius: 18px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--fomio-card) 96%, #fff) 0%,
-      color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg)) 100%
-    );
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--fomio-surface) 94%, #fff);
   color: inherit;
   text-align: left;
-  cursor: text;
+  cursor: pointer;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 58%),
-    0 12px 24px rgb(17 24 39 / 5%);
+    0 8px 18px rgb(17 24 39 / 4%);
 
   &:hover {
     border-color: color-mix(in oklab, var(--fomio-border) 90%, transparent);
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-card) 98%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg)) 100%
-      );
+    background: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-surface));
   }
 
   &:focus-visible {
@@ -9820,17 +9839,16 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-surface));
-  color: color-mix(in oklab, var(--fomio-primary) 78%, var(--fomio-text));
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fomio-muted);
   flex-shrink: 0;
 }
 
 .fomio-sidebar__search-launcher-body {
-  display: flex;
-  flex-direction: column;
+  display: block;
   min-width: 0;
   flex: 1;
 }
@@ -9838,17 +9856,9 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
 .fomio-sidebar__search-launcher-title {
   color: var(--fomio-text);
   font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.fomio-sidebar__search-launcher-hint {
-  margin-top: 0.12rem;
-  color: var(--fomio-muted);
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  line-height: 1.35;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.15;
 }
 
 .fomio-sidebar__search-launcher-shortcut {
@@ -9856,33 +9866,26 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  min-width: 3.25rem;
-  padding: 0.28rem 0.5rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.32rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 80%, transparent);
-  background: color-mix(in oklab, var(--fomio-surface) 92%, #fff);
+  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 74%, transparent);
+  background: color-mix(in oklab, var(--fomio-surface) 78%, #fff);
   color: var(--fomio-muted);
   font-family: var(--fomio-font-ui);
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.66rem;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
+  opacity: 0.78;
 }
 
 .fomio-sidebar__search-title {
   display: block;
   color: inherit;
-  line-height: 1.25;
-}
-
-.fomio-sidebar__search-hint {
-  display: block;
-  margin-top: 1px;
-  color: var(--fomio-muted);
-  font-size: var(--fomio-text-xs);
-  line-height: 1.3;
-  letter-spacing: normal;
+  line-height: 1.15;
 }
 
 .fomio-global-search {
@@ -10062,76 +10065,78 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
     .search-menu-initial-options {
       list-style: none;
       margin: 0;
-      padding: 0.85rem;
+      padding: 0.6rem 0.65rem 0.65rem;
     }
 
     .search-random-quick-tip {
       list-style: none;
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      margin: 0 0 0.9rem;
-      padding: 0.1rem 0;
+      gap: 0.55rem;
+      margin: 0 0 0.55rem;
+      padding: 0.05rem 0 0.15rem;
       color: var(--fomio-muted);
       font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-xs);
-      line-height: 1.45;
+      font-size: 0.78rem;
+      line-height: 1.35;
     }
 
     .tip-label.tip-clickable {
       display: inline-flex;
       align-items: center;
-      min-height: 1.85rem;
-      padding: 0.28rem 0.62rem;
+      min-height: 1.55rem;
+      padding: 0.18rem 0.5rem;
       border: 0;
       border-radius: var(--fomio-radius-pill);
-      background: color-mix(in oklab, var(--fomio-primary) 14%, var(--fomio-surface));
+      background: color-mix(in oklab, var(--fomio-primary) 11%, var(--fomio-surface));
       color: var(--fomio-primary);
       font-family: var(--fomio-font-mono);
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       line-height: 1;
       cursor: pointer;
     }
 
     .search-menu-recent {
-      padding: 1.05rem 1rem 0.4rem;
-      border: 1px solid color-mix(in oklab, var(--fomio-border) 78%, transparent);
-      border-radius: 18px;
-      background: color-mix(in oklab, var(--fomio-surface) 72%, var(--fomio-card));
+      padding: 0.4rem 0.3rem 0.1rem;
+      border: 0;
+      border-top: 1px solid color-mix(in oklab, var(--fomio-border) 54%, transparent);
+      border-radius: 0;
+      background: transparent;
     }
 
     .heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 0.5rem;
       padding-top: 0;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.25rem;
     }
 
     .heading h4 {
       margin: 0;
-      font-family: var(--fomio-font-serif);
-      font-size: clamp(1.45rem, 1.2rem + 0.9vw, 1.9rem);
-      font-weight: 600;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fomio-muted);
     }
 
     .clear-recent-searches {
-      width: 2.25rem;
-      height: 2.25rem;
+      width: 1.55rem;
+      height: 1.55rem;
       padding: 0;
       border-radius: 999px;
       color: var(--fomio-muted);
-      background: color-mix(in oklab, var(--fomio-card) 70%, transparent);
+      background: transparent;
     }
 
     .clear-recent-searches:hover,
     .clear-recent-searches:focus-visible {
       color: var(--fomio-text);
-      background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+      background: color-mix(in oklab, var(--fomio-card) 76%, var(--fomio-surface));
     }
 
     .search-menu-assistant-item {
@@ -10153,8 +10158,8 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
     .search-menu-assistant-item .search-link {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      padding: 0.8rem 0.9rem;
+      gap: 0.65rem;
+      padding: 0.42rem 0.45rem;
       background: transparent;
     }
 
@@ -10162,11 +10167,11 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 1.7rem;
+      height: 1.7rem;
       border-radius: 999px;
-      background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-surface));
-      color: color-mix(in oklab, var(--fomio-primary) 78%, var(--fomio-text));
+      background: color-mix(in oklab, var(--fomio-primary) 7%, var(--fomio-surface));
+      color: color-mix(in oklab, var(--fomio-primary) 68%, var(--fomio-text));
       flex-shrink: 0;
     }
 
@@ -10178,8 +10183,8 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
 
     .search-menu-assistant-item .search-item-slug {
       font-family: var(--fomio-font-serif);
-      font-size: 1.1rem;
-      line-height: 1.2;
+      font-size: 0.88rem;
+      line-height: 1.1;
       letter-spacing: -0.01em;
     }
 
@@ -10247,11 +10252,11 @@ body:not(.fomio-surface-touch) .fomio-search-sheet__backdrop {
 body:not(.fomio-surface-touch) .fomio-search-sheet--desktop.fomio-ephemeral-sheet {
   position: fixed;
   top: clamp(6rem, 20vh, 14rem);
-  left: calc(50vw + (var(--fomio-surface-sidebar-offset) / 2));
+  left: 50vw;
   right: auto;
   bottom: auto;
   transform: translateX(-50%);
-  width: min(36rem, calc(100vw - var(--fomio-surface-sidebar-offset) - 2.5rem));
+  width: min(36rem, calc(100vw - 2.5rem));
   min-height: 72px;
   max-height: min(68vh, 36rem);
   z-index: 1990;
@@ -10291,10 +10296,15 @@ body.fomio-surface-touch .fomio-search-sheet.fomio-ephemeral-sheet {
   top: auto;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--fomio-ephemeral-keyboard-offset, 0px);
   width: 100%;
-  max-height: min(82dvh, 46rem);
+  box-sizing: border-box;
+  max-height: min(calc(var(--fomio-ephemeral-viewport-height, 82dvh) - 8px), 46rem);
   border-radius: 24px 24px 0 0;
+  padding-top: 14px;
+  padding-inline-start: var(--fomio-page-pad-inline-start, 16px);
+  padding-inline-end: var(--fomio-page-pad-inline-end, 16px);
+  padding-bottom: calc(max(14px, var(--fomio-safe-bottom)) + var(--fomio-safe-bottom));
 }
 
 body.fomio-surface-touch .fomio-search-sheet {
@@ -10303,7 +10313,12 @@ body.fomio-surface-touch .fomio-search-sheet {
   }
 
   .fomio-search-sheet__search .results {
-    max-height: min(52dvh, 30rem);
+    max-height: min(calc(var(--fomio-ephemeral-viewport-height, 52dvh) - 170px), 30rem);
+  }
+
+  .fomio-ephemeral-sheet__close {
+    margin-top: 0.25rem;
+    margin-bottom: 0;
   }
 }
 
@@ -10394,6 +10409,7 @@ body:not(.fomio-notifications-master-active) .fomio-notifications-detail-heading
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
   flex-shrink: 0;
   width: 20px;
   height: 20px;
@@ -10408,6 +10424,10 @@ body:not(.fomio-notifications-master-active) .fomio-notifications-detail-heading
 
   @media (prefers-reduced-motion: no-preference) {
     transition: transform 150ms ease, opacity 150ms ease, color 150ms ease;
+  }
+
+  .d-icon {
+    display: block;
   }
 
   svg {
@@ -10696,6 +10716,7 @@ body.fomio-sidebar-active.categories-list {
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
@@ -10703,7 +10724,11 @@ body.fomio-sidebar-active.categories-list {
   transition: background 120ms, border-color 120ms, color 120ms, box-shadow 120ms;
   font: inherit;
 
-  .d-icon { width: 14px; height: 14px; }
+  .d-icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
 
   &.is-active {
     background: var(--fomio-card);
@@ -10975,7 +11000,14 @@ body.fomio-sidebar-active.categories-list {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  .d-icon { width: 13px; height: 13px; }
+  justify-content: center;
+  line-height: 0;
+
+  .d-icon {
+    width: 13px;
+    height: 13px;
+    display: block;
+  }
 }
 
 @media (max-width: 767px) {
@@ -12343,7 +12375,10 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   color: var(--fomio-muted);
   font-variant-numeric: tabular-nums;
 
-  svg { flex-shrink: 0; }
+  svg {
+    flex-shrink: 0;
+    display: block;
+  }
 }
 
 .fomio-topic-context__date {
@@ -12477,7 +12512,6 @@ html.fomio-color-dark .fomio-topic-context__thumb {
     --fomio-bottom-bar-safe-height,
     calc(56px + env(safe-area-inset-bottom, 0px))
   );
-  padding-bottom: var(--fomio-safe-bottom, env(safe-area-inset-bottom, 0px));
   background: var(--fomio-bg);
   border-top: 1px solid var(--fomio-border);
   z-index: 900;
@@ -12491,8 +12525,18 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  height: var(
+    --fomio-bottom-bar-safe-height,
+    calc(56px + env(safe-area-inset-bottom, 0px))
+  );
+  min-height: 100%;
+  align-self: stretch;
   gap: 4px;
-  padding: var(--fomio-space-xs) var(--fomio-space-sm);
+  padding:
+    var(--fomio-space-xs)
+    var(--fomio-space-sm)
+    calc(var(--fomio-space-xs) + var(--fomio-safe-bottom, env(safe-area-inset-bottom, 0px)));
   text-decoration: none;
   color: var(--fomio-muted);
   font-family: var(--fomio-font-ui);
@@ -12501,6 +12545,8 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   letter-spacing: 0.02em;
   cursor: pointer;
   border: none;
+  appearance: none;
+  -webkit-appearance: none;
   background: transparent;
   -webkit-tap-highlight-color: transparent;
 
@@ -12527,9 +12573,11 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   width: 1.25rem;
   height: 1.25rem;
   flex-shrink: 0;
+  line-height: 0;
   color: currentColor;
 
   svg {
+    display: block;
     width: 1.25rem;
     height: 1.25rem;
     fill: currentColor;
@@ -17327,10 +17375,12 @@ html.fomio-color-dark .fomio-seg-btn.active {
   border-radius: 6px;
   border: 1px solid transparent;
   color: var(--fomio-muted);
+  line-height: 0;
 
   .d-icon {
     width: 14px;
     height: 14px;
+    display: block;
   }
 
   &.active,

@@ -283,7 +283,6 @@ export default class FomioSidebar extends Component {
 
   get ariaLabel()          { return i18n(themePrefix("sidebar.aria_label")); }
   get searchLabel()        { return i18n(themePrefix("sidebar.search_label")); }
-  get searchHint()         { return i18n(themePrefix("sidebar.search_hint")); }
   get latestLabel()        { return i18n(themePrefix("sidebar.latest")); }
   get hotLabel()           { return i18n(themePrefix("sidebar.hot")); }
   get hubsLabel()          { return i18n(themePrefix("sidebar.hubs")); }
@@ -575,7 +574,6 @@ export default class FomioSidebar extends Component {
               <span class="fomio-sidebar__icon">{{icon "magnifying-glass"}}</span>
               <span class="fomio-sidebar__item-label">
                 <span class="fomio-sidebar__search-title">{{this.searchLabel}}</span>
-                <span class="fomio-sidebar__search-hint">{{this.searchHint}}</span>
               </span>
             </button>
           {{else}}
@@ -592,7 +590,6 @@ export default class FomioSidebar extends Component {
               </span>
               <span class="fomio-sidebar__search-launcher-body">
                 <span class="fomio-sidebar__search-launcher-title">{{this.searchLabel}}</span>
-                <span class="fomio-sidebar__search-launcher-hint">{{this.searchHint}}</span>
               </span>
               <span class="fomio-sidebar__search-launcher-shortcut">
                 {{this.searchShortcutLabel}}

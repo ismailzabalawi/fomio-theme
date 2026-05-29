@@ -202,7 +202,7 @@ export default class FomioBottomBar extends Component {
           aria-current={{if this.isHomeActive "page"}}
           title={{this.homeLabel}}
         >
-          {{icon "clock"}}
+          <span class="fomio-bottom-bar__icon">{{icon "clock"}}</span>
           <span class="fomio-bottom-bar__label">{{this.homeLabel}}</span>
         </a>
 
@@ -212,7 +212,7 @@ export default class FomioBottomBar extends Component {
           aria-current={{if this.isDiscoverActive "page"}}
           title={{this.discoverLabel}}
         >
-          {{icon "compass"}}
+          <span class="fomio-bottom-bar__icon">{{icon "compass"}}</span>
           <span class="fomio-bottom-bar__label">{{this.discoverLabel}}</span>
         </a>
 
@@ -223,7 +223,7 @@ export default class FomioBottomBar extends Component {
           title={{this.createLabel}}
           {{on "click" this.openNewByte}}
         >
-          {{icon "pen-to-square"}}
+          <span class="fomio-bottom-bar__icon">{{icon "pen-to-square"}}</span>
           <span class="fomio-bottom-bar__label">{{this.createLabel}}</span>
         </button>
 
@@ -263,7 +263,7 @@ export default class FomioBottomBar extends Component {
             title={{this.meLabel}}
             {{on "click" this.armMeHubLanding}}
           >
-            {{icon "user"}}
+            <span class="fomio-bottom-bar__icon">{{icon "user"}}</span>
             <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>
           </a>
         {{else}}
@@ -273,7 +273,7 @@ export default class FomioBottomBar extends Component {
             title={{this.meLabel}}
             {{on "click" this.goToMe}}
           >
-            {{icon "user"}}
+            <span class="fomio-bottom-bar__icon">{{icon "user"}}</span>
             <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>
           </button>
         {{/if}}
