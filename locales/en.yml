@@ -35,6 +35,7 @@ en:
     view_profile: "Sign in to open your profile."
   notifications_overlay:
     aria_label: "Notifications menu"
+    title: "Notifications"
   auth_password_reset:
     valid_hint: "We'll look for your account"
     spam_note: "Check your spam folder if the email doesn't arrive."

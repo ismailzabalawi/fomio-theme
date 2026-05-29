@@ -100,6 +100,10 @@ export default class FomioNotificationsMenu extends Component {
     return i18n(themePrefix("notifications_overlay.aria_label"));
   }
 
+  get title() {
+    return i18n(themePrefix("notifications_overlay.title"));
+  }
+
   get shouldRender() {
     return Boolean(this.currentUser && this.isOpen);
   }
@@ -220,6 +224,11 @@ export default class FomioNotificationsMenu extends Component {
           {{didInsert this.setupPanel}}
           {{on "keydown" this.handleKeydown}}
         >
+          {{#if this.source}}
+            <header class="fomio-np-header">
+              <span class="fomio-np-title">{{this.title}}</span>
+            </header>
+          {{/if}}
           <UserMenu @closeUserMenu={{this.close}} />
         </div>
       </div>

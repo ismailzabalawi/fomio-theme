@@ -9602,6 +9602,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   }
 }
 
+body.fomio-ephemeral-sheet-open.fomio-surface-touch {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 // ── Zones ────────────────────────────────────────────────────
 
 .fomio-sidebar__zone {
@@ -10293,13 +10298,13 @@ body:not(.fomio-surface-touch) .fomio-search-sheet--desktop {
 }
 
 body.fomio-surface-touch .fomio-search-sheet.fomio-ephemeral-sheet {
-  top: auto;
+  top: max(8px, calc(var(--fomio-ephemeral-viewport-top, 0px) + 8px));
   left: 0;
   right: 0;
   bottom: var(--fomio-ephemeral-keyboard-offset, 0px);
   width: 100%;
   box-sizing: border-box;
-  max-height: min(calc(var(--fomio-ephemeral-viewport-height, 82dvh) - 8px), 46rem);
+  max-height: min(calc(var(--fomio-ephemeral-viewport-height, 82dvh) - 16px), 46rem);
   border-radius: 24px 24px 0 0;
   padding-top: 14px;
   padding-inline-start: var(--fomio-page-pad-inline-start, 16px);
@@ -10308,12 +10313,17 @@ body.fomio-surface-touch .fomio-search-sheet.fomio-ephemeral-sheet {
 }
 
 body.fomio-surface-touch .fomio-search-sheet {
+  display: flex;
+  flex-direction: column;
+
   .fomio-ephemeral-sheet__inner {
+    flex: 1 1 auto;
+    min-height: 0;
     padding-bottom: max(0.65rem, var(--fomio-safe-bottom));
   }
 
   .fomio-search-sheet__search .results {
-    max-height: min(calc(var(--fomio-ephemeral-viewport-height, 52dvh) - 170px), 30rem);
+    max-height: min(calc(var(--fomio-ephemeral-viewport-height, 52dvh) - 190px), 30rem);
   }
 
   .fomio-ephemeral-sheet__close {
@@ -12609,6 +12619,15 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   box-shadow: 0 0 0 2px var(--fomio-bg);
 }
 
+// ============================================================
+// FOMIO NOTIFICATION PANEL
+// Editorial restyle of Discourse's native UserMenu popover.
+// Design: "Notification Panel v1" (Fomio Design System Handoff).
+// We reshape the native DOM — no fetch, no rebuilt notification
+// logic — into a calm, reading-first panel: serif title, pill
+// tabs, terracotta unread treatment, tinted footer.
+// ============================================================
+
 .fomio-notifications-menu-shell {
   position: fixed;
   inset: 0;
@@ -12616,47 +12635,461 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   background: rgb(15 23 42 / 0.28);
 }
 
+// The dialog itself is the card surface — header + native menu
+// both sit inside one rounded, shadowed shell.
 .fomio-notifications-menu {
   position: absolute;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--fomio-card) 86%, var(--fomio-bg));
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  box-shadow:
+    0 16px 56px -10px rgb(0 0 0 / 16%),
+    0 0 0 1px rgb(0 0 0 / 3%);
 }
 
+// ── Serif title header ──────────────────────────────────────
+.fomio-np-header {
+  flex-shrink: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--fomio-border);
+}
+
+.fomio-np-title {
+  flex: 1;
+  font-family: var(--fomio-font-serif);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--fomio-text);
+}
+
+// ── Native UserMenu shell → transparent, fills the card ─────
 .fomio-notifications-menu .user-menu {
   width: 100%;
   max-width: none;
-  max-height: min(78vh, 44rem);
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 70%, transparent);
-  box-shadow: 0 20px 60px rgb(15 23 42 / 0.18);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-.fomio-notifications-menu .panel-body {
-  max-height: min(60vh, 34rem);
-  overflow: auto;
+.fomio-notifications-menu .panel-body,
+.fomio-notifications-menu .panel-body-contents {
+  height: 100%;
+  min-height: 0;
 }
 
+// Stack tabs above the list (native default is row-reverse).
+.fomio-notifications-menu .panel-body-contents {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Pill tab bar ────────────────────────────────────────────
+.fomio-notifications-menu .menu-tabs-container {
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--fomio-border);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.fomio-notifications-menu .tabs-list {
+  flex-direction: row;
+  gap: 6px;
+}
+
+// Bottom tabs (profile, review) sit inline with the top tabs —
+// no divider rule when laid out horizontally.
+.fomio-notifications-menu .bottom-tabs {
+  border-top: none;
+}
+
+.fomio-notifications-menu .menu-tabs-container .btn.user-menu-tab {
+  flex: 0 0 auto;
+  height: 26px;
+  width: auto;
+  padding: 0 10px;
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-pill);
+  background: transparent;
+  color: var(--fomio-muted);
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease),
+    border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+  .d-icon {
+    padding: 0;
+    width: 14px;
+    height: 14px;
+    color: inherit;
+    background: none;
+  }
+
+  .badge-notification {
+    position: static;
+    margin-left: 5px;
+    padding: 0 5px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  &:not(.active):hover,
+  &:not(.active):focus-visible {
+    background: transparent;
+    color: var(--fomio-text);
+
+    .d-icon {
+      background: none;
+    }
+  }
+
+  &.active {
+    background: var(--fomio-primary);
+    border-color: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+
+    .d-icon {
+      color: var(--fomio-on-primary);
+      background: none;
+    }
+
+    .badge-notification {
+      background: var(--fomio-on-primary);
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+// ── Scrollable list body ────────────────────────────────────
+.fomio-notifications-menu .quick-access-panel {
+  width: 100%;
+  min-width: 0;
+  border-right: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fomio-border) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--fomio-border);
+    border-radius: 2px;
+  }
+
+  > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+// ── Notification row ────────────────────────────────────────
+.fomio-notifications-menu .quick-access-panel li.notification,
+.fomio-notifications-menu .quick-access-panel li.message {
+  position: relative;
+  margin: 0;
+
+  > a {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px 10px 18px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 100ms var(--fomio-ease);
+  }
+
+  &:hover > a {
+    background: rgb(0 0 0 / 3%);
+  }
+
+  // Avatar / icon column
+  .icon-avatar {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .icon-avatar .avatar,
+  .icon-avatar img {
+    width: 34px;
+    height: 34px;
+    border-radius: 17px;
+  }
+
+  // Type glyph overlaid on the avatar corner
+  .icon-avatar__icon-wrapper {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fomio-card);
+    box-shadow: 0 0 0 1px var(--fomio-border);
+
+    .d-icon {
+      width: 9px;
+      height: 9px;
+      color: var(--fomio-muted);
+    }
+  }
+
+  // Plain-icon rows (no avatar) — keep a calm muted glyph
+  > a > .d-icon:first-child {
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 20px;
+    height: 20px;
+    color: var(--fomio-muted);
+  }
+
+  // Text column
+  > a > div {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-label {
+    order: 1;
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--fomio-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 2px;
+  }
+
+  .item-description {
+    order: 2;
+    font-family: var(--fomio-font-serif);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--fomio-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// Unread treatment — terracotta inset stripe, soft tint, bolder label
+.fomio-notifications-menu .quick-access-panel li.notification.unread,
+.fomio-notifications-menu .quick-access-panel li.message.unread {
+  background: rgb(196 69 54 / 5%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--fomio-primary);
+  }
+
+  &:hover > a {
+    background: rgb(196 69 54 / 9%);
+  }
+
+  .item-label {
+    font-weight: 700;
+  }
+
+  .icon-avatar__icon-wrapper .d-icon {
+    color: var(--fomio-primary);
+  }
+}
+
+// ── Footer — tinted "view all / dismiss" bar ────────────────
+.fomio-notifications-menu .panel-body-bottom {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--fomio-border);
+  background: rgb(196 69 54 / 7%);
+
+  .btn {
+    height: 32px;
+    border-radius: var(--fomio-radius-pill);
+    font-family: var(--fomio-font-ui);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .show-all .btn {
+    width: 100%;
+    color: var(--fomio-primary);
+    background: transparent;
+    border: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary-dark);
+      background: rgb(196 69 54 / 8%);
+    }
+
+    .d-icon {
+      color: inherit;
+    }
+  }
+
+  .notifications-dismiss {
+    margin-left: 0;
+    color: var(--fomio-muted);
+    background: transparent;
+    border: 1px solid var(--fomio-border);
+
+    .d-icon {
+      color: inherit;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary);
+      border-color: var(--fomio-primary);
+      background: transparent;
+    }
+  }
+}
+
+// ── Empty state ─────────────────────────────────────────────
+.fomio-notifications-menu .empty-state {
+  padding: 40px 28px;
+  text-align: center;
+
+  .empty-state-title,
+  .empty-state__title {
+    font-family: var(--fomio-font-serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--fomio-muted);
+  }
+
+  .empty-state-body,
+  .empty-state__body {
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--fomio-muted);
+  }
+}
+
+// ── Positioning (desktop popover / mobile sheet) ────────────
 .fomio-notifications-menu--desktop {
   top: max(1rem, env(safe-area-inset-top, 0px) + 1rem);
   left: max(1rem, env(safe-area-inset-left, 0px) + 1rem);
   width: min(23rem, calc(100vw - 2rem));
+  max-height: min(78vh, 44rem);
 }
 
 .fomio-notifications-menu--mobile {
   inset-inline: 0;
   bottom: 0;
   width: 100%;
-  padding: 0 0.75rem calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
-}
-
-.fomio-notifications-menu--mobile .user-menu {
+  max-height: min(78vh, 44rem);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  max-height: min(72vh, 42rem);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-body.fomio-surface-touch .fomio-notifications-menu--mobile .user-menu {
-  max-height: min(68vh, 38rem);
+// Pull-handle affordance above the title on the mobile sheet.
+.fomio-notifications-menu--mobile .fomio-np-header {
+  position: relative;
+  height: 60px;
+  align-items: flex-end;
+  padding-bottom: 12px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--fomio-border);
+  }
+}
+
+body.fomio-surface-touch .fomio-notifications-menu--mobile {
+  max-height: min(72vh, 40rem);
+}
+
+// ── Dark mode (warm brown) ──────────────────────────────────
+html.fomio-color-dark {
+  .fomio-notifications-menu {
+    box-shadow:
+      0 16px 56px -10px rgb(0 0 0 / 55%),
+      0 0 0 1px rgb(255 255 255 / 4%);
+  }
+
+  .fomio-notifications-menu .quick-access-panel li.notification:hover > a,
+  .fomio-notifications-menu .quick-access-panel li.message:hover > a {
+    background: rgb(255 255 255 / 4%);
+  }
+
+  .fomio-notifications-menu .quick-access-panel li.notification.unread,
+  .fomio-notifications-menu .quick-access-panel li.message.unread {
+    background: rgb(230 116 88 / 8%);
+
+    &:hover > a {
+      background: rgb(230 116 88 / 13%);
+    }
+  }
+
+  .fomio-notifications-menu .panel-body-bottom {
+    background: rgb(230 116 88 / 9%);
+  }
+
+  .fomio-notifications-menu .icon-avatar__icon-wrapper {
+    background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+  }
 }
 
 // Create — visually emphasized center item

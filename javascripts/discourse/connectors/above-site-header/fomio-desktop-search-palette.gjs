@@ -29,6 +29,14 @@ function isEditableTarget(element) {
   return ["input", "textarea", "select"].includes(tagName);
 }
 
+function isPhoneWidthViewport() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return window.innerWidth < 640;
+}
+
 export default class FomioDesktopSearchPalette extends Component {
   @service router;
   @service search;
@@ -45,7 +53,7 @@ export default class FomioDesktopSearchPalette extends Component {
 
     this.#unsubscribeTouch = subscribeFomioTouchShell((value) => {
       this.isTouchShell = value;
-      if (value) {
+      if (value && isPhoneWidthViewport()) {
         closeDesktopSearchPalette();
       }
     });
@@ -122,7 +130,13 @@ export default class FomioDesktopSearchPalette extends Component {
   }
 
   get shouldRender() {
-    return !this.isTouchShell && !isAuthPath(this.currentPath);
+    if (isAuthPath(this.currentPath)) {
+      return false;
+    }
+
+    // Keep the desktop palette host alive on foldables/tablet-class widths
+    // even if focus/keyboard changes briefly flip the shell into touch mode.
+    return !this.isTouchShell || !isPhoneWidthViewport() || this.isSearchSheetOpen;
   }
 
   get desktopSearchInputId() {

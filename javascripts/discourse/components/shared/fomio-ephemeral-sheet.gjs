@@ -14,8 +14,11 @@ const FOCUSABLE_SELECTORS =
  * do not render (keeps content out of the accessibility tree).
  */
 export default class FomioEphemeralSheet extends Component {
+  BODY_OPEN_CLASS = "fomio-ephemeral-sheet-open";
+
   #sheetElement = null;
   #viewportCleanup = null;
+  #focusSyncTimer = null;
 
   get closeLabel() {
     return i18n(themePrefix("ephemeral_sheet.close_label"));
@@ -109,12 +112,18 @@ export default class FomioEphemeralSheet extends Component {
   teardownSheet() {
     this.#viewportCleanup?.();
     this.#viewportCleanup = null;
+    if (this.#focusSyncTimer) {
+      window.clearTimeout(this.#focusSyncTimer);
+      this.#focusSyncTimer = null;
+    }
 
     if (this.#sheetElement) {
       this.#sheetElement.style.removeProperty("--fomio-ephemeral-keyboard-offset");
       this.#sheetElement.style.removeProperty("--fomio-ephemeral-viewport-height");
+      this.#sheetElement.style.removeProperty("--fomio-ephemeral-viewport-top");
     }
 
+    document.body?.classList.remove(this.BODY_OPEN_CLASS);
     this.#sheetElement = null;
   }
 
@@ -131,6 +140,7 @@ export default class FomioEphemeralSheet extends Component {
     if (!viewport) {
       element.style.removeProperty("--fomio-ephemeral-keyboard-offset");
       element.style.removeProperty("--fomio-ephemeral-viewport-height");
+      element.style.removeProperty("--fomio-ephemeral-viewport-top");
       return;
     }
 
@@ -150,6 +160,36 @@ export default class FomioEphemeralSheet extends Component {
       "--fomio-ephemeral-viewport-height",
       `${viewportHeight}px`
     );
+    element.style.setProperty(
+      "--fomio-ephemeral-viewport-top",
+      `${viewportOffsetTop}px`
+    );
+
+    document.body?.classList.add(this.BODY_OPEN_CLASS);
+
+    if (keyboardOffset > 0) {
+      this.#focusSyncTimer && window.clearTimeout(this.#focusSyncTimer);
+      this.#focusSyncTimer = window.setTimeout(() => {
+        this.ensureFocusedElementVisible(element);
+      }, 120);
+    }
+  }
+
+  ensureFocusedElementVisible(element) {
+    const activeElement = document.activeElement;
+    if (!activeElement || !element.contains(activeElement)) {
+      return;
+    }
+
+    try {
+      activeElement.scrollIntoView({
+        block: "center",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    } catch {
+      activeElement.scrollIntoView(true);
+    }
   }
 
   <template>
