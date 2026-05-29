@@ -9607,6 +9607,28 @@ body.fomio-ephemeral-sheet-open.fomio-surface-touch {
   overscroll-behavior: none;
 }
 
+body.fomio-ephemeral-keyboard-open.fomio-surface-touch {
+  .fomio-search-sheet.fomio-ephemeral-sheet {
+    padding-bottom: 8px;
+    max-height: calc(var(--fomio-ephemeral-viewport-height, 82dvh) - 8px);
+  }
+
+  .fomio-search-sheet .fomio-ephemeral-sheet__inner {
+    padding-bottom: 0;
+  }
+
+  .fomio-search-sheet .fomio-ephemeral-sheet__close {
+    display: none;
+  }
+
+  .fomio-search-sheet .fomio-search-sheet__search .results {
+    max-height: min(
+      calc(var(--fomio-ephemeral-viewport-height, 52dvh) - 148px),
+      30rem
+    );
+  }
+}
+
 // ── Zones ────────────────────────────────────────────────────
 
 .fomio-sidebar__zone {

@@ -15,6 +15,7 @@ const FOCUSABLE_SELECTORS =
  */
 export default class FomioEphemeralSheet extends Component {
   BODY_OPEN_CLASS = "fomio-ephemeral-sheet-open";
+  BODY_KEYBOARD_CLASS = "fomio-ephemeral-keyboard-open";
 
   #sheetElement = null;
   #viewportCleanup = null;
@@ -124,6 +125,7 @@ export default class FomioEphemeralSheet extends Component {
     }
 
     document.body?.classList.remove(this.BODY_OPEN_CLASS);
+    document.body?.classList.remove(this.BODY_KEYBOARD_CLASS);
     this.#sheetElement = null;
   }
 
@@ -166,12 +168,18 @@ export default class FomioEphemeralSheet extends Component {
     );
 
     document.body?.classList.add(this.BODY_OPEN_CLASS);
+    document.body?.classList.toggle(
+      this.BODY_KEYBOARD_CLASS,
+      keyboardOffset > 0
+    );
 
     if (keyboardOffset > 0) {
       this.#focusSyncTimer && window.clearTimeout(this.#focusSyncTimer);
       this.#focusSyncTimer = window.setTimeout(() => {
         this.ensureFocusedElementVisible(element);
       }, 120);
+    } else {
+      document.body?.classList.remove(this.BODY_KEYBOARD_CLASS);
     }
   }
 
