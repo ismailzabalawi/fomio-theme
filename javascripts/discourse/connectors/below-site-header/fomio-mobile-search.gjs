@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import FomioSearchSheet from "../../components/shared/fomio-search-sheet";
+import FomioMobileSearchPalette from "../../components/shared/fomio-mobile-search-palette";
 import { isAuthPath } from "../../lib/fomio-mobile-nav-paths";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
@@ -39,6 +39,10 @@ export default class FomioMobileSearch extends Component {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
+      if (this.isSearchSheetOpen) {
+        this.closeSearchSheet();
+        return;
+      }
       this.#prevFocusEl = trigger;
       this.openSearchSheet();
     };
@@ -99,10 +103,9 @@ export default class FomioMobileSearch extends Component {
 
   <template>
     {{#if this.shouldRender}}
-      <FomioSearchSheet
+      <FomioMobileSearchPalette
         @isOpen={{this.isSearchSheetOpen}}
         @onClose={{this.closeSearchSheet}}
-        @variant="mobile"
         @searchInputId="fomio-mobile-search-input"
       />
     {{/if}}

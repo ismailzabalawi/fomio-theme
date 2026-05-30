@@ -36,6 +36,18 @@ en:
   notifications_overlay:
     aria_label: "Notifications menu"
     title: "Notifications"
+    mark_all_read: "Mark all read"
+    tabs:
+      all: "All"
+      messages: "Messages"
+    groups:
+      today: "Today"
+      yesterday: "Yesterday"
+      earlier: "Earlier"
+    view_all_notifications: "View all notifications"
+    view_all_messages: "View all messages"
+    empty_all: "No notifications right now."
+    empty_messages: "No messages right now."
   auth_password_reset:
     valid_hint: "We'll look for your account"
     spam_note: "Check your spam folder if the email doesn't arrive."

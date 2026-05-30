@@ -9602,33 +9602,6 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   }
 }
 
-body.fomio-ephemeral-sheet-open.fomio-surface-touch {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
-
-body.fomio-ephemeral-keyboard-open.fomio-surface-touch {
-  .fomio-search-sheet.fomio-ephemeral-sheet {
-    padding-bottom: 8px;
-    max-height: calc(var(--fomio-ephemeral-viewport-height, 82dvh) - 8px);
-  }
-
-  .fomio-search-sheet .fomio-ephemeral-sheet__inner {
-    padding-bottom: 0;
-  }
-
-  .fomio-search-sheet .fomio-ephemeral-sheet__close {
-    display: none;
-  }
-
-  .fomio-search-sheet .fomio-search-sheet__search .results {
-    max-height: min(
-      calc(var(--fomio-ephemeral-viewport-height, 52dvh) - 148px),
-      30rem
-    );
-  }
-}
-
 // ── Zones ────────────────────────────────────────────────────
 
 .fomio-sidebar__zone {
@@ -9958,87 +9931,28 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   }
 }
 
-.fomio-mobile-search-row {
-  padding: 0.75rem max(0.85rem, var(--fomio-page-pad-x, 0.85rem)) 0.35rem;
-}
-
 .fomio-global-search--mobile {
   .search-input {
     background: var(--fomio-card);
   }
 }
 
-.fomio-mobile-search-launcher {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  min-height: 56px;
-  padding: 0.9rem 1rem;
-  border: 1px solid color-mix(in oklab, var(--fomio-border) 85%, transparent);
-  border-radius: 18px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--fomio-card) 96%, #fff) 0%,
-      color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg)) 100%
-    );
-  color: inherit;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 58%),
-    0 14px 28px rgb(17 24 39 / 5%);
-}
-
-.fomio-mobile-search-launcher__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-surface));
-  color: color-mix(in oklab, var(--fomio-primary) 78%, var(--fomio-text));
-  flex-shrink: 0;
-}
-
-.fomio-mobile-search-launcher__body {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.fomio-mobile-search-launcher__title {
-  color: var(--fomio-text);
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.fomio-mobile-search-launcher__hint {
-  margin-top: 0.15rem;
-  color: var(--fomio-muted);
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  line-height: 1.35;
-}
-
-.fomio-search-sheet.fomio-ephemeral-sheet {
+.fomio-search-sheet.fomio-ephemeral-sheet,
+.fomio-mobile-search-palette__surface {
   overflow: hidden;
 }
 
-.fomio-search-sheet {
-  .fomio-ephemeral-sheet__inner {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding: 0.65rem 1rem 0.85rem;
-    max-height: inherit;
-  }
+.fomio-search-sheet .fomio-ephemeral-sheet__inner,
+.fomio-mobile-search-palette__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.65rem 1rem 0.85rem;
+  max-height: inherit;
+}
 
+.fomio-search-sheet,
+.fomio-mobile-search-palette__surface {
   .fomio-search-sheet__search {
     display: flex;
     flex-direction: column;
@@ -10319,38 +10233,69 @@ body:not(.fomio-surface-touch) .fomio-search-sheet--desktop {
   }
 }
 
-body.fomio-surface-touch .fomio-search-sheet.fomio-ephemeral-sheet {
-  top: max(8px, calc(var(--fomio-ephemeral-viewport-top, 0px) + 8px));
+body.fomio-surface-touch .fomio-mobile-search-palette__backdrop {
+  position: fixed;
+  top: calc(var(--fomio-safe-top, 0px) + 57px);
   left: 0;
   right: 0;
-  bottom: var(--fomio-ephemeral-keyboard-offset, 0px);
-  width: 100%;
-  box-sizing: border-box;
-  max-height: min(calc(var(--fomio-ephemeral-viewport-height, 82dvh) - 16px), 46rem);
-  border-radius: 24px 24px 0 0;
-  padding-top: 14px;
-  padding-inline-start: var(--fomio-page-pad-inline-start, 16px);
-  padding-inline-end: var(--fomio-page-pad-inline-end, 16px);
-  padding-bottom: calc(max(14px, var(--fomio-safe-bottom)) + var(--fomio-safe-bottom));
+  bottom: 0;
+  z-index: 1880;
+  background: rgb(17 24 39 / 12%);
+  backdrop-filter: blur(1px);
 }
 
-body.fomio-surface-touch .fomio-search-sheet {
+body.fomio-surface-touch .fomio-mobile-search-palette {
+  --fomio-mobile-search-offset-top: calc(var(--fomio-safe-top, 0px) + 57px);
+  position: fixed;
+  top: var(--fomio-mobile-search-offset-top);
+  left: 0;
+  right: 0;
+  z-index: 1890;
+  padding:
+    0
+    var(--fomio-page-pad-inline-end, 16px)
+    max(12px, var(--fomio-safe-bottom, 0px))
+    var(--fomio-page-pad-inline-start, 16px);
+  box-sizing: border-box;
+}
+
+body.fomio-surface-touch .fomio-mobile-search-palette__surface {
   display: flex;
   flex-direction: column;
+  max-height: min(
+    calc(100dvh - var(--fomio-mobile-search-offset-top) - max(12px, var(--fomio-safe-bottom, 0px))),
+    42rem
+  );
+  border: 1px solid color-mix(in oklab, var(--fomio-border) 86%, transparent);
+  border-top: 0;
+  border-radius: 0 0 24px 24px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--fomio-card) 97%, #fff) 0%,
+      color-mix(in oklab, var(--fomio-surface) 95%, var(--fomio-bg)) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 52%),
+    0 20px 40px rgb(17 24 39 / 12%);
+}
 
-  .fomio-ephemeral-sheet__inner {
-    flex: 1 1 auto;
-    min-height: 0;
-    padding-bottom: max(0.65rem, var(--fomio-safe-bottom));
+body.fomio-surface-touch .fomio-mobile-search-palette__inner {
+  min-height: 0;
+  padding-top: 0.75rem;
+  padding-bottom: max(0.75rem, var(--fomio-safe-bottom, 0px));
+}
+
+body.fomio-surface-touch .fomio-mobile-search-palette__surface .fomio-search-sheet__search {
+  .search-input-wrapper {
+    top: 0;
   }
 
-  .fomio-search-sheet__search .results {
-    max-height: min(calc(var(--fomio-ephemeral-viewport-height, 52dvh) - 190px), 30rem);
-  }
-
-  .fomio-ephemeral-sheet__close {
-    margin-top: 0.25rem;
-    margin-bottom: 0;
+  .results {
+    max-height: min(
+      calc(100dvh - var(--fomio-mobile-search-offset-top) - 10rem),
+      30rem
+    );
   }
 }
 
@@ -12708,20 +12653,21 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   box-shadow: none;
 }
 
-.fomio-notifications-menu .panel-body,
-.fomio-notifications-menu .panel-body-contents {
+.fomio-notifications-menu .user-menu.revamped .panel-body,
+.fomio-notifications-menu .user-menu.revamped .panel-body-contents {
   height: 100%;
   min-height: 0;
 }
 
-// Stack tabs above the list (native default is row-reverse).
-.fomio-notifications-menu .panel-body-contents {
+// Stack tabs above the list (native default is row-reverse). The
+// `.user-menu.revamped` prefix is required to outrank core layout rules.
+.fomio-notifications-menu .user-menu.revamped .panel-body-contents {
   display: flex;
   flex-direction: column;
 }
 
 // ── Pill tab bar ────────────────────────────────────────────
-.fomio-notifications-menu .menu-tabs-container {
+.fomio-notifications-menu .user-menu.revamped .menu-tabs-container {
   flex-shrink: 0;
   flex-direction: row;
   align-items: center;
@@ -12737,18 +12683,18 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   }
 }
 
-.fomio-notifications-menu .tabs-list {
+.fomio-notifications-menu .user-menu.revamped .tabs-list {
   flex-direction: row;
   gap: 6px;
 }
 
 // Bottom tabs (profile, review) sit inline with the top tabs —
 // no divider rule when laid out horizontally.
-.fomio-notifications-menu .bottom-tabs {
+.fomio-notifications-menu .user-menu.revamped .bottom-tabs {
   border-top: none;
 }
 
-.fomio-notifications-menu .menu-tabs-container .btn.user-menu-tab {
+.fomio-notifications-menu .user-menu.revamped .menu-tabs-container .btn.user-menu-tab {
   flex: 0 0 auto;
   height: 26px;
   width: auto;
@@ -12813,27 +12759,34 @@ html.fomio-color-dark .fomio-topic-context__thumb {
 }
 
 // ── Scrollable list body ────────────────────────────────────
-.fomio-notifications-menu .quick-access-panel {
+// Full-width column: list scrolls, footer pins to the bottom.
+.fomio-notifications-menu .user-menu.revamped .quick-access-panel {
   width: 100%;
   min-width: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   border-right: none;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--fomio-border) transparent;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--fomio-border);
-    border-radius: 2px;
-  }
 
   > ul {
+    flex: 1;
+    min-height: 0;
     margin: 0;
     padding: 0;
     list-style: none;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--fomio-border) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--fomio-border);
+      border-radius: 2px;
+    }
   }
 }
 
@@ -12965,7 +12918,7 @@ html.fomio-color-dark .fomio-topic-context__thumb {
 }
 
 // ── Footer — tinted "view all / dismiss" bar ────────────────
-.fomio-notifications-menu .panel-body-bottom {
+.fomio-notifications-menu .user-menu.revamped .panel-body-bottom {
   flex: 0 0 auto;
   flex-wrap: nowrap;
   align-items: center;
@@ -13114,6 +13067,314 @@ html.fomio-color-dark {
   }
 }
 
+// Custom panel DOM overrides. These come after the older native UserMenu
+// restyle rules so the owned Fomio layout wins without selector arm-wrestling.
+.fomio-notifications-menu {
+  min-height: 22rem;
+}
+
+.fomio-np-mark-all {
+  border: none;
+  background: transparent;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0;
+  transition: color var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-primary);
+  }
+}
+
+.fomio-np-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--fomio-border);
+}
+
+.fomio-np-tab {
+  height: 2.5rem;
+  padding: 0 1.15rem;
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-pill);
+  background: transparent;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease),
+    border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-text);
+    border-color: color-mix(in oklab, var(--fomio-border) 82%, var(--fomio-text));
+  }
+
+  &.is-active {
+    background: var(--fomio-primary);
+    border-color: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+  }
+}
+
+.fomio-np-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-np-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.fomio-np-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-np-section-title {
+  margin: 0;
+  padding: 1rem 16px 0.55rem;
+  font-family: var(--fomio-font-ui);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+}
+
+.fomio-np-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fomio-np-empty-state {
+  flex: 1;
+  min-height: 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.fomio-np-empty-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fomio-font-ui);
+  font-size: 0.95rem;
+  color: var(--fomio-muted);
+}
+
+.fomio-np-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--fomio-border);
+  background: color-mix(in oklab, var(--fomio-card) 94%, var(--fomio-primary) 6%);
+}
+
+.fomio-np-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 4rem;
+  padding: 0 1rem;
+  color: var(--fomio-primary);
+  font-family: var(--fomio-font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-primary-dark);
+    background: rgb(196 69 54 / 4%);
+  }
+
+  .d-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    color: inherit;
+  }
+}
+
+.fomio-notifications-menu li.notification,
+.fomio-notifications-menu li.message {
+  position: relative;
+  margin: 0;
+
+  > a {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px 14px 22px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 100ms var(--fomio-ease);
+  }
+
+  &:hover > a {
+    background: rgb(0 0 0 / 3%);
+  }
+
+  .icon-avatar {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .icon-avatar .avatar,
+  .icon-avatar img {
+    width: 42px;
+    height: 42px;
+    border-radius: 21px;
+  }
+
+  .icon-avatar__icon-wrapper {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fomio-card);
+    box-shadow: 0 0 0 2px var(--fomio-card);
+
+    .d-icon {
+      width: 9px;
+      height: 9px;
+      color: var(--fomio-primary);
+    }
+  }
+
+  > a > .d-icon:first-child {
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 20px;
+    height: 20px;
+    color: var(--fomio-muted);
+  }
+
+  > a > div {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-label {
+    order: 1;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--fomio-text);
+  }
+
+  .item-description {
+    order: 2;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-family: var(--fomio-font-serif);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--fomio-secondary);
+  }
+}
+
+.fomio-notifications-menu li.notification.unread,
+.fomio-notifications-menu li.message.unread {
+  background: rgb(196 69 54 / 5%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 4px;
+    border-radius: 0 3px 3px 0;
+    background: var(--fomio-primary);
+  }
+}
+
+.fomio-notifications-menu li.notification.unread .item-label,
+.fomio-notifications-menu li.message.unread .item-label {
+  font-weight: 800;
+}
+
+.fomio-notifications-menu li.notification.unread:hover > a,
+.fomio-notifications-menu li.message.unread:hover > a {
+  background: rgb(196 69 54 / 8%);
+}
+
+.fomio-notifications-menu li.notification.read .icon-avatar__icon-wrapper .d-icon,
+.fomio-notifications-menu li.message.read .icon-avatar__icon-wrapper .d-icon {
+  color: var(--fomio-muted);
+}
+
+.fomio-notifications-menu--desktop {
+  width: min(26.25rem, calc(100vw - 2rem));
+  max-height: min(82vh, 44rem);
+}
+
+.fomio-notifications-menu--mobile {
+  max-height: min(88vh, 48rem);
+}
+
+body.fomio-surface-touch .fomio-notifications-menu--mobile {
+  max-height: min(86vh, 46rem);
+}
+
+html.fomio-color-dark {
+  .fomio-notifications-menu li.notification:hover > a,
+  .fomio-notifications-menu li.message:hover > a {
+    background: rgb(255 255 255 / 4%);
+  }
+
+  .fomio-notifications-menu li.notification.unread,
+  .fomio-notifications-menu li.message.unread {
+    background: rgb(230 116 88 / 8%);
+
+    &:hover > a {
+      background: rgb(230 116 88 / 13%);
+    }
+  }
+
+  .fomio-np-footer {
+    background: rgb(230 116 88 / 9%);
+  }
+
+  .fomio-notifications-menu .icon-avatar__icon-wrapper {
+    background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+  }
+}
+
 // Create — visually emphasized center item
 .fomio-bottom-bar__item--create {
   .fomio-bottom-bar__icon {
@@ -13178,7 +13439,8 @@ html.fomio-color-dark {
     }
   }
 
-  .fomio-search-sheet.fomio-ephemeral-sheet {
+  .fomio-search-sheet.fomio-ephemeral-sheet,
+  .fomio-mobile-search-palette__surface {
     border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
     background:
       linear-gradient(
@@ -13191,7 +13453,8 @@ html.fomio-color-dark {
       0 28px 72px rgb(0 0 0 / 42%);
   }
 
-  .fomio-search-sheet {
+  .fomio-search-sheet,
+  .fomio-mobile-search-palette__surface {
     .search-random-quick-tip,
     .search-link .blurb,
     .search-link .search-item-category,

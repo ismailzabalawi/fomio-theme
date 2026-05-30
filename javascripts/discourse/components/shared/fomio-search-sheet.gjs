@@ -4,7 +4,7 @@ import FomioEphemeralSheet from "./fomio-ephemeral-sheet";
 
 export default class FomioSearchSheet extends Component {
   get variant() {
-    return this.args.variant ?? "mobile";
+    return this.args.variant ?? "desktop";
   }
 
   get inputId() {
