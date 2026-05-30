@@ -213,6 +213,10 @@ export default class FomioNotificationsMenu extends Component {
     return i18n(themePrefix("notifications_overlay.title"));
   }
 
+  get showMobileCloseButton() {
+    return this.source === "mobile";
+  }
+
   get activeEntries() {
     return this.activeTab === TAB_MESSAGES
       ? this.messageEntries || []
@@ -529,6 +533,17 @@ export default class FomioNotificationsMenu extends Component {
                 {{on "click" this.markAllRead}}
               >
                 {{this.markAllReadLabel}}
+              </button>
+            {{/if}}
+
+            {{#if this.showMobileCloseButton}}
+              <button
+                type="button"
+                class="fomio-np-close"
+                aria-label={{this.ariaLabel}}
+                {{on "click" this.close}}
+              >
+                {{icon "xmark"}}
               </button>
             {{/if}}
           </header>

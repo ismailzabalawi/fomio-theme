@@ -99,6 +99,15 @@ en:
         description: "External URL used for app handoff actions on the web theme."
   search_page:
     title: "Search"
+    heading_pre: "Search"
+    heading_brand: "fomio"
+    deck: "Find bytes, terets, and people across every hub — chronological, unhurried, and entirely yours."
+    results_label: "Search results"
+    results_for: "for"
+    results_suffix: "results"
+    filter_sort: "Sort:"
+    filter_title_only: "Title only"
+    filter_has_replies: "Has replies"
   hub_page:
     breadcrumb_hubs: "Hubs"
     bytes_section_title: "Bytes"

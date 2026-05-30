@@ -759,6 +759,56 @@ html.fomio-color-dark body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-a
 
 // ── Mobile notifications — match Activity shell hierarchy ───────────────────
 
+body.fomio-surface-touch .fomio-notifications-menu--mobile {
+  .fomio-np-header {
+    height: 56px;
+    gap: 8px;
+    padding-inline: 14px;
+    padding-bottom: 10px;
+  }
+
+  .fomio-np-title {
+    min-width: 0;
+    font-size: 0.98rem;
+  }
+
+  .fomio-np-mark-all {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .fomio-np-close {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg));
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    box-shadow: none;
+
+    .d-icon {
+      width: 0.85rem;
+      height: 0.85rem;
+      color: inherit;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      color: var(--fomio-text);
+      border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+      background: color-mix(in oklab, var(--fomio-card) 82%, var(--fomio-surface));
+    }
+  }
+}
+
 body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio-auth-mode) {
   #main-outlet .user-main .new-user-content-wrapper {
     margin: 0 10px 16px;

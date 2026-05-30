@@ -17,6 +17,7 @@ import {
 } from "../../lib/fomio-mobile-nav-paths";
 import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
 import {
+  closeFomioNotificationsMenu,
   FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
   openFomioNotificationsMenu,
 } from "../../lib/fomio-notifications-menu";
@@ -159,7 +160,11 @@ export default class FomioBottomBar extends Component {
   openNotifications(e) {
     e?.preventDefault();
     if (this.currentUser) {
-      openFomioNotificationsMenu("mobile");
+      if (this.notificationsMenuOpen) {
+        closeFomioNotificationsMenu();
+      } else {
+        openFomioNotificationsMenu("mobile");
+      }
     } else {
       redirectToLoginWithIntent("view_profile", this.currentPath);
     }
