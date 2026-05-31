@@ -7,46 +7,19 @@ import { service } from "@ember/service";
 import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 import {
   getFomioCoreAccountSections,
   isOwnedActivitySectionPath,
 } from "../../lib/fomio-account-sections";
-
-// Keep in sync with other shell connectors. Theme files cannot share modules.
-const AUTH_PATHS = [
-  "/login",
-  "/signup",
-  "/session/",
-  "/user-api-key",
-  "/password-reset",
-  "/u/activate-account",
-  "/u/account-created",
-  "/invites",
-  "/u/confirm",
-  "/auth/",
-];
+import {
+  isAuthPath,
+  isOwnBookmarksPath,
+  isOwnNotificationsPath,
+  isOwnProfileShellPath,
+} from "../../lib/fomio-mobile-nav-paths";
 const RAIL_OVERLAY_CONTEXTS = ["hubs", "profile", "bookmarks", "notifications"];
 const PENDING_RAIL_OVERLAY_KEY = "fomio_pending_rail_overlay_context";
-
-function isAuthPath(url) {
-  return AUTH_PATHS.some((p) => url.startsWith(p));
-}
-
-// Keep in sync with fomio-sidebar.gjs — Discourse user notification routes live
-// under /u/:username/notifications/* as well as /notifications and /my/notifications.
-function isNotificationsSectionPath(path) {
-  const p = path.split("?")[0];
-  if (p === "/notifications" || p.startsWith("/notifications/")) {
-    return true;
-  }
-  if (/^\/u\/[^/]+\/notifications(\/|$)/.test(p)) {
-    return true;
-  }
-  if (p.startsWith("/my/notifications")) {
-    return true;
-  }
-  return false;
-}
 
 export default class FomioMasterPane extends Component {
   @service router;
@@ -112,48 +85,6 @@ export default class FomioMasterPane extends Component {
     super.willDestroy(...arguments);
   }
 
-  normalizeCategorySource(source) {
-    if (!source) {
-      return [];
-    }
-
-    if (Array.isArray(source)) {
-      return source;
-    }
-
-    if (typeof source.toArray === "function") {
-      const normalized = source.toArray();
-      return Array.isArray(normalized) ? normalized : [];
-    }
-
-    if (Array.isArray(source.content)) {
-      return source.content;
-    }
-
-    if (typeof source.length === "number") {
-      try {
-        return Array.from(source);
-      } catch {
-        return [];
-      }
-    }
-
-    return [];
-  }
-
-  dedupeCategories(categories) {
-    const seen = new Set();
-
-    return categories.filter((category) => {
-      const key = category?.id ?? category?.slug;
-      if (!key || seen.has(key)) {
-        return false;
-      }
-      seen.add(key);
-      return true;
-    });
-  }
-
   get currentPath() {
     return (this.router.currentURL || "").split("?")[0];
   }
@@ -163,13 +94,13 @@ export default class FomioMasterPane extends Component {
     if (p === "/categories" || p.startsWith("/c/")) {
       return "hubs";
     }
-    if (p.includes("bookmarks")) {
+    if (isOwnBookmarksPath(p, this.currentUser)) {
       return "bookmarks";
     }
-    if (isNotificationsSectionPath(p)) {
+    if (isOwnNotificationsPath(p, this.currentUser)) {
       return "notifications";
     }
-    if (p.startsWith("/u/") || p.startsWith("/my/")) {
+    if (isOwnProfileShellPath(p, this.currentUser)) {
       return "profile";
     }
     return "home";
@@ -250,28 +181,7 @@ export default class FomioMasterPane extends Component {
   // Primary source mirrors sidebar/categories connectors: site.categories.
   // Fallbacks are safe reads only; no network fetches.
   get categoryPool() {
-    const candidates = [
-      this.site?.categories,
-      this.site?.categoryList?.categories,
-      this.site?.categoriesList,
-      this.site?.site?.categories,
-      this.args?.outletArgs?.site?.categories,
-      this.args?.outletArgs?.categoryList?.categories,
-    ];
-
-    const sourceMeta = candidates.map((source) => ({
-      exists: Boolean(source),
-      isArray: Array.isArray(source),
-      hasToArray: typeof source?.toArray === "function",
-      length: typeof source?.length === "number" ? source.length : null,
-      contentLength: Array.isArray(source?.content) ? source.content.length : null,
-      keys: source ? Object.keys(source).slice(0, 12) : [],
-    }));
-
-    const rawCategories = candidates
-      .flatMap((source) => this.normalizeCategorySource(source))
-      .filter((category) => Boolean(category && typeof category === "object"));
-    const categories = this.dedupeCategories(rawCategories);
+    const catalog = this.hubCatalog;
 
     if (
       typeof window !== "undefined" &&
@@ -279,10 +189,8 @@ export default class FomioMasterPane extends Component {
     ) {
       // Debug is opt-in and removable; disabled by default.
       console.debug("[fomio-master-pane] categoryPool", {
-        rawCount: rawCategories.length,
-        dedupedCount: categories.length,
-        sourceMeta,
-        sample: categories.slice(0, 3).map((c) => ({
+        dedupedCount: catalog.categories.length,
+        sample: catalog.categories.slice(0, 3).map((c) => ({
           id: c?.id,
           slug: c?.slug,
           parent_category_id: c?.parent_category_id,
@@ -292,19 +200,26 @@ export default class FomioMasterPane extends Component {
       });
     }
 
-    return categories;
+    return catalog.categories;
   }
 
   get topLevelHubs() {
-    return this.categoryPool
-      .filter(
-        (category) =>
-          category &&
-          (category.parent_category_id === null ||
-            category.parent_category_id === undefined) &&
-          category.slug !== "uncategorized"
-      )
-      .slice(0, 16);
+    return this.hubCatalog.topLevelHubs;
+  }
+
+  get hasMoreHubs() {
+    return this.hubCatalog.hasMoreHubs;
+  }
+
+  get hubCatalog() {
+    return buildFomioHubCatalog([
+      this.site?.categories,
+      this.site?.categoryList?.categories,
+      this.site?.categoriesList,
+      this.site?.site?.categories,
+      this.args?.outletArgs?.site?.categories,
+      this.args?.outletArgs?.categoryList?.categories,
+    ]);
   }
 
   // /categories keeps overview state with no selected row.
@@ -846,6 +761,11 @@ export default class FomioMasterPane extends Component {
                   {{/if}}
                 </div>
               {{/each}}
+              {{#if this.hasMoreHubs}}
+                <a href="/categories" class="fomio-master-pane__item">
+                  <span class="fomio-master-pane__name">{{i18n (themePrefix "sidebar.all_hubs")}}</span>
+                </a>
+              {{/if}}
             {{/if}}
           </nav>
         </div>

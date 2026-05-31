@@ -1,6 +1,12 @@
 en:
   js:
     log_in: "Sign in"
+    search:
+      type:
+        default: "Bytes"
+        categories_and_tags: "Terets & tags"
+        categories: "Terets"
+        users: "People"
     invites:
       welcome_to: "One more step."
     login:
@@ -100,8 +106,8 @@ en:
   search_page:
     title: "Search"
     heading_pre: "Search"
-    heading_brand: "fomio"
-    deck: "Find bytes, terets, and people across every hub — chronological, unhurried, and entirely yours."
+    heading_display: "Find bytes, terets, and people"
+    deck: "Across every hub on fomio."
     results_label: "Search results"
     results_for: "for"
     results_suffix: "results"
@@ -125,6 +131,8 @@ en:
     description: "Explore the spaces where conversations begin."
     overview_copy: "Hubs are the primary spaces that organize conversation across Fomio."
     select_hint: "Select a Hub from the left to open its detail surface."
+    overview_list_title: "Start with these Hubs"
+    overview_signal: "Overview"
     search_placeholder: "Search Hubs…"
     stat: "%{count} hubs · %{bytes} bytes"
     bytes_label: "bytes"

@@ -2,9 +2,21 @@ import Component from "@glimmer/component";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 
+const SEARCH_OPERATORS =
+  /\b(?:order|in|with|status|min_replies|min_posts|max_posts|min_views|max_views|before|after|user|category|tags?):\S+\b/g;
+
 export default class FomioSearchHeader extends Component {
   get searchTerm() {
     return this.args.outletArgs?.searchTerm ?? "";
+  }
+
+  get displayTerm() {
+    const cleaned = this.searchTerm
+      .replace(SEARCH_OPERATORS, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return cleaned || this.searchTerm.trim();
   }
 
   get isEmpty() {
@@ -14,15 +26,12 @@ export default class FomioSearchHeader extends Component {
   <template>
     {{#if this.isEmpty}}
       <header class="fomio-search-hd fomio-search-hd--empty">
-        <h1 class="fomio-search-hd__display">
+        <span class="fomio-search-hd__eyebrow">
           {{i18n (themePrefix "search_page.heading_pre")}}
-          <span class="fomio-search-hd__mark">
-            {{i18n (themePrefix "search_page.heading_brand")}}<span
-              class="fomio-search-hd__arc"
-              aria-hidden="true"
-            ></span>
-          </span>
-        </h1>
+        </span>
+        <h1 class="fomio-search-hd__display">{{i18n
+            (themePrefix "search_page.heading_display")
+          }}</h1>
         <p class="fomio-search-hd__deck">
           {{i18n (themePrefix "search_page.deck")}}
         </p>
@@ -34,7 +43,7 @@ export default class FomioSearchHeader extends Component {
         </span>
         <h1 class="fomio-search-hd__title">
           {{i18n (themePrefix "search_page.results_for")}}
-          <em>"{{this.searchTerm}}"</em>
+          <em>"{{this.displayTerm}}"</em>
         </h1>
       </header>
     {{/if}}

@@ -8,6 +8,7 @@ import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import FomioSearchInput from "../../components/shared/fomio-search-input";
 import FomioSegmentedControl from "../../components/shared/fomio-segmented-control";
+import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 
 function fmtK(n) {
   if (!n) return "0";
@@ -20,8 +21,19 @@ export default class FomioCategories extends Component {
   @tracked view = "grid";
   @tracked searchQuery = "";
 
+  get hubCatalog() {
+    return buildFomioHubCatalog([
+      this.site?.categories,
+      this.site?.categoryList?.categories,
+      this.site?.categoriesList,
+      this.site?.site?.categories,
+      this.args?.outletArgs?.site?.categories,
+      this.args?.outletArgs?.categoryList?.categories,
+    ]);
+  }
+
   get hubs() {
-    return (this.site.categories || []).filter((c) => !c.parent_category_id);
+    return this.hubCatalog.topLevelHubs;
   }
 
   get totalBytes() {
@@ -37,7 +49,7 @@ export default class FomioCategories extends Component {
 
   get filteredHubsWithTerets() {
     const q = this.searchQuery.toLowerCase().trim();
-    const all = this.site.categories || [];
+    const all = this.hubCatalog.categories;
     return this.hubs
       .filter((hub) => {
         if (!q) return true;
@@ -58,10 +70,16 @@ export default class FomioCategories extends Component {
       });
   }
 
+  get overviewLeadHubs() {
+    return this.filteredHubsWithTerets.slice(0, 3);
+  }
+
   get titleLabel()        { return i18n(themePrefix("hubs_index.title")); }
   get descriptionLabel()  { return i18n(themePrefix("hubs_index.description")); }
   get overviewLabel()     { return i18n(themePrefix("hubs_index.overview_copy")); }
   get selectHintLabel()   { return i18n(themePrefix("hubs_index.select_hint")); }
+  get overviewListLabel() { return i18n(themePrefix("hubs_index.overview_list_title")); }
+  get overviewSignalLabel() { return i18n(themePrefix("hubs_index.overview_signal")); }
   get searchPlaceholder() { return i18n(themePrefix("hubs_index.search_placeholder")); }
   get viewGridLabel()     { return i18n(themePrefix("hubs_index.view_grid")); }
   get viewListLabel()     { return i18n(themePrefix("hubs_index.view_list")); }
@@ -125,8 +143,39 @@ export default class FomioCategories extends Component {
 
       {{#if this.isMasterPaneActive}}
         <section class="fomio-hubs__overview" aria-label={{this.titleLabel}}>
-          <p class="fomio-hubs__overview-copy">{{this.overviewLabel}}</p>
-          <p class="fomio-hubs__overview-hint">{{this.selectHintLabel}}</p>
+          <div class="fomio-hubs__overview-intro">
+            <p class="fomio-hubs__overview-copy">{{this.overviewLabel}}</p>
+            <p class="fomio-hubs__overview-hint">{{this.selectHintLabel}}</p>
+          </div>
+
+          <div class="fomio-hubs__overview-band">
+            <div class="fomio-hubs__overview-stat-card">
+              <span class="fomio-hubs__overview-stat-label">{{this.overviewSignalLabel}}</span>
+              <span class="fomio-hubs__overview-stat-value">{{this.statLine}}</span>
+            </div>
+
+            <div class="fomio-hubs__overview-lead">
+              <div class="fomio-hubs__overview-lead-title">{{this.overviewListLabel}}</div>
+              <div class="fomio-hubs__overview-lead-list">
+                {{#each this.overviewLeadHubs as |entry|}}
+                  <a
+                    href="/c/{{entry.hub.slug}}/{{entry.hub.id}}"
+                    class="fomio-hubs__overview-lead-item"
+                  >
+                    <div class="fomio-hubs__overview-lead-main">
+                      <span
+                        class="fomio-hub-swatch fomio-hubs__overview-swatch"
+                        style="background: #{{entry.hub.color}}; color: #{{entry.hub.text_color}}"
+                        aria-hidden="true"
+                      >{{entry.letter}}</span>
+                      <span class="fomio-hubs__overview-lead-name">{{entry.hub.name}}</span>
+                    </div>
+                    <span class="fomio-hubs__overview-lead-meta">{{entry.bytesLabel}} {{this.bytesLabel}}</span>
+                  </a>
+                {{/each}}
+              </div>
+            </div>
+          </div>
         </section>
       {{else}}
         {{! ── Search ──────────────────────────────────────────── }}

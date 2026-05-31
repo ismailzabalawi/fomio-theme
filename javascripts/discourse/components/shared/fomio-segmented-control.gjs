@@ -9,6 +9,7 @@ export default class FomioSegmentedControl extends Component {
     return this.args.wrapperClass ? `fomio-seg ${this.args.wrapperClass}` : "fomio-seg";
   }
 
+  @action
   buttonClass(option) {
     const classes = ["fomio-seg-btn"];
     if (this.args.buttonClass) {

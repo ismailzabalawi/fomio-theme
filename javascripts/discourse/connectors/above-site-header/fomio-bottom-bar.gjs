@@ -12,7 +12,7 @@ import {
   isDiscoverPath,
   isHomeFeedPath,
   isMePath,
-  isNotificationsPath,
+  isOwnNotificationsPath,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
 import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
@@ -95,7 +95,10 @@ export default class FomioBottomBar extends Component {
   }
 
   get isNotificationsActive() {
-    return isNotificationsPath(this.currentPath) || this.notificationsMenuOpen;
+    return (
+      isOwnNotificationsPath(this.currentPath, this.currentUser) ||
+      this.notificationsMenuOpen
+    );
   }
 
   get isMeActive() {

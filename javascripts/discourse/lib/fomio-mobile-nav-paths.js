@@ -18,6 +18,10 @@ export function isAuthPath(url) {
   return AUTH_PATH_PREFIXES.some((p) => url.startsWith(p));
 }
 
+export function normalizePath(path) {
+  return path?.split("?")[0]?.replace(/\/+$/, "") || "/";
+}
+
 /**
  * Canonical logged-in bookmarks URL. Prefer `/u/:username/activity/bookmarks`;
  * fall back to Discourse `/my/activity/bookmarks` if `username` is missing.
@@ -204,6 +208,10 @@ function ownUserPathMatcher(path, currentUser) {
   };
 }
 
+export function isPathForCurrentUser(path, currentUser) {
+  return Boolean(ownUserPathMatcher(normalizePath(path), currentUser));
+}
+
 /**
  * Touch Me hub: only own profile landing surfaces (not native leaf routes).
  * Logged-out: Me-tab territory sign-in CTA (`isMePath`), excluding about/logout/session notifications.
@@ -285,11 +293,11 @@ export function isOwnUserSummarySurfacePath(path, currentUser) {
  * Home tab + home feed pills: primary reading feeds.
  */
 export function isHomeFeedPath(path) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   if (p === "/categories" || p.startsWith("/c/")) {
     return false;
   }
-  if (p.includes("bookmarks")) {
+  if (isSavedPath(p)) {
     return false;
   }
   if (p.startsWith("/u/") || p === "/my" || p.startsWith("/my/")) {
@@ -317,7 +325,7 @@ export function isHomeFeedPath(path) {
 }
 
 export function isDiscoverPath(path) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   return (
     p === "/categories" ||
     p.startsWith("/c/") ||
@@ -326,12 +334,16 @@ export function isDiscoverPath(path) {
 }
 
 export function isSavedPath(path) {
-  return path.split("?")[0].includes("bookmarks");
+  const p = normalizePath(path);
+  return (
+    /^\/u\/[^/]+\/activity\/bookmarks(?:\/.*)?$/.test(p) ||
+    /^\/my\/activity\/bookmarks(?:\/.*)?$/.test(p)
+  );
 }
 
 export function isMePath(path, currentUser) {
-  const p = path.split("?")[0];
-  if (p.includes("bookmarks")) {
+  const p = normalizePath(path);
+  if (isSavedPath(p)) {
     return false;
   }
   if (p === "/notifications" || p.startsWith("/notifications/")) {
@@ -343,13 +355,69 @@ export function isMePath(path, currentUser) {
   return Boolean(ownUserPathMatcher(p, currentUser));
 }
 
+export function isOwnBookmarksPath(path, currentUser) {
+  if (!currentUser) {
+    return false;
+  }
+
+  const p = normalizePath(path);
+  if (/^\/my\/activity\/bookmarks(?:\/.*)?$/.test(p)) {
+    return true;
+  }
+
+  if (!currentUser.username) {
+    return false;
+  }
+
+  const escapedUsername = String(currentUser.username).replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+
+  return new RegExp(
+    `^/u/${escapedUsername}/activity/bookmarks(?:/.*)?$`,
+    "i"
+  ).test(p);
+}
+
+export function isOwnNotificationsPath(path, currentUser) {
+  if (!currentUser) {
+    return false;
+  }
+
+  const p = normalizePath(path);
+  if (p === "/notifications" || p.startsWith("/notifications/")) {
+    return true;
+  }
+  if (p.startsWith("/my/notifications")) {
+    return true;
+  }
+
+  if (!currentUser.username) {
+    return false;
+  }
+
+  const escapedUsername = String(currentUser.username).replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+
+  return new RegExp(`^/u/${escapedUsername}/notifications(?:/|$)`, "i").test(p);
+}
+
+export function isOwnProfileShellPath(path, currentUser) {
+  return (
+    isMePath(path, currentUser) && !isOwnNotificationsPath(path, currentUser)
+  );
+}
+
 /**
  * True only when the user is at the Me Hub landing screen:
  * own-profile summary (/u/:me/summary or /u/:me) or /my/summary or /my.
  * All leaf pages (activity, preferences, notifications, …) return false.
  */
 export function isMeHubPath(path, currentUser) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   if (isAuthPath(p) || isSavedPath(p)) {
     return false;
   }
@@ -365,7 +433,7 @@ export function isMeHubPath(path, currentUser) {
  * Used to show the Me stack header (← Me | Section Title).
  */
 export function isMeStackPath(path, currentUser) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   if (!currentUser?.username) {
     return false;
   }
@@ -379,7 +447,7 @@ export function isMeStackPath(path, currentUser) {
  * Returns null if the path is not a recognisable Me leaf.
  */
 export function meSectionTitleKey(path) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   if (/^\/u\/[^/]+\/activity(\/|$)/.test(p) || p.startsWith("/my/activity")) {
     return "me_stack.activity";
   }
@@ -410,7 +478,7 @@ export function meSectionTitleKey(path) {
 }
 
 export function isCoreActivityPath(path) {
-  const p = path.split("?")[0].replace(/\/+$/, "") || "/";
+  const p = normalizePath(path);
   return [
     /^\/u\/[^/]+\/activity$/,
     /^\/u\/[^/]+\/activity\/topics$/,
@@ -426,12 +494,12 @@ export function isCoreActivityPath(path) {
 }
 
 export function isActivityPath(path) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   return /^\/u\/[^/]+\/activity(\/|$)/.test(p) || p.startsWith("/my/activity");
 }
 
 export function isNotificationsPath(path) {
-  const p = path.split("?")[0];
+  const p = normalizePath(path);
   return (
     /^\/u\/[^/]+\/notifications(\/|$)/.test(p) ||
     p === "/notifications" ||

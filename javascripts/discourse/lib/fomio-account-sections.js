@@ -14,11 +14,11 @@ import {
   notificationsPathForUser,
   notificationsMentionsPathForUser,
   notificationsRepliesPathForUser,
+  isOwnProfileShellPath,
   preferencesNotificationsPathForUser,
   preferencesPathForUser,
   profileSummaryPathForUser,
 } from "./fomio-mobile-nav-paths";
-
 function normalizePath(path) {
   return path?.replace(/\/+$/, "") || "/";
 }
@@ -54,8 +54,8 @@ function matchesPath(currentPath, ...patterns) {
   });
 }
 
-function canShowActivity({ currentUser, siteSettings }) {
-  const viewingSelf = true;
+function canShowActivity({ currentUser, currentPath, siteSettings }) {
+  const viewingSelf = isOwnProfileShellPath(currentPath, currentUser);
   return (
     viewingSelf ||
     currentUser?.admin ||
@@ -63,13 +63,13 @@ function canShowActivity({ currentUser, siteSettings }) {
   );
 }
 
-function canShowNotifications({ currentUser }) {
-  const viewingSelf = true;
+function canShowNotifications({ currentUser, currentPath }) {
+  const viewingSelf = isOwnProfileShellPath(currentPath, currentUser);
   return viewingSelf || currentUser?.admin;
 }
 
-function canShowMessages({ currentUser }) {
-  const viewingSelf = true;
+function canShowMessages({ currentUser, currentPath }) {
+  const viewingSelf = isOwnProfileShellPath(currentPath, currentUser);
   return Boolean(
     currentUser?.can_send_private_messages &&
       (viewingSelf || currentUser?.admin)
@@ -90,6 +90,10 @@ function canShowManageUser({ currentUser }) {
 
 export function getFomioCoreAccountSections(context) {
   const { currentUser, currentPath } = context;
+  if (!isOwnProfileShellPath(currentPath, currentUser)) {
+    return [];
+  }
+
   const username = currentUser?.username;
   const profileBasePath = username ? `/u/${username}` : null;
   const manageUserPath = adminManageUserPathForUser(currentUser);

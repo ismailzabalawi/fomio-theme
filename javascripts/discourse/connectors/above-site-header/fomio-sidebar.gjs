@@ -10,6 +10,7 @@ import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
+import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 import {
   openDesktopSearchPalette,
   subscribeDesktopSearchPalette,
@@ -21,42 +22,12 @@ import {
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 import {
   bookmarksPathForUser,
+  isAuthPath,
+  isOwnBookmarksPath,
+  isOwnNotificationsPath,
+  isOwnProfileShellPath,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
-
-// Keep in sync with fomio-layout.gjs. Discourse themes cannot share modules
-// across files, so this list is intentionally duplicated.
-const AUTH_PATHS = [
-  "/login",
-  "/signup",
-  "/session/",
-  "/user-api-key",
-  "/password-reset",
-  "/u/activate-account",
-  "/u/account-created",
-  "/invites",
-  "/u/confirm",
-  "/auth/",
-];
-
-function isAuthPath(url) {
-  return AUTH_PATHS.some((p) => url.startsWith(p));
-}
-
-// Keep in sync with fomio-master-pane.gjs
-function isNotificationsSectionPath(path) {
-  const p = path.split("?")[0];
-  if (p === "/notifications" || p.startsWith("/notifications/")) {
-    return true;
-  }
-  if (/^\/u\/[^/]+\/notifications(\/|$)/.test(p)) {
-    return true;
-  }
-  if (p.startsWith("/my/notifications")) {
-    return true;
-  }
-  return false;
-}
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
@@ -171,15 +142,18 @@ export default class FomioSidebar extends Component {
   }
 
   get isBookmarksActive() {
-    return this.currentPath.includes("bookmarks");
+    return isOwnBookmarksPath(this.currentPath, this.currentUser);
   }
 
   get isNotificationsActive() {
-    return isNotificationsSectionPath(this.currentPath) || this.notificationsMenuOpen;
+    return (
+      isOwnNotificationsPath(this.currentPath, this.currentUser) ||
+      this.notificationsMenuOpen
+    );
   }
 
   get isProfileActive() {
-    return this.currentPath.startsWith("/u/") || this.currentPath.startsWith("/my/");
+    return isOwnProfileShellPath(this.currentPath, this.currentUser);
   }
 
   // ── Hub/Teret active detection ────────────────────────────────
@@ -195,7 +169,7 @@ export default class FomioSidebar extends Component {
     }
     if (parts[3] && /^\d+$/.test(parts[3])) {
       const teretId = parseInt(parts[3], 10);
-      const teret = (this.site.categories || []).find((c) => c.id === teretId);
+      const teret = this.hubCatalog.categories.find((category) => category.id === teretId);
       return teret?.parent_category_id ?? null;
     }
     return null;
@@ -219,18 +193,27 @@ export default class FomioSidebar extends Component {
   // ── Data getters ──────────────────────────────────────────────
 
   get hubsWithTerets() {
-    const all = this.site.categories || [];
-    return all
-      .filter((c) => !c.parent_category_id)
-      .slice(0, 10)
-      .map((hub) => ({
-        hub,
-        terets: all.filter((c) => c.parent_category_id === hub.id),
-      }));
+    return this.hubCatalog.topLevelHubs.map((hub) => ({
+      hub,
+      terets: this.hubCatalog.categories.filter(
+        (category) => category.parent_category_id === hub.id
+      ),
+    }));
   }
 
   get hasMoreHubs() {
-    return (this.site.categories || []).filter((c) => !c.parent_category_id).length > 10;
+    return this.hubCatalog.hasMoreHubs;
+  }
+
+  get hubCatalog() {
+    return buildFomioHubCatalog([
+      this.site?.categories,
+      this.site?.categoryList?.categories,
+      this.site?.categoriesList,
+      this.site?.site?.categories,
+      this.args?.outletArgs?.site?.categories,
+      this.args?.outletArgs?.categoryList?.categories,
+    ]);
   }
 
   get isRailOrTouchSurface() {
@@ -338,16 +321,34 @@ export default class FomioSidebar extends Component {
     });
   }
 
+  get mobileLogoUrl() {
+    return this.logoResolver("mobile_logo");
+  }
+
+  get mobileLogoUrlDark() {
+    return this.logoResolver("mobile_logo", {
+      dark: this.session.darkModeAvailable,
+    });
+  }
+
   get showCompactLogo() {
     return this.isRailSurface || this.isCompactDesktopSurface;
   }
 
   get currentLogoUrl() {
-    return this.showCompactLogo ? this.logoSmallUrl : this.logoUrl;
+    if (!this.showCompactLogo) {
+      return this.logoUrl;
+    }
+
+    return this.logoSmallUrl || this.mobileLogoUrl || this.logoUrl;
   }
 
   get currentLogoUrlDark() {
-    return this.showCompactLogo ? this.logoSmallUrlDark : this.logoUrlDark;
+    if (!this.showCompactLogo) {
+      return this.logoUrlDark;
+    }
+
+    return this.logoSmallUrlDark || this.mobileLogoUrlDark || this.logoUrlDark;
   }
 
   get currentLogoClass() {

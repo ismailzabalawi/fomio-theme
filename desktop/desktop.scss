@@ -254,7 +254,8 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
   // ── 4. Items: icon-only, touch-safe, with hover reveal ──
 
   .fomio-sidebar__item,
-  .fomio-sidebar__search-trigger {
+  .fomio-sidebar__search-trigger,
+  .fomio-sidebar__search-launcher {
     position: relative;
     justify-content: center;
     padding: 0.5rem 0;
@@ -276,7 +277,8 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
   // Icon micro-feedback on hover — scale only the glyph, not the background
   @media (prefers-reduced-motion: no-preference) {
     .fomio-sidebar__item:hover .fomio-sidebar__icon,
-    .fomio-sidebar__search-trigger:hover .fomio-sidebar__icon {
+    .fomio-sidebar__search-trigger:hover .fomio-sidebar__icon,
+    .fomio-sidebar__search-launcher:hover .fomio-sidebar__search-launcher-icon {
       transform: scale(1.12);
       transition: transform 120ms ease;
     }
@@ -330,6 +332,27 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
 
     &:hover {
       border-color: var(--fomio-border);
+    }
+  }
+
+  // Resize-transition fallback: if the expanded launcher survives briefly
+  // after the shell switches to rail, collapse it into an icon-only control
+  // so it cannot bleed outside the narrow sidebar.
+  .fomio-sidebar__search-launcher {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+    overflow: hidden;
+
+    .fomio-sidebar__search-launcher-body,
+    .fomio-sidebar__search-launcher-shortcut {
+      display: none;
+    }
+
+    .fomio-sidebar__search-launcher-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--fomio-text);
     }
   }
 
@@ -1303,9 +1326,15 @@ body.fomio-sidebar-active.fomio-surface-rail.user-messages-page:not(.fomio-auth-
 // duplicates rail/master-pane navigation.
 // ============================================================
 
-body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
+body.fomio-settings-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-settings-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode),
+body.fomio-bookmarks-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-bookmarks-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-bookmarks-master-active.fomio-surface-rail:not(.fomio-auth-mode),
+body.fomio-notifications-master-active.fomio-surface-expanded:not(.fomio-auth-mode),
+body.fomio-notifications-master-active.fomio-surface-compact-desktop:not(.fomio-auth-mode),
+body.fomio-notifications-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   &.user-summary-page,
   &.user-activity-page,
   &.user-messages-page,

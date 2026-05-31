@@ -756,6 +756,366 @@ html.fomio-color-dark body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-a
   }
 }
 
+// ── Mobile search page — phone-first editorial surface ────────────────────
+
+body.fomio-sidebar-active.search-page.fomio-surface-touch:not(.fomio-auth-mode) {
+  .search-container {
+    max-width: 100%;
+    padding:
+      0
+      var(--fomio-page-pad-inline-end, 16px)
+      calc(var(--fomio-bottom-bar-safe-height, 72px) + 1rem)
+      var(--fomio-page-pad-inline-start, 16px);
+  }
+
+  .search-header {
+    margin-bottom: 0.9rem;
+  }
+
+  .fomio-search-hd {
+    padding: 1.15rem 0 0.85rem;
+  }
+
+  .fomio-search-hd__display {
+    max-width: 9ch;
+    font-size: clamp(2rem, 8.2vw, 2.45rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+
+  .fomio-search-hd__deck {
+    margin-top: 0.75rem;
+    font-size: 0.98rem;
+    line-height: 1.58;
+    max-width: none;
+  }
+
+  .fomio-search-hd__eyebrow {
+    margin-bottom: 0.35rem;
+  }
+
+  .fomio-search-hd__title {
+    font-size: clamp(1.6rem, 6vw, 2rem);
+    line-height: 1.16;
+    letter-spacing: -0.024em;
+  }
+
+  .search-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem 0.7rem;
+    min-height: 0;
+    padding: 0.95rem;
+    border-radius: 24px;
+
+    &::before {
+      left: 1rem;
+      top: 1.55rem;
+      transform: none;
+    }
+
+    > .select-kit.combo-box {
+      grid-column: 1;
+      grid-row: 2;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+
+      .select-kit-header {
+        height: 2.5rem;
+        padding-inline: 0.8rem;
+      }
+
+      .selected-name {
+        font-size: 0.78rem;
+      }
+    }
+
+    input.full-page-search {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      height: 2.1rem;
+      padding-left: 1.85rem;
+      font-size: 1.15rem;
+      line-height: 1.2;
+    }
+
+    .search-cta.btn {
+      grid-column: 2;
+      grid-row: 2;
+      height: 2.5rem;
+      width: 2.5rem;
+      min-width: 2.5rem;
+      padding: 0;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 22px rgb(196 69 54 / 18%);
+
+      .d-icon {
+        display: inline-flex;
+        width: 0.95rem;
+        height: 0.95rem;
+        color: currentColor;
+      }
+
+      .d-button-label {
+        display: none;
+      }
+    }
+  }
+
+  .search-context {
+    margin-top: 0.85rem;
+
+    label {
+      width: 100%;
+      justify-content: center;
+      min-height: 2.5rem;
+      padding-inline: 0.9rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+  }
+
+  .fomio-search-chips-bar {
+    align-items: stretch;
+    gap: 0.8rem;
+    margin: 1rem 0 1.15rem;
+  }
+
+  .fomio-search-result-meta {
+    gap: 0.55rem;
+    min-height: 0;
+    flex-wrap: wrap;
+  }
+
+  .fomio-search-result-count {
+    font-size: 0.8rem;
+  }
+
+  .fomio-search-result-scope {
+    min-height: 1.65rem;
+    padding-inline: 0.55rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .fomio-search-chips {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 0.55rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.2rem;
+    margin-inline: calc(var(--fomio-page-pad-inline-start, 16px) * -1)
+      calc(var(--fomio-page-pad-inline-end, 16px) * -1);
+    padding-inline: var(--fomio-page-pad-inline-start, 16px)
+      var(--fomio-page-pad-inline-end, 16px);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .fomio-search-chip-label,
+  .fomio-search-chip {
+    flex: 0 0 auto;
+  }
+
+  .fomio-search-chip-label {
+    margin-right: 0;
+    padding-left: 0.1rem;
+    font-size: 0.72rem;
+  }
+
+  .fomio-search-chip {
+    height: 2rem;
+    padding-inline: 0.75rem;
+    font-size: 0.76rem;
+    gap: 0.35rem;
+  }
+
+  .fomio-search-chip-divider {
+    display: none;
+  }
+
+  .search-filters {
+    margin-top: 0.2rem;
+  }
+
+  .advanced-filters__toggle.btn-default {
+    width: 100%;
+    justify-content: center;
+    min-height: 2.5rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+  }
+
+  .search-advanced-filters {
+    margin-top: 0.85rem;
+    padding: 1rem;
+    border-radius: 22px;
+  }
+
+  .search-advanced-options,
+  .search-advanced-filters .controls.inline-form {
+    grid-template-columns: 1fr;
+  }
+
+  .control-label {
+    margin-bottom: 0.45rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.09em;
+  }
+
+  .search-advanced-filters .select-kit .select-kit-header,
+  .search-advanced-filters input:not([type="checkbox"]),
+  .search-advanced-filters .date-picker-wrapper input {
+    min-height: 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  .search-advanced-filters .second-search-button {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 0.35rem;
+  }
+
+  .search-advanced-filters .second-search-button .search-cta.btn {
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--fomio-primary);
+    color: #fff;
+    box-shadow: 0 10px 22px rgb(196 69 54 / 16%);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition:
+      background 120ms ease,
+      border-color 120ms ease,
+      transform 120ms ease,
+      box-shadow 120ms ease;
+
+    .d-icon {
+      display: inline-flex;
+      width: 0.9rem;
+      height: 0.9rem;
+      color: currentColor;
+    }
+
+    .d-button-label {
+      display: inline;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-primary-dark);
+      box-shadow: 0 12px 26px rgb(196 69 54 / 20%);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgb(196 69 54 / 14%);
+    }
+  }
+
+  .search-results {
+    margin-top: 0.35rem;
+  }
+
+  .fps-result {
+    padding: 1rem;
+    margin-bottom: 0.85rem;
+    border-radius: 22px;
+  }
+
+  .search-category {
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .search-category .badge-wrapper {
+    padding: 0.18rem 0.5rem;
+
+    .badge-category {
+      font-size: 0.58rem;
+    }
+  }
+
+  .fps-topic .search-link {
+    margin-bottom: 0.55rem;
+    font-size: 1.32rem;
+    line-height: 1.24;
+  }
+
+  .blurb.container {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    -webkit-line-clamp: 3;
+  }
+
+  .fps-result-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.9rem;
+    margin-top: 0.8rem;
+    font-size: 0.72rem;
+  }
+
+  .category-items,
+  .tag-items,
+  .user-items {
+    gap: 0.85rem;
+  }
+
+  .fps-category-item,
+  .fps-tag-item,
+  .fps-user-item {
+    gap: 0.8rem;
+    padding: 1rem;
+    border-radius: 18px;
+  }
+
+  .fps-category-item {
+    font-size: 0.98rem;
+  }
+
+  .fps-user-item .name {
+    font-size: 1.08rem;
+  }
+
+  .fps-user-item .username {
+    font-size: 0.76rem;
+  }
+
+  .no-results-container {
+    padding: 2.5rem 0.75rem;
+
+    h3 {
+      font-size: 1.55rem;
+    }
+
+    .no-results-suggestion {
+      font-size: 0.98rem;
+    }
+  }
+
+  .search-footer {
+    padding-bottom: 0.5rem;
+    font-size: 0.68rem;
+  }
+}
+
 
 // ── Mobile notifications — match Activity shell hierarchy ───────────────────
 
