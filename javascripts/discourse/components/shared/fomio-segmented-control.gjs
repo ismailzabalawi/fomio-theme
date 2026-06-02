@@ -3,6 +3,7 @@ import { action } from "@ember/object";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import icon from "discourse/helpers/d-icon";
+import FomioPhIcon from "./fomio-ph-icon";
 
 export default class FomioSegmentedControl extends Component {
   get wrapperClass() {
@@ -36,7 +37,9 @@ export default class FomioSegmentedControl extends Component {
           aria-pressed={{if option.isActive "true" "false"}}
           {{on "click" (fn this.selectOption option.id)}}
         >
-          {{#if option.icon}}
+          {{#if option.phIcon}}
+            <FomioPhIcon @name={{option.phIcon}} @size={{16}} />
+          {{else if option.icon}}
             {{icon option.icon}}
           {{else}}
             {{option.label}}

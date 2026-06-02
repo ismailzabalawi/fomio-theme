@@ -9,11 +9,13 @@ import {
 describe("fomio-hub-catalog", () => {
   it("excludes uncategorized and dedupes repeated category sources", () => {
     const repeatedHub = { id: 1, slug: "alpha", name: "Alpha", color: "111111" };
+    const overflowHub = { id: 4, slug: "beta", name: "Beta", color: "333333" };
     const catalog = buildFomioHubCatalog([
       [
         repeatedHub,
         { id: 2, slug: "uncategorized", name: "Uncategorized", color: "222222" },
         { id: 3, slug: "alpha-chat", name: "Alpha Chat", parent_category_id: 1 },
+        overflowHub,
       ],
       {
         toArray() {
@@ -24,9 +26,13 @@ describe("fomio-hub-catalog", () => {
 
     assert.deepEqual(
       catalog.topLevelHubs.map((hub) => hub.slug),
-      ["alpha"]
+      ["alpha", "beta"]
     );
-    assert.equal(catalog.categories.length, 3);
+    assert.deepEqual(
+      catalog.allTopLevelHubs.map((hub) => hub.slug),
+      ["alpha", "beta"]
+    );
+    assert.equal(catalog.categories.length, 4);
     assert.equal(catalog.hasMoreHubs, false);
   });
 
@@ -43,12 +49,17 @@ describe("fomio-hub-catalog", () => {
     const catalog = buildFomioHubCatalog([categories]);
 
     assert.equal(catalog.topLevelHubs.length, FOMIO_TOP_LEVEL_HUB_LIMIT);
+    assert.equal(catalog.allTopLevelHubs.length, categories.length);
     assert.equal(catalog.hasMoreHubs, true);
     assert.deepEqual(
       catalog.topLevelHubs.map((hub) => hub.slug),
       categories
         .slice(0, FOMIO_TOP_LEVEL_HUB_LIMIT)
         .map((hub) => hub.slug)
+    );
+    assert.deepEqual(
+      catalog.allTopLevelHubs.map((hub) => hub.slug),
+      categories.map((hub) => hub.slug)
     );
   });
 });

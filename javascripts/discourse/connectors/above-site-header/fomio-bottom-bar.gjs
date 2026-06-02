@@ -8,14 +8,14 @@ import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import {
-  isAuthPath,
   isDiscoverPath,
+  isFomioShellPath,
   isHomeFeedPath,
   isMePath,
   isOwnNotificationsPath,
-  profileSummaryPathForUser,
+  meHubPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
-import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
+import { fomioCurrentPath } from "../../lib/fomio-router-pathname";
 import {
   closeFomioNotificationsMenu,
   FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
@@ -79,11 +79,11 @@ export default class FomioBottomBar extends Component {
   }
 
   get currentPath() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioCurrentPath(this.router.currentURL || "");
   }
 
   get shouldRender() {
-    return !isAuthPath(this.currentPath);
+    return isFomioShellPath(this.currentPath);
   }
 
   get isHomeActive() {
@@ -110,7 +110,7 @@ export default class FomioBottomBar extends Component {
   }
 
   get profileUrl() {
-    return profileSummaryPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
+    return meHubPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
   }
 
   get navAriaLabel() {
@@ -177,25 +177,13 @@ export default class FomioBottomBar extends Component {
   goToMe(e) {
     e?.preventDefault();
     if (this.currentUser) {
-      const url = profileSummaryPathForUser(this.currentUser);
+      const url = meHubPathForUser(this.currentUser);
       if (url) {
-        armMeHubLandingForNextSummaryVisit();
         window.location.assign(url);
       }
     } else {
       redirectToLoginWithIntent("view_profile", this.currentPath);
     }
-  }
-
-  @action
-  armMeHubLanding(e) {
-    if (
-      e &&
-      (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0)
-    ) {
-      return;
-    }
-    armMeHubLandingForNextSummaryVisit();
   }
 
   <template>
@@ -269,7 +257,6 @@ export default class FomioBottomBar extends Component {
             class="fomio-bottom-bar__item {{if this.isMeActive 'is-active'}}"
             aria-current={{if this.isMeActive "page"}}
             title={{this.meLabel}}
-            {{on "click" this.armMeHubLanding}}
           >
             <span class="fomio-bottom-bar__icon">{{icon "user"}}</span>
             <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>

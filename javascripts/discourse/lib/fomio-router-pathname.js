@@ -14,6 +14,18 @@ export function fomioPathnameNoQuery(currentURL) {
   return raw;
 }
 
+/**
+ * Prefer the real browser pathname when available. This avoids stale
+ * `router.currentURL` reads during hard loads / preview transitions.
+ */
+export function fomioCurrentPath(routerCurrentURL) {
+  if (typeof window !== "undefined" && window.location?.pathname) {
+    return window.location.pathname;
+  }
+
+  return fomioPathnameNoQuery(routerCurrentURL);
+}
+
 /** Trailing-slash–agnostic, case-insensitive path compare (Discourse URLs are ASCII). */
 export function fomioPathsEqual(a, b) {
   const norm = (x) => (x.replace(/\/$/, "") || "/").toLowerCase();

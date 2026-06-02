@@ -1,24 +1,9 @@
 import { apiInitializer } from "discourse/lib/api";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
-
-// Keep in sync with fomio-sidebar.gjs and isDiscourseAuthSupportingPath in
-// theme-initializer.gjs. Discourse themes cannot share modules across files.
-const AUTH_PATHS = [
-  "/login",
-  "/signup",
-  "/session/",
-  "/user-api-key",
-  "/password-reset",
-  "/u/activate-account",
-  "/u/account-created",
-  "/invites",
-  "/u/confirm",
-  "/auth/",
-];
-
-function isAuthPath(url) {
-  return AUTH_PATHS.some((p) => url.startsWith(p));
-}
+import {
+  isAuthPath,
+  isDiscourseNativePath,
+} from "../lib/fomio-route-mode";
 
 function normalizeDiscoursePath(rawPath) {
   getURL("/");
@@ -46,9 +31,15 @@ export default apiInitializer("1.8.0", (api) => {
   function syncLayoutClasses() {
     const path = normalizeDiscoursePath(window.location.pathname);
     const authMode = isAuthPath(path);
+    const discourseNativeMode = isDiscourseNativePath(path);
+    const fomioShellMode = !authMode && !discourseNativeMode;
 
     document.body.classList.toggle("fomio-auth-mode", authMode);
-    document.body.classList.toggle("fomio-sidebar-active", !authMode);
+    document.body.classList.toggle(
+      "fomio-discourse-native-mode",
+      discourseNativeMode
+    );
+    document.body.classList.toggle("fomio-sidebar-active", fomioShellMode);
     // Close the mobile sidebar on every navigation so it doesn't stay open
     // after the user taps a link inside it.
     document.body.classList.remove("fomio-mobile-sidebar-open");

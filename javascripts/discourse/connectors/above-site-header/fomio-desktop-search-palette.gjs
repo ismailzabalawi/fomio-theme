@@ -9,7 +9,7 @@ import {
   openDesktopSearchPalette,
   subscribeDesktopSearchPalette,
 } from "../../lib/fomio-desktop-search-palette";
-import { isAuthPath } from "../../lib/fomio-mobile-nav-paths";
+import { isFomioShellPath } from "../../lib/fomio-mobile-nav-paths";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 function isEditableTarget(element) {
@@ -130,7 +130,7 @@ export default class FomioDesktopSearchPalette extends Component {
   }
 
   get shouldRender() {
-    if (isAuthPath(this.currentPath)) {
+    if (!isFomioShellPath(this.currentPath)) {
       return false;
     }
 

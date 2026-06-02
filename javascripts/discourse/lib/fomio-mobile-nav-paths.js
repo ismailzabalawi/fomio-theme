@@ -1,25 +1,26 @@
-// Shared path classification for mobile tab bar + contextual pills.
-// Keep AUTH_PATHS in sync with fomio-layout.gjs and fomio-sidebar.gjs.
+export {
+  AUTH_PATH_PREFIXES,
+  DISCOURSE_NATIVE_PATH_PREFIXES,
+  isAuthPath,
+  isDiscourseNativePath,
+  isFomioShellPath,
+  normalizePath,
+} from "./fomio-route-mode.js";
 
-export const AUTH_PATH_PREFIXES = [
-  "/login",
-  "/signup",
-  "/session/",
-  "/user-api-key",
-  "/password-reset",
-  "/u/activate-account",
-  "/u/account-created",
-  "/invites",
-  "/u/confirm",
-  "/auth/",
-];
+import { isAuthPath, normalizePath } from "./fomio-route-mode.js";
 
-export function isAuthPath(url) {
-  return AUTH_PATH_PREFIXES.some((p) => url.startsWith(p));
-}
+function userPathMatcher(path) {
+  const normalizedPath = normalizePath(path);
+  const match = /^\/u\/([^/]+)(\/.*)?$/.exec(normalizedPath);
+  if (!match) {
+    return null;
+  }
 
-export function normalizePath(path) {
-  return path?.split("?")[0]?.replace(/\/+$/, "") || "/";
+  return {
+    username: match[1],
+    isRoot: !match[2],
+    suffix: match[2] || "",
+  };
 }
 
 /**
@@ -50,10 +51,33 @@ export function profileSummaryPathForUser(user) {
   }
   if (typeof console !== "undefined" && console.warn) {
     console.warn(
-      "[Fomio] profileSummaryPathForUser: missing username; using /my"
+      "[Fomio] profileSummaryPathForUser: missing username; no safe fallback"
     );
   }
-  return "/my";
+  return null;
+}
+
+export function meHubPathForUser(user) {
+  if (!user) {
+    return null;
+  }
+
+  if (user.username) {
+    return `/u/${user.username}`;
+  }
+
+  return null;
+}
+
+export function shouldUseOwnProfileRootAsMeHub(currentUser, viewedUsername, { isTouchShell = false } = {}) {
+  if (!isTouchShell || !currentUser?.username || !viewedUsername) {
+    return false;
+  }
+
+  return (
+    String(currentUser.username).toLowerCase() ===
+    String(viewedUsername).toLowerCase()
+  );
 }
 
 export function activityPathForUser(user) {
@@ -184,6 +208,14 @@ export function adminManageUserPathForUser(user) {
   return `/admin/users/${user.id}/${String(user.username).toLowerCase()}`;
 }
 
+export function adminManageUserPathForUsers(viewer, viewedUser) {
+  if (!viewer?.staff || viewedUser?.id == null || !viewedUser?.username) {
+    return null;
+  }
+
+  return `/admin/users/${viewedUser.id}/${String(viewedUser.username).toLowerCase()}`;
+}
+
 /**
  * Site About page (native Discourse `/about`). Return null from a fork if the route is disabled.
  */
@@ -197,15 +229,23 @@ function ownUserPathMatcher(path, currentUser) {
   }
 
   const slug = currentUser.username.toLowerCase();
-  const match = /^\/u\/([^/]+)(\/.*)?$/.exec(path);
-  if (!match || match[1].toLowerCase() !== slug) {
+  const match = userPathMatcher(path);
+  if (!match || match.username.toLowerCase() !== slug) {
     return null;
   }
 
   return {
-    isRoot: !match[2],
-    suffix: match[2] || "",
+    isRoot: match.isRoot,
+    suffix: match.suffix,
   };
+}
+
+export function viewedProfileUsername(path) {
+  return userPathMatcher(path)?.username ?? null;
+}
+
+export function isUserProfilePath(path) {
+  return Boolean(userPathMatcher(path));
 }
 
 export function isPathForCurrentUser(path, currentUser) {
@@ -241,15 +281,12 @@ export function isMeLandingSurfacePath(rawUrl, currentUser) {
   if (path === "/my/messages" || path.startsWith("/my/messages/")) {
     return false;
   }
-  if (path === "/my" || path === "/my/summary") {
-    return true;
-  }
   if (path.startsWith("/my/")) {
     return false;
   }
 
   const ownMatch = ownUserPathMatcher(path, currentUser);
-  return Boolean(ownMatch && (ownMatch.isRoot || ownMatch.suffix === "/summary"));
+  return Boolean(ownMatch && ownMatch.isRoot);
 }
 
 /**
@@ -261,11 +298,8 @@ export function isMeLandingPath(path, currentUser) {
   if (!currentUser || isAuthPath(p) || isSavedPath(path)) {
     return false;
   }
-  if (p === "/my" || p === "/my/summary") {
-    return true;
-  }
   const ownMatch = ownUserPathMatcher(p, currentUser);
-  return Boolean(ownMatch && (ownMatch.isRoot || ownMatch.suffix === "/summary"));
+  return Boolean(ownMatch && ownMatch.isRoot);
 }
 
 /**
@@ -277,9 +311,6 @@ export function isOwnUserSummarySurfacePath(path, currentUser) {
     return false;
   }
   const p = path.split("?")[0];
-  if (p === "/my" || p === "/my/summary") {
-    return true;
-  }
   const slug = currentUser.username;
   if (!slug) {
     return false;
@@ -287,6 +318,21 @@ export function isOwnUserSummarySurfacePath(path, currentUser) {
   const lower = slug.toLowerCase();
   const mSummary = /^\/u\/([^/]+)\/summary$/.exec(p);
   return Boolean(mSummary && mSummary[1].toLowerCase() === lower);
+}
+
+export function isOwnUserHubSurfacePath(path, currentUser) {
+  if (!currentUser) {
+    return false;
+  }
+
+  const p = normalizePath(path);
+  const ownMatch = ownUserPathMatcher(p, currentUser);
+  return Boolean(ownMatch && ownMatch.isRoot);
+}
+
+export function isOwnedProfileChildPath(path, currentUser) {
+  const ownMatch = ownUserPathMatcher(normalizePath(path), currentUser);
+  return Boolean(ownMatch && !ownMatch.isRoot);
 }
 
 /**
@@ -300,7 +346,7 @@ export function isHomeFeedPath(path) {
   if (isSavedPath(p)) {
     return false;
   }
-  if (p.startsWith("/u/") || p === "/my" || p.startsWith("/my/")) {
+  if (p.startsWith("/u/") || p.startsWith("/my/")) {
     return false;
   }
   if (p.startsWith("/t/")) {
@@ -349,7 +395,7 @@ export function isMePath(path, currentUser) {
   if (p === "/notifications" || p.startsWith("/notifications/")) {
     return true;
   }
-  if (p === "/my" || p.startsWith("/my/")) {
+  if (p.startsWith("/my/")) {
     return true;
   }
   return Boolean(ownUserPathMatcher(p, currentUser));
@@ -413,7 +459,7 @@ export function isOwnProfileShellPath(path, currentUser) {
 
 /**
  * True only when the user is at the Me Hub landing screen:
- * own-profile summary (/u/:me/summary or /u/:me) or /my/summary or /my.
+ * own-profile root (/u/:me).
  * All leaf pages (activity, preferences, notifications, …) return false.
  */
 export function isMeHubPath(path, currentUser) {
@@ -421,11 +467,8 @@ export function isMeHubPath(path, currentUser) {
   if (isAuthPath(p) || isSavedPath(p)) {
     return false;
   }
-  if (p === "/my" || p === "/my/summary") {
-    return true;
-  }
   const ownMatch = ownUserPathMatcher(p, currentUser);
-  return Boolean(ownMatch && (ownMatch.isRoot || ownMatch.suffix === "/summary"));
+  return Boolean(ownMatch && ownMatch.isRoot);
 }
 
 /**

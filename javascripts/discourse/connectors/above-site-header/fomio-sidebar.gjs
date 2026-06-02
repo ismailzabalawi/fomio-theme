@@ -22,7 +22,7 @@ import {
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 import {
   bookmarksPathForUser,
-  isAuthPath,
+  isFomioShellPath,
   isOwnBookmarksPath,
   isOwnNotificationsPath,
   isOwnProfileShellPath,
@@ -99,7 +99,7 @@ export default class FomioSidebar extends Component {
   }
 
   get shouldRender() {
-    return !isAuthPath(this.currentPath) && !this.isTouchSurface;
+    return isFomioShellPath(this.currentPath) && !this.isTouchSurface;
   }
 
   // ── Master context skeleton (Build Slice 3A) ───────────────────

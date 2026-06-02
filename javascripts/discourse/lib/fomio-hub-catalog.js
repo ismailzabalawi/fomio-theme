@@ -58,6 +58,7 @@ export function buildFomioHubCatalog(sources, options = {}) {
 
   return {
     categories,
+    allTopLevelHubs: topLevelCandidates,
     topLevelHubs: topLevelCandidates.slice(0, limit),
     hasMoreHubs: topLevelCandidates.length > limit,
   };

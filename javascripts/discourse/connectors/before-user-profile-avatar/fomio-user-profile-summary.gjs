@@ -1,30 +1,14 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import { service } from "@ember/service";
 import FomioUserProfileSummary from "../../components/shared/fomio-user-profile-summary";
-import { isAuthPath } from "../../lib/fomio-mobile-nav-paths";
-import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
+import { fomioCurrentPath } from "../../lib/fomio-router-pathname";
+import { shouldRenderInlineProfileIdentity } from "../../lib/fomio-profile-identity-ownership";
 
 export default class FomioUserProfileSummaryConnector extends Component {
   @service router;
 
-  @tracked isTouchShell = false;
-  #unsubscribeTouch = null;
-
-  constructor(owner, args) {
-    super(owner, args);
-    this.#unsubscribeTouch = subscribeFomioTouchShell((value) => {
-      this.isTouchShell = value;
-    });
-  }
-
-  willDestroy() {
-    this.#unsubscribeTouch?.();
-    super.willDestroy();
-  }
-
   get currentPath() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioCurrentPath(this.router.currentURL || "");
   }
 
   get user() {
@@ -32,11 +16,10 @@ export default class FomioUserProfileSummaryConnector extends Component {
   }
 
   get shouldRender() {
-    return (
-      !this.isTouchShell &&
-      !isAuthPath(this.currentPath) &&
-      Boolean(this.user?.username)
-    );
+    return shouldRenderInlineProfileIdentity({
+      currentPath: this.currentPath,
+      viewedUser: this.user,
+    });
   }
 
   get summaryHref() {
@@ -44,7 +27,7 @@ export default class FomioUserProfileSummaryConnector extends Component {
       return null;
     }
 
-    if (/^\/u\/[^/]+\/summary\/?$/.test(this.currentPath) || this.currentPath === "/my" || this.currentPath === "/my/summary") {
+    if (/^\/u\/[^/]+\/summary\/?$/.test(this.currentPath)) {
       return null;
     }
 

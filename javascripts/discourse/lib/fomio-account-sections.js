@@ -6,6 +6,7 @@ import {
   activityRepliesPathForUser,
   activityTopicsPathForUser,
   adminManageUserPathForUser,
+  adminManageUserPathForUsers,
   badgesPathForUser,
   invitedPathForUser,
   isCoreActivityPath,
@@ -18,7 +19,8 @@ import {
   preferencesNotificationsPathForUser,
   preferencesPathForUser,
   profileSummaryPathForUser,
-} from "./fomio-mobile-nav-paths";
+  viewedProfileUsername,
+} from "./fomio-mobile-nav-paths.js";
 function normalizePath(path) {
   return path?.replace(/\/+$/, "") || "/";
 }
@@ -60,6 +62,15 @@ function canShowActivity({ currentUser, currentPath, siteSettings }) {
     viewingSelf ||
     currentUser?.admin ||
     !siteSettings?.hide_user_activity_tab
+  );
+}
+
+function isViewingSelfProfile(currentUser, viewedUser) {
+  return Boolean(
+    currentUser?.username &&
+      viewedUser?.username &&
+      String(currentUser.username).toLowerCase() ===
+        String(viewedUser.username).toLowerCase()
   );
 }
 
@@ -106,9 +117,8 @@ export function getFomioCoreAccountSections(context) {
       href: profileSummaryPathForUser(currentUser),
       isVisible: Boolean(profileSummaryPathForUser(currentUser)),
       isActive:
-        matchesExactPath(currentPath, "/my", "/my/summary") ||
         matchesPath(
-        currentPath,
+          currentPath,
           `${profileBasePath}/summary`
         ),
     },
@@ -178,6 +188,104 @@ export function getFomioCoreAccountSections(context) {
       labelKey: "mobile_nav.me_hub_admin",
       href: manageUserPath,
       isVisible: canShowManageUser(context),
+      isActive: matchesPath(currentPath, `${manageUserPath}*`),
+      isAdminSection: true,
+    },
+  ].filter((section) => section.isVisible && section.href);
+}
+
+export function getFomioProfileMasterSections(context) {
+  const { currentUser, currentPath, siteSettings, viewedUser } = context;
+  const viewedUsername = viewedUser?.username ?? viewedProfileUsername(currentPath);
+  if (!viewedUsername) {
+    return [];
+  }
+
+  const profileBasePath = `/u/${viewedUsername}`;
+  const viewingSelf = isViewingSelfProfile(currentUser, viewedUser);
+  const activityVisible =
+    viewingSelf || currentUser?.admin || !siteSettings?.hide_user_activity_tab;
+  const messagesVisible =
+    Boolean(currentUser?.can_send_private_messages) && (viewingSelf || currentUser?.admin);
+  const notificationsVisible = viewingSelf || currentUser?.admin;
+  const preferencesVisible = viewingSelf;
+  const invitesVisible = viewingSelf && Boolean(currentUser?.can_invite_to_forum);
+  const badgesVisible = Boolean(
+    siteSettings?.enable_badges && (viewedUser?.badge_count ?? 0) > 0
+  );
+  const manageUserPath = adminManageUserPathForUsers(currentUser, viewedUser);
+
+  return [
+    {
+      key: "summary",
+      icon: "user",
+      labelKey: "mobile_nav.me_hub_summary",
+      href: `${profileBasePath}/summary`,
+      isVisible: true,
+      isActive: matchesPath(currentPath, `${profileBasePath}/summary`),
+    },
+    {
+      key: "activity",
+      icon: "bars-staggered",
+      labelKey: "mobile_nav.me_hub_activity",
+      href: `${profileBasePath}/activity`,
+      isVisible: activityVisible,
+      isActive: matchesPath(currentPath, `${profileBasePath}/activity*`),
+    },
+    {
+      key: "notifications",
+      icon: "bell",
+      labelKey: "mobile_nav.me_hub_notifications",
+      metaKey: "mobile_nav.me_hub_notifications_meta",
+      href: `${profileBasePath}/notifications`,
+      isVisible: notificationsVisible,
+      isActive: matchesPath(
+        currentPath,
+        `${profileBasePath}/notifications*`,
+        "/notifications",
+        "/notifications/*",
+        "/my/notifications*"
+      ),
+    },
+    {
+      key: "messages",
+      icon: "envelope",
+      labelKey: "mobile_nav.me_hub_messages",
+      href: `${profileBasePath}/messages`,
+      isVisible: messagesVisible,
+      isActive: matchesPath(currentPath, `${profileBasePath}/messages*`),
+    },
+    {
+      key: "invites",
+      icon: "user-plus",
+      labelKey: "mobile_nav.me_hub_invites",
+      href: `${profileBasePath}/invited`,
+      isVisible: invitesVisible,
+      isActive: matchesPath(currentPath, `${profileBasePath}/invited*`),
+    },
+    {
+      key: "preferences",
+      icon: "gear",
+      labelKey: "mobile_nav.me_hub_preferences",
+      metaKey: "mobile_nav.me_hub_settings_meta",
+      href: `${profileBasePath}/preferences/account`,
+      isVisible: preferencesVisible,
+      isActive: matchesPath(currentPath, `${profileBasePath}/preferences*`, "/my/preferences*"),
+    },
+    {
+      key: "badges",
+      icon: "certificate",
+      labelKey: "mobile_nav.me_hub_badges",
+      href: `${profileBasePath}/badges`,
+      isVisible: badgesVisible,
+      isActive: matchesPath(currentPath, `${profileBasePath}/badges*`),
+    },
+    {
+      key: "manage-user",
+      icon: "wrench",
+      labelKey: "mobile_nav.me_hub_admin",
+      href: manageUserPath,
+      isVisible: Boolean(manageUserPath),
       isActive: matchesPath(currentPath, `${manageUserPath}*`),
       isAdminSection: true,
     },

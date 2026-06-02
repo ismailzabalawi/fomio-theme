@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
@@ -12,15 +11,15 @@ import {
   isOwnedActivitySectionPath,
 } from "../../lib/fomio-account-sections";
 import {
-  isAuthPath,
   isActivityPath,
+  isFomioShellPath,
   isMeStackPath,
   isNotificationsPath,
+  meHubPathForUser,
   meSectionTitleKey,
-  profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
+import { fomioCurrentPath } from "../../lib/fomio-router-pathname";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
-import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landing";
 
 /**
  * Connector: below-site-header
@@ -28,7 +27,7 @@ import { armMeHubLandingForNextSummaryVisit } from "../../lib/fomio-me-hub-landi
  * Renders the Me stack header (‹ Me | Section Title) on touch surfaces
  * whenever the user is on a Me leaf page (Activity, Preferences, Notifications,
  * Messages, Invites, Badges) — i.e. inside the Me context but NOT on the hub
- * landing screen (/u/:me/summary).
+ * landing screen (`/u/:me`).
  *
  * Relies on:
  *  - `isMeStackPath` — true for any Me leaf that's not the hub
@@ -55,21 +54,21 @@ export default class FomioMeStackHeaderConnector extends Component {
   }
 
   get currentPath() {
-    return (this.router.currentURL || "").split("?")[0];
+    return fomioCurrentPath(this.router.currentURL || "");
   }
 
   get shouldRender() {
     if (!this.isTouchShell) {
       return false;
     }
-    if (isAuthPath(this.currentPath)) {
+    if (!isFomioShellPath(this.currentPath)) {
       return false;
     }
     return isMeStackPath(this.currentPath, this.currentUser);
   }
 
   get backHref() {
-    return profileSummaryPathForUser(this.currentUser) ?? "/";
+    return meHubPathForUser(this.currentUser) ?? "/";
   }
 
   get sectionTitle() {
@@ -113,24 +112,12 @@ export default class FomioMeStackHeaderConnector extends Component {
     }));
   }
 
-  @action
-  armMeHubLandingBeforeBack(e) {
-    if (
-      e &&
-      (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0)
-    ) {
-      return;
-    }
-    armMeHubLandingForNextSummaryVisit();
-  }
-
   <template>
     {{#if this.shouldRender}}
       <div class="fomio-me-stack-shell">
         <FomioMeStackHeader
           @backHref={{this.backHref}}
           @sectionTitle={{this.sectionTitle}}
-          @onBackClick={{this.armMeHubLandingBeforeBack}}
         />
 
         {{#if this.shouldRenderChildNav}}

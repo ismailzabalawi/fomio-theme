@@ -1,39 +1,28 @@
-import { isOwnUserSummarySurfacePath } from "./fomio-mobile-nav-paths";
-
-export const FOMIO_ME_HUB_LANDING_SESSION_KEY = "fomio_me_hub_landing_v1";
-
-export function armMeHubLandingForNextSummaryVisit() {
-  try {
-    sessionStorage.setItem(FOMIO_ME_HUB_LANDING_SESSION_KEY, "1");
-  } catch {
-    // ignore quota / private mode
-  }
-}
-
-export function clearMeHubLandingSession() {
-  try {
-    sessionStorage.removeItem(FOMIO_ME_HUB_LANDING_SESSION_KEY);
-  } catch {
-    // ignore
-  }
-}
-
-export function isMeHubLandingSessionArmed() {
-  try {
-    return sessionStorage.getItem(FOMIO_ME_HUB_LANDING_SESSION_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
+import { isOwnUserHubSurfacePath } from "./fomio-mobile-nav-paths";
+import { shouldHideSharedProfileHeader } from "./fomio-profile-identity-ownership";
+import { fomioCurrentPath } from "./fomio-router-pathname";
 
 /**
- * Toggle body.fomio-me-hub-landing so touch SCSS can hide native Discourse summary
- * chrome until the user taps Summary in the Fomio hub (see common.scss).
+ * Toggle body.fomio-me-hub-landing on the dedicated Me hub route so touch
+ * SCSS can show the Fomio-owned hub instead of the native summary content.
  */
 export function syncMeHubLandingBodyClass(path, currentUser) {
   if (typeof document === "undefined" || !document.body) {
     return;
   }
-  const shouldLand = isOwnUserSummarySurfacePath(path, currentUser);
+  const currentPath = fomioCurrentPath(path);
+  const isTouchShell = Boolean(
+    document.body.classList.contains("fomio-surface-touch")
+  );
+  const shouldLand = isOwnUserHubSurfacePath(currentPath, currentUser);
+  const shouldHideSharedHeader = shouldHideSharedProfileHeader({
+    currentPath,
+    currentUser,
+    isTouchShell,
+  });
   document.body.classList.toggle("fomio-me-hub-landing", shouldLand);
+  document.body.classList.toggle(
+    "fomio-profile-identity-owned",
+    shouldHideSharedHeader && !shouldLand
+  );
 }

@@ -3,7 +3,10 @@ import { tracked } from "@glimmer/tracking";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import { isAuthPath, isHomeFeedPath } from "../../lib/fomio-mobile-nav-paths";
+import {
+  isFomioShellPath,
+  isHomeFeedPath,
+} from "../../lib/fomio-mobile-nav-paths";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 export default class FomioHomePills extends Component {
@@ -31,7 +34,7 @@ export default class FomioHomePills extends Component {
   get shouldRender() {
     return (
       this.isTouchShell &&
-      !isAuthPath(this.currentPath) &&
+      isFomioShellPath(this.currentPath) &&
       isHomeFeedPath(this.currentPath)
     );
   }

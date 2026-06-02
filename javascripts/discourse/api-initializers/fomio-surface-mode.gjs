@@ -1,5 +1,6 @@
 import { apiInitializer } from "discourse/lib/api";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
+import { isFomioShellPath } from "../lib/fomio-route-mode";
 
 const SURFACE_CLASS_BY_MODE = {
   expanded: "fomio-surface-expanded",
@@ -11,20 +12,6 @@ const SURFACE_CLASS_BY_MODE = {
 const SURFACE_CLASSES = Object.values(SURFACE_CLASS_BY_MODE);
 const READY_CLASS = "fomio-surface-ready";
 
-// Keep in sync with auth/supporting path guards used by other Fomio initializers.
-const AUTH_PATH_PREFIXES = [
-  "/login",
-  "/signup",
-  "/session/",
-  "/user-api-key",
-  "/password-reset",
-  "/u/activate-account",
-  "/u/account-created",
-  "/invites",
-  "/u/confirm",
-  "/auth/",
-];
-
 function normalizeDiscoursePath(rawPath) {
   getURL("/");
   let path = withoutPrefix(rawPath);
@@ -35,11 +22,6 @@ function normalizeDiscoursePath(rawPath) {
     path = path.slice(0, -1);
   }
   return path;
-}
-
-function isAuthPath(rawPath) {
-  const path = normalizeDiscoursePath(rawPath);
-  return AUTH_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
 }
 
 function hasCoarsePointer() {
@@ -113,7 +95,7 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
-    if (isAuthPath(window.location.pathname)) {
+    if (!isFomioShellPath(normalizeDiscoursePath(window.location.pathname))) {
       activeMode = null;
       clearSurfaceModeClasses();
       return;

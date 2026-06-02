@@ -8,7 +8,7 @@ import {
   getFomioActivityChildSections,
   isOwnedActivitySectionPath,
 } from "../../lib/fomio-account-sections";
-import { isAuthPath } from "../../lib/fomio-mobile-nav-paths";
+import { isFomioShellPath } from "../../lib/fomio-mobile-nav-paths";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 export default class FomioMeActivityNavDesktopConnector extends Component {
@@ -36,7 +36,7 @@ export default class FomioMeActivityNavDesktopConnector extends Component {
   }
 
   get shouldRender() {
-    if (this.isTouchShell || isAuthPath(this.currentPath)) {
+    if (this.isTouchShell || !isFomioShellPath(this.currentPath)) {
       return false;
     }
 

@@ -96,10 +96,10 @@ html.fomio-color-dark {
 // ============================================================
 
 @media (min-width: 640px) and (max-width: 1099px) {
-  body.has-sidebar-page.navigation-topics,
-  body.has-sidebar-page.navigation-categories,
-  body.has-sidebar-page.navigation-category,
-  body.has-sidebar-page.archetype-regular {
+  body.fomio-sidebar-active.has-sidebar-page.navigation-topics,
+  body.fomio-sidebar-active.has-sidebar-page.navigation-categories,
+  body.fomio-sidebar-active.has-sidebar-page.navigation-category,
+  body.fomio-sidebar-active.has-sidebar-page.archetype-regular {
     .sidebar-wrapper,
     #d-sidebar,
     .header-sidebar-toggle,
@@ -236,6 +236,10 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
   .fomio-sidebar__zone {
     align-items: center;
     padding-inline: var(--fomio-space-xs);
+  }
+
+  .fomio-sidebar__section {
+    width: 100%;
   }
 
   // zone--core has overflow-y:auto in common.scss which forces overflow-x:auto
@@ -510,10 +514,26 @@ body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   .user-main .user-preferences .control-group,
   .user-main .user-content .control-group,
   .user-main .user-content .pref-control {
+    display: block;
     background: var(--fomio-card);
-    border: 1px solid var(--fomio-border-soft);
-    border-radius: var(--fomio-radius-md);
-    padding: 0.8rem 0.95rem;
+    border: none;
+    border-radius: var(--fomio-radius-card);
+    padding: 0.95rem 1.05rem;
+    box-shadow: 0 10px 24px rgb(17 24 39 / 4%);
+  }
+
+  .user-main .form-vertical {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .user-main .user-preferences .pref-group + .pref-group,
+  .user-main .user-preferences .control-group + .control-group,
+  .user-main .user-content .control-group + .control-group,
+  .user-main .user-content .pref-control + .pref-control {
+    margin-top: 0.95rem;
   }
 
   .user-main label,
@@ -531,7 +551,7 @@ body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   .user-main .control-instructions {
     color: var(--fomio-muted);
     font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
+    font-size: 0.78125rem;
     line-height: 1.45;
   }
 
@@ -546,6 +566,17 @@ body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
     border: 1px solid var(--fomio-border);
     border-radius: var(--fomio-radius-sm);
     color: var(--fomio-text);
+  }
+
+  .user-main .select-kit .select-kit-header,
+  .user-main input[type="text"],
+  .user-main input[type="email"],
+  .user-main input[type="password"],
+  .user-main input[type="number"],
+  .user-main textarea,
+  .user-main select {
+    min-height: 40px;
+    box-shadow: none;
   }
 
   // Preserve visibility and usability of security/destructive actions.

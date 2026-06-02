@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import FomioMobileSearchPalette from "../../components/shared/fomio-mobile-search-palette";
-import { isAuthPath } from "../../lib/fomio-mobile-nav-paths";
+import { isFomioShellPath } from "../../lib/fomio-mobile-nav-paths";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 export default class FomioMobileSearch extends Component {
@@ -77,7 +77,7 @@ export default class FomioMobileSearch extends Component {
   get shouldRender() {
     return (
       this.isTouchShell &&
-      !isAuthPath(this.currentPath) &&
+      isFomioShellPath(this.currentPath) &&
       !this.currentPath.startsWith("/search")
     );
   }

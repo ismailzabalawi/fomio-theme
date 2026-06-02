@@ -6,7 +6,7 @@ import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import FomioSearchInput from "../../components/shared/fomio-search-input";
+import FomioCard from "../../components/shared/fomio-card";
 import FomioSegmentedControl from "../../components/shared/fomio-segmented-control";
 import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 
@@ -19,7 +19,6 @@ export default class FomioCategories extends Component {
   @service site;
 
   @tracked view = "grid";
-  @tracked searchQuery = "";
 
   get hubCatalog() {
     return buildFomioHubCatalog([
@@ -33,7 +32,7 @@ export default class FomioCategories extends Component {
   }
 
   get hubs() {
-    return this.hubCatalog.topLevelHubs;
+    return this.hubCatalog.allTopLevelHubs;
   }
 
   get totalBytes() {
@@ -47,17 +46,9 @@ export default class FomioCategories extends Component {
     });
   }
 
-  get filteredHubsWithTerets() {
-    const q = this.searchQuery.toLowerCase().trim();
+  get hubsWithTerets() {
     const all = this.hubCatalog.categories;
     return this.hubs
-      .filter((hub) => {
-        if (!q) return true;
-        return (
-          hub.name.toLowerCase().includes(q) ||
-          (hub.description_text || "").toLowerCase().includes(q)
-        );
-      })
       .map((hub) => {
         const terets = all.filter((c) => c.parent_category_id === hub.id);
         return {
@@ -71,7 +62,7 @@ export default class FomioCategories extends Component {
   }
 
   get overviewLeadHubs() {
-    return this.filteredHubsWithTerets.slice(0, 3);
+    return this.hubsWithTerets.slice(0, 3);
   }
 
   get titleLabel()        { return i18n(themePrefix("hubs_index.title")); }
@@ -80,7 +71,6 @@ export default class FomioCategories extends Component {
   get selectHintLabel()   { return i18n(themePrefix("hubs_index.select_hint")); }
   get overviewListLabel() { return i18n(themePrefix("hubs_index.overview_list_title")); }
   get overviewSignalLabel() { return i18n(themePrefix("hubs_index.overview_signal")); }
-  get searchPlaceholder() { return i18n(themePrefix("hubs_index.search_placeholder")); }
   get viewGridLabel()     { return i18n(themePrefix("hubs_index.view_grid")); }
   get viewListLabel()     { return i18n(themePrefix("hubs_index.view_list")); }
   get bytesLabel()        { return i18n(themePrefix("hubs_index.bytes_label")); }
@@ -88,13 +78,13 @@ export default class FomioCategories extends Component {
     return [
       {
         id: "grid",
-        icon: "table-cells",
+        phIcon: "fomio-ph-table",
         ariaLabel: this.viewGridLabel,
         isActive: this.view === "grid",
       },
       {
         id: "list",
-        icon: "list",
+        phIcon: "fomio-ph-list-bullets",
         ariaLabel: this.viewListLabel,
         isActive: this.view === "list",
       },
@@ -118,7 +108,6 @@ export default class FomioCategories extends Component {
   }
 
   @action setView(v) { this.view = v; }
-  @action updateSearch(e) { this.searchQuery = e.target.value; }
 
   <template>
     <div class="fomio-hubs">
@@ -177,87 +166,78 @@ export default class FomioCategories extends Component {
             </div>
           </div>
         </section>
-      {{else}}
-        {{! ── Search ──────────────────────────────────────────── }}
-        <FomioSearchInput
-          @wrapperClass="fomio-hubs__search"
-          @inputClass="fomio-hubs__search-input"
-          @placeholder={{this.searchPlaceholder}}
-          @value={{this.searchQuery}}
-          @ariaLabel={{this.searchPlaceholder}}
-          @onInput={{this.updateSearch}}
-        />
+      {{/if}}
 
-        {{! ── Grid ────────────────────────────────────────────── }}
-        {{#if (eq this.view "grid")}}
-          <div class="fomio-hubs__grid">
-            {{#each this.filteredHubsWithTerets as |entry|}}
-              {{#let entry.hub entry.terets as |hub terets|}}
-                <a
-                  href="/c/{{hub.slug}}/{{hub.id}}"
-                  class="fomio-hub-card"
-                >
-                  <div class="fomio-hub-card__top">
-                    <div
-                      class="fomio-hub-swatch"
-                      style="background: #{{hub.color}}; color: #{{hub.text_color}}"
-                      aria-hidden="true"
-                    >{{entry.letter}}</div>
-                    <div class="fomio-hub-card__identity">
-                      <div class="fomio-hub-card__name">{{hub.name}}</div>
-                      <div class="fomio-hub-card__count">{{entry.bytesLabel}} {{this.bytesLabel}}</div>
-                    </div>
-                  </div>
-                  {{#if hub.description_text}}
-                    <p class="fomio-hub-card__desc">{{hub.description_text}}</p>
-                  {{/if}}
-                  {{#if terets.length}}
-                    <div class="fomio-hub-card__terets">
-                      {{#each terets as |teret|}}
-                        <span class="fomio-hub-card__teret-pill">{{teret.name}}</span>
-                      {{/each}}
-                    </div>
-                  {{/if}}
-                </a>
-              {{/let}}
-            {{/each}}
-          </div>
-
-        {{! ── List ────────────────────────────────────────────── }}
-        {{else}}
-          <div class="fomio-hubs__list">
-            {{#each this.filteredHubsWithTerets as |entry|}}
-              {{#let entry.hub entry.terets as |hub terets|}}
-                <a
-                  href="/c/{{hub.slug}}/{{hub.id}}"
-                  class="fomio-hub-row"
-                >
+      {{! ── Grid ────────────────────────────────────────────── }}
+      {{#if (eq this.view "grid")}}
+        <div class="fomio-hubs__grid">
+          {{#each this.hubsWithTerets as |entry|}}
+            {{#let entry.hub entry.terets as |hub terets|}}
+              <FomioCard
+                @href="/c/{{hub.slug}}/{{hub.id}}"
+                @interactive={{true}}
+                @extraClass="fomio-hub-card"
+              >
+                <div class="fomio-hub-card__top">
                   <div
-                    class="fomio-hub-swatch fomio-hub-swatch--lg"
+                    class="fomio-hub-swatch"
                     style="background: #{{hub.color}}; color: #{{hub.text_color}}"
                     aria-hidden="true"
                   >{{entry.letter}}</div>
-                  <div class="fomio-hub-row__body">
-                    <div class="fomio-hub-row__top">
-                      <span class="fomio-hub-row__name">{{hub.name}}</span>
-                      {{#if entry.teretNames}}
-                        <span class="fomio-hub-row__terets">{{entry.teretNames}}</span>
-                      {{/if}}
-                    </div>
-                    {{#if hub.description_text}}
-                      <p class="fomio-hub-row__desc">{{hub.description_text}}</p>
+                  <div class="fomio-hub-card__identity">
+                    <div class="fomio-hub-card__name">{{hub.name}}</div>
+                    <div class="fomio-hub-card__count">{{entry.bytesLabel}} {{this.bytesLabel}}</div>
+                  </div>
+                </div>
+                {{#if hub.description_text}}
+                  <p class="fomio-hub-card__desc">{{hub.description_text}}</p>
+                {{/if}}
+                {{#if terets.length}}
+                  <div class="fomio-hub-card__terets">
+                    {{#each terets as |teret|}}
+                      <span class="fomio-hub-card__teret-pill">{{teret.name}}</span>
+                    {{/each}}
+                  </div>
+                {{/if}}
+              </FomioCard>
+            {{/let}}
+          {{/each}}
+        </div>
+
+      {{! ── List ────────────────────────────────────────────── }}
+      {{else}}
+        <div class="fomio-hubs__list">
+          {{#each this.hubsWithTerets as |entry|}}
+            {{#let entry.hub entry.terets as |hub terets|}}
+              <a
+                href="/c/{{hub.slug}}/{{hub.id}}"
+                class="fomio-hub-row"
+              >
+                <div
+                  class="fomio-hub-swatch fomio-hub-swatch--lg"
+                  style="background: #{{hub.color}}; color: #{{hub.text_color}}"
+                  aria-hidden="true"
+                >{{entry.letter}}</div>
+                <div class="fomio-hub-row__body">
+                  <div class="fomio-hub-row__top">
+                    <span class="fomio-hub-row__name">{{hub.name}}</span>
+                    {{#if entry.teretNames}}
+                      <span class="fomio-hub-row__terets">{{entry.teretNames}}</span>
                     {{/if}}
                   </div>
-                  <div class="fomio-hub-row__meta">
-                    <span class="fomio-hub-row__count">{{entry.bytesLabel}}</span>
-                    <span class="fomio-hub-row__label">{{this.bytesLabel}}</span>
-                  </div>
-                  <span class="fomio-hub-row__chevron" aria-hidden="true">{{icon "angle-right"}}</span>
-                </a>
-              {{/let}}
-            {{/each}}
-          </div>
-        {{/if}}
+                  {{#if hub.description_text}}
+                    <p class="fomio-hub-row__desc">{{hub.description_text}}</p>
+                  {{/if}}
+                </div>
+                <div class="fomio-hub-row__meta">
+                  <span class="fomio-hub-row__count">{{entry.bytesLabel}}</span>
+                  <span class="fomio-hub-row__label">{{this.bytesLabel}}</span>
+                </div>
+                <span class="fomio-hub-row__chevron" aria-hidden="true">{{icon "angle-right"}}</span>
+              </a>
+            {{/let}}
+          {{/each}}
+        </div>
       {{/if}}
 
     </div>

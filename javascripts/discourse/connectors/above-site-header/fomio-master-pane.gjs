@@ -1,22 +1,25 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { getOwner } from "@ember/owner";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import { eq } from "discourse/truth-helpers";
+import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioUserProfileSummary from "../../components/shared/fomio-user-profile-summary";
 import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 import {
-  getFomioCoreAccountSections,
+  getFomioProfileMasterSections,
   isOwnedActivitySectionPath,
 } from "../../lib/fomio-account-sections";
 import {
-  isAuthPath,
+  isFomioShellPath,
   isOwnBookmarksPath,
   isOwnNotificationsPath,
-  isOwnProfileShellPath,
+  isUserProfilePath,
 } from "../../lib/fomio-mobile-nav-paths";
 const RAIL_OVERLAY_CONTEXTS = ["hubs", "profile", "bookmarks", "notifications"];
 const PENDING_RAIL_OVERLAY_KEY = "fomio_pending_rail_overlay_context";
@@ -29,6 +32,7 @@ export default class FomioMasterPane extends Component {
 
   @tracked railOverlayOpen = false;
   @tracked railOverlayContext = null;
+  @tracked hubExpansionState = {};
 
   constructor(...args) {
     super(...args);
@@ -75,6 +79,7 @@ export default class FomioMasterPane extends Component {
       document.body.classList.remove("fomio-bookmarks-master-active");
       document.body.classList.remove("fomio-notifications-master-active");
       document.body.classList.remove("fomio-activity-master-active");
+      document.body.classList.remove("fomio-profile-master-active");
     }
     if (typeof document !== "undefined" && this._onKeydown) {
       document.removeEventListener("keydown", this._onKeydown);
@@ -100,7 +105,7 @@ export default class FomioMasterPane extends Component {
     if (isOwnNotificationsPath(p, this.currentUser)) {
       return "notifications";
     }
-    if (isOwnProfileShellPath(p, this.currentUser)) {
+    if (isUserProfilePath(p)) {
       return "profile";
     }
     return "home";
@@ -151,16 +156,25 @@ export default class FomioMasterPane extends Component {
     // Rail overlay: temporary contextual depth above rail/content.
     // It reuses the same Hub/Teret list structure as the desktop master pane.
     return (
-      this.railOverlayOpen &&
+      (this.railOverlayOpen || this.shouldForceRailProfilePane) &&
       RAIL_OVERLAY_CONTEXTS.includes(this.railOverlayContext) &&
       this.isRailSurface &&
       this.isShellActive &&
-      !isAuthPath(this.currentPath)
+      isFomioShellPath(this.currentPath)
+    );
+  }
+
+  get shouldForceRailProfilePane() {
+    return (
+      this.activeMasterContext === "profile" &&
+      this.isRailSurface &&
+      this.isShellActive &&
+      isFomioShellPath(this.currentPath)
     );
   }
 
   get shouldRenderMasterPane() {
-    if (isAuthPath(this.currentPath)) {
+    if (!isFomioShellPath(this.currentPath)) {
       return false;
     }
     if (!this.isShellActive) {
@@ -170,11 +184,19 @@ export default class FomioMasterPane extends Component {
   }
 
   get shouldRenderRailBackdrop() {
-    return this.shouldRenderRailMasterPaneOverlay;
+    return this.shouldRenderRailMasterPaneOverlay && !this.shouldForceRailProfilePane;
   }
 
   get paneClass() {
     return this.shouldRenderRailMasterPaneOverlay ? "fomio-master-pane is-rail-overlay" : "fomio-master-pane";
+  }
+
+  get viewedUser() {
+    return getOwner(this)?.lookup("controller:user")?.model ?? null;
+  }
+
+  get userController() {
+    return getOwner(this)?.lookup("controller:user") ?? null;
   }
 
   // Keep category source resilient across connector contexts.
@@ -279,10 +301,38 @@ export default class FomioMasterPane extends Component {
 
   @action
   childTeretsForHub(hub) {
-    if (!hub?.id || hub.id !== this.activeHubId) {
+    if (!hub?.id) {
       return [];
     }
-    return this.childTeretsForActiveHub;
+    return this.categoryPool.filter(
+      (category) => category.parent_category_id === hub.id
+    );
+  }
+
+  @action
+  isHubExpanded(hub) {
+    if (!hub?.id) {
+      return false;
+    }
+
+    const explicitState = this.hubExpansionState[hub.id];
+    if (typeof explicitState === "boolean") {
+      return explicitState;
+    }
+
+    return hub.id === this.activeHubId;
+  }
+
+  @action
+  toggleHub(hubId, event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    const nextIsExpanded = !this.isHubExpanded({ id: hubId });
+    this.hubExpansionState = {
+      ...this.hubExpansionState,
+      [hubId]: nextIsExpanded,
+    };
   }
 
   @action
@@ -297,9 +347,12 @@ export default class FomioMasterPane extends Component {
       });
     }
     this.railOverlayOpen = false;
-    this.railOverlayContext = null;
+    this.railOverlayContext = this.shouldForceRailProfilePane ? "profile" : null;
     if (typeof document !== "undefined") {
-      document.body.classList.remove("fomio-master-pane-rail-open");
+      document.body.classList.toggle(
+        "fomio-master-pane-rail-open",
+        this.shouldForceRailProfilePane
+      );
     }
     this.syncMasterDetailShellClasses();
   }
@@ -310,11 +363,15 @@ export default class FomioMasterPane extends Component {
     if (!RAIL_OVERLAY_CONTEXTS.includes(context)) {
       return;
     }
-    if (!this.isRailSurface || !this.isShellActive || isAuthPath(this.currentPath)) {
+    this.railOverlayContext = context;
+    if (
+      !this.isRailSurface ||
+      !this.isShellActive ||
+      !isFomioShellPath(this.currentPath)
+    ) {
       return;
     }
     this.railOverlayOpen = true;
-    this.railOverlayContext = context;
     if (typeof document !== "undefined") {
       document.body.classList.add("fomio-master-pane-rail-open");
     }
@@ -336,7 +393,12 @@ export default class FomioMasterPane extends Component {
     if (!RAIL_OVERLAY_CONTEXTS.includes(context)) {
       return;
     }
-    if (!this.isRailSurface || !this.isShellActive || isAuthPath(this.currentPath)) {
+    this.railOverlayContext = context;
+    if (
+      !this.isRailSurface ||
+      !this.isShellActive ||
+      !isFomioShellPath(this.currentPath)
+    ) {
       return;
     }
     if (typeof window !== "undefined" && window.sessionStorage) {
@@ -344,6 +406,9 @@ export default class FomioMasterPane extends Component {
     }
 
     if (this.railOverlayOpen && this.railOverlayContext === context) {
+      if (context === "profile" && this.shouldForceRailProfilePane) {
+        return;
+      }
       this.closeRailOverlay("toggle");
       return;
     }
@@ -362,13 +427,19 @@ export default class FomioMasterPane extends Component {
       !window.sessionStorage ||
       !this.isRailSurface ||
       !this.isShellActive ||
-      isAuthPath(this.currentPath)
+      !isFomioShellPath(this.currentPath)
     ) {
+      this.railOverlayContext = this.activeMasterContext;
       return;
     }
 
+    this.railOverlayContext = this.activeMasterContext;
+
     const pendingContext = window.sessionStorage.getItem(PENDING_RAIL_OVERLAY_KEY);
     if (!RAIL_OVERLAY_CONTEXTS.includes(pendingContext)) {
+      if (this.shouldForceRailProfilePane && typeof document !== "undefined") {
+        document.body.classList.add("fomio-master-pane-rail-open");
+      }
       return;
     }
 
@@ -387,6 +458,9 @@ export default class FomioMasterPane extends Component {
   @action
   syncRailOverlayEligibility() {
     if (!this.railOverlayOpen) {
+      if (this.shouldForceRailProfilePane && typeof document !== "undefined") {
+        document.body.classList.add("fomio-master-pane-rail-open");
+      }
       return;
     }
     if (!this.isRailSurface) {
@@ -401,7 +475,7 @@ export default class FomioMasterPane extends Component {
     const desktopShell =
       this.isExpandedOrCompactSurface &&
       this.isShellActive &&
-      !isAuthPath(this.currentPath);
+      isFomioShellPath(this.currentPath);
 
     const isSettingsDesktopMasterPane =
       this.activeMasterContext === "profile" && desktopShell;
@@ -416,6 +490,25 @@ export default class FomioMasterPane extends Component {
       this.activeMasterContext === "profile" &&
       desktopShell &&
       isOwnedActivitySectionPath(this.currentPath);
+
+    const isProfileDesktopMasterPane =
+      this.activeMasterContext === "profile" &&
+      ((desktopShell && this.isExpandedOrCompactSurface) ||
+        (this.isRailSurface &&
+          this.isShellActive &&
+          isFomioShellPath(this.currentPath) &&
+          this.shouldForceRailProfilePane));
+
+    const shouldShowRailPane =
+      this.isRailSurface &&
+      this.isShellActive &&
+      isFomioShellPath(this.currentPath) &&
+      (this.railOverlayOpen || this.shouldForceRailProfilePane);
+
+    document.body.classList.toggle(
+      "fomio-master-pane-rail-open",
+      shouldShowRailPane
+    );
 
     document.body.classList.toggle(
       "fomio-settings-master-active",
@@ -432,6 +525,10 @@ export default class FomioMasterPane extends Component {
     document.body.classList.toggle(
       "fomio-activity-master-active",
       isActivityDesktopMasterPane
+    );
+    document.body.classList.toggle(
+      "fomio-profile-master-active",
+      isProfileDesktopMasterPane
     );
   }
 
@@ -458,7 +555,11 @@ export default class FomioMasterPane extends Component {
 
   get titleLabel() {
     if (this.activeMasterContext === "profile") {
-      return i18n(themePrefix("settings_master_pane.title"));
+      return (
+        this.viewedUser?.name ||
+        this.viewedUser?.username ||
+        i18n(themePrefix("settings_master_pane.title"))
+      );
     }
     if (this.activeMasterContext === "bookmarks") {
       return i18n(themePrefix("bookmarks_master_pane.title"));
@@ -471,7 +572,7 @@ export default class FomioMasterPane extends Component {
 
   get descriptionLabel() {
     if (this.activeMasterContext === "profile") {
-      return i18n(themePrefix("settings_master_pane.description"));
+      return null;
     }
     if (this.activeMasterContext === "bookmarks") {
       return i18n(themePrefix("bookmarks_master_pane.description"));
@@ -482,9 +583,110 @@ export default class FomioMasterPane extends Component {
     return i18n(themePrefix("hubs_index.description"));
   }
 
-  get profileBasePath() {
-    const username = this.currentUser?.username;
-    return username ? `/u/${username}` : "/login?fomio_web=1";
+  get canExpandProfile() {
+    return Boolean(this.userController?.canExpandProfile);
+  }
+
+  get collapsedInfoState() {
+    return this.userController?.collapsedInfoState ?? null;
+  }
+
+  get showExpandedDetails() {
+    return Boolean(this.collapsedInfoState?.isExpanded);
+  }
+
+  get expandButtonLabel() {
+    const labelKey = this.collapsedInfoState?.label;
+    return labelKey ? i18n(`user.${labelKey}`) : null;
+  }
+
+  get expandButtonAriaLabel() {
+    const labelKey = this.collapsedInfoState?.ariaLabel;
+    return labelKey ? i18n(labelKey) : null;
+  }
+
+  get expandButtonIcon() {
+    return this.collapsedInfoState?.icon ?? "angles-down";
+  }
+
+  get profileAdminSection() {
+    return this.profileSections.find((section) => section.key === "manage-user") ?? null;
+  }
+
+  get profileNavSections() {
+    return this.profileSections.filter((section) => section.key !== "manage-user");
+  }
+
+  get profileAdminHref() {
+    return this.profileAdminSection?.href ?? null;
+  }
+
+  get profileAdminLabel() {
+    return this.profileAdminSection ? i18n("admin.user.show_admin_profile") : null;
+  }
+
+  get profileMarkerText() {
+    if (this.viewedUser?.admin) {
+      return i18n("admin.title");
+    }
+
+    if (this.viewedUser?.moderator) {
+      return i18n("moderator");
+    }
+
+    return null;
+  }
+
+  get profileExpandedInfoItems() {
+    const user = this.viewedUser;
+    const items = [];
+
+    if (user?.created_at) {
+      items.push({
+        key: "created",
+        label: i18n("user.created"),
+        date: user.created_at,
+      });
+    }
+
+    if (user?.last_posted_at) {
+      items.push({
+        key: "last-posted",
+        label: i18n("user.last_posted"),
+        date: user.last_posted_at,
+      });
+    }
+
+    if (user?.last_seen_at) {
+      items.push({
+        key: "last-seen",
+        label: i18n("user.last_seen"),
+        date: user.last_seen_at,
+      });
+    }
+
+    if (user?.profile_view_count) {
+      items.push({
+        key: "views",
+        label: i18n("views"),
+        value: String(user.profile_view_count),
+      });
+    }
+
+    if (user?.trustLevel?.name) {
+      items.push({
+        key: "trust-level",
+        label: i18n("user.trust_level"),
+        value: user.trustLevel.name,
+      });
+    }
+
+    return items;
+  }
+
+  @action
+  toggleProfile() {
+    this.userController?.toggleProfile?.();
   }
 
   isCurrentPath(...patterns) {
@@ -501,10 +703,11 @@ export default class FomioMasterPane extends Component {
   }
 
   get profileSections() {
-    return getFomioCoreAccountSections({
+    return getFomioProfileMasterSections({
       currentUser: this.currentUser,
       currentPath: this.currentPath,
       siteSettings: this.siteSettings,
+      viewedUser: this.viewedUser,
     }).map((section) => ({
       ...section,
       label: i18n(themePrefix(section.labelKey)),
@@ -685,85 +888,122 @@ export default class FomioMasterPane extends Component {
         aria-label={{this.titleLabel}}
       >
         <div class="fomio-master-pane__inner">
-          <header class="fomio-master-pane__header">
-            <h2 class="fomio-master-pane__title">{{this.titleLabel}}</h2>
-            <p class="fomio-master-pane__description">{{this.descriptionLabel}}</p>
-          </header>
+          {{#if (eq this.activeMasterContext "profile")}}
+            {{#if this.viewedUser}}
+              <div class="fomio-master-pane__profile-summary">
+                <FomioUserProfileSummary
+                  @user={{this.viewedUser}}
+                  @markerText={{this.profileMarkerText}}
+                  @adminFirst={{true}}
+                  @showExpand={{this.canExpandProfile}}
+                  @expandButtonLabel={{this.expandButtonLabel}}
+                  @expandButtonAriaLabel={{this.expandButtonAriaLabel}}
+                  @expandButtonIcon={{this.expandButtonIcon}}
+                  @showDetails={{this.showExpandedDetails}}
+                  @onToggleExpand={{this.toggleProfile}}
+                  @adminHref={{this.profileAdminHref}}
+                  @adminLabel={{this.profileAdminLabel}}
+                  @detailsItems={{this.profileExpandedInfoItems}}
+                />
+              </div>
+            {{/if}}
+          {{else}}
+            <header class="fomio-master-pane__header">
+              <h2 class="fomio-master-pane__title">{{this.titleLabel}}</h2>
+              <p class="fomio-master-pane__description">{{this.descriptionLabel}}</p>
+            </header>
+          {{/if}}
 
           <nav
-            class="fomio-master-pane__nav"
+            class="fomio-master-pane__nav fomio-utility-list fomio-utility-list--bare"
             aria-label={{this.titleLabel}}
             {{on "click" this.handleNavClick}}
           >
             {{#if (eq this.activeMasterContext "profile")}}
-              {{#each this.profileSections as |link|}}
+              {{#each this.profileNavSections as |link|}}
                 <a
                   href={{link.href}}
-                  class="fomio-master-pane__item {{if link.isActive 'is-active'}}"
+                  class="fomio-master-pane__item fomio-utility-row {{if link.isActive 'is-active'}}"
                   aria-current={{if link.isActive "page"}}
                 >
-                  <span class="fomio-master-pane__name">{{link.label}}</span>
+                  <span class="fomio-master-pane__name fomio-utility-row__label">{{link.label}}</span>
                 </a>
               {{/each}}
             {{else if (eq this.activeMasterContext "bookmarks")}}
               {{#each this.bookmarksLinks as |link|}}
                 <a
                   href={{link.href}}
-                  class="fomio-master-pane__item {{if link.isActive 'is-active'}}"
+                  class="fomio-master-pane__item fomio-utility-row {{if link.isActive 'is-active'}}"
                   aria-current={{if link.isActive "page"}}
                 >
-                  <span class="fomio-master-pane__name">{{link.label}}</span>
+                  <span class="fomio-master-pane__name fomio-utility-row__label">{{link.label}}</span>
                 </a>
               {{/each}}
             {{else if (eq this.activeMasterContext "notifications")}}
               {{#each this.notificationsLinks as |link|}}
                 <a
                   href={{link.href}}
-                  class="fomio-master-pane__item {{if link.isActive 'is-active'}}"
+                  class="fomio-master-pane__item fomio-utility-row {{if link.isActive 'is-active'}}"
                   aria-current={{if link.isActive "page"}}
                 >
-                  <span class="fomio-master-pane__name">{{link.label}}</span>
+                  <span class="fomio-master-pane__name fomio-utility-row__label">{{link.label}}</span>
                 </a>
               {{/each}}
             {{else}}
               {{#each this.topLevelHubs as |hub|}}
-                <div class="fomio-master-pane__group">
-                  <a
-                    href="/c/{{hub.slug}}/{{hub.id}}"
-                    class="fomio-master-pane__item {{if (this.isHubActive hub) 'is-active'}}"
-                    aria-current={{if (this.isHubActive hub) "page"}}
-                    title={{hub.name}}
-                  >
-                    <span
-                      class="fomio-master-pane__dot"
-                      style="background: #{{hub.color}}"
-                      aria-hidden="true"
-                    ></span>
-                    <span class="fomio-master-pane__name">{{hub.name}}</span>
-                  </a>
+                {{#let (this.childTeretsForHub hub) as |terets|}}
+                  <div class="fomio-master-pane__group">
+                    <div class="fomio-master-pane__hub-row {{if (this.isHubActive hub) 'is-active'}}">
+                      <a
+                        href="/c/{{hub.slug}}/{{hub.id}}"
+                        class="fomio-master-pane__item fomio-utility-row {{if (this.isHubActive hub) 'is-active'}}"
+                        aria-current={{if (this.isHubActive hub) "page"}}
+                        title={{hub.name}}
+                      >
+                        <span
+                          class="fomio-master-pane__dot"
+                          style="background: #{{hub.color}}"
+                          aria-hidden="true"
+                        ></span>
+                        <span class="fomio-master-pane__name fomio-utility-row__label">{{hub.name}}</span>
+                      </a>
 
-                  {{#if (this.isHubActive hub)}}
-                    {{#if this.childTeretsForActiveHub.length}}
-                      <ul class="fomio-master-pane__teret-list">
-                        {{#each (this.childTeretsForHub hub) as |teret|}}
-                          <li>
-                            <a
-                              href="/c/{{hub.slug}}/{{teret.slug}}/{{teret.id}}"
-                              class="fomio-master-pane__teret-item {{if (this.isTeretActive teret) 'is-active'}}"
-                              aria-current={{if (this.isTeretActive teret) "page"}}
-                            >
-                              {{teret.name}}
-                            </a>
-                          </li>
-                        {{/each}}
-                      </ul>
+                      {{#if terets.length}}
+                        <button
+                          type="button"
+                          class="fomio-master-pane__hub-toggle {{if (this.isHubExpanded hub) 'is-open'}}"
+                          aria-expanded={{if (this.isHubExpanded hub) "true" "false"}}
+                          aria-label="{{hub.name}} terets"
+                          {{on "click" (fn this.toggleHub hub.id)}}
+                        >
+                          {{icon "angle-right"}}
+                        </button>
+                      {{/if}}
+                    </div>
+
+                    {{#if (this.isHubExpanded hub)}}
+                      {{#if terets.length}}
+                        <ul class="fomio-master-pane__teret-list">
+                          {{#each terets as |teret|}}
+                            <li>
+                              <a
+                                href="/c/{{hub.slug}}/{{teret.slug}}/{{teret.id}}"
+                                class="fomio-master-pane__teret-item {{if (this.isTeretActive teret) 'is-active'}}"
+                                aria-current={{if (this.isTeretActive teret) "page"}}
+                              >
+                                {{teret.name}}
+                              </a>
+                            </li>
+                          {{/each}}
+                        </ul>
+                      {{/if}}
                     {{/if}}
-                  {{/if}}
-                </div>
+                  </div>
+                {{/let}}
               {{/each}}
               {{#if this.hasMoreHubs}}
                 <a href="/categories" class="fomio-master-pane__item">
-                  <span class="fomio-master-pane__name">{{i18n (themePrefix "sidebar.all_hubs")}}</span>
+                  <span class="fomio-master-pane__name fomio-utility-row__label">{{i18n (themePrefix "sidebar.all_hubs")}}</span>
                 </a>
               {{/if}}
             {{/if}}

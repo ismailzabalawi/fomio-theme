@@ -6,6 +6,7 @@ import formatDate from "discourse/helpers/format-date";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioCard from "./fomio-card";
 import FomioIdentity from "./fomio-identity";
 
 export default class FomioByteCard extends Component {
@@ -91,6 +92,10 @@ export default class FomioByteCard extends Component {
       classes.push("byte--no-thumb");
     }
 
+    if (this.isUnread) {
+      classes.push("is-unread");
+    }
+
     if (this.args.extraClass) {
       classes.push(this.args.extraClass);
     }
@@ -110,7 +115,11 @@ export default class FomioByteCard extends Component {
 
   <template>
     <div class={{this.slotClass}}>
-      <article class={{this.byteClass}}>
+      <FomioCard
+        @tag="article"
+        @surface="flat"
+        @extraClass={{this.byteClass}}
+      >
         <div class="byte__body">
           <div class="byte__meta fomio-topic-context__meta">
             {{#if this.teret}}
@@ -182,7 +191,7 @@ export default class FomioByteCard extends Component {
             <img src={{this.topicImage}} alt="" loading="lazy" />
           </div>
         {{/if}}
-      </article>
+      </FomioCard>
     </div>
   </template>
 }

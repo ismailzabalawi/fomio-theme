@@ -201,14 +201,19 @@ apps/web/
     │   ├── fomio-rich-editor-toolbar.gjs  # Forces rich editor mode; registers ProseMirror toolbar extension
     │   └── my-theme.gjs             # Legacy placeholder — do not add to
     ├── components/
-    │   └── fomio-block-editor.gjs    # HISTORICAL — old block shell, not active, do not use
+    │   └── shared/                   # Shared GJS components (fomio-card, fomio-button, fomio-ph-icon, …)
     ├── lib/
     │   └── fomio-selection-toolbar-extension.js  # ProseMirror floating selection toolbar
     └── connectors/
         ├── above-site-header/fomio-sidebar.gjs   # Persistent sidebar nav (desktop)
         ├── above-site-header/fomio-bottom-bar.gjs # Mobile bottom navigation bar
-        ├── above-site-header/fomio-composer.gjs   # INTENTIONALLY DISABLED — renders nothing
+        ├── before-composer-controls/fomio-composer-topbar.gjs  # Composer topbar: mode label, back, close (create/edit)
         ├── before-composer-fields/fomio-fullscreen-composer-fields.gjs  # Restores title/category/tags in fullscreen
+        ├── composer-open/fomio-composer-reply-context.gjs  # Reply: teret tag + byte title context card
+        ├── composer-action-after/fomio-composer-edit-banner.gjs  # Edit: "editing your byte" banner
+        ├── composer-after-composer-editor/fomio-composer-rail.gjs  # Create/edit: word count, outline, checks rail
+        ├── composer-fields-below/fomio-composer-statusbar.gjs  # Create/edit: saved indicator + counts
+        ├── composer-fields-below/fomio-composer-hints.gjs  # Create/edit: ⌘↵ / esc keyboard hints
         ├── discovery-list-controls-above/fomio-hub-chrome.gjs  # Hub page chrome: breadcrumb, hero, Teret tabs, filter bar
         ├── below-discovery-categories/fomio-categories.gjs     # /categories index: grid/list toggle, search, hub cards
         ├── full-page-search-above-search-header/fomio-search-header.gjs  # Search page title header
@@ -224,10 +229,18 @@ apps/web/
 
 > See `docs/web/rich-editor-composer-reference.md` for full detail.
 
-The active composer is the **native Discourse composer**, restyled by the theme and extended through supported theme APIs. The custom block shell (`fomio-composer.gjs`, `fomio-block-editor.gjs`) was an earlier experiment and is no longer active.
+The composer is the **native Discourse composer**, restyled in place and extended only through supported theme APIs (plugin outlets, value transformers, rich-editor extensions). The Ember layer is never modified.
 
-- `connectors/above-site-header/fomio-composer.gjs` — **intentionally neutralized**, renders nothing. Do not add behavior here.
-- `components/fomio-block-editor.gjs` — **historical code**, not the active composer path. Do not use.
+An earlier full-screen overlay experiment (`fomio-composer.gjs`, `fomio-block-editor.gjs`, the `.fomio-cm-*` SCSS, and the block/slash/source-toggle locale keys) has been **fully removed** — do not reintroduce a parallel composer shell.
+
+### Editorial surface (three modes)
+
+Driven by Discourse's own `composer-action-${dasherize(action)}` class on `#reply-control`:
+
+- **Create** (`.composer-action-create-topic`) and **Edit** (`.composer-action-edit`) → full-page editorial surface beside the persistent sidebar (`left: var(--fomio-surface-sidebar-offset)`), with topbar, right rail (word count / outline / checks), and status bar.
+- **Reply** (`.composer-action-reply`) → stays a refined in-context bottom sheet with a byte-context card; no rail/status bar.
+
+Live editor metrics (word/char counts, heading outline) come from a read-only ProseMirror extension (`lib/fomio-composer-metrics-extension.js`) that writes a tracked singleton (`lib/fomio-composer-metrics-store.js`); pure derivations live in `lib/fomio-composer-metrics.js` (unit-tested in `tests/fomio-composer-metrics.test.js`). The connectors listed in the file tree read that store.
 
 ### Active composer extension points
 
@@ -247,7 +260,11 @@ The active composer is the **native Discourse composer**, restyled by the theme 
 
 ### Styling the composer
 
-The native `#reply-control` is styled under `body.fomio-sidebar-active #reply-control` in `common.scss`. The fixed top toolbar (`.d-editor-button-bar__wrap`) is hidden because the floating toolbar replaces it. `.composer-action-title` is also hidden.
+The native `#reply-control` is styled under `body.fomio-sidebar-active #reply-control` in `common.scss` (section "7. Composer shell"). The fixed top toolbar (`.d-editor-button-bar__wrap`) is hidden because the floating toolbar replaces it. `.composer-action-title` is also hidden.
+
+The full-page Create / Edit surface is pure CSS, scoped to `&.open.composer-action-create-topic, &.open.composer-action-edit`: it pins `#reply-control` to the viewport beside the sidebar (`left: var(--fomio-surface-sidebar-offset)`), turns `.reply-to` into the sticky topbar, centres the writing column (`--fomio-composer-measure`), and absolutely positions the rail + status bar. Reply is left as the native bottom sheet. Connector visuals live in section "7b. Composer editorial connectors"; touch overrides in `mobile/mobile.scss`. The metrics extension's `update(view)` is wrapped in try/catch — it can never throw into editor setup (see failure mode 3).
+
+**Open-canvas behaviour** (`lib/fomio-composer-canvas.js`): the writing column reads as one open canvas (`cursor: text`, seams removed, editable fills the viewport). A document-level, capture-phase `mousedown` listener focuses the editor and drops the caret at the end when the user clicks the canvas dead space (margins / below the text), in create/edit only. It focuses the same element core focuses (`.d-editor-container .d-editor-input`) and uses a standard DOM range — no ProseMirror internals. The focus *decision* is the pure, unit-tested `shouldFocusCanvas()`; only the DOM glue is runtime-only. Every branch is guarded so it can never break a normal click.
 
 ### Known failure modes
 

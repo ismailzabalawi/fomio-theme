@@ -3,6 +3,10 @@ import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import icon from "discourse/helpers/d-icon";
+import {
+  buildHubEntityUrl,
+  normalizeHubFilter,
+} from "../../lib/fomio-hub-routes";
 
 function fmtK(n) {
   if (!n) return "0";
@@ -75,35 +79,7 @@ export default class FomioHubChrome extends Component {
   }
 
   get currentFilter() {
-    const url = (this.router.currentURL || "").split("?")[0];
-    if (url.includes("/l/top")) return "top";
-    if (url.includes("/l/new")) return "new";
-    return "latest";
-  }
-
-  get filters() {
-    const hub = this.hub;
-    if (!hub) return [];
-    return [
-      {
-        key: "latest",
-        label: i18n(themePrefix("hub_page.filter_latest")),
-        url: `/c/${hub.slug}/${hub.id}`,
-        isActive: this.currentFilter === "latest",
-      },
-      {
-        key: "top",
-        label: i18n(themePrefix("hub_page.filter_top")),
-        url: `/c/${hub.slug}/${hub.id}/l/top`,
-        isActive: this.currentFilter === "top",
-      },
-      {
-        key: "new",
-        label: i18n(themePrefix("hub_page.filter_new")),
-        url: `/c/${hub.slug}/${hub.id}/l/new`,
-        isActive: this.currentFilter === "new",
-      },
-    ];
+    return normalizeHubFilter(this.router.currentURL || "");
   }
 
   get teretTabs() {
@@ -113,14 +89,21 @@ export default class FomioHubChrome extends Component {
       {
         id: null,
         name: i18n(themePrefix("hub_page.teret_all")),
-        url: `/c/${hub.slug}/${hub.id}`,
+        url: buildHubEntityUrl({
+          hub,
+          filter: this.currentFilter,
+        }),
         isActive: !this.activeTeret,
         count: null,
       },
       ...this.terets.map((t) => ({
         id: t.id,
         name: t.name,
-        url: `/c/${hub.slug}/${t.slug}/${t.id}`,
+        url: buildHubEntityUrl({
+          hub,
+          teret: t,
+          filter: this.currentFilter,
+        }),
         isActive: this.activeTeret?.id === t.id,
         count: fmtK(t.topic_count || 0),
       })),
@@ -198,18 +181,6 @@ export default class FomioHubChrome extends Component {
             {{/each}}
           </div>
         {{/if}}
-
-        {{! ── Filter bar ── }}
-        <div class="fomio-hub-chrome__filters" role="tablist" aria-label="Sort">
-          {{#each this.filters as |f|}}
-            <a
-              href={{f.url}}
-              class="fomio-hub-chrome__filter {{if f.isActive 'is-active'}}"
-              role="tab"
-              aria-selected={{if f.isActive "true" "false"}}
-            >{{f.label}}</a>
-          {{/each}}
-        </div>
 
         <div class="fomio-hub-chrome__bytes-intro">
           {{this.bytesSectionLabel}}
