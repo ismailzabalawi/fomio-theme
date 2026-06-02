@@ -393,7 +393,7 @@ export default class FomioMasterPane extends Component {
     if (!RAIL_OVERLAY_CONTEXTS.includes(context)) {
       return;
     }
-    this.railOverlayContext = context;
+
     if (
       !this.isRailSurface ||
       !this.isShellActive ||
@@ -405,7 +405,10 @@ export default class FomioMasterPane extends Component {
       window.sessionStorage.removeItem(PENDING_RAIL_OVERLAY_KEY);
     }
 
-    if (this.railOverlayOpen && this.railOverlayContext === context) {
+    const isSameContextOpen =
+      this.railOverlayOpen && this.railOverlayContext === context;
+
+    if (isSameContextOpen) {
       if (context === "profile" && this.shouldForceRailProfilePane) {
         return;
       }

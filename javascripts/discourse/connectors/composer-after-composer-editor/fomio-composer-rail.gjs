@@ -1,4 +1,7 @@
 import Component from "@glimmer/component";
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
+import { action } from "@ember/object";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
@@ -7,7 +10,10 @@ import {
   progressPct,
   readTimeMinutes,
 } from "../../lib/fomio-composer-metrics";
-import { metricsStore } from "../../lib/fomio-composer-metrics-store";
+import {
+  jumpToOutline,
+  metricsStore,
+} from "../../lib/fomio-composer-metrics-store";
 
 /**
  * Connector: composer-after-composer-editor
@@ -48,6 +54,10 @@ export default class FomioComposerRail extends Component {
     return metricsStore.outline;
   }
 
+  get activeOutlinePos() {
+    return metricsStore.activeOutlinePos;
+  }
+
   get checks() {
     return computeChecks({
       title: this.model?.title,
@@ -56,9 +66,25 @@ export default class FomioComposerRail extends Component {
     });
   }
 
+  @action
+  jumpTo(item) {
+    if (!item || typeof item.pos !== "number") {
+      return;
+    }
+    jumpToOutline(item.pos);
+  }
+
+  isActive(item) {
+    return Boolean(
+      item &&
+        Number.isFinite(item.pos) &&
+        item.pos === this.activeOutlinePos
+    );
+  }
+
   <template>
     {{#if this.shouldRender}}
-      <aside class="fomio-composer-rail" aria-hidden="true">
+      <aside class="fomio-composer-rail">
         <section class="fomio-composer-rail__section">
           <h4>{{i18n (themePrefix "composer.rail_draft")}}</h4>
           <div class="fomio-composer-rail__meter">
@@ -87,9 +113,14 @@ export default class FomioComposerRail extends Component {
             <h4>{{i18n (themePrefix "composer.rail_outline")}}</h4>
             <div class="fomio-composer-rail__outline">
               {{#each this.outline as |item|}}
-                <span
-                  class="fomio-composer-rail__out is-h{{item.level}}"
-                >{{item.text}}</span>
+                <button
+                  type="button"
+                  class="fomio-composer-rail__out is-h{{item.level}}
+                    {{if (this.isActive item) "is-active"}}"
+                  aria-label={{i18n (themePrefix "composer.outline_jump_to")}}
+                  aria-current={{if (this.isActive item) "true"}}
+                  {{on "click" (fn this.jumpTo item)}}
+                >{{item.text}}</button>
               {{/each}}
             </div>
           </section>

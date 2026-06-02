@@ -6,6 +6,7 @@ import {
   countChars,
   countWords,
   extractOutline,
+  findActiveOutlinePos,
 } from "../lib/fomio-composer-metrics";
 import { createMetricsExtension } from "../lib/fomio-composer-metrics-extension";
 import {
@@ -44,12 +45,16 @@ export default apiInitializer("1.8.0", (api) => {
   // text + headings from the ProseMirror doc.
   api.registerRichEditorExtension(
     createMetricsExtension({
-      onUpdate: ({ text, headings }) =>
+      onUpdate: ({ text, headings, cursorPos, jumpToPos }) => {
+        const outline = extractOutline(headings);
         updateMetrics({
           words: countWords(text),
           chars: countChars(text),
-          outline: extractOutline(headings),
-        }),
+          outline,
+          activeOutlinePos: findActiveOutlinePos(outline, cursorPos),
+          jumpToPos,
+        });
+      },
       onReset: resetMetrics,
     })
   );

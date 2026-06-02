@@ -14,9 +14,18 @@ export const metricsStore = new TrackedObject({
   words: 0,
   chars: 0,
   outline: [],
+  activeOutlinePos: null,
 });
 
-export function updateMetrics({ words, chars, outline }) {
+let outlineNavigator = null;
+
+export function updateMetrics({
+  words,
+  chars,
+  outline,
+  activeOutlinePos,
+  jumpToPos,
+}) {
   if (typeof words === "number") {
     metricsStore.words = words;
   }
@@ -26,10 +35,25 @@ export function updateMetrics({ words, chars, outline }) {
   if (Array.isArray(outline)) {
     metricsStore.outline = outline;
   }
+  if (activeOutlinePos === null || Number.isFinite(activeOutlinePos)) {
+    metricsStore.activeOutlinePos = activeOutlinePos;
+  }
+  if (typeof jumpToPos === "function") {
+    outlineNavigator = jumpToPos;
+  }
 }
 
 export function resetMetrics() {
   metricsStore.words = 0;
   metricsStore.chars = 0;
   metricsStore.outline = [];
+  metricsStore.activeOutlinePos = null;
+  outlineNavigator = null;
+}
+
+export function jumpToOutline(pos) {
+  if (typeof outlineNavigator !== "function") {
+    return false;
+  }
+  return outlineNavigator(pos);
 }

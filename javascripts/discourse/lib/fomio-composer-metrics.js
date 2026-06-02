@@ -35,8 +35,8 @@ export function readTimeMinutes(words, wpm = WORDS_PER_MINUTE) {
 }
 
 /**
- * Normalise raw heading descriptors into `[{ level, text }]`, dropping
- * blank entries. Accepts `[{ level, text }]`.
+ * Normalise raw heading descriptors into `[{ level, text, pos }]`, dropping
+ * blank entries. Accepts `[{ level, text, pos }]`.
  */
 export function extractOutline(headings) {
   if (!Array.isArray(headings)) {
@@ -47,7 +47,32 @@ export function extractOutline(headings) {
     .map((h) => ({
       level: Number(h.level) > 0 ? Number(h.level) : 1,
       text: h.text.trim(),
+      pos: Number.isFinite(h.pos) ? Number(h.pos) : null,
     }));
+}
+
+/**
+ * Pick the nearest heading at/before the current cursor position.
+ * Returns the heading `pos`, or null when no suitable heading exists.
+ */
+export function findActiveOutlinePos(outline, cursorPos) {
+  if (!Array.isArray(outline) || !Number.isFinite(cursorPos)) {
+    return null;
+  }
+
+  let active = null;
+  for (const item of outline) {
+    if (!item || !Number.isFinite(item.pos)) {
+      continue;
+    }
+    if (item.pos <= cursorPos) {
+      active = item.pos;
+      continue;
+    }
+    break;
+  }
+
+  return active;
 }
 
 /** Editorial readiness checks for the rail. */

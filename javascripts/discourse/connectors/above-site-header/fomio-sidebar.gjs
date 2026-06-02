@@ -457,15 +457,18 @@ export default class FomioSidebar extends Component {
       window.sessionStorage.setItem(PENDING_RAIL_OVERLAY_KEY, context);
     }
 
-    if (this.activeMasterContext === context) {
-      e.preventDefault();
-      e.stopPropagation();
-      window.dispatchEvent(
-        new CustomEvent("fomio:master-pane:toggle", {
+    e?.preventDefault();
+    e?.stopPropagation();
+    window.dispatchEvent(
+      new CustomEvent(
+        this.activeMasterContext === context
+          ? "fomio:master-pane:toggle"
+          : "fomio:master-pane:open",
+        {
           detail: { context },
-        })
-      );
-    }
+        }
+      )
+    );
   }
 
   @action

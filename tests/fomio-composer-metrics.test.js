@@ -6,6 +6,7 @@ import {
   countChars,
   countWords,
   extractOutline,
+  findActiveOutlinePos,
   MIN_CHARS,
   progressPct,
   readTimeMinutes,
@@ -62,25 +63,49 @@ describe("fomio-composer-metrics", () => {
     it("drops blank headings and trims text", () => {
       assert.deepEqual(
         extractOutline([
-          { level: 2, text: "  Three small rituals  " },
+          { level: 2, text: "  Three small rituals  ", pos: 4 },
           { level: 3, text: "" },
           { level: 3, text: "   " },
-          { level: 3, text: "A notebook" },
+          { level: 3, text: "A notebook", pos: 28 },
         ]),
         [
-          { level: 2, text: "Three small rituals" },
-          { level: 3, text: "A notebook" },
+          { level: 2, text: "Three small rituals", pos: 4 },
+          { level: 3, text: "A notebook", pos: 28 },
         ]
       );
     });
 
     it("defaults invalid levels to 1", () => {
       assert.deepEqual(extractOutline([{ level: 0, text: "x" }]), [
-        { level: 1, text: "x" },
+        { level: 1, text: "x", pos: null },
       ]);
       assert.deepEqual(extractOutline([{ text: "y" }]), [
-        { level: 1, text: "y" },
+        { level: 1, text: "y", pos: null },
       ]);
+    });
+  });
+
+  describe("findActiveOutlinePos", () => {
+    const outline = [
+      { level: 2, text: "Start", pos: 2 },
+      { level: 2, text: "Middle", pos: 18 },
+      { level: 3, text: "Detail", pos: 41 },
+    ];
+
+    it("returns null for invalid inputs", () => {
+      assert.equal(findActiveOutlinePos(null, 10), null);
+      assert.equal(findActiveOutlinePos(outline, NaN), null);
+    });
+
+    it("returns the nearest heading at/before cursor", () => {
+      assert.equal(findActiveOutlinePos(outline, 2), 2);
+      assert.equal(findActiveOutlinePos(outline, 12), 2);
+      assert.equal(findActiveOutlinePos(outline, 18), 18);
+      assert.equal(findActiveOutlinePos(outline, 999), 41);
+    });
+
+    it("returns null when cursor is before first heading", () => {
+      assert.equal(findActiveOutlinePos(outline, 1), null);
     });
   });
 

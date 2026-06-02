@@ -334,6 +334,7 @@ en:
     rail_draft: "Draft"
     rail_outline: "Outline"
     rail_checks: "Checks"
+    outline_jump_to: "Jump to"
     words: "words"
     chars: "chars"
     min: "min"

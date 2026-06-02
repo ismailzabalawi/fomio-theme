@@ -103,22 +103,39 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   // Full-page editorial surface on touch: tighten the desktop padding.
   // The rail is already viewport-gated; the status bar + hints live in the
   // submit-panel's first <span>, which the rule above hides on touch.
-  &.open.composer-action-create-topic,
-  &.open.composer-action-edit {
+  &.composer-action-create-topic,
+  &.composer-action-edit,
+  &:has(.fomio-composer-topbar) {
+    left: 0;
+    right: 0;
+
     .d-editor {
-      padding: 1.25rem var(--fomio-page-pad-x, 1rem) 0;
+      padding: 1.5rem var(--fomio-page-pad-x, 1rem) 0;
+    }
+
+    .title-and-category {
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--fomio-border-soft) 70%, transparent);
     }
 
     .submit-panel {
-      margin-top: 1.5rem;
+      margin-top: 1.35rem;
       padding: 1.25rem var(--fomio-page-pad-x, 1rem)
         max(1.25rem, var(--fomio-safe-bottom, 0px));
+      border-top: 0;
     }
 
     .fomio-composer-topbar {
       padding-inline: var(--fomio-page-pad-x, 1rem);
     }
   }
+}
+
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control:has(.fomio-composer-topbar) {
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  max-width: none !important;
 }
 
 .topic-list.--fomio-discovery-list {

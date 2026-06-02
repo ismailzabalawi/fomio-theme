@@ -1,6 +1,6 @@
 # Fomio Rich-Editor Composer — Reference
 
-This document describes the current composer implementation in `apps/web` after the reset away from the custom block-shell experiment.
+This document describes the current composer implementation in `apps/web`.
 
 The live composer is now the native Discourse composer, restyled by the Fomio theme and extended through supported theme APIs.
 
@@ -22,6 +22,8 @@ The current stack is:
   - Forces the composer to rich-editor mode via `composer-force-editor-mode`
   - Overrides the rich-editor placeholder via `composer-editor-reply-placeholder`
   - Registers the floating-toolbar rich-editor extension
+  - Registers the metrics rich-editor extension
+  - Installs open-canvas focus behavior for full-page Create/Edit
 
 - [apps/web/javascripts/discourse/lib/fomio-selection-toolbar-extension.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-selection-toolbar-extension.js)
   - ProseMirror plugin for floating selection UI
@@ -29,13 +31,42 @@ The current stack is:
   - Buttons: `bold`, `italic`, `link`
   - Uses core `ToolbarBase`, `ToolbarButtons`, and `UpsertHyperlink`
 
+- [apps/web/javascripts/discourse/lib/fomio-composer-metrics-extension.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-composer-metrics-extension.js)
+  - Reads plain text + heading structure (+ heading positions) from the rich-editor document
+  - Tracks cursor position for active-outline highlighting
+  - Pushes live values into a tracked metrics store
+
+- [apps/web/javascripts/discourse/lib/fomio-composer-metrics-store.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-composer-metrics-store.js)
+  - Reactive singleton for rail/status-bar display values
+
+- [apps/web/javascripts/discourse/lib/fomio-composer-metrics.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-composer-metrics.js)
+  - Pure derivations for words/chars/read-time/progress/checks
+
+- [apps/web/javascripts/discourse/lib/fomio-composer-canvas.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-composer-canvas.js)
+  - Canvas-click focus behavior for the full-page editorial surface
+  - Keeps dead-space clicks focused on writing without touching ProseMirror internals
+
 - [apps/web/javascripts/discourse/connectors/before-composer-fields/fomio-fullscreen-composer-fields.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/before-composer-fields/fomio-fullscreen-composer-fields.gjs)
   - Restores title/category/tags fields when the composer enters fullscreen
   - Uses the `before-composer-fields` outlet because core hides these fields when `viewFullscreen` is true
 
-- [apps/web/javascripts/discourse/connectors/above-site-header/fomio-composer.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/above-site-header/fomio-composer.gjs)
-  - The old full-screen shell connector now renders nothing
-  - This file is intentionally neutralized so native Discourse composer UI is used
+- [apps/web/javascripts/discourse/connectors/before-composer-controls/fomio-composer-topbar.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/before-composer-controls/fomio-composer-topbar.gjs)
+  - Full-page Create/Edit topbar (back, mode, close)
+
+- [apps/web/javascripts/discourse/connectors/before-composer-fields/fomio-composer-edit-banner.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/before-composer-fields/fomio-composer-edit-banner.gjs)
+  - Edit-mode context banner
+
+- [apps/web/javascripts/discourse/connectors/composer-after-composer-editor/fomio-composer-rail.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/composer-after-composer-editor/fomio-composer-rail.gjs)
+  - Draft metrics, clickable outline jump, active section highlight, and readiness checks
+
+- [apps/web/javascripts/discourse/connectors/composer-fields-below/fomio-composer-statusbar.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/composer-fields-below/fomio-composer-statusbar.gjs)
+  - Live words/chars and submit shortcut status row
+
+- [apps/web/javascripts/discourse/connectors/composer-fields-below/fomio-composer-hints.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/composer-fields-below/fomio-composer-hints.gjs)
+  - Keyboard shortcut hint row for full-page Create/Edit
+
+- [apps/web/javascripts/discourse/connectors/composer-open/fomio-composer-reply-context.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/composer-open/fomio-composer-reply-context.gjs)
+  - Reply context card for the compact reply flow
 
 ### Styling
 
@@ -213,6 +244,23 @@ On mobile, the composer footer is reflowed into:
 
 This is done in `apps/web/mobile/mobile.scss` because core mobile composer layout and the Fomio button styling were fighting each other.
 
+### Full-Page Editorial Surface
+
+Create and Edit modes use a full-page writing layout through CSS and connectors:
+
+- topbar in `.reply-to`
+- centered writing column
+- right-side editorial rail
+- status/hints rows below the fields
+
+Open-canvas pass (current):
+
+- reduced panel framing around the writing flow
+- stronger visual continuity between fields and body
+- softer peripheral chrome (topbar, rail, status) to keep focus on writing
+
+Reply mode intentionally remains compact and context-first.
+
 ## Known Constraints
 
 ### Fullscreen Composer Is Not Symmetric With Open Composer
@@ -225,16 +273,15 @@ Important consequence:
 
 That is why the theme has to restore them through an outlet connector.
 
-### The Old Block Composer Is Still In The Repo
+### Parallel Composer Path Is Out Of Scope
 
-The previous custom shell and block editor files still exist in the repository, but they are not the active composer path now.
+The active architecture does not run a parallel custom block-editor shell.
 
-Relevant old files:
+Current direction:
 
-- [apps/web/javascripts/discourse/components/fomio-block-editor.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/fomio-block-editor.gjs)
-- [apps/web/javascripts/discourse/connectors/above-site-header/fomio-composer.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/connectors/above-site-header/fomio-composer.gjs)
-
-The connector is intentionally disabled. The old component remains as historical code and should not be treated as current behavior.
+- native Discourse composer model
+- rich-editor extensions via plugin API
+- Fomio surface and interaction polish via connectors and SCSS
 
 ### Rich Editor Only
 
@@ -301,6 +348,10 @@ When changing composer behavior, verify all of the following:
 7. Confirm draft auto-save still works.
 8. Confirm uploads still work from the mobile and desktop footer/button path.
 9. Confirm the mobile submit row still aligns after any button styling changes.
+10. Confirm Create/Edit topbar and rail do not appear in Reply mode.
+11. Confirm canvas dead-space click focuses editor in Create/Edit only.
+12. Confirm clicking an outline item jumps the caret to that section.
+13. Confirm active-outline highlight follows caret movement while typing and arrowing.
 
 ## Current Scope
 
@@ -310,21 +361,17 @@ Included now:
 
 - rich-editor-only composer
 - floating selection toolbar
+- metrics extension + tracked rail/status metrics
+- clickable outline jump + active heading highlight
+- full-page Create/Edit editorial connector surface
+- compact Reply context card
 - fullscreen title/category/tags restoration
 - Fomio surface styling for native Discourse composer
 
 Not included now:
 
 - markdown-mode toolbar support
-- custom block composer shell
+- parallel custom block composer shell
 - custom publish pipeline
 - custom upload pipeline
 - custom serializer
-
-## Suggested Next Docs
-
-If this composer work continues, the next useful docs would be:
-
-1. A visual token map for composer-specific colors, radii, and spacing.
-2. A mobile composer interaction guide with screenshots.
-3. A “remove old shell” cleanup note once the repo no longer needs the historical block-editor files.

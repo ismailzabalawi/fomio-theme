@@ -1,56 +1,84 @@
-# Fomio Composer — Production Audit
+# Fomio Composer — Production Audit (Current)
 
-Audited against the design prototype in `fomio-design-system/project/Fomio Composer.html`.
+This audit reflects the active implementation in `apps/web`.
 
-## Feature Classification
+The composer is the native Discourse composer, restyled as a Fomio editorial surface and extended through supported theme APIs.
 
-| Feature | Status | Notes |
+## Implementation Snapshot
+
+| Area | Status | Notes |
 |---|---|---|
-| Block rendering | **real** | Tracked array of `{id, type, content}` objects; rendered as styled textareas per block type |
-| Slash menu | **real** | `/` in empty block opens menu; Heading / Quote / Divider insert real blocks; Poll / Collapsible / Image disabled with visual indicator |
-| Floating toolbar | **real** | Appears on textarea selection; Bold / Italic / Link wrap selection in markdown syntax; wraps directly in the block's content |
-| Drag handles | **disabled** | No drag-and-drop implementation; handles removed from production build |
-| Insert buttons (+ in gutter) | **real** | `+` handle adds a new paragraph block below the current block |
-| Source / rendered toggle | **real** | `sourceMode` shows the raw serialized markdown in a `<pre>` below the editor; blocks always contain markdown-compatible text |
-| Word count | **real** | Computed from all block content lengths; updates on every change |
-| Reading time | **real** | Derived from word count at 200 wpm |
-| Outline rail | **real** | Extracts h2/h3 blocks from block array; clickable scroll-to (by block ID) |
-| Publish checklist | **real** | Title set, Teret chosen checks are live state; image alt-text check is disabled (no image upload) |
-| Status bar | **real** | Draft saved timestamp from Discourse model, word+char counts from block state, L col from active block index |
-| Image block | **disabled** | Slot exists in slash menu but is visually disabled with "Coming soon" label; no fake upload |
-| Onebox block | **partial** | Real block type; serializes as bare URL (Discourse renders it inline); no live fetch preview in editor |
-| Edit diff | **disabled** | +/− counts in the edit-mode rail are removed; edit banner shows revision number only |
-| Reply compact mode | **real** | Reply mode renders the parent Byte context card above the composer, then a focused reply card |
+| Publish pipeline | **native** | Uses core composer save flow; no custom posting API path |
+| Draft behavior | **native** | Core draft autosave and restore remain intact |
+| Uploads | **native** | Core upload behavior remains available |
+| Validation and permissions | **native** | Title/body/category and permission checks remain core Discourse behavior |
+| Editor mode | **customized** | Composer is forced to rich-editor mode |
+| Placeholder | **customized** | Theme-level placeholder copy override |
+| Formatting UX | **customized** | Floating selection toolbar (bold, italic, link) in rich editor |
+| Create/Edit shell | **customized** | Full-page open-canvas layout (continuous writing surface) with lightweight topbar, rail, and status bar |
+| Reply shell | **customized** | Compact reply context card above native reply surface |
+| Metrics | **customized** | Live words/chars/outline from ProseMirror extension -> tracked store |
+| Outline navigation | **customized** | Rail headings are clickable and jump caret/focus to section |
+| Active section | **customized** | Rail auto-highlights the heading nearest the current caret position |
 
-## Discourse-backed features (preserved as-is)
+## Active Components and Extensions
 
-- **Publish / Save / Reply** — calls `this.composerService.save()`; no custom API call
-- **Draft auto-save** — Discourse saves whenever `model.reply` changes; our sync handles this
-- **Uploads** — not intercepted; Discourse upload UI is available via toolbar
-- **Validation** — title length, body length, category required — all enforced by Discourse on `save()`
-- **Permissions** — `can_edit`, `can_create_topic` checked by Discourse; theme checks `currentUser` for early gating only
-- **Reply target** — `composer.model.post` preserved from the `composer.open` call
-- **Edit target** — `composer.model.post` preserved from the `composer.open` call
+- `javascripts/discourse/api-initializers/fomio-rich-editor-toolbar.gjs`
+  - Forces rich-editor mode
+  - Overrides rich placeholder
+  - Registers selection-toolbar extension
+  - Registers metrics extension
+  - Installs open-canvas focus behavior
+- `javascripts/discourse/lib/fomio-selection-toolbar-extension.js`
+  - Floating selection actions: bold, italic, link
+- `javascripts/discourse/lib/fomio-composer-metrics-extension.js`
+  - Extracts plain text + headings (+ heading positions) from editor transactions
+  - Tracks live cursor position for active-outline highlighting
+- `javascripts/discourse/lib/fomio-composer-metrics-store.js`
+  - Reactive singleton consumed by connectors
+  - Exposes outline jump navigation callback
+- `javascripts/discourse/lib/fomio-composer-metrics.js`
+  - Pure metric derivations (word/char/count/checks/progress)
 
-## Markdown-backed (serialized and written to `model.reply`)
+## Connector Surface Coverage
 
-| Block type | Serialization |
-|---|---|
-| paragraph | plain text |
-| h2 | `## text` |
-| h3 | `### text` |
-| quote | `> text` |
-| divider | `---` |
-| image | `![alt](url)` + optional caption line |
-| onebox | bare URL on its own line |
+- `before-composer-controls/fomio-composer-topbar.gjs`
+  - Full-page Create/Edit topbar (back, mode, close)
+- `before-composer-fields/fomio-fullscreen-composer-fields.gjs`
+  - Re-adds title/category/tags in fullscreen
+- `before-composer-fields/fomio-composer-edit-banner.gjs`
+  - Edit-mode context banner
+- `composer-after-composer-editor/fomio-composer-rail.gjs`
+  - Draft metrics, clickable outline jump, active section highlight, checks
+- `composer-fields-below/fomio-composer-statusbar.gjs`
+  - Live words/chars + submit shortcut
+- `composer-fields-below/fomio-composer-hints.gjs`
+  - Keyboard-hint legend
+- `composer-open/fomio-composer-reply-context.gjs`
+  - Reply target context card
 
-## Unsafe for production (removed)
+## Styling Coverage
 
-- Drag handles on blocks (no implementation; removed entirely)
-- Fake "source" output (replaced with real serialized markdown)
-- Fake word count (replaced with real computed count)
-- Fake publish button (replaced with `composer.save()` call)
-- Fake slash commands for Poll, Collapsible, Image (disabled with visual state)
-- Edit diff visualization in the rail (+/− counts)
-- Fake image upload preview
-- Fake onebox live fetch
+- `common/common.scss`
+  - Section 7: composer shell (native container restyle)
+  - Section 7b: editorial connector styles
+  - Open-canvas visual pass for Create/Edit (de-boxed writing flow)
+  - Hides stock fixed rich toolbar in favor of floating toolbar
+- `mobile/mobile.scss`
+  - Touch/full-page spacing refinements
+  - Submit-row and topbar touch layout adjustments
+
+## Tests Present
+
+- `tests/fomio-composer-metrics.test.js`
+  - Pure metrics and checks behavior
+- `tests/fomio-composer-canvas.test.js`
+  - Canvas focus decision logic for full-page Create/Edit
+
+## Explicitly Not In Scope (Current)
+
+- Parallel custom block-editor engine
+- Custom slash-menu block model and serializer
+- Custom publish API pipeline
+- Custom upload pipeline
+- Markdown-mode parity work (current path is rich-editor only)
