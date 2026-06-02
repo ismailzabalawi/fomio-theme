@@ -54,52 +54,6 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
     padding-inline: 0.95rem;
   }
 
-  .submit-panel {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 0.6rem;
-
-    > span:first-child,
-    > span:last-of-type {
-      display: none;
-    }
-
-    #mobile-file-upload,
-    .mobile-file-upload {
-      grid-column: 1;
-      grid-row: 1;
-      justify-self: start;
-      align-self: center;
-      width: 2.8rem;
-      min-width: 2.8rem;
-      height: 2.8rem;
-      padding: 0;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-
-  .save-or-cancel {
-    grid-column: 2;
-    width: 100%;
-    margin-right: 0;
-    gap: 0.45rem;
-    justify-content: flex-end;
-
-    .btn-primary.create {
-      flex: 1 1 auto;
-      max-width: none;
-      justify-content: center;
-    }
-
-    .discard-button {
-      flex: 0 0 auto;
-    }
-  }
-
   // Full-page editorial surface on touch: tighten the desktop padding.
   // The rail is already viewport-gated; the status bar + hints live in the
   // submit-panel's first <span>, which the rule above hides on touch.
@@ -119,10 +73,53 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
     }
 
     .submit-panel {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 0.6rem;
       margin-top: 1.35rem;
       padding: 1.25rem var(--fomio-page-pad-x, 1rem)
         max(1.25rem, var(--fomio-safe-bottom, 0px));
       border-top: 0;
+
+      > span:first-child,
+      > span:last-of-type {
+        display: none;
+      }
+
+      #mobile-file-upload,
+      .mobile-file-upload {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: start;
+        align-self: center;
+        width: 2.8rem;
+        min-width: 2.8rem;
+        height: 2.8rem;
+        padding: 0;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .save-or-cancel {
+      grid-column: 2;
+      width: 100%;
+      margin-right: 0;
+      gap: 0.45rem;
+      justify-content: flex-end;
+
+      .btn-primary.create {
+        flex: 1 1 auto;
+        max-width: none;
+        justify-content: center;
+      }
+
+      .discard-button {
+        flex: 0 0 auto;
+      }
     }
 
     .fomio-composer-topbar {
@@ -140,8 +137,8 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
 
 // Keyboard-safe composer interactions on touch.
 // Follow Discourse keyboard-state convention on <html>.
-html.keyboard-visible body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control.open,
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control.open:focus-within {
+html.keyboard-visible body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control.open:has(.fomio-composer-topbar),
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control.open:has(.fomio-composer-topbar):focus-within {
   .submit-panel {
     position: sticky;
     bottom: 0;

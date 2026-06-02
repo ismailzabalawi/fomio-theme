@@ -5974,8 +5974,9 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .top-section {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 16px;
+    align-items: start;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   #main-outlet .user-main #user-content .stats-section,
@@ -5985,11 +5986,11 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .stats-title {
-    margin: 0 0 12px;
+    margin: 0 0 10px;
     font-family: var(--fomio-font-ui);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     line-height: 1.2;
     text-transform: uppercase;
     color: color-mix(in oklab, var(--fomio-ink-muted) 90%, var(--fomio-text));
@@ -6002,8 +6003,8 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     width: auto;
     float: none;
     margin: 0;
-    padding: 18px 18px 20px;
-    border-radius: 24px;
+    padding: 16px 16px 18px;
+    border-radius: 20px;
     border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
     background:
       linear-gradient(
@@ -6019,8 +6020,8 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
 
   #main-outlet .user-main #user-content .stats-section ul {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
+    gap: 8px;
     margin: 0;
     padding: 0;
   }
@@ -6028,8 +6029,8 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .stats-section li {
     display: block;
     margin: 0;
-    padding: 12px 14px;
-    border-radius: 18px;
+    padding: 10px 12px;
+    border-radius: 16px;
     border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
     background: color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg));
   }
@@ -6040,7 +6041,7 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .stats-section li.linked-stat a {
-    padding: 12px 14px;
+    padding: 10px 12px;
     color: inherit;
     text-decoration: none;
   }
@@ -6055,10 +6056,10 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .stats-section .label {
-    margin-top: 4px;
+    margin-top: 3px;
     color: color-mix(in oklab, var(--fomio-ink-muted) 92%, var(--fomio-text));
     font-family: var(--fomio-font-ui);
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     line-height: 1.35;
   }
 
@@ -6075,7 +6076,7 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
 
   #main-outlet .user-main #user-content .top-sub-section li {
     margin: 0;
-    padding: 12px 0;
+    padding: 10px 0;
     border: 0;
     border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
   }
@@ -6211,7 +6212,7 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .badges-section > .more {
     display: inline-flex;
     align-items: center;
-    margin-top: 14px;
+    margin-top: 10px;
     color: var(--fomio-primary);
   }
 
@@ -6330,11 +6331,50 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 }
 
+// Desktop summary rhythm: lead with full-width Stats, then balanced secondary cards.
+body.fomio-sidebar-active.fomio-surface-expanded.user-summary-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+  }
+
+  #main-outlet .user-main #user-content .top-section > .stats-section {
+    grid-column: 1 / -1;
+  }
+
+  #main-outlet .user-main #user-content .top-section > .top-sub-section {
+    grid-column: 1 / -1;
+    min-height: 0;
+  }
+
+  #main-outlet .user-main #user-content .stats-section ul {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty,
+  #main-outlet .user-main #user-content .top-sub-section > p,
+  #main-outlet .user-main #user-content .badges-section > p {
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 0.83rem;
+  }
+}
+
 // Tablet rail should keep the desktop summary/detail surface instead of
 // collapsing into the narrow mobile-like summary stack.
 body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .top-section {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section,
+  #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .badges-section {
+    border-radius: 18px;
   }
 }
 
