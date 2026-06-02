@@ -138,6 +138,27 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   max-width: none !important;
 }
 
+// Keyboard-safe composer interactions on touch.
+// Follow Discourse keyboard-state convention on <html>.
+html.keyboard-visible body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control.open,
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-control.open:focus-within {
+  .submit-panel {
+    position: sticky;
+    bottom: 0;
+    z-index: 6;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--fomio-bg) 92%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--fomio-border-soft) 75%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  // Prevent keyboard overlap with final lines while keeping writing flow.
+  .d-editor-input {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+  }
+}
+
 .topic-list.--fomio-discovery-list {
   border-spacing: 0 0.75rem;
 }

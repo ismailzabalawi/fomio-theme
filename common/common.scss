@@ -15856,6 +15856,35 @@ body.fomio-sidebar-active #reply-control:has(.fomio-composer-topbar) {
   transform: none !important;
 }
 
+// Rail mode (tablet/foldable): prioritize writable width over desktop rhythm.
+body.fomio-sidebar-active.fomio-surface-rail #reply-control:has(.fomio-composer-topbar) {
+  left: var(--fomio-sidebar-rail-width, 72px) !important;
+  --fomio-composer-measure: none;
+
+  .d-editor {
+    max-width: none;
+    padding: 1.6rem clamp(0.85rem, 2.2vw, 1.25rem) 0;
+  }
+
+  .title-and-category {
+    gap: 0.65rem;
+  }
+
+  .submit-panel {
+    max-width: none;
+    padding: 1rem clamp(0.85rem, 2.2vw, 1.25rem) 6.75rem;
+  }
+
+  .fomio-composer-topbar {
+    padding-inline: clamp(0.75rem, 2vw, 1rem);
+  }
+
+  .fomio-composer-topbar__mode {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+}
+
 #reply-control .d-editor-container.--rich-editor-enabled .d-editor-button-bar__wrap {
   display: none;
 }

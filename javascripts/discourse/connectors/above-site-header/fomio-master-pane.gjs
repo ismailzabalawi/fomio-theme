@@ -187,6 +187,17 @@ export default class FomioMasterPane extends Component {
     return this.shouldRenderRailMasterPaneOverlay && !this.shouldForceRailProfilePane;
   }
 
+  get displayedMasterContext() {
+    if (
+      this.shouldRenderRailMasterPaneOverlay &&
+      RAIL_OVERLAY_CONTEXTS.includes(this.railOverlayContext)
+    ) {
+      return this.railOverlayContext;
+    }
+
+    return this.activeMasterContext;
+  }
+
   get paneClass() {
     return this.shouldRenderRailMasterPaneOverlay ? "fomio-master-pane is-rail-overlay" : "fomio-master-pane";
   }
@@ -197,6 +208,21 @@ export default class FomioMasterPane extends Component {
 
   get userController() {
     return getOwner(this)?.lookup("controller:user") ?? null;
+  }
+
+  get resolvedProfileUser() {
+    if (this.viewedUser) {
+      return this.viewedUser;
+    }
+
+    if (
+      this.displayedMasterContext === "profile" &&
+      this.currentUser?.username
+    ) {
+      return this.currentUser;
+    }
+
+    return null;
   }
 
   // Keep category source resilient across connector contexts.
@@ -557,30 +583,30 @@ export default class FomioMasterPane extends Component {
   }
 
   get titleLabel() {
-    if (this.activeMasterContext === "profile") {
+    if (this.displayedMasterContext === "profile") {
       return (
-        this.viewedUser?.name ||
-        this.viewedUser?.username ||
+        this.resolvedProfileUser?.name ||
+        this.resolvedProfileUser?.username ||
         i18n(themePrefix("settings_master_pane.title"))
       );
     }
-    if (this.activeMasterContext === "bookmarks") {
+    if (this.displayedMasterContext === "bookmarks") {
       return i18n(themePrefix("bookmarks_master_pane.title"));
     }
-    if (this.activeMasterContext === "notifications") {
+    if (this.displayedMasterContext === "notifications") {
       return i18n(themePrefix("notifications_master_pane.title"));
     }
     return i18n(themePrefix("hubs_index.title"));
   }
 
   get descriptionLabel() {
-    if (this.activeMasterContext === "profile") {
+    if (this.displayedMasterContext === "profile") {
       return null;
     }
-    if (this.activeMasterContext === "bookmarks") {
+    if (this.displayedMasterContext === "bookmarks") {
       return i18n(themePrefix("bookmarks_master_pane.description"));
     }
-    if (this.activeMasterContext === "notifications") {
+    if (this.displayedMasterContext === "notifications") {
       return i18n(themePrefix("notifications_master_pane.description"));
     }
     return i18n(themePrefix("hubs_index.description"));
@@ -629,11 +655,11 @@ export default class FomioMasterPane extends Component {
   }
 
   get profileMarkerText() {
-    if (this.viewedUser?.admin) {
+    if (this.resolvedProfileUser?.admin) {
       return i18n("admin.title");
     }
 
-    if (this.viewedUser?.moderator) {
+    if (this.resolvedProfileUser?.moderator) {
       return i18n("moderator");
     }
 
@@ -641,7 +667,7 @@ export default class FomioMasterPane extends Component {
   }
 
   get profileExpandedInfoItems() {
-    const user = this.viewedUser;
+    const user = this.resolvedProfileUser;
     const items = [];
 
     if (user?.created_at) {
@@ -710,7 +736,7 @@ export default class FomioMasterPane extends Component {
       currentUser: this.currentUser,
       currentPath: this.currentPath,
       siteSettings: this.siteSettings,
-      viewedUser: this.viewedUser,
+      viewedUser: this.resolvedProfileUser,
     }).map((section) => ({
       ...section,
       label: i18n(themePrefix(section.labelKey)),
@@ -891,11 +917,11 @@ export default class FomioMasterPane extends Component {
         aria-label={{this.titleLabel}}
       >
         <div class="fomio-master-pane__inner">
-          {{#if (eq this.activeMasterContext "profile")}}
-            {{#if this.viewedUser}}
+          {{#if (eq this.displayedMasterContext "profile")}}
+            {{#if this.resolvedProfileUser}}
               <div class="fomio-master-pane__profile-summary">
                 <FomioUserProfileSummary
-                  @user={{this.viewedUser}}
+                  @user={{this.resolvedProfileUser}}
                   @markerText={{this.profileMarkerText}}
                   @adminFirst={{true}}
                   @showExpand={{this.canExpandProfile}}
@@ -922,7 +948,7 @@ export default class FomioMasterPane extends Component {
             aria-label={{this.titleLabel}}
             {{on "click" this.handleNavClick}}
           >
-            {{#if (eq this.activeMasterContext "profile")}}
+            {{#if (eq this.displayedMasterContext "profile")}}
               {{#each this.profileNavSections as |link|}}
                 <a
                   href={{link.href}}
@@ -932,7 +958,7 @@ export default class FomioMasterPane extends Component {
                   <span class="fomio-master-pane__name fomio-utility-row__label">{{link.label}}</span>
                 </a>
               {{/each}}
-            {{else if (eq this.activeMasterContext "bookmarks")}}
+            {{else if (eq this.displayedMasterContext "bookmarks")}}
               {{#each this.bookmarksLinks as |link|}}
                 <a
                   href={{link.href}}
@@ -942,7 +968,7 @@ export default class FomioMasterPane extends Component {
                   <span class="fomio-master-pane__name fomio-utility-row__label">{{link.label}}</span>
                 </a>
               {{/each}}
-            {{else if (eq this.activeMasterContext "notifications")}}
+            {{else if (eq this.displayedMasterContext "notifications")}}
               {{#each this.notificationsLinks as |link|}}
                 <a
                   href={{link.href}}
