@@ -694,6 +694,316 @@ body.fomio-bookmarks-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   }
 }
 
+// Notifications — icon-only dismiss (mark all read); mirrors filter trigger sizing.
+@mixin fomio-notifications-dismiss-icon-button($size: 40px) {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.dismiss-notifications {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    width: $size !important;
+    min-width: $size !important;
+    height: $size !important;
+    min-height: $size !important;
+    padding: 0 !important;
+    overflow: hidden;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent) !important;
+    border-radius: 14px !important;
+    background: color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg)) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%) !important;
+    color: transparent !important;
+
+    .d-button-label,
+    .d-icon {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
+    }
+
+    .fomio-notifications-dismiss-ph {
+      width: 18px !important;
+      height: 18px !important;
+      flex-shrink: 0;
+      color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+      fill: currentColor;
+    }
+
+    &:not(.fomio-dismiss-notifications--icon)::after {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      background: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='black' d='m229.66 77.66-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='black' d='m229.66 77.66-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+    }
+
+    &.fomio-dismiss-notifications--icon::after {
+      display: none !important;
+    }
+
+    &:hover:not([disabled]) {
+      border-color: color-mix(in oklab, var(--fomio-border) 78%, transparent) !important;
+      background: color-mix(in oklab, var(--fomio-surface) 97%, #fff) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent) !important;
+      outline-offset: 2px;
+    }
+
+    &[disabled] {
+      opacity: 0.52 !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+// Notifications toolbar — chips, read/unread filter, dismiss on one centered row.
+@mixin fomio-notifications-filter-toolbar-row($control-size: 40px, $gap: 10px) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) $control-size $control-size;
+    grid-template-areas:
+      "chips filter dismiss"
+      "content content content";
+    align-items: center;
+    column-gap: $gap;
+    row-gap: $gap;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .user-content#user-content {
+    display: contents;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream {
+    display: contents;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips {
+    grid-area: chips;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-self: center;
+    justify-self: stretch;
+    min-width: 0;
+    max-width: 100%;
+    min-height: $control-size;
+    margin: 0 !important;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .fomio-me-filter-chips__chip {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: $control-size;
+      margin: 0;
+    }
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips__empty {
+    grid-area: content;
+    grid-column: 1 / -1;
+    align-self: start;
+    margin: 0 0 4px;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .user-notifications-filter {
+    grid-area: filter;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    justify-self: center;
+    margin: 0 !important;
+    padding: 0;
+    min-width: 0;
+    max-width: none;
+    min-height: $control-size;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    grid-area: dismiss;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-self: center;
+    justify-content: flex-end;
+    justify-self: end;
+    gap: 0;
+    margin: 0 !important;
+    padding: 0;
+    min-width: 0;
+    width: auto;
+    min-height: $control-size;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    min-height: $control-size;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .user-notifications-list,
+  #main-outlet .user-main .notification-history.user-stream > .alert.alert-info,
+  #main-outlet .user-main .notification-history.user-stream > .empty-state,
+  #main-outlet .user-main .notification-history.user-stream > .item.error,
+  #main-outlet .user-main .notification-history.user-stream > .loading-container,
+  #main-outlet .user-main .notification-history.user-stream > .load-more-sentinel {
+    grid-area: content;
+    grid-column: 1 / -1;
+    align-self: start;
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+// Notifications read/unread filter — icon-only trigger (expanded, compact-desktop, rail).
+@mixin fomio-notifications-filter-icon-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .select-kit.notifications-filter {
+    min-width: 0;
+    margin: 0;
+  }
+
+  summary.notifications-filter-header {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent) !important;
+    border-radius: 14px !important;
+    background: color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg)) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%) !important;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    .select-kit-header-wrapper {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 0;
+    }
+
+    .filter-text,
+    .header-text,
+    .angle-icon,
+    .d-icon {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .fomio-notifications-filter-ph {
+      width: 18px !important;
+      height: 18px !important;
+      flex-shrink: 0;
+      color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+      fill: currentColor;
+    }
+
+    &:not(.fomio-notifications-filter-header--icon)::after {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      background: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='black' d='M200 136a8 8 0 0 1-8 8H64a8 8 0 0 1 0-16h128a8 8 0 0 1 8 8m32-56H24a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16m-80 96h-48a8 8 0 0 0 0 16h48a8 8 0 0 0 0-16'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='black' d='M200 136a8 8 0 0 1-8 8H64a8 8 0 0 1 0-16h128a8 8 0 0 1 8 8m32-56H24a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16m-80 96h-48a8 8 0 0 0 0 16h48a8 8 0 0 0 0-16'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+    }
+
+    &.fomio-notifications-filter-header--icon::after {
+      display: none !important;
+    }
+
+    &:hover {
+      border-color: color-mix(in oklab, var(--fomio-border) 78%, transparent) !important;
+      background: color-mix(in oklab, var(--fomio-surface) 97%, #fff) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent) !important;
+      outline-offset: 2px;
+    }
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-expanded.user-notifications-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-compact-desktop.user-notifications-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-rail.user-notifications-page:not(.fomio-auth-mode) {
+  @include fomio-notifications-filter-toolbar-row;
+  @include fomio-notifications-dismiss-icon-button(40px);
+
+  #main-outlet .user-main .user-notifications-filter {
+    @include fomio-notifications-filter-icon-trigger;
+  }
+}
+
 // ============================================================
 // NOTIFICATIONS DETAIL ALIGNMENT (Slice 9B)
 // Desktop only when Notifications Master Pane is active.
@@ -767,14 +1077,17 @@ body.fomio-notifications-master-active.fomio-surface-rail:not(.fomio-auth-mode) 
     color: var(--fomio-muted);
   }
 
-  // Preserve filter + list behavior; add calm rhythm only.
-  .user-main .user-notifications-filter {
-    margin-bottom: 0.55rem;
+  @include fomio-notifications-filter-toolbar-row;
+  @include fomio-notifications-dismiss-icon-button(40px);
+
+  // Preserve filter + list behavior; icon-only read/unread trigger.
+  #main-outlet .user-main .user-notifications-filter {
+    @include fomio-notifications-filter-icon-trigger;
   }
 
   .user-main .user-notifications-list {
     gap: 0;
-    margin-top: 0.2rem;
+    margin-top: 0;
     border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
   }
 
@@ -848,12 +1161,6 @@ body.fomio-notifications-master-active.fomio-surface-rail:not(.fomio-auth-mode) 
 
   .user-main .user-notifications-list.show-avatars > li > a .icon-avatar__icon-wrapper {
     box-shadow: none;
-  }
-
-  .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.dismiss-notifications {
-    border-radius: 12px;
-    background: color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 38%);
   }
 
   .user-main .user-notifications-list a,
