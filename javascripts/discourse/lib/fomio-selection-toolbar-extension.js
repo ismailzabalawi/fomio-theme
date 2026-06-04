@@ -1,5 +1,7 @@
 import UpsertHyperlink from "discourse/components/modal/upsert-hyperlink";
 import {
+  computeComposerToolbarSafeTop,
+  getComposerSurfaceMode,
   computeToolbarTriggerRect,
   computeToolbarViewportPosition,
 } from "./fomio-selection-toolbar-geometry";
@@ -267,10 +269,19 @@ class FomioSelectionToolbarPluginView {
     try {
       const start = this.#view.coordsAtPos(this.#selection.from);
       const end = this.#view.coordsAtPos(this.#selection.to);
-      const replyTopbarRect = document
-        .querySelector("#reply-control .reply-to")
+      const replyControl = this.#view.dom.closest("#reply-control");
+      const fullscreenTopbarRect = document
+        .querySelector("#reply-control .fomio-composer-topbar")
+        ?.closest(".reply-to")
         ?.getBoundingClientRect();
-      const safeTop = replyTopbarRect ? replyTopbarRect.bottom + 8 : 8;
+      const mode = getComposerSurfaceMode({
+        hasFullscreenTopbar: Boolean(fullscreenTopbarRect),
+        replyControlClassName: replyControl?.className || "",
+      });
+      const safeTop = computeComposerToolbarSafeTop({
+        mode,
+        fullscreenTopbarBottom: fullscreenTopbarRect?.bottom,
+      });
 
       return computeToolbarTriggerRect(start, end, safeTop);
     } finally {

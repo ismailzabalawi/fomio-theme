@@ -2,6 +2,36 @@ const MENU_OFFSET = 18;
 const TOOLBAR_HEIGHT = 48;
 const VIEWPORT_OFFSET = 8;
 
+export function getComposerSurfaceMode({
+  hasFullscreenTopbar = false,
+  replyControlClassName = "",
+} = {}) {
+  if (
+    hasFullscreenTopbar ||
+    replyControlClassName.includes("composer-action-create-topic") ||
+    replyControlClassName.includes("composer-action-edit")
+  ) {
+    return "fullscreen";
+  }
+
+  if (replyControlClassName.includes("composer-action-reply")) {
+    return "reply";
+  }
+
+  return "default";
+}
+
+export function computeComposerToolbarSafeTop({
+  mode = "default",
+  fullscreenTopbarBottom,
+} = {}) {
+  if (mode === "fullscreen" && fullscreenTopbarBottom) {
+    return fullscreenTopbarBottom + VIEWPORT_OFFSET;
+  }
+
+  return VIEWPORT_OFFSET;
+}
+
 export function computeToolbarTriggerRect(start, end, safeTop = 0) {
   const left = Math.round((start.left + end.left) / 2);
   const selectionTop = Math.min(start.top, end.top);
