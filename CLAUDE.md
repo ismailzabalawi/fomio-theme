@@ -251,8 +251,10 @@ Live editor metrics (word/char counts, heading outline) come from a read-only Pr
 
 **`lib/fomio-selection-toolbar-extension.js`** — ProseMirror plugin:
 - Shows a floating Bold / Italic / Link toolbar on non-empty `TextSelection` inside `#reply-control`
-- Uses Discourse core primitives (`ToolbarBase`, `ToolbarButtons`, `UpsertHyperlink`, Float Kit) — do not invent a parallel formatting system
+- Lightweight DOM implementation: `FomioSelectionToolbarPluginView` creates a simple `<div class="fomio-selection-toolbar">` with three `<button>` elements
+- Uses `UpsertHyperlink` modal (Discourse core primitive) for link editing
 - Access ProseMirror classes through extension params (e.g. `pmState.TextSelection`), not direct package imports — theme bundles do not resolve raw `prosemirror-*` imports
+- i18n keys: `composer.toolbar_aria_label`, `composer.toolbar_bold`, `composer.toolbar_italic`, `composer.toolbar_link` (fallbacks to English labels if missing)
 
 **`connectors/before-composer-fields/fomio-fullscreen-composer-fields.gjs`**:
 - Restores title/category/tags in fullscreen mode — core deliberately removes them when `viewFullscreen` is true

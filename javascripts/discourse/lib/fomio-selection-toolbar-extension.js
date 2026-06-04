@@ -1,24 +1,8 @@
-import { TrackedObject } from "@ember-compat/tracked-built-ins";
-import ToolbarButtons from "discourse/components/composer/toolbar-buttons";
 import UpsertHyperlink from "discourse/components/modal/upsert-hyperlink";
-import { updatePosition } from "discourse/float-kit/lib/update-position";
-import { ToolbarBase } from "discourse/lib/composer/toolbar";
-import { rovingButtonBar } from "discourse/lib/roving-button-bar";
-
-const MENU_IDENTIFIER = "fomio-composer-selection-toolbar";
-const MENU_OFFSET = 12;
-
-function selectionHasMark(state, markType) {
-  const { from, to, empty } = state.selection;
-
-  if (empty) {
-    return !!(state.storedMarks || state.selection.$from.marks()).find(
-      (mark) => mark.type === markType
-    );
-  }
-
-  return state.doc.rangeHasMark(from, to, markType);
-}
+import {
+  computeToolbarTriggerRect,
+  computeToolbarViewportPosition,
+} from "./fomio-selection-toolbar-geometry";
 
 function findSelectionLinkMark(state) {
   const { from, to } = state.selection;
@@ -37,48 +21,16 @@ function findSelectionLinkMark(state) {
   return linkMark;
 }
 
-class FomioSelectionToolbar extends ToolbarBase {
-  constructor(opts = {}) {
-    super(opts);
-
-    this.addButton({
-      id: "bold",
-      icon: "bold",
-      shortcut: "B",
-      action: opts.toggleBold,
-      active: ({ state }) => state.inBold,
-    });
-
-    this.addButton({
-      id: "italic",
-      icon: "italic",
-      shortcut: "I",
-      action: opts.toggleItalic,
-      active: ({ state }) => state.inItalic,
-    });
-
-    this.addButton({
-      id: "link",
-      icon: "link",
-      action: opts.upsertLink,
-      active: ({ state }) => state.inLink,
-    });
-  }
-}
-
 class FomioSelectionToolbarPluginView {
   #getContext;
   #toggleMarkCommand;
   #utils;
   #TextSelection;
   #view;
-  #toolbar;
-  #toolbarState;
-  #menuInstance;
+  #toolbarElement;
   #selection;
   #linkMark;
   #scrollContainer;
-  #menuTrigger;
   #calculatingCoords = false;
   #boundScroll = () => this.#repositionToolbar();
   #boundFocusOut = () => {
@@ -97,27 +49,32 @@ class FomioSelectionToolbarPluginView {
   }
 
   update(view) {
-    this.#view = view;
+    try {
+      this.#view = view;
 
-    if (!this.#isEligibleSelection(view)) {
+      if (!this.#isEligibleSelection(view)) {
+        this.#resetToolbar();
+        return;
+      }
+
+      this.#selection = {
+        from: view.state.selection.from,
+        to: view.state.selection.to,
+      };
+      this.#linkMark = findSelectionLinkMark(view.state);
+
+      this.#attachListeners();
+      this.#showToolbar();
+    } catch {
+      // Never throw into editor setup — silent fail per CLAUDE.md failure mode 3
       this.#resetToolbar();
-      return;
     }
-
-    this.#selection = {
-      from: view.state.selection.from,
-      to: view.state.selection.to,
-    };
-    this.#linkMark = findSelectionLinkMark(view.state);
-
-    this.#ensureToolbar();
-    this.#attachListeners();
-    this.#showToolbar();
   }
 
   destroy() {
     this.#resetToolbar();
-    this.#toolbar = null;
+    this.#toolbarElement?.remove();
+    this.#toolbarElement = null;
   }
 
   #isEligibleSelection(view) {
@@ -132,36 +89,6 @@ class FomioSelectionToolbarPluginView {
     }
 
     return !!doc.textBetween(selection.from, selection.to, "\n", "\n").trim();
-  }
-
-  #ensureToolbar() {
-    if (!this.#toolbar) {
-      this.#toolbarState = new TrackedObject({
-        inBold: false,
-        inItalic: false,
-        inLink: false,
-      });
-
-      this.#toolbar = new FomioSelectionToolbar({
-        capabilities: this.#getContext().capabilities,
-        site: this.#getContext().site,
-        toggleBold: () => this.#toggleMark(this.#view.state.schema.marks.strong),
-        toggleItalic: () => this.#toggleMark(this.#view.state.schema.marks.em),
-        upsertLink: () => this.#openLinkModal(),
-      });
-
-      this.#toolbar.context = {
-        textManipulation: { state: this.#toolbarState },
-        newToolbarEvent: () => this.#buildToolbarEvent(),
-      };
-      this.#toolbar.rovingButtonBar = rovingButtonBar;
-    }
-
-    Object.assign(this.#toolbarState, {
-      inBold: selectionHasMark(this.#view.state, this.#view.state.schema.marks.strong),
-      inItalic: selectionHasMark(this.#view.state, this.#view.state.schema.marks.em),
-      inLink: selectionHasMark(this.#view.state, this.#view.state.schema.marks.link),
-    });
   }
 
   #toggleMark(markType) {
@@ -242,42 +169,84 @@ class FomioSelectionToolbarPluginView {
   }
 
   #showToolbar() {
-    this.#menuTrigger = {
-      getBoundingClientRect: () => this.#getTriggerClientRect(),
-    };
-
-    if (this.#menuInstance?.expanded) {
-      this.#menuInstance.trigger = this.#menuTrigger;
-      this.#repositionToolbar();
-      return;
+    if (!this.#toolbarElement) {
+      this.#createToolbarElement();
     }
 
-    this.#menuInstance?.destroy();
-    this.#getContext()
-      .menu.show(this.#menuTrigger, {
-        portalOutletElement: this.#view.dom.parentElement,
-        identifier: MENU_IDENTIFIER,
-        component: ToolbarButtons,
-        placement: "top",
-        padding: 0,
-        hide: true,
-        boundary: this.#view.dom.parentElement,
-        fallbackPlacements: ["top-start", "top-end", "bottom", "bottom-start"],
-        closeOnClickOutside: false,
-        data: this.#toolbar,
-      })
-      .then((instance) => {
-        this.#menuInstance = instance;
+    this.#repositionToolbar();
+    this.#toolbarElement.style.display = "flex";
+  }
+
+  #createToolbarElement() {
+    this.#toolbarElement = document.createElement("div");
+    this.#toolbarElement.className = "fomio-selection-toolbar";
+    this.#toolbarElement.setAttribute("role", "toolbar");
+
+    const i18n = this.#getContext().siteSettings.themeTranslatedTextOverrides || {};
+    const ariaLabel = i18n["composer.toolbar_aria_label"] || "Text formatting";
+    this.#toolbarElement.setAttribute("aria-label", ariaLabel);
+
+    const buttonConfigs = [
+      {
+        id: "bold",
+        label: "B",
+        ariaLabel: i18n["composer.toolbar_bold"] || "Bold",
+        shortcut: "⌘B",
+        action: () => this.#toggleMark(this.#view.state.schema.marks.strong),
+      },
+      {
+        id: "italic",
+        label: "I",
+        ariaLabel: i18n["composer.toolbar_italic"] || "Italic",
+        shortcut: "⌘I",
+        action: () => this.#toggleMark(this.#view.state.schema.marks.em),
+      },
+      {
+        id: "link",
+        label: "🔗",
+        ariaLabel: i18n["composer.toolbar_link"] || "Link",
+        shortcut: "⌘K",
+        action: () => this.#openLinkModal(),
+      },
+    ];
+
+    buttonConfigs.forEach(({ id, label, ariaLabel, shortcut, action }) => {
+      const button = document.createElement("button");
+      button.className = "fomio-selection-toolbar__button";
+      button.setAttribute("type", "button");
+      button.setAttribute("aria-label", ariaLabel);
+      button.setAttribute("title", shortcut);
+      button.setAttribute("data-id", id);
+      button.textContent = label;
+
+      button.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        action();
+        this.#view.focus();
       });
+
+      this.#toolbarElement.appendChild(button);
+    });
+
+    document.body.appendChild(this.#toolbarElement);
   }
 
   #repositionToolbar() {
-    if (!this.#menuInstance?.content) {
+    if (!this.#toolbarElement) {
       return;
     }
 
-    this.#menuInstance.trigger = this.#menuTrigger;
-    updatePosition(this.#menuTrigger, this.#menuInstance.content, {});
+    const coords = this.#getTriggerClientRect();
+    const { top, left } = computeToolbarViewportPosition(
+      coords,
+      this.#toolbarElement.offsetWidth,
+      { width: window.innerWidth, height: window.innerHeight }
+    );
+
+    this.#toolbarElement.style.position = "fixed";
+    this.#toolbarElement.style.top = `${top}px`;
+    this.#toolbarElement.style.left = `${left}px`;
+    this.#toolbarElement.style.zIndex = "10000";
   }
 
   #getTriggerClientRect() {
@@ -298,17 +267,12 @@ class FomioSelectionToolbarPluginView {
     try {
       const start = this.#view.coordsAtPos(this.#selection.from);
       const end = this.#view.coordsAtPos(this.#selection.to);
-      const left = Math.round((start.left + end.left) / 2);
-      const top = Math.min(start.top, end.top) - MENU_OFFSET;
+      const replyTopbarRect = document
+        .querySelector("#reply-control .reply-to")
+        ?.getBoundingClientRect();
+      const safeTop = replyTopbarRect ? replyTopbarRect.bottom + 8 : 8;
 
-      return {
-        left,
-        right: left,
-        top,
-        bottom: top,
-        width: 0,
-        height: 0,
-      };
+      return computeToolbarTriggerRect(start, end, safeTop);
     } finally {
       this.#calculatingCoords = false;
     }
@@ -316,10 +280,10 @@ class FomioSelectionToolbarPluginView {
 
   #resetToolbar() {
     this.#detachListeners();
-    this.#menuInstance?.destroy();
-    this.#menuInstance = null;
+    if (this.#toolbarElement) {
+      this.#toolbarElement.style.display = "none";
+    }
     this.#selection = null;
-    this.#menuTrigger = null;
   }
 }
 

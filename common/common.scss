@@ -15367,7 +15367,7 @@ body.fomio-sidebar-active #reply-control {
   &.composer-action-create-topic,
   &.composer-action-edit,
   &:has(.fomio-composer-topbar) {
-    --fomio-composer-measure: 780px;
+    --fomio-composer-measure: 740px;
 
     // Core composer can inject positional styles for sheet behavior.
     // Force full-page editorial geometry for Create/Edit.
@@ -15439,30 +15439,30 @@ body.fomio-sidebar-active #reply-control {
       width: 100%;
       max-width: var(--fomio-composer-measure);
       margin-inline: auto;
-      padding: 3rem 2.75rem 0;
+      padding: 2.55rem 2.1rem 0;
       cursor: text;
     }
 
     .composer-fields {
-      gap: 1.25rem;
+      gap: 1rem;
       cursor: auto;
     }
 
     .title-and-category {
-      gap: 0.85rem;
+      gap: 0.7rem;
       padding-top: 0.2rem;
-      padding-bottom: 0.35rem;
+      padding-bottom: 0.4rem;
       border-bottom: 1px solid color-mix(in srgb, var(--fomio-border-soft) 75%, transparent);
     }
 
     .category-input .select-kit-header,
     .tags-input .select-kit-header {
-      min-height: 2.35rem;
-      height: 2.35rem;
+      min-height: 2.2rem;
+      height: 2.2rem;
       border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--fomio-border) 40%, transparent);
-      background: color-mix(in srgb, var(--fomio-surface) 62%, transparent);
-      padding-inline: 0.85rem;
+      border: 1px solid color-mix(in srgb, var(--fomio-border) 30%, transparent);
+      background: color-mix(in srgb, var(--fomio-surface) 55%, transparent);
+      padding-inline: 0.8rem;
     }
 
     // Seamless body — no rule between the fields and the writing surface.
@@ -15483,12 +15483,12 @@ body.fomio-sidebar-active #reply-control {
     .title-input input {
       min-height: 0;
       height: auto;
-      padding: 0.35rem 0 0.7rem;
+      padding: 0.25rem 0 0.65rem;
       border: 0;
       border-bottom: 1px solid var(--fomio-border);
       border-radius: 0;
       background: transparent;
-      font-size: clamp(1.55rem, 1.3rem + 1vw, 1.85rem);
+      font-size: clamp(1.42rem, 1.16rem + 0.86vw, 1.68rem);
       font-weight: 700;
       letter-spacing: var(--fomio-tracking-tight);
 
@@ -15507,8 +15507,8 @@ body.fomio-sidebar-active #reply-control {
       width: 100%;
       max-width: var(--fomio-composer-measure);
       margin-inline: auto;
-      margin-top: 2rem;
-      padding: 1.5rem 2.5rem 7.5rem;
+      margin-top: 1.6rem;
+      padding: 1.1rem 2.1rem 6.8rem;
       border-top: 0;
       background: transparent;
     }
@@ -15729,12 +15729,12 @@ body.fomio-sidebar-active #reply-control {
   .d-editor-input,
   .d-editor-preview {
     min-height: 16rem;
-    padding: 0.75rem 0.8rem 0.9rem;
+    padding: 0.7rem 0.65rem 0.85rem;
     background: transparent;
     color: var(--fomio-text);
     font-family: var(--fomio-font-serif);
-    font-size: var(--fomio-text-md);
-    line-height: var(--fomio-leading-loose);
+    font-size: 1.03rem;
+    line-height: 1.63;
   }
 
   .d-editor-input {
@@ -15774,13 +15774,13 @@ body.fomio-sidebar-active #reply-control {
     }
 
     h2 {
-      font-size: 1.35rem;
-      margin: 1.2em 0 0.4em;
+      font-size: 1.32rem;
+      margin: 1.16em 0 0.38em;
     }
 
     h3 {
-      font-size: 1.15rem;
-      margin: 1.05em 0 0.35em;
+      font-size: 1.12rem;
+      margin: 1em 0 0.32em;
     }
 
     h1:first-child,
@@ -15929,45 +15929,65 @@ body.fomio-sidebar-active.fomio-surface-rail #reply-control:has(.fomio-composer-
   display: none;
 }
 
-.fk-d-menu[data-identifier="fomio-composer-selection-toolbar"] {
-  z-index: 1100;
+// Floating selection toolbar: subtle light surface with border and soft shadow.
+.fomio-selection-toolbar {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fomio-card) 94%, var(--fomio-bg));
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--fomio-shadow) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fomio-border) 65%, transparent);
   user-select: none;
+  z-index: 10000;
+  animation: fomio-toolbar-fade-in 150ms var(--fomio-ease);
+}
 
-  // Dark pill (design `.cm-pop`): high-contrast floating bar over the text.
-  .fk-d-menu__inner-content {
-    overflow: visible;
-    padding: 0.25rem;
-    border: 0;
-    border-radius: var(--fomio-radius-md);
-    background: var(--fomio-text);
-    box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--fomio-shadow) 70%, transparent);
+@keyframes fomio-toolbar-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fomio-selection-toolbar__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.4rem 0.5rem;
+  border: 0;
+  border-radius: var(--fomio-radius-sm);
+  background: transparent;
+  color: var(--fomio-text);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 120ms var(--fomio-ease);
+  font-family: var(--fomio-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  -webkit-appearance: none;
+  appearance: none;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: color-mix(in srgb, var(--fomio-surface) 90%, transparent);
+    color: var(--fomio-text);
+    opacity: 1;
+    outline: 1px solid var(--fomio-border);
   }
 
-  .toolbar__button {
-    min-width: 2rem;
-    min-height: 2rem;
-    padding: 0;
-    border-radius: var(--fomio-radius-sm);
-    background: transparent;
-    color: var(--fomio-bg);
-    opacity: 0.82;
-
-    .d-icon {
-      color: currentColor;
-    }
-
-    &:hover:not(:disabled),
-    &:focus-visible {
-      background: color-mix(in srgb, var(--fomio-bg) 18%, transparent);
-      color: var(--fomio-bg);
-      opacity: 1;
-    }
-
-    &.--active {
-      background: var(--fomio-primary);
-      color: var(--fomio-on-primary);
-      opacity: 1;
-    }
+  &:active {
+    background: color-mix(in srgb, var(--fomio-primary-soft) 100%, transparent);
+    color: var(--fomio-primary);
+    opacity: 1;
   }
 }
 
@@ -15986,7 +16006,7 @@ body.fomio-sidebar-active #reply-control {
     align-items: center;
     gap: 0.875rem;
     width: 100%;
-    height: 52px;
+    height: 50px;
     padding: 0 1.5rem;
   }
 
@@ -16021,7 +16041,7 @@ body.fomio-sidebar-active #reply-control {
   .fomio-composer-topbar__mode {
     margin-inline: auto;
     font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
+    font-size: 0.67rem;
     font-weight: 700;
     letter-spacing: var(--fomio-tracking-wide);
     text-transform: uppercase;
@@ -16321,13 +16341,13 @@ body.fomio-sidebar-active #reply-control {
     height: 30px;
     padding: 0 1rem;
     border-top: 1px solid color-mix(in srgb, var(--fomio-border-soft) 60%, transparent);
-    background: color-mix(in srgb, var(--fomio-bg) 74%, transparent);
+    background: color-mix(in srgb, var(--fomio-bg) 80%, transparent);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     font-family: var(--fomio-font-mono);
     font-size: 10px;
     letter-spacing: 0.04em;
-    color: color-mix(in srgb, var(--fomio-muted) 88%, var(--fomio-secondary));
+    color: color-mix(in srgb, var(--fomio-muted) 82%, var(--fomio-secondary));
   }
 
   .fomio-composer-statusbar__right {
@@ -16431,27 +16451,26 @@ html.fomio-color-dark {
     }
   }
 
-  // Selection toolbar: warm card pill in dark (the light-mode dark pill would
-  // invert to a light bar against the brown surface).
-  .fk-d-menu[data-identifier="fomio-composer-selection-toolbar"] {
-    .fk-d-menu__inner-content {
-      background: var(--fomio-card);
-      border: 1px solid var(--fomio-border);
+  // Selection toolbar: warm card pill in dark mode.
+  .fomio-selection-toolbar {
+    background: color-mix(in srgb, var(--fomio-card) 94%, var(--fomio-bg));
+    border-color: color-mix(in srgb, var(--fomio-border) 65%, transparent);
+    box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--fomio-shadow) 55%, transparent);
+  }
+
+  .fomio-selection-toolbar__button {
+    color: var(--fomio-secondary);
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: color-mix(in srgb, var(--fomio-surface) 80%, transparent);
+      color: var(--fomio-text);
+      outline-color: var(--fomio-border);
     }
 
-    .toolbar__button {
-      color: var(--fomio-secondary);
-
-      &:hover:not(:disabled),
-      &:focus-visible {
-        background: color-mix(in srgb, var(--fomio-surface) 90%, transparent);
-        color: var(--fomio-text);
-      }
-
-      &.--active {
-        background: var(--fomio-primary);
-        color: var(--fomio-on-primary);
-      }
+    &:active {
+      background: color-mix(in srgb, var(--fomio-primary-soft) 100%, transparent);
+      color: var(--fomio-primary);
     }
   }
 

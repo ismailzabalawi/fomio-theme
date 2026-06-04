@@ -14,7 +14,7 @@ The composer is the native Discourse composer, restyled as a Fomio editorial sur
 | Validation and permissions | **native** | Title/body/category and permission checks remain core Discourse behavior |
 | Editor mode | **customized** | Composer is forced to rich-editor mode |
 | Placeholder | **customized** | Theme-level placeholder copy override |
-| Formatting UX | **customized** | Floating selection toolbar (bold, italic, link) in rich editor |
+| Formatting UX | **customized** | Floating selection toolbar (bold, italic, link) as lightweight DOM widget |
 | Create/Edit shell | **customized** | Full-page open-canvas layout (continuous writing surface) with lightweight topbar, rail, and status bar |
 | Reply shell | **customized** | Compact reply context card above native reply surface |
 | Metrics | **customized** | Live words/chars/outline from ProseMirror extension -> tracked store |

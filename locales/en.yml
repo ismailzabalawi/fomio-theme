@@ -320,6 +320,11 @@ en:
     reply_plural: "replies"
   composer:
     rich_placeholder: "Write your byte here."
+    # Floating selection toolbar
+    toolbar_aria_label: "Text formatting"
+    toolbar_bold: "Bold"
+    toolbar_italic: "Italic"
+    toolbar_link: "Link"
     # Topbar (create / edit full-page surface)
     mode_label: "Mode"
     mode_create: "Create byte"

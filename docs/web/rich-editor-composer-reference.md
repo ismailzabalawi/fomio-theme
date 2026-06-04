@@ -27,9 +27,11 @@ The current stack is:
 
 - [apps/web/javascripts/discourse/lib/fomio-selection-toolbar-extension.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-selection-toolbar-extension.js)
   - ProseMirror plugin for floating selection UI
-  - Shows a compact toolbar on non-empty text selections
+  - Shows a compact floating toolbar on non-empty text selections
   - Buttons: `bold`, `italic`, `link`
-  - Uses core `ToolbarBase`, `ToolbarButtons`, and `UpsertHyperlink`
+  - Lightweight DOM implementation: `FomioSelectionToolbarPluginView` creates a simple `<div>` with `<button>` elements
+  - Uses `UpsertHyperlink` modal (Discourse core primitive) for link editing
+  - i18n: `composer.toolbar_aria_label`, `composer.toolbar_bold`, `composer.toolbar_italic`, `composer.toolbar_link`
 
 - [apps/web/javascripts/discourse/lib/fomio-composer-metrics-extension.js](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/lib/fomio-composer-metrics-extension.js)
   - Reads plain text + heading structure (+ heading positions) from the rich-editor document
@@ -183,21 +185,20 @@ The current v1 toolbar includes:
 
 The toolbar is positioned from the current ProseMirror selection using:
 
-- `view.coordsAtPos(selection.from)`
-- `view.coordsAtPos(selection.to)`
+- `view.coordsAtPos(selection.from)` — start of selection
+- `view.coordsAtPos(selection.to)` — end of selection
+- `FomioSelectionToolbarPluginView#getTriggerClientRect()` — calculates viewport-aware floating position
 
-The theme builds a virtual trigger rect and passes it to Discourse Float Kit menu rendering.
+Toolbar appears above the selection by default; flips below if space is constrained.
 
-### Why We Use Core Primitives
+### Reuse of Core Primitives
 
 The toolbar deliberately reuses:
 
-- `ToolbarBase`
-- `ToolbarButtons`
-- `UpsertHyperlink`
-- Discourse Float Kit `menu.show(...)`
+- `UpsertHyperlink` modal (Discourse core component) for link editing
+- Extension params (`pmState`, `pmCommands`) — no direct package imports
 
-This avoids inventing a second formatting system or manually mutating composer state.
+This keeps the implementation simple and maintains compatibility with theme bundle constraints.
 
 ## Current Styling Rules
 
