@@ -5,7 +5,7 @@ import { service } from "@ember/service";
 import ComposerTitle from "discourse/components/composer-title";
 import PopupInputTip from "discourse/components/popup-input-tip";
 import MiniTagChooser from "discourse/select-kit/components/mini-tag-chooser";
-import CategoryChooser from "discourse/select-kit/components/category-chooser";
+import FomioComposerCategoryPicker from "../../components/shared/fomio-composer-category-picker";
 
 export default class FomioFullscreenComposerFields extends Component {
   @service composer;
@@ -15,7 +15,10 @@ export default class FomioFullscreenComposerFields extends Component {
   }
 
   get shouldRender() {
-    return this.model?.viewFullscreen && this.model?.canEditTitle;
+    return Boolean(
+      this.model?.canEditTitle &&
+        (this.model?.creatingTopic || this.model?.editingPost)
+    );
   }
 
   <template>
@@ -29,15 +32,12 @@ export default class FomioFullscreenComposerFields extends Component {
 
         {{#if this.model.showCategoryChooser}}
           <div class="category-input">
-            <CategoryChooser
+            <FomioComposerCategoryPicker
               @value={{this.model.categoryId}}
-              @onChange={{this.composer.updateCategory}}
-              @options={{hash
-                disabled=this.composer.disableCategoryChooser
-                scopedCategoryId=this.composer.scopedCategoryId
-                prioritizedCategoryId=this.composer.prioritizedCategoryId
-                readOnlyCategoryId=this.composer.readOnlyCategoryId
-              }}
+              @disabled={{this.composer.disableCategoryChooser}}
+              @scopedCategoryId={{this.composer.scopedCategoryId}}
+              @prioritizedCategoryId={{this.composer.prioritizedCategoryId}}
+              @readOnlyCategoryId={{this.composer.readOnlyCategoryId}}
             />
             <PopupInputTip
               @validation={{this.composer.categoryValidation}}

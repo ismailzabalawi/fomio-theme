@@ -28,10 +28,10 @@ import {
   isOwnProfileShellPath,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
+import { PENDING_RAIL_OVERLAY_KEY } from "../../lib/fomio-rail-overlay-state";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
-const PENDING_RAIL_OVERLAY_KEY = "fomio_pending_rail_overlay_context";
 
 export default class FomioSidebar extends Component {
   @service router;

@@ -144,7 +144,7 @@ export function notificationsPathForUser(user) {
   if (user.username) {
     return `/u/${user.username}/notifications`;
   }
-  return "/notifications";
+  return "/my/notifications";
 }
 
 export function notificationsRepliesPathForUser(user) {

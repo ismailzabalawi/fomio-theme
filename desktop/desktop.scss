@@ -11,6 +11,10 @@ body.fomio-sidebar-active:not(.fomio-auth-mode):is(
 ) {
   .fomio-sidebar {
     display: flex;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
   // Collapse Discourse desktop header only for non-touch shell surfaces.
@@ -40,7 +44,10 @@ body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode),
 body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
   .fomio-sidebar {
     width: var(--fomio-sidebar-width);
-    overflow-x: hidden;
+  }
+
+  .fomio-sidebar__zone--core {
+    overflow: hidden;
   }
 
   // Search entry should read like a calm command entry, not a heavy button.
@@ -219,9 +226,10 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
 
   .fomio-sidebar {
     width: var(--fomio-sidebar-rail-width);
+    overflow-y: hidden;
     // overflow-x: hidden (from common.scss) clips the floating label chips.
-    // Rail has too few items to need vertical scroll, so safe to lift both.
-    overflow: visible;
+    // Rail labels still need to escape horizontally.
+    overflow-x: visible;
   }
 
   // ── 2. Remove text layers that don't belong in the rail ─

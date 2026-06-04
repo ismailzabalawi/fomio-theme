@@ -19,6 +19,10 @@ import {
   FOMIO_NOTIFICATIONS_MENU_OPEN_EVENT,
   publishFomioNotificationsMenuState,
 } from "../../lib/fomio-notifications-menu";
+import {
+  messagesPathForUser,
+  notificationsPathForUser,
+} from "../../lib/fomio-mobile-nav-paths";
 
 const TAB_ALL = "all";
 const TAB_MESSAGES = "messages";
@@ -298,8 +302,8 @@ export default class FomioNotificationsMenu extends Component {
     }
 
     return this.activeTab === TAB_MESSAGES
-      ? `${this.currentUser.path}/messages`
-      : `${this.currentUser.path}/notifications`;
+      ? messagesPathForUser(this.currentUser) ?? "#"
+      : notificationsPathForUser(this.currentUser) ?? "#";
   }
 
   get viewAllLabel() {

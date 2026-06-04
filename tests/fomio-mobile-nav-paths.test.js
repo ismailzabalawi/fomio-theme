@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 
 import {
   getFomioCoreAccountSections,
+  getFomioNotificationsChildSections,
   getFomioProfileMasterSections,
 } from "../javascripts/discourse/lib/fomio-account-sections.js";
 import {
@@ -174,6 +175,52 @@ describe("fomio-mobile-nav-paths", () => {
       }),
       false
     );
+  });
+
+  it("emits notifications panel links that match Discourse user notification routes", () => {
+    const sections = getFomioNotificationsChildSections({
+      currentUser,
+      currentPath: "/u/ismail/notifications",
+    });
+
+    assert.deepEqual(
+      sections.map((section) => [section.key, section.href]),
+      [
+        ["all", "/u/Ismail/notifications"],
+        ["replies", "/u/Ismail/notifications/responses"],
+        ["mentions", "/u/Ismail/notifications/mentions"],
+        ["likes", "/u/Ismail/notifications/likes-received"],
+        ["messages", "/u/Ismail/messages"],
+        ["settings", "/u/Ismail/preferences/notifications"],
+      ]
+    );
+    assert.equal(sections[0]?.isActive, true);
+    assert.equal(sections[1]?.isActive, false);
+  });
+
+  it("marks the matching notifications panel link active on each sub-route", () => {
+    const cases = [
+      ["/u/ismail/notifications/responses", "replies"],
+      ["/u/ismail/notifications/mentions", "mentions"],
+      ["/u/ismail/notifications/likes-received", "likes"],
+      ["/u/ismail/messages", "messages"],
+      ["/u/ismail/preferences/notifications", "settings"],
+    ];
+
+    for (const [path, activeKey] of cases) {
+      const sections = getFomioNotificationsChildSections({
+        currentUser,
+        currentPath: path,
+      });
+      const active = sections.filter((section) => section.isActive);
+
+      assert.equal(
+        active.length,
+        1,
+        `expected one active notifications panel link on ${path}`
+      );
+      assert.equal(active[0]?.key, activeKey);
+    }
   });
 
   it("emits own-account sections with canonical URLs on owned surfaces", () => {

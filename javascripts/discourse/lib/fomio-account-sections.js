@@ -22,30 +22,34 @@ import {
   viewedProfileUsername,
 } from "./fomio-mobile-nav-paths.js";
 function normalizePath(path) {
-  return path?.replace(/\/+$/, "") || "/";
+  return path?.split("?")[0]?.replace(/\/+$/, "") || "/";
+}
+
+function normalizePathForCompare(path) {
+  return normalizePath(path).toLowerCase();
 }
 
 function matchesExactPath(currentPath, ...patterns) {
-  const path = normalizePath(currentPath);
+  const path = normalizePathForCompare(currentPath);
 
   return patterns.some((pattern) => {
     if (!pattern) {
       return false;
     }
 
-    return path === normalizePath(pattern);
+    return path === normalizePathForCompare(pattern);
   });
 }
 
 function matchesPath(currentPath, ...patterns) {
-  const path = normalizePath(currentPath);
+  const path = normalizePathForCompare(currentPath);
 
   return patterns.some((pattern) => {
     if (!pattern) {
       return false;
     }
 
-    const normalizedPattern = normalizePath(pattern);
+    const normalizedPattern = normalizePathForCompare(pattern);
     if (normalizedPattern.endsWith("*")) {
       return path.startsWith(normalizedPattern.slice(0, -1));
     }

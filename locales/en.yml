@@ -331,6 +331,10 @@ en:
     mode_edit: "Edit byte"
     back: "Back"
     close: "Close"
+    category_placeholder: "Choose a teret"
+    category_list_label: "Terets"
+    category_search_placeholder: "Search terets..."
+    category_search_empty: "No terets match this search."
     # Reply context + edit banner
     replying_to: "replying to"
     edit_banner_title: "Editing your byte"
