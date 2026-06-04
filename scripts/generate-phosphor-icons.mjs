@@ -26,6 +26,7 @@ const ICONS = [
   { name: "DotsThree", id: "dots-three", weights: ["regular"] },
   { name: "Envelope", id: "envelope", weights: ["regular"] },
   { name: "Fire", id: "fire", weights: ["regular"] },
+  { name: "FunnelSimple", id: "funnel-simple", weights: ["regular"] },
   { name: "Gear", id: "gear", weights: ["regular"] },
   { name: "Heart", id: "heart", weights: ["regular", "fill"] },
   { name: "House", id: "house", weights: ["regular"] },

@@ -5180,7 +5180,7 @@ body.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet-wrapper {
 }
 
 :root {
-  --fomio-sidebar-width:      260px;
+  --fomio-sidebar-width:      228px;
   --fomio-sidebar-rail-width:  72px;
   --fomio-master-pane-width:  320px;
 }
@@ -8746,9 +8746,12 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
       .select-kit.notifications-filter .select-kit-header.notifications-filter-header {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        gap: 0;
+        width: 40px;
+        min-width: 40px;
         min-height: 40px;
-        padding: 8px 12px;
+        padding: 0;
         border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
         border-radius: 14px;
         background: color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg));
@@ -8770,28 +8773,30 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
           outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
           outline-offset: 2px;
         }
+
+        .select-kit-header-wrapper {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        }
       }
 
-      .select-kit.notifications-filter .filter-text {
-        margin: 0;
-        color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
-        font-family: var(--fomio-font-ui);
-        font-size: var(--fomio-text-xs);
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
+      .select-kit.notifications-filter .filter-text,
       .select-kit.notifications-filter .header-text {
-        color: var(--fomio-text);
-        font-family: var(--fomio-font-ui);
-        font-size: var(--fomio-text-sm);
-        font-weight: 600;
+        display: none;
       }
 
       .select-kit.notifications-filter .d-icon {
-        color: color-mix(in oklab, var(--fomio-muted) 80%, var(--fomio-text));
-        font-size: 0.95rem;
+        display: none;
+      }
+
+      .select-kit.notifications-filter .fomio-notifications-filter-ph {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+        fill: currentColor;
       }
     }
 
@@ -15748,6 +15753,9 @@ body.fomio-sidebar-active #reply-control {
   .fomio-composer-category-picker__swatch,
   .fomio-composer-category-picker__item-swatch {
     flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 0.7rem;
     height: 0.7rem;
     border-radius: 3px;
@@ -15758,7 +15766,7 @@ body.fomio-sidebar-active #reply-control {
     flex: 1;
     min-width: 0;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.5rem;
   }
 
@@ -15770,6 +15778,7 @@ body.fomio-sidebar-active #reply-control {
     font-family: var(--fomio-font-ui);
     font-size: 0.8rem;
     font-weight: 700;
+    line-height: 1;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
@@ -15783,6 +15792,7 @@ body.fomio-sidebar-active #reply-control {
     font-family: var(--fomio-font-ui);
     font-size: 0.76rem;
     font-weight: 500;
+    line-height: 1.2;
   }
 
   .fomio-composer-category-picker__chevron {

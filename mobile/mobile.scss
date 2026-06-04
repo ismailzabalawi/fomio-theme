@@ -1443,9 +1443,15 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
   }
 
   #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .d-icon {
-    margin: 0;
-    font-size: 0.95rem;
+    display: none;
+  }
+
+  #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .fomio-notifications-filter-ph {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
     color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+    fill: currentColor;
   }
 
   #main-outlet .user-main .user-notifications-filter .select-kit.notifications-filter .select-kit-body {
