@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { eq } from "discourse/truth-helpers";
+import { listSectionHeaderClassNames } from "../../lib/fomio-content-classes";
 
 export default class FomioListSectionHeader extends Component {
   get tagName() {
@@ -7,19 +8,25 @@ export default class FomioListSectionHeader extends Component {
   }
 
   get className() {
-    return this.args.extraClass
-      ? `fomio-list__section-header ${this.args.extraClass}`
-      : "fomio-list__section-header";
+    return listSectionHeaderClassNames(this.args);
   }
 
   <template>
     {{#if (eq this.tagName "div")}}
       <div class={{this.className}} ...attributes>
-        {{yield}}
+        {{#if @title}}
+          {{@title}}
+        {{else}}
+          {{yield}}
+        {{/if}}
       </div>
     {{else}}
       <li class={{this.className}} ...attributes>
-        {{yield}}
+        {{#if @title}}
+          {{@title}}
+        {{else}}
+          {{yield}}
+        {{/if}}
       </li>
     {{/if}}
   </template>

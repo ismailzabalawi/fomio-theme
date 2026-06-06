@@ -157,9 +157,11 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
     .fomio-composer-category-picker__panel {
       left: 0;
       right: 0;
+      width: auto;
+      max-width: none;
     }
 
-    .fomio-composer-category-picker__search input {
+    .fomio-composer-category-picker__search .fomio-input {
       font-size: 16px;
     }
   }

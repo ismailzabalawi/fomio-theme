@@ -12,17 +12,13 @@ import {
   wrapClassNames,
 } from "../../lib/fomio-control-classes";
 
-export default class FomioSearchInput extends Component {
+export default class FomioSelect extends Component {
   get fieldClass() {
     return fieldClassNames("fomio-field", this.args);
   }
 
-  get labelClass() {
-    return fieldLabelClassNames("fomio-field-label", this.args);
-  }
-
-  get wrapperClass() {
-    return wrapClassNames("fomio-search-wrap", this.args);
+  get wrapClass() {
+    return wrapClassNames("fomio-input-wrap", this.iconArgs);
   }
 
   get inputClass() {
@@ -32,21 +28,12 @@ export default class FomioSearchInput extends Component {
   get iconArgs() {
     return {
       ...this.args,
-      leadingIcon: this.leadingIcon,
       trailingIcon: this.trailingIcon,
     };
   }
 
   get isDisabled() {
     return isControlDisabled(this.args);
-  }
-
-  get leadingIcon() {
-    if (this.args.leadingIcon === null) {
-      return null;
-    }
-
-    return this.args.leadingIcon ?? "magnifying-glass";
   }
 
   get trailingIcon() {
@@ -67,6 +54,10 @@ export default class FomioSearchInput extends Component {
     return classes.join(" ");
   }
 
+  get labelClass() {
+    return fieldLabelClassNames("fomio-field-label", this.args);
+  }
+
   get hintClass() {
     return fieldHintClassNames(this.args);
   }
@@ -76,8 +67,7 @@ export default class FomioSearchInput extends Component {
   }
 
   @action
-  handleInput(event) {
-    this.args.onInput?.(event);
+  handleChange(event) {
     this.args.onChange?.(event);
   }
 
@@ -89,22 +79,35 @@ export default class FomioSearchInput extends Component {
         </label>
       {{/if}}
 
-      <div class={{this.wrapperClass}}>
-        {{#if this.leadingIcon}}
-          <span class="fomio-search-icon" aria-hidden="true">
-            {{icon this.leadingIcon}}
+      <div class={{this.wrapClass}}>
+        {{#if @leadingIcon}}
+          <span class="fomio-input-icon prefix static" aria-hidden="true">
+            {{icon @leadingIcon}}
           </span>
         {{/if}}
-        <input
-          type="search"
+
+        <select
           class={{this.inputClass}}
           value={{@value}}
-          placeholder={{@placeholder}}
-          aria-label={{@ariaLabel}}
           disabled={{this.isDisabled}}
-          {{on "input" this.handleInput}}
+          {{on "change" this.handleChange}}
           ...attributes
-        />
+        >
+          {{#if @placeholder}}
+            <option value="">{{@placeholder}}</option>
+          {{/if}}
+
+          {{#if @options}}
+            {{#each @options as |option|}}
+              <option value={{option.value}} disabled={{option.disabled}}>
+                {{option.label}}
+              </option>
+            {{/each}}
+          {{else}}
+            {{yield}}
+          {{/if}}
+        </select>
+
         {{#if this.trailingIcon}}
           <span class={{this.trailingIconClass}} aria-hidden="true">
             {{icon this.trailingIcon}}

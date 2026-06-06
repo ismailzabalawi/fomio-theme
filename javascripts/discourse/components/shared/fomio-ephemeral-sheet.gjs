@@ -1,8 +1,13 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import {
+  ephemeralSheetBackdropClassNames,
+  ephemeralSheetClassNames,
+} from "../../lib/fomio-interaction-classes";
 
 const FOCUSABLE_SELECTORS =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -16,14 +21,38 @@ export default class FomioEphemeralSheet extends Component {
     return i18n(themePrefix("ephemeral_sheet.close_label"));
   }
 
+  get dialogClass() {
+    return ephemeralSheetClassNames(this.args);
+  }
+
+  get resolvedBackdropClass() {
+    return ephemeralSheetBackdropClassNames(this.args);
+  }
+
+  get showCloseButton() {
+    return this.args.showCloseButton ?? true;
+  }
+
+  get closeOnBackdrop() {
+    return this.args.closeOnBackdrop ?? true;
+  }
+
+  get closeOnEscape() {
+    return this.args.closeOnEscape ?? true;
+  }
+
   @action
   onBackdropClick() {
+    if (!this.closeOnBackdrop) {
+      return;
+    }
+
     this.args.onClose?.();
   }
 
   @action
   onKeydown(event) {
-    if (event.key === "Escape") {
+    if (event.key === "Escape" && this.closeOnEscape) {
       event.preventDefault();
       this.args.onClose?.();
       return;
@@ -61,31 +90,39 @@ export default class FomioEphemeralSheet extends Component {
     this.args.onClose?.();
   }
 
+  @action
+  setupSheet(element) {
+    element.focus();
+  }
+
   <template>
     {{#if @isOpen}}
       <div
-        class="fomio-ephemeral-sheet-backdrop {{@backdropClass}}"
+        class={{this.resolvedBackdropClass}}
         aria-hidden="true"
         {{on "click" this.onBackdropClick}}
       ></div>
       <div
-        class="fomio-ephemeral-sheet {{@extraClass}}"
+        class={{this.dialogClass}}
         role="dialog"
         aria-modal="true"
         aria-label={{@ariaLabel}}
         tabindex="-1"
+        {{didInsert this.setupSheet}}
         {{on "keydown" this.onKeydown}}
       >
         <div class="fomio-ephemeral-sheet__inner">
           {{yield}}
         </div>
-        <button
-          type="button"
-          class="fomio-ephemeral-sheet__close"
-          {{on "click" this.onCloseClick}}
-        >
-          {{this.closeLabel}}
-        </button>
+        {{#if this.showCloseButton}}
+          <button
+            type="button"
+            class="fomio-ephemeral-sheet__close"
+            {{on "click" this.onCloseClick}}
+          >
+            {{this.closeLabel}}
+          </button>
+        {{/if}}
       </div>
     {{/if}}
   </template>

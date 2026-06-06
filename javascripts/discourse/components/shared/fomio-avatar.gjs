@@ -1,43 +1,18 @@
 import Component from "@glimmer/component";
 import avatar from "discourse/helpers/avatar";
-
-const SIZE_CLASSES = {
-  xs: "fomio-avatar--xs",
-  sm: "fomio-avatar--sm",
-  md: "fomio-avatar--md",
-  lg: "fomio-avatar--lg",
-  xl: "fomio-avatar--xl",
-};
-
-const PALETTE_CLASSES = {
-  terra: "fomio-avatar--terra",
-  violet: "fomio-avatar--violet",
-  sage: "fomio-avatar--sage",
-  slate: "fomio-avatar--slate",
-  warm: "fomio-avatar--warm",
-};
+import {
+  avatarClassNames,
+  avatarImageSize,
+  hasAvatarBadge,
+} from "../../lib/fomio-content-classes";
 
 export default class FomioAvatar extends Component {
   get user() {
     return this.args.user;
   }
 
-  get sizeClass() {
-    return SIZE_CLASSES[this.args.size] || SIZE_CLASSES.md;
-  }
-
-  get paletteClass() {
-    return PALETTE_CLASSES[this.args.palette] || PALETTE_CLASSES.terra;
-  }
-
   get avatarClass() {
-    const classes = ["fomio-avatar", this.sizeClass, this.paletteClass];
-
-    if (this.args.extraClass) {
-      classes.push(this.args.extraClass);
-    }
-
-    return classes.join(" ");
+    return avatarClassNames(this.args);
   }
 
   get initials() {
@@ -51,7 +26,7 @@ export default class FomioAvatar extends Component {
   }
 
   get hasBadge() {
-    return Boolean(this.args.online || this.args.badgeCount);
+    return hasAvatarBadge(this.args);
   }
 
   get badgeLabel() {
@@ -62,12 +37,24 @@ export default class FomioAvatar extends Component {
     return this.args.badgeCount;
   }
 
+  get imageSize() {
+    return avatarImageSize(this.args);
+  }
+
+  get ariaHidden() {
+    return this.args.ariaLabel ? null : "true";
+  }
+
   <template>
     {{#if this.hasBadge}}
       <span class="fomio-avatar-wrap">
-        <span class={{this.avatarClass}} aria-hidden="true">
+        <span
+          class={{this.avatarClass}}
+          aria-hidden={{this.ariaHidden}}
+          aria-label={{@ariaLabel}}
+        >
           {{#if this.user}}
-            {{avatar this.user imageSize="large"}}
+            {{avatar this.user imageSize=this.imageSize}}
           {{else}}
             {{this.initials}}
           {{/if}}
@@ -77,9 +64,13 @@ export default class FomioAvatar extends Component {
         </span>
       </span>
     {{else}}
-      <span class={{this.avatarClass}} aria-hidden="true">
+      <span
+        class={{this.avatarClass}}
+        aria-hidden={{this.ariaHidden}}
+        aria-label={{@ariaLabel}}
+      >
         {{#if this.user}}
-          {{avatar this.user imageSize="large"}}
+          {{avatar this.user imageSize=this.imageSize}}
         {{else}}
           {{this.initials}}
         {{/if}}

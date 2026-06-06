@@ -37,6 +37,7 @@ export default class FomioMasterPane extends Component {
   @tracked railOverlayOpen = false;
   @tracked railOverlayContext = null;
   @tracked hubExpansionState = {};
+  @tracked fallbackProfileExpanded = false;
 
   clearPendingRailOverlay() {
     clearPendingRailOverlay();
@@ -621,11 +622,37 @@ export default class FomioMasterPane extends Component {
   }
 
   get canExpandProfile() {
-    return Boolean(this.userController?.canExpandProfile);
+    if (this.userController?.canExpandProfile !== undefined) {
+      return Boolean(this.userController.canExpandProfile);
+    }
+
+    return Boolean(
+      this.displayedMasterContext === "profile" &&
+        this.currentUser?.username &&
+        this.resolvedProfileUser?.username &&
+        String(this.currentUser.username).toLowerCase() ===
+          String(this.resolvedProfileUser.username).toLowerCase() &&
+        !this.resolvedProfileUser?.profile_hidden
+    );
   }
 
   get collapsedInfoState() {
-    return this.userController?.collapsedInfoState ?? null;
+    if (this.userController?.collapsedInfoState) {
+      return this.userController.collapsedInfoState;
+    }
+
+    if (!this.canExpandProfile) {
+      return null;
+    }
+
+    return {
+      isExpanded: this.fallbackProfileExpanded,
+      icon: this.fallbackProfileExpanded ? "angles-up" : "angles-down",
+      label: this.fallbackProfileExpanded ? "collapse_profile" : "expand_profile",
+      ariaLabel: this.fallbackProfileExpanded
+        ? "user.sr_collapse_profile"
+        : "user.sr_expand_profile",
+    };
   }
 
   get showExpandedDetails() {
@@ -723,7 +750,14 @@ export default class FomioMasterPane extends Component {
 
   @action
   toggleProfile() {
-    this.userController?.toggleProfile?.();
+    if (this.userController?.toggleProfile) {
+      this.userController.toggleProfile();
+      return;
+    }
+
+    if (this.canExpandProfile) {
+      this.fallbackProfileExpanded = !this.fallbackProfileExpanded;
+    }
   }
 
   isCurrentPath(...patterns) {
@@ -843,6 +877,7 @@ export default class FomioMasterPane extends Component {
                   @markerText={{this.profileMarkerText}}
                   @adminFirst={{true}}
                   @showExpand={{this.canExpandProfile}}
+                  @expandButtonStyle="hub-toggle"
                   @expandButtonLabel={{this.expandButtonLabel}}
                   @expandButtonAriaLabel={{this.expandButtonAriaLabel}}
                   @expandButtonIcon={{this.expandButtonIcon}}

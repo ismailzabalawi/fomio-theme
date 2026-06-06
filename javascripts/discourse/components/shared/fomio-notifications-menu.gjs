@@ -19,6 +19,7 @@ import {
   FOMIO_NOTIFICATIONS_MENU_OPEN_EVENT,
   publishFomioNotificationsMenuState,
 } from "../../lib/fomio-notifications-menu";
+import { notificationsMenuClassNames } from "../../lib/fomio-interaction-classes";
 import {
   messagesPathForUser,
   notificationsPathForUser,
@@ -84,8 +85,7 @@ export default class FomioNotificationsMenu extends Component {
         return;
       }
 
-      const nextSource =
-        event?.detail?.source === "mobile" ? "mobile" : "desktop";
+      const nextSource = event?.detail?.source === "mobile" ? "mobile" : "desktop";
 
       if (this.isOpen && this.source === nextSource) {
         this.close();
@@ -160,7 +160,7 @@ export default class FomioNotificationsMenu extends Component {
   }
 
   get panelClass() {
-    return `fomio-notifications-menu fomio-notifications-menu--${this.source}`;
+    return notificationsMenuClassNames(this.source, this.args.extraClass);
   }
 
   get panelStyle() {

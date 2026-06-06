@@ -1,10 +1,15 @@
 import Component from "@glimmer/component";
 import SearchMenu from "discourse/components/search-menu";
 import FomioEphemeralSheet from "./fomio-ephemeral-sheet";
+import {
+  normalizeSheetVariant,
+  searchSheetBackdropClass,
+  searchSheetClassNames,
+} from "../../lib/fomio-interaction-classes";
 
 export default class FomioSearchSheet extends Component {
   get variant() {
-    return this.args.variant ?? "desktop";
+    return normalizeSheetVariant(this.args);
   }
 
   get inputId() {
@@ -12,30 +17,43 @@ export default class FomioSearchSheet extends Component {
   }
 
   get sheetClass() {
-    return `fomio-search-sheet fomio-search-sheet--${this.variant}`;
+    return searchSheetClassNames(this.args);
   }
 
   get backdropClass() {
-    if (this.variant === "desktop") {
-      return "fomio-search-sheet__backdrop";
-    }
-    return null;
+    return searchSheetBackdropClass(this.args);
+  }
+
+  get ariaLabel() {
+    return this.args.ariaLabel ?? "Search Fomio";
+  }
+
+  get inlineResults() {
+    return this.args.inlineResults ?? true;
+  }
+
+  get autofocusInput() {
+    return this.args.autofocusInput ?? true;
+  }
+
+  get location() {
+    return this.args.location ?? "header";
   }
 
   <template>
     <FomioEphemeralSheet
       @isOpen={{@isOpen}}
       @onClose={{@onClose}}
-      @ariaLabel="Search Fomio"
+      @ariaLabel={{this.ariaLabel}}
       @extraClass={{this.sheetClass}}
       @backdropClass={{this.backdropClass}}
     >
       <div class="fomio-search-sheet__search search-menu">
         <SearchMenu
           @onClose={{@onClose}}
-          @inlineResults={{true}}
-          @autofocusInput={{true}}
-          @location="header"
+          @inlineResults={{this.inlineResults}}
+          @autofocusInput={{this.autofocusInput}}
+          @location={{this.location}}
           @searchInputId={{this.inputId}}
         />
       </div>

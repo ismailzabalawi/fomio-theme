@@ -1,19 +1,13 @@
 import Component from "@glimmer/component";
 import FomioAvatar from "./fomio-avatar";
+import {
+  identityClassNames,
+  normalizeIdentitySize,
+} from "../../lib/fomio-content-classes";
 
 export default class FomioIdentity extends Component {
   get className() {
-    const classes = ["fomio-identity"];
-
-    if (this.args.large) {
-      classes.push("fomio-identity--lg");
-    }
-
-    if (this.args.extraClass) {
-      classes.push(this.args.extraClass);
-    }
-
-    return classes.join(" ");
+    return identityClassNames(this.args);
   }
 
   get name() {
@@ -33,24 +27,34 @@ export default class FomioIdentity extends Component {
     return username ? `@${username}` : null;
   }
 
+  get size() {
+    return normalizeIdentitySize(this.args);
+  }
+
   get avatarSize() {
-    return this.args.avatarSize || (this.args.large ? "lg" : "sm");
+    return this.args.avatarSize || (this.size === "lg" ? "lg" : "sm");
   }
 
   get palette() {
     return this.args.palette || "terra";
   }
 
+  get showAvatar() {
+    return this.args.showAvatar !== false;
+  }
+
   <template>
     <span class={{this.className}}>
-      <FomioAvatar
-        @user={{@user}}
-        @size={{this.avatarSize}}
-        @palette={{this.palette}}
-        @initials={{@initials}}
-        @badgeCount={{@badgeCount}}
-        @online={{@online}}
-      />
+      {{#if this.showAvatar}}
+        <FomioAvatar
+          @user={{@user}}
+          @size={{this.avatarSize}}
+          @palette={{this.palette}}
+          @initials={{@initials}}
+          @badgeCount={{@badgeCount}}
+          @online={{@online}}
+        />
+      {{/if}}
       <span class="fomio-identity__meta">
         <span class="fomio-identity__name">{{this.name}}</span>
         {{#if this.handle}}

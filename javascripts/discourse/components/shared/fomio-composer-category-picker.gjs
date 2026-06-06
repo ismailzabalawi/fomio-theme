@@ -6,10 +6,12 @@ import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import icon from "discourse/helpers/d-icon";
+import FomioDropdown from "./fomio-dropdown";
 import FomioList from "./fomio-list";
 import FomioListItem from "./fomio-list-item";
 import FomioListSectionHeader from "./fomio-list-section-header";
 import FomioListSeparator from "./fomio-list-separator";
+import FomioSearchInput from "./fomio-search-input";
 import { eq } from "discourse/truth-helpers";
 import { themePrefix } from "virtual:theme";
 
@@ -23,8 +25,12 @@ export default class FomioComposerCategoryPicker extends Component {
   @tracked isOpen = false;
   @tracked searchTerm = "";
 
+  get selectedKey() {
+    return this.args.selectedKey ?? this.args.value ?? null;
+  }
+
   get selectedCategory() {
-    return this.categories.find((category) => category.id === this.args.value) ?? null;
+    return this.categories.find((category) => category.id === this.selectedKey) ?? null;
   }
 
   get categories() {
@@ -148,7 +154,7 @@ export default class FomioComposerCategoryPicker extends Component {
   }
 
   priorityFor(category, prioritizedCategoryId) {
-    if (category.id === this.args.value) {
+    if (category.id === this.selectedKey) {
       return 0;
     }
 
@@ -192,41 +198,12 @@ export default class FomioComposerCategoryPicker extends Component {
   }
 
   @action
-  togglePicker() {
-    if (this.isDisabled) {
-      return;
-    }
+  handleOpenChange(isOpen) {
+    this.isOpen = isOpen;
 
-    this.isOpen = !this.isOpen;
-
-    if (!this.isOpen) {
+    if (!isOpen) {
       this.searchTerm = "";
     }
-  }
-
-  @action
-  closePicker() {
-    this.isOpen = false;
-    this.searchTerm = "";
-  }
-
-  @action
-  handleKeydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      this.closePicker();
-    }
-  }
-
-  @action
-  handleFocusOut(event) {
-    const nextFocused = event.relatedTarget;
-
-    if (nextFocused && event.currentTarget.contains(nextFocused)) {
-      return;
-    }
-
-    this.closePicker();
   }
 
   @action
@@ -240,54 +217,61 @@ export default class FomioComposerCategoryPicker extends Component {
       return;
     }
 
+    this.args.onSelect?.(categoryId);
+    this.args.onChange?.(categoryId);
     this.composer.updateCategory(categoryId);
-    this.closePicker();
+    this.handleOpenChange(false);
   }
 
   <template>
-    <div
-      class="fomio-composer-category-picker"
-      {{on "keydown" this.handleKeydown}}
-      {{on "focusout" this.handleFocusOut}}
+    <FomioDropdown
+      @open={{this.isOpen}}
+      @onOpenChange={{this.handleOpenChange}}
+      @customPanel={{true}}
+      @panelClass="fomio-composer-category-picker__panel"
+      @panelRole="dialog"
+      @extraClass="fomio-composer-category-picker"
+      @initialFocusSelector=".fomio-composer-category-picker__search .fomio-input"
     >
-      <button
-        type="button"
-        class={{this.buttonClass}}
-        disabled={{this.isDisabled}}
-        aria-expanded={{if this.isOpen "true" "false"}}
-        {{on "click" this.togglePicker}}
-      >
-        <span
-          class="fomio-composer-category-picker__swatch"
-          style={{this.selectedSwatchStyle}}
-          aria-hidden="true"
-        ></span>
+      <:trigger as |dropdown|>
+        <button
+          type="button"
+          class={{this.buttonClass}}
+          disabled={{this.isDisabled}}
+          aria-haspopup={{dropdown.triggerRole}}
+          aria-expanded={{if dropdown.isOpen "true" "false"}}
+          {{on "click" dropdown.toggleOpen}}
+          {{on "keydown" dropdown.triggerKeydown}}
+        >
+          <span
+            class="fomio-composer-category-picker__swatch"
+            style={{this.selectedSwatchStyle}}
+            aria-hidden="true"
+          ></span>
 
-        <span class="fomio-composer-category-picker__trigger-copy">
-          <span class="fomio-composer-category-picker__label">{{this.selectedLabel}}</span>
-          {{#if this.selectedDescription}}
-            <span class="fomio-composer-category-picker__meta">{{this.selectedDescription}}</span>
-          {{/if}}
-        </span>
+          <span class="fomio-composer-category-picker__trigger-copy">
+            <span class="fomio-composer-category-picker__label">{{this.selectedLabel}}</span>
+            {{#if this.selectedDescription}}
+              <span class="fomio-composer-category-picker__meta">{{this.selectedDescription}}</span>
+            {{/if}}
+          </span>
 
-        <span class="fomio-composer-category-picker__chevron" aria-hidden="true">
-          {{icon (if this.isOpen "chevron-up" "chevron-down")}}
-        </span>
-      </button>
+          <span class="fomio-composer-category-picker__chevron" aria-hidden="true">
+            {{icon (if dropdown.isOpen "chevron-up" "chevron-down")}}
+          </span>
+        </button>
+      </:trigger>
 
-      {{#if this.isOpen}}
-        <div class="fomio-composer-category-picker__panel">
-          <label class="fomio-composer-category-picker__search">
-            <input
-              type="text"
-              value={{this.searchTerm}}
-              placeholder={{i18n (themePrefix "composer.category_search_placeholder")}}
-              {{on "input" this.updateSearch}}
-            />
-            <span class="fomio-composer-category-picker__search-icon" aria-hidden="true">
-              {{icon "search"}}
-            </span>
-          </label>
+      <:panel>
+          <FomioSearchInput
+            @value={{this.searchTerm}}
+            @placeholder={{i18n (themePrefix "composer.category_search_placeholder")}}
+            @onInput={{this.updateSearch}}
+            @leadingIcon={{null}}
+            @trailingIcon="search"
+            @wrapperClass="fomio-composer-category-picker__search"
+            @inputClass="fomio-composer-category-picker__search-input"
+          />
 
           <FomioList @tag="div" @extraClass="fomio-composer-category-picker__list">
             <FomioListSectionHeader @tag="div">
@@ -297,7 +281,7 @@ export default class FomioComposerCategoryPicker extends Component {
             {{#each this.filteredCategories as |entry|}}
               <FomioListItem
                 @wrapperTag="div"
-                @isActive={{eq entry.category.id @value}}
+                @isActive={{eq entry.category.id this.selectedKey}}
                 @isDisabled={{entry.isDisabled}}
                 @extraClass="fomio-composer-category-picker__item"
                 {{on "click" (fn this.selectCategory entry.category.id)}}
@@ -325,8 +309,7 @@ export default class FomioComposerCategoryPicker extends Component {
               </div>
             {{/each}}
           </FomioList>
-        </div>
-      {{/if}}
-    </div>
+      </:panel>
+    </FomioDropdown>
   </template>
 }

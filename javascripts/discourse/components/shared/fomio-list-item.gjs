@@ -1,5 +1,7 @@
 import Component from "@glimmer/component";
 import { eq } from "discourse/truth-helpers";
+import icon from "discourse/helpers/d-icon";
+import { listItemClassNames } from "../../lib/fomio-content-classes";
 
 export default class FomioListItem extends Component {
   get wrapperTagName() {
@@ -23,29 +25,29 @@ export default class FomioListItem extends Component {
   }
 
   get className() {
-    const classes = ["fomio-list__item"];
-
-    if (this.args.isActive) {
-      classes.push("fomio-list__item--active");
-    }
-
-    if (this.args.isDanger) {
-      classes.push("fomio-list__item--danger");
-    }
-
-    if (this.args.isDisabled) {
-      classes.push("fomio-list__item--disabled");
-    }
-
-    if (this.args.extraClass) {
-      classes.push(this.args.extraClass);
-    }
-
-    return classes.join(" ");
+    return listItemClassNames(this.args);
   }
 
   get buttonType() {
     return this.args.type ?? "button";
+  }
+
+  get isActive() {
+    return this.args.isActive ?? this.args.active;
+  }
+
+  get isDisabled() {
+    return this.args.isDisabled ?? this.args.disabled;
+  }
+
+  get hasStructuredContent() {
+    return Boolean(
+      this.args.leadingIcon ||
+        this.args.title ||
+        this.args.subtitle ||
+        this.args.meta ||
+        this.args.trailingIcon
+    );
   }
 
   <template>
@@ -55,31 +57,85 @@ export default class FomioListItem extends Component {
           <a
             href={{@href}}
             class={{this.className}}
-            aria-current={{if @isActive "true" @ariaCurrent}}
-            aria-disabled={{if @isDisabled "true" @ariaDisabled}}
+            aria-current={{if this.isActive "true" @ariaCurrent}}
+            aria-disabled={{if this.isDisabled "true" @ariaDisabled}}
             ...attributes
           >
-            {{yield}}
+            {{#if this.hasStructuredContent}}
+              {{#if @leadingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @leadingIcon}}</span>
+              {{/if}}
+              <span class="fomio-list__content">
+                <span class="fomio-list__title">{{@title}}</span>
+                {{#if @subtitle}}
+                  <span class="fomio-list__subtitle">{{@subtitle}}</span>
+                {{/if}}
+              </span>
+              {{#if @meta}}
+                <span class="fomio-list__meta">{{@meta}}</span>
+              {{/if}}
+              {{#if @trailingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @trailingIcon}}</span>
+              {{/if}}
+            {{else}}
+              {{yield}}
+            {{/if}}
           </a>
         {{else if (eq this.itemTagName "div")}}
           <div
             class={{this.className}}
-            aria-current={{if @isActive "true" @ariaCurrent}}
-            aria-disabled={{if @isDisabled "true" @ariaDisabled}}
+            aria-current={{if this.isActive "true" @ariaCurrent}}
+            aria-disabled={{if this.isDisabled "true" @ariaDisabled}}
             ...attributes
           >
-            {{yield}}
+            {{#if this.hasStructuredContent}}
+              {{#if @leadingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @leadingIcon}}</span>
+              {{/if}}
+              <span class="fomio-list__content">
+                <span class="fomio-list__title">{{@title}}</span>
+                {{#if @subtitle}}
+                  <span class="fomio-list__subtitle">{{@subtitle}}</span>
+                {{/if}}
+              </span>
+              {{#if @meta}}
+                <span class="fomio-list__meta">{{@meta}}</span>
+              {{/if}}
+              {{#if @trailingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @trailingIcon}}</span>
+              {{/if}}
+            {{else}}
+              {{yield}}
+            {{/if}}
           </div>
         {{else}}
           <button
             type={{this.buttonType}}
             class={{this.className}}
-            disabled={{@isDisabled}}
-            aria-current={{if @isActive "true" @ariaCurrent}}
-            aria-disabled={{if @isDisabled "true" @ariaDisabled}}
+            disabled={{this.isDisabled}}
+            aria-current={{if this.isActive "true" @ariaCurrent}}
+            aria-disabled={{if this.isDisabled "true" @ariaDisabled}}
             ...attributes
           >
-            {{yield}}
+            {{#if this.hasStructuredContent}}
+              {{#if @leadingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @leadingIcon}}</span>
+              {{/if}}
+              <span class="fomio-list__content">
+                <span class="fomio-list__title">{{@title}}</span>
+                {{#if @subtitle}}
+                  <span class="fomio-list__subtitle">{{@subtitle}}</span>
+                {{/if}}
+              </span>
+              {{#if @meta}}
+                <span class="fomio-list__meta">{{@meta}}</span>
+              {{/if}}
+              {{#if @trailingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @trailingIcon}}</span>
+              {{/if}}
+            {{else}}
+              {{yield}}
+            {{/if}}
           </button>
         {{/if}}
       </div>
@@ -89,31 +145,85 @@ export default class FomioListItem extends Component {
           <a
             href={{@href}}
             class={{this.className}}
-            aria-current={{if @isActive "true" @ariaCurrent}}
-            aria-disabled={{if @isDisabled "true" @ariaDisabled}}
+            aria-current={{if this.isActive "true" @ariaCurrent}}
+            aria-disabled={{if this.isDisabled "true" @ariaDisabled}}
             ...attributes
           >
-            {{yield}}
+            {{#if this.hasStructuredContent}}
+              {{#if @leadingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @leadingIcon}}</span>
+              {{/if}}
+              <span class="fomio-list__content">
+                <span class="fomio-list__title">{{@title}}</span>
+                {{#if @subtitle}}
+                  <span class="fomio-list__subtitle">{{@subtitle}}</span>
+                {{/if}}
+              </span>
+              {{#if @meta}}
+                <span class="fomio-list__meta">{{@meta}}</span>
+              {{/if}}
+              {{#if @trailingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @trailingIcon}}</span>
+              {{/if}}
+            {{else}}
+              {{yield}}
+            {{/if}}
           </a>
         {{else if (eq this.itemTagName "div")}}
           <div
             class={{this.className}}
-            aria-current={{if @isActive "true" @ariaCurrent}}
-            aria-disabled={{if @isDisabled "true" @ariaDisabled}}
+            aria-current={{if this.isActive "true" @ariaCurrent}}
+            aria-disabled={{if this.isDisabled "true" @ariaDisabled}}
             ...attributes
           >
-            {{yield}}
+            {{#if this.hasStructuredContent}}
+              {{#if @leadingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @leadingIcon}}</span>
+              {{/if}}
+              <span class="fomio-list__content">
+                <span class="fomio-list__title">{{@title}}</span>
+                {{#if @subtitle}}
+                  <span class="fomio-list__subtitle">{{@subtitle}}</span>
+                {{/if}}
+              </span>
+              {{#if @meta}}
+                <span class="fomio-list__meta">{{@meta}}</span>
+              {{/if}}
+              {{#if @trailingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @trailingIcon}}</span>
+              {{/if}}
+            {{else}}
+              {{yield}}
+            {{/if}}
           </div>
         {{else}}
           <button
             type={{this.buttonType}}
             class={{this.className}}
-            disabled={{@isDisabled}}
-            aria-current={{if @isActive "true" @ariaCurrent}}
-            aria-disabled={{if @isDisabled "true" @ariaDisabled}}
+            disabled={{this.isDisabled}}
+            aria-current={{if this.isActive "true" @ariaCurrent}}
+            aria-disabled={{if this.isDisabled "true" @ariaDisabled}}
             ...attributes
           >
-            {{yield}}
+            {{#if this.hasStructuredContent}}
+              {{#if @leadingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @leadingIcon}}</span>
+              {{/if}}
+              <span class="fomio-list__content">
+                <span class="fomio-list__title">{{@title}}</span>
+                {{#if @subtitle}}
+                  <span class="fomio-list__subtitle">{{@subtitle}}</span>
+                {{/if}}
+              </span>
+              {{#if @meta}}
+                <span class="fomio-list__meta">{{@meta}}</span>
+              {{/if}}
+              {{#if @trailingIcon}}
+                <span class="fomio-list__icon" aria-hidden="true">{{icon @trailingIcon}}</span>
+              {{/if}}
+            {{else}}
+              {{yield}}
+            {{/if}}
           </button>
         {{/if}}
       </li>

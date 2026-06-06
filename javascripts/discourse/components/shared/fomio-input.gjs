@@ -12,7 +12,7 @@ import {
   wrapClassNames,
 } from "../../lib/fomio-control-classes";
 
-export default class FomioSearchInput extends Component {
+export default class FomioInput extends Component {
   get fieldClass() {
     return fieldClassNames("fomio-field", this.args);
   }
@@ -21,8 +21,8 @@ export default class FomioSearchInput extends Component {
     return fieldLabelClassNames("fomio-field-label", this.args);
   }
 
-  get wrapperClass() {
-    return wrapClassNames("fomio-search-wrap", this.args);
+  get wrapClass() {
+    return wrapClassNames("fomio-input-wrap", this.iconArgs);
   }
 
   get inputClass() {
@@ -32,21 +32,16 @@ export default class FomioSearchInput extends Component {
   get iconArgs() {
     return {
       ...this.args,
-      leadingIcon: this.leadingIcon,
       trailingIcon: this.trailingIcon,
     };
   }
 
-  get isDisabled() {
-    return isControlDisabled(this.args);
+  get inputType() {
+    return this.args.type ?? "text";
   }
 
-  get leadingIcon() {
-    if (this.args.leadingIcon === null) {
-      return null;
-    }
-
-    return this.args.leadingIcon ?? "magnifying-glass";
+  get isDisabled() {
+    return isControlDisabled(this.args);
   }
 
   get trailingIcon() {
@@ -89,14 +84,15 @@ export default class FomioSearchInput extends Component {
         </label>
       {{/if}}
 
-      <div class={{this.wrapperClass}}>
-        {{#if this.leadingIcon}}
-          <span class="fomio-search-icon" aria-hidden="true">
-            {{icon this.leadingIcon}}
+      <div class={{this.wrapClass}}>
+        {{#if @leadingIcon}}
+          <span class="fomio-input-icon prefix static" aria-hidden="true">
+            {{icon @leadingIcon}}
           </span>
         {{/if}}
+
         <input
-          type="search"
+          type={{this.inputType}}
           class={{this.inputClass}}
           value={{@value}}
           placeholder={{@placeholder}}
@@ -105,6 +101,7 @@ export default class FomioSearchInput extends Component {
           {{on "input" this.handleInput}}
           ...attributes
         />
+
         {{#if this.trailingIcon}}
           <span class={{this.trailingIconClass}} aria-hidden="true">
             {{icon this.trailingIcon}}

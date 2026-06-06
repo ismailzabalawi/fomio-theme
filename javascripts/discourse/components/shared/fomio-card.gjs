@@ -1,10 +1,6 @@
 import Component from "@glimmer/component";
 import { eq } from "discourse/truth-helpers";
-
-const SURFACE_CLASSES = {
-  elevated: "fomio-card",
-  flat: "fomio-card fomio-card--flat",
-};
+import { cardClassNames } from "../../lib/fomio-content-classes";
 
 export default class FomioCard extends Component {
   get tagName() {
@@ -12,17 +8,11 @@ export default class FomioCard extends Component {
   }
 
   get className() {
-    const classes = [SURFACE_CLASSES[this.args.surface] || SURFACE_CLASSES.elevated];
+    return cardClassNames(this.args);
+  }
 
-    if (this.args.interactive) {
-      classes.push("fomio-card--interactive");
-    }
-
-    if (this.args.extraClass) {
-      classes.push(this.args.extraClass);
-    }
-
-    return classes.join(" ");
+  get buttonType() {
+    return this.args.type ?? "button";
   }
 
   <template>
@@ -38,6 +28,16 @@ export default class FomioCard extends Component {
       <section class={{this.className}} ...attributes>
         {{yield}}
       </section>
+    {{else if (eq this.tagName "button")}}
+      <button
+        type={{this.buttonType}}
+        class={{this.className}}
+        disabled={{@disabled}}
+        aria-disabled={{if @disabled "true"}}
+        ...attributes
+      >
+        {{yield}}
+      </button>
     {{else}}
       <div class={{this.className}} ...attributes>
         {{yield}}

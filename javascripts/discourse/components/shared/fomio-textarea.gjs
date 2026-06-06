@@ -12,27 +12,22 @@ import {
   wrapClassNames,
 } from "../../lib/fomio-control-classes";
 
-export default class FomioSearchInput extends Component {
+export default class FomioTextarea extends Component {
   get fieldClass() {
-    return fieldClassNames("fomio-field", this.args);
+    return fieldClassNames("fomio-textarea", this.args);
   }
 
-  get labelClass() {
-    return fieldLabelClassNames("fomio-field-label", this.args);
-  }
-
-  get wrapperClass() {
-    return wrapClassNames("fomio-search-wrap", this.args);
+  get wrapClass() {
+    return wrapClassNames("fomio-input-wrap", this.iconArgs);
   }
 
   get inputClass() {
-    return inputClassNames(this.iconArgs);
+    return inputClassNames(this.iconArgs, ["fomio-textarea__field"]);
   }
 
   get iconArgs() {
     return {
       ...this.args,
-      leadingIcon: this.leadingIcon,
       trailingIcon: this.trailingIcon,
     };
   }
@@ -41,12 +36,8 @@ export default class FomioSearchInput extends Component {
     return isControlDisabled(this.args);
   }
 
-  get leadingIcon() {
-    if (this.args.leadingIcon === null) {
-      return null;
-    }
-
-    return this.args.leadingIcon ?? "magnifying-glass";
+  get rows() {
+    return this.args.rows ?? 4;
   }
 
   get trailingIcon() {
@@ -65,6 +56,10 @@ export default class FomioSearchInput extends Component {
     }
 
     return classes.join(" ");
+  }
+
+  get labelClass() {
+    return fieldLabelClassNames("fomio-textarea__label", this.args);
   }
 
   get hintClass() {
@@ -89,22 +84,24 @@ export default class FomioSearchInput extends Component {
         </label>
       {{/if}}
 
-      <div class={{this.wrapperClass}}>
-        {{#if this.leadingIcon}}
-          <span class="fomio-search-icon" aria-hidden="true">
-            {{icon this.leadingIcon}}
+      <div class={{this.wrapClass}}>
+        {{#if @leadingIcon}}
+          <span class="fomio-input-icon prefix static" aria-hidden="true">
+            {{icon @leadingIcon}}
           </span>
         {{/if}}
-        <input
-          type="search"
+
+        <textarea
           class={{this.inputClass}}
           value={{@value}}
+          disabled={{this.isDisabled}}
+          rows={{this.rows}}
           placeholder={{@placeholder}}
           aria-label={{@ariaLabel}}
-          disabled={{this.isDisabled}}
           {{on "input" this.handleInput}}
           ...attributes
-        />
+        ></textarea>
+
         {{#if this.trailingIcon}}
           <span class={{this.trailingIconClass}} aria-hidden="true">
             {{icon this.trailingIcon}}

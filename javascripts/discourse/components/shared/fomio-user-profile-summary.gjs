@@ -121,6 +121,29 @@ export default class FomioUserProfileSummary extends Component {
     return this.args.expandButtonAriaLabel ?? this.expandButtonLabel;
   }
 
+  get useHubStyleExpandToggle() {
+    return this.args.expandButtonStyle === "hub-toggle";
+  }
+
+  get expandButtonClass() {
+    let className =
+      "fomio-me-hub__summary-action fomio-me-hub__summary-action--secondary user-profile-toggle-btn";
+
+    if (this.useHubStyleExpandToggle) {
+      className += " fomio-me-hub__summary-action--toggle";
+    }
+
+    if (this.args.showDetails) {
+      className += " is-open";
+    }
+
+    return className;
+  }
+
+  get renderedExpandButtonIcon() {
+    return this.useHubStyleExpandToggle ? "angle-right" : this.expandButtonIcon;
+  }
+
   <template>
     <div class="fomio-user-profile-summary">
       <div class="fomio-me-hub__summary">
@@ -200,7 +223,7 @@ export default class FomioUserProfileSummary extends Component {
               {{#if this.showAdminAction}}
                 <a
                   href={{this.args.adminHref}}
-                  class="fomio-me-hub__summary-action btn btn-default"
+                  class="fomio-me-hub__summary-action fomio-me-hub__summary-action--secondary"
                 >
                   <span class="fomio-me-hub__summary-action-icon" aria-hidden="true">{{icon
                       "wrench"
@@ -213,16 +236,19 @@ export default class FomioUserProfileSummary extends Component {
             {{#if this.showExpand}}
               <button
                 type="button"
-                class="fomio-me-hub__summary-action btn btn-default user-profile-toggle-btn"
+                class={{this.expandButtonClass}}
                 aria-controls="collapsed-info-panel"
                 aria-expanded={{if this.args.showDetails "true" "false"}}
                 aria-label={{this.expandButtonAriaLabel}}
+                title={{this.expandButtonLabel}}
                 {{on "click" this.args.onToggleExpand}}
               >
                 <span class="fomio-me-hub__summary-action-icon" aria-hidden="true">{{icon
-                    this.expandButtonIcon
+                    this.renderedExpandButtonIcon
                   }}</span>
-                <span class="fomio-me-hub__summary-action-label">{{this.expandButtonLabel}}</span>
+                {{#unless this.useHubStyleExpandToggle}}
+                  <span class="fomio-me-hub__summary-action-label">{{this.expandButtonLabel}}</span>
+                {{/unless}}
               </button>
             {{/if}}
 
@@ -230,7 +256,7 @@ export default class FomioUserProfileSummary extends Component {
               {{#if this.showAdminAction}}
                 <a
                   href={{this.args.adminHref}}
-                  class="fomio-me-hub__summary-action btn btn-default"
+                  class="fomio-me-hub__summary-action fomio-me-hub__summary-action--secondary"
                 >
                   <span class="fomio-me-hub__summary-action-icon" aria-hidden="true">{{icon
                       "wrench"
@@ -241,26 +267,26 @@ export default class FomioUserProfileSummary extends Component {
             {{/unless}}
           </div>
         {{/if}}
-
-        {{#if this.showDetails}}
-          <div class="fomio-me-hub__details" id="collapsed-info-panel">
-            <dl>
-              {{#each this.detailsItems as |item|}}
-                <div>
-                  <dt>{{item.label}}</dt>
-                  <dd>
-                    {{#if item.date}}
-                      {{ageWithTooltip item.date format="medium"}}
-                    {{else}}
-                      {{item.value}}
-                    {{/if}}
-                  </dd>
-                </div>
-              {{/each}}
-            </dl>
-          </div>
-        {{/if}}
       </div>
+
+      {{#if this.showDetails}}
+        <div class="fomio-me-hub__details is-open" id="collapsed-info-panel">
+          <dl>
+            {{#each this.detailsItems as |item|}}
+              <div>
+                <dt>{{item.label}}</dt>
+                <dd>
+                  {{#if item.date}}
+                    {{ageWithTooltip item.date format="medium"}}
+                  {{else}}
+                    {{item.value}}
+                  {{/if}}
+                </dd>
+              </div>
+            {{/each}}
+          </dl>
+        </div>
+      {{/if}}
     </div>
   </template>
 }

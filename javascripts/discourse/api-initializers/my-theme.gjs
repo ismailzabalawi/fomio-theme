@@ -33,7 +33,66 @@ const PHOSPHOR_ICON_REPLACEMENTS = {
   xmark: "fomio-ph-x",
 };
 
+const ACTIVITY_TOPICS_PATH = /^\/(?:u\/[^/]+|my)\/activity\/topics(?:\/.*)?(?:\?.*)?$/i;
+const ACTIVITY_STREAM_PATH =
+  /^\/(?:u\/[^/]+|my)\/activity(?:\/(?:replies|likes-given))?(?:\/.*)?(?:\?.*)?$/i;
+const ACTIVITY_TOPICS_LIST_SELECTOR = "#main-outlet .user-main #user-content .topic-list";
+const ACTIVITY_TOPICS_ITEM_SELECTOR = `${ACTIVITY_TOPICS_LIST_SELECTOR} .topic-list-item`;
+const ACTIVITY_STREAM_SELECTOR = "#main-outlet .user-main #user-content .user-stream";
+const ACTIVITY_STREAM_ITEM_SELECTOR = `${ACTIVITY_STREAM_SELECTOR} .item, ${ACTIVITY_STREAM_SELECTOR} .user-stream-item, ${ACTIVITY_STREAM_SELECTOR} .stream-item`;
+
+function decorateActivitySurfaces() {
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    return;
+  }
+
+  const currentUrl = window.location.pathname + window.location.search;
+
+  if (ACTIVITY_TOPICS_PATH.test(currentUrl)) {
+    document.querySelectorAll(ACTIVITY_TOPICS_LIST_SELECTOR).forEach((list) => {
+      list.classList.add("fomio-activity-topics-list");
+    });
+
+    document.querySelectorAll(ACTIVITY_TOPICS_ITEM_SELECTOR).forEach((item) => {
+      item.classList.add("--fomio-activity-topics-card");
+    });
+  }
+
+  if (ACTIVITY_STREAM_PATH.test(currentUrl)) {
+    document.querySelectorAll(ACTIVITY_STREAM_SELECTOR).forEach((stream) => {
+      stream.classList.add("fomio-activity-stream-list", "fomio-list");
+    });
+
+    document.querySelectorAll(ACTIVITY_STREAM_ITEM_SELECTOR).forEach((item) => {
+      item.classList.add("fomio-list__item", "fomio-list__item--activity");
+    });
+  }
+}
+
+function scheduleActivityDecoration() {
+  if (typeof window === "undefined" || typeof window.requestAnimationFrame !== "function") {
+    decorateActivitySurfaces();
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      decorateActivitySurfaces();
+    });
+  });
+}
+
+function isActivityTopicsPage() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return ACTIVITY_TOPICS_PATH.test(window.location.pathname + window.location.search);
+}
+
 export default apiInitializer("1.8.0", (api) => {
+  let activityObserver;
+
   for (const [source, target] of Object.entries(PHOSPHOR_ICON_REPLACEMENTS)) {
     api.replaceIcon(source, target);
   }
@@ -63,6 +122,10 @@ export default apiInitializer("1.8.0", (api) => {
       classes.push("--fomio-fresh-bytes-list");
     }
 
+    if (context.listContext === "user-activity" && isActivityTopicsPage()) {
+      classes.push("fomio-activity-topics-list");
+    }
+
     return classes;
   });
 
@@ -77,11 +140,20 @@ export default apiInitializer("1.8.0", (api) => {
         classes.push("--fomio-fresh-byte-item");
       }
 
+      if (context.listContext === "user-activity" && isActivityTopicsPage()) {
+        classes.push("--fomio-activity-topics-card");
+      }
+
       return classes;
     }
   );
 
   api.registerValueTransformer("topic-list-columns", ({ value: columns, context }) => {
+    if (context.listContext === "user-activity" && isActivityTopicsPage()) {
+      columns.delete("views");
+      return columns;
+    }
+
     if (!["discovery", "suggested"].includes(context.listContext)) {
       return columns;
     }
@@ -135,4 +207,32 @@ export default apiInitializer("1.8.0", (api) => {
       return "";
     },
   });
+
+  const refreshActivityDecoration = () => {
+    activityObserver?.disconnect();
+    scheduleActivityDecoration();
+
+    if (typeof MutationObserver === "undefined" || typeof document === "undefined") {
+      return;
+    }
+
+    const currentUrl = window.location.pathname + window.location.search;
+    if (!ACTIVITY_TOPICS_PATH.test(currentUrl) && !ACTIVITY_STREAM_PATH.test(currentUrl)) {
+      return;
+    }
+
+    const userContent = document.querySelector("#main-outlet .user-main #user-content");
+    if (!userContent) {
+      return;
+    }
+
+    activityObserver = new MutationObserver(() => scheduleActivityDecoration());
+    activityObserver.observe(userContent, {
+      childList: true,
+      subtree: true,
+    });
+  };
+
+  refreshActivityDecoration();
+  api.onPageChange(refreshActivityDecoration);
 });

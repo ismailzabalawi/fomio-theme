@@ -33,7 +33,7 @@ export default class FomioFullscreenComposerFields extends Component {
         {{#if this.model.showCategoryChooser}}
           <div class="category-input">
             <FomioComposerCategoryPicker
-              @value={{this.model.categoryId}}
+              @selectedKey={{this.model.categoryId}}
               @disabled={{this.composer.disableCategoryChooser}}
               @scopedCategoryId={{this.composer.scopedCategoryId}}
               @prioritizedCategoryId={{this.composer.prioritizedCategoryId}}
