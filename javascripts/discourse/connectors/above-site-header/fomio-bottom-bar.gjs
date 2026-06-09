@@ -6,6 +6,7 @@ import { service } from "@ember/service";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioPhIcon from "../../components/shared/fomio-ph-icon";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import {
   isDiscoverPath,
@@ -33,10 +34,12 @@ export default class FomioBottomBar extends Component {
   @service router;
   @service currentUser;
   @service composer;
+  @service interfaceColor;
 
   @tracked isHidden = false;
   @tracked notificationsMenuOpen = false;
   @tracked messagesFilter = "latest";
+  @tracked isDarkModeActive = false;
   #lastScrollY = 0;
   #scrollHandler = null;
   #notificationsMenuStateHandler = null;
@@ -44,6 +47,7 @@ export default class FomioBottomBar extends Component {
 
   constructor(owner, args) {
     super(owner, args);
+    this.#updateDarkModeState();
     this.#scrollHandler = () => {
       const y = window.scrollY;
       const deltaY = y - this.#lastScrollY;
@@ -73,6 +77,9 @@ export default class FomioBottomBar extends Component {
     this.#unsubscribeMessages = subscribeMessagesState((s) => {
       this.messagesFilter = s.filter;
     });
+    window.addEventListener("fomio:dark-mode:changed", () => {
+      this.#updateDarkModeState();
+    });
   }
 
   willDestroy() {
@@ -82,7 +89,17 @@ export default class FomioBottomBar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
+    window.removeEventListener("fomio:dark-mode:changed", () => {
+      this.#updateDarkModeState();
+    });
     this.#unsubscribeMessages?.();
+  }
+
+  #updateDarkModeState() {
+    if (typeof document === "undefined") {
+      return;
+    }
+    this.isDarkModeActive = document.documentElement.classList.contains("fomio-color-dark");
   }
 
   get currentPath() {
@@ -142,6 +159,17 @@ export default class FomioBottomBar extends Component {
 
   get meLabel() {
     return i18n(themePrefix("mobile_nav.me"));
+  }
+
+  get toggleDarkModeLabel() {
+    return i18n(themePrefix("mobile_nav.toggle_dark_mode"));
+  }
+
+  @action
+  toggleColorScheme() {
+    // Discourse's interfaceColor service toggles between light and dark modes
+    // by updating the user's color scheme preference
+    this.interfaceColor?.toggleDarkMode?.();
   }
 
   @action
@@ -293,6 +321,22 @@ export default class FomioBottomBar extends Component {
             <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>
           </button>
         {{/if}}
+
+        <button
+          type="button"
+          class="fomio-bottom-bar__color-toggle"
+          title={{this.toggleDarkModeLabel}}
+          aria-label={{this.toggleDarkModeLabel}}
+          {{on "click" this.toggleColorScheme}}
+        >
+          <span class="fomio-bottom-bar__icon">
+            {{#if this.isDarkModeActive}}
+              <FomioPhIcon @name="sun" @size="20" />
+            {{else}}
+              <FomioPhIcon @name="moon" @size="20" />
+            {{/if}}
+          </span>
+        </button>
       </nav>
     {{/if}}
   </template>

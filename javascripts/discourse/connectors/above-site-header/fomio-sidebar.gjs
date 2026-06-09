@@ -9,6 +9,7 @@ import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioPhIcon from "../../components/shared/fomio-ph-icon";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 import {
@@ -51,6 +52,7 @@ export default class FomioSidebar extends Component {
   @tracked messagesFilter = "latest";
   @tracked previousMasterContext = null;
   @tracked masterContextChanged = false;
+  @tracked isDarkModeActive = false;
   #unsubscribeTouchShell = null;
   #unsubscribeSearchPalette = null;
   #notificationsMenuStateHandler = null;
@@ -60,6 +62,7 @@ export default class FomioSidebar extends Component {
   constructor(owner, args) {
     super(owner, args);
     this.#restoreHubExpandState();
+    this.#updateDarkModeState();
     this.#unsubscribeTouchShell = subscribeFomioTouchShell((isTouchSurface) => {
       this.isTouchSurface = isTouchSurface;
     });
@@ -76,6 +79,9 @@ export default class FomioSidebar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
+    window.addEventListener("fomio:dark-mode:changed", () => {
+      this.#updateDarkModeState();
+    });
   }
 
   willDestroy() {
@@ -87,6 +93,16 @@ export default class FomioSidebar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
+    window.removeEventListener("fomio:dark-mode:changed", () => {
+      this.#updateDarkModeState();
+    });
+  }
+
+  #updateDarkModeState() {
+    if (typeof document === "undefined") {
+      return;
+    }
+    this.isDarkModeActive = document.documentElement.classList.contains("fomio-color-dark");
   }
 
   get currentPath() {
@@ -328,6 +344,7 @@ export default class FomioSidebar extends Component {
   get signInLabel()        { return i18n(themePrefix("sidebar.sign_in")); }
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
   get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
+  get toggleDarkModeLabel() { return i18n(themePrefix("sidebar.toggle_dark_mode")); }
   get searchShortcutLabel() {
     return "/";
   }
@@ -570,6 +587,13 @@ export default class FomioSidebar extends Component {
   @action
   onProfileActivate(e) {
     this.toggleMasterPaneOverlay("profile", e);
+  }
+
+  @action
+  toggleColorScheme() {
+    // Discourse's interfaceColor service toggles between light and dark modes
+    // by updating the user's color scheme preference
+    this.interfaceColor?.toggleDarkMode?.();
   }
 
   <template>
@@ -824,28 +848,64 @@ export default class FomioSidebar extends Component {
               <span class="fomio-sidebar__item-label">{{this.notificationsLabel}}</span>
             </button>
 
-            <a
-              href={{this.profileUrl}}
-              class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
-              {{on "click" this.onProfileActivate}}
-            >
-              <span class="fomio-sidebar__icon">
-                {{icon "user"}}
-                {{#if this.messagesBadge}}
-                  <span class="fomio-sidebar__badge">{{this.messagesBadge}}</span>
-                {{/if}}
-              </span>
-              <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
-            </a>
+            <div class="fomio-sidebar__color-toggle-container">
+              <button
+                type="button"
+                class="fomio-sidebar__color-toggle"
+                title={{this.toggleDarkModeLabel}}
+                aria-label={{this.toggleDarkModeLabel}}
+                {{on "click" this.toggleColorScheme}}
+              >
+                <span class="fomio-sidebar__icon">
+                  {{#if this.isDarkModeActive}}
+                    <FomioPhIcon @name="sun" @size="16" />
+                  {{else}}
+                    <FomioPhIcon @name="moon" @size="16" />
+                  {{/if}}
+                </span>
+              </button>
+
+              <a
+                href={{this.profileUrl}}
+                class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+                {{on "click" this.onProfileActivate}}
+              >
+                <span class="fomio-sidebar__icon">
+                  {{icon "user"}}
+                  {{#if this.messagesBadge}}
+                    <span class="fomio-sidebar__badge">{{this.messagesBadge}}</span>
+                  {{/if}}
+                </span>
+                <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
+              </a>
+            </div>
           {{else}}
-            <a
-              href={{this.profileUrl}}
-              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
-              {{on "click" this.onProfileActivate}}
-            >
-              <span class="fomio-sidebar__icon">{{icon "user"}}</span>
-              <span class="fomio-sidebar__item-label">{{this.signInLabel}}</span>
-            </a>
+            <div class="fomio-sidebar__color-toggle-container">
+              <button
+                type="button"
+                class="fomio-sidebar__color-toggle"
+                title={{this.toggleDarkModeLabel}}
+                aria-label={{this.toggleDarkModeLabel}}
+                {{on "click" this.toggleColorScheme}}
+              >
+                <span class="fomio-sidebar__icon">
+                  {{#if this.isDarkModeActive}}
+                    <FomioPhIcon @name="sun" @size="16" />
+                  {{else}}
+                    <FomioPhIcon @name="moon" @size="16" />
+                  {{/if}}
+                </span>
+              </button>
+
+              <a
+                href={{this.profileUrl}}
+                class="fomio-sidebar__item {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+                {{on "click" this.onProfileActivate}}
+              >
+                <span class="fomio-sidebar__icon">{{icon "user"}}</span>
+                <span class="fomio-sidebar__item-label">{{this.signInLabel}}</span>
+              </a>
+            </div>
           {{/if}}
         </div>
 

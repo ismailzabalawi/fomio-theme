@@ -273,6 +273,7 @@ en:
     all_hubs: "See all Hubs →"
     open_menu: "Open navigation"
     close_menu: "Close navigation"
+    toggle_dark_mode: "Toggle dark mode"
   bottom_bar:
     latest: "Latest"
     hot: "Hot"
@@ -288,6 +289,7 @@ en:
     saved: "Saved"
     me: "Me"
     home_pills_aria: "Home feed modes"
+    toggle_dark_mode: "Toggle dark mode"
     discover_pills_aria: "Discover modes"
     pill_latest: "Latest"
     pill_hot: "Hot"

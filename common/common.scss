@@ -10916,6 +10916,81 @@ body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-n
   gap: var(--fomio-space-xs);
 }
 
+// ── Color Toggle Container ───────────────────────────────────
+
+.fomio-sidebar__color-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-xs);
+  width: 100%;
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sidebar__color-toggle-container {
+  flex-direction: column;
+}
+
+// ── Color Toggle Button ──────────────────────────────────────
+
+.fomio-sidebar__color-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: var(--fomio-radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--fomio-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease, background 150ms ease;
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  &:focus-visible {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 1px;
+  }
+
+  .fomio-sidebar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    color: currentColor;
+
+    i,
+    svg {
+      display: block;
+      width: 1rem;
+      height: 1rem;
+      fill: currentColor;
+    }
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sidebar__color-toggle-container {
+  .fomio-sidebar__color-toggle {
+    width: 100%;
+    justify-content: flex-start;
+    padding: var(--fomio-space-sm) var(--fomio-space-sm);
+  }
+}
+
 // ── Wordmark ─────────────────────────────────────────────────
 
 .fomio-sidebar__wordmark {
@@ -14873,6 +14948,64 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   font-weight: 700;
   line-height: 1;
   box-shadow: 0 0 0 2px var(--fomio-bg);
+}
+
+// ── Color Toggle Button ──────────────────────────────────────
+
+.fomio-bottom-bar__color-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(
+    --fomio-bottom-bar-safe-height,
+    calc(56px + env(safe-area-inset-bottom, 0px))
+  );
+  min-height: 100%;
+  align-self: stretch;
+  gap: 4px;
+  padding:
+    var(--fomio-space-xs)
+    var(--fomio-space-sm)
+    calc(var(--fomio-space-xs) + var(--fomio-safe-bottom, env(safe-area-inset-bottom, 0px)));
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  cursor: pointer;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease;
+  }
+
+  &:hover,
+  &:active {
+    color: var(--fomio-text);
+  }
+
+  .fomio-bottom-bar__icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    line-height: 0;
+    color: currentColor;
+
+    i,
+    svg {
+      display: block;
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: currentColor;
+    }
+  }
 }
 
 // ============================================================
