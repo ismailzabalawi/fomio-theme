@@ -9161,20 +9161,22 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   // Phase 3C-N3 — Preferences leaf (`preferences.gjs` → `body.user-preferences-page`).
   // Secondary: `.user-navigation-secondary` + `HorizontalOverflowNav` + `ul.nav-pills`.
   // Content: `#user-content.user-preferences` (forms — keep interactive; no decorative cages).
+  // One flat surface: no wrapper card, no per-group boxes — grouping comes
+  // from spacing and hairline separators between control groups.
   &.user-preferences-page {
     #main-outlet .user-main {
       max-width: 100%;
       overflow-x: hidden;
       box-sizing: border-box;
-      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+      background: var(--fomio-bg);
     }
 
     #main-outlet .user-main .new-user-content-wrapper {
-      margin: 0 10px 12px;
+      margin: 0;
       padding: 10px 10px 12px;
-      background: var(--fomio-surface);
-      border: 1px solid var(--fomio-border-soft);
-      border-radius: 16px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
       box-sizing: border-box;
       max-width: 100%;
       width: 100%;
@@ -9349,7 +9351,13 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
     #main-outlet .user-main #user-content.user-preferences .control-group,
     #main-outlet .user-main #user-content.user-preferences .pref-group {
-      margin-bottom: 1rem;
+      margin-bottom: 0;
+      padding: 14px 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-group + .control-group,
+    #main-outlet .user-main #user-content.user-preferences .pref-group + .pref-group {
+      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 70%, transparent);
     }
 
     #main-outlet .user-main #user-content.user-preferences label,

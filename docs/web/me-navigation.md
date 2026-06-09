@@ -53,7 +53,7 @@ Chips set `data-fomio-me-notifications-filter` on `document.body` (`all` clears 
 |------|--------|
 | **Messages** | Inbox / sent / unread / archive / group / tags load **different datasets** per route — keep native pills + dropdown. |
 | **Invites** | Status tabs map to different server queries — native pills. |
-| **Preferences** | Native tab + form chrome — no Fomio filter row. |
+| **Preferences** | Native tab + form chrome — no Fomio filter row. Redesigned to **one flat surface on touch** (see `touch-preferences-redesign-pattern.md`). |
 | **Badges** | Single list — no chips. |
 | **Activity** | No stable row-level selectors for “all” stream; use native secondary nav. |
 
