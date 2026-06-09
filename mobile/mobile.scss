@@ -259,12 +259,12 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
 }
 
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
-  --fomio-mobile-child-radius: 26px;
   --fomio-mobile-child-pad-x: clamp(14px, 4vw, 18px);
-  --fomio-mobile-child-card-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 54%),
-    0 18px 42px rgb(17 24 39 / 7%);
 
+  // Me leaf pages — one flat surface (see
+  // docs/web/touch-preferences-redesign-pattern.md). No page canvas
+  // gradient, no wrapper card, no boxed pill track; list pages keep
+  // their item-level cards for row separation.
   &.user-activity-page,
   &.user-notifications-page,
   &.user-messages-page,
@@ -278,18 +278,7 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
     #main-outlet .user-main {
       min-height: calc(100svh - var(--header-offset, 50px));
       padding-bottom: max(22px, var(--fomio-page-pad-bottom, 16px));
-      background:
-        radial-gradient(
-          circle at 20% 0%,
-          color-mix(in oklab, var(--fomio-primary) 10%, transparent) 0%,
-          transparent 34%
-        ),
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-bg) 92%, var(--fomio-surface)) 0%,
-          var(--fomio-bg) 46%,
-          color-mix(in oklab, var(--fomio-surface) 28%, var(--fomio-bg)) 100%
-        );
+      background: var(--fomio-bg);
       overflow-x: hidden;
     }
 
@@ -299,17 +288,7 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
         max(10px, var(--fomio-page-pad-inline-start, 12px))
         max(10px, var(--fomio-page-pad-inline-end, 12px));
       border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-card) 97%, var(--fomio-surface)) 0%,
-          color-mix(in oklab, var(--fomio-bg) 86%, var(--fomio-surface)) 100%
-        );
-      box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 58%),
-        0 12px 28px rgb(17 24 39 / 5%);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: var(--fomio-bg);
     }
 
     #main-outlet .user-main .fomio-me-stack-header__back {
@@ -342,40 +321,31 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
     }
 
     #main-outlet .user-main .new-user-content-wrapper {
-      margin:
+      margin: 0;
+      padding:
         12px
         var(--fomio-mobile-child-pad-x)
         max(18px, var(--fomio-safe-bottom, 0px));
-      padding: 14px;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-      border-radius: var(--fomio-mobile-child-radius);
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-card) 98%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg)) 100%
-        );
-      box-shadow: var(--fomio-mobile-child-card-shadow);
-      overflow: clip;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary {
       margin: 0 0 12px;
     }
 
+    // Pills keep their own affordance; the boxed track behind them is dropped.
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills,
     #main-outlet .user-main .fomio-me-filter-chips {
       gap: 6px;
-      padding: 5px;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
-      border-radius: 999px;
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-bg) 34%, var(--fomio-surface)) 0%,
-          color-mix(in oklab, var(--fomio-bg) 52%, var(--fomio-surface)) 100%
-        );
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 46%);
+      padding: 0 0 10px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a,
@@ -441,68 +411,31 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
     }
   }
 
+  // Badges renders its list straight on the flat surface — gutters come
+  // from the wrapper; the badge cards themselves stay (item-level grouping).
   &.user-badges-page {
     #main-outlet .user-main #user-content,
     #main-outlet .user-main .user-content#user-content {
       display: block;
-      margin:
-        12px
-        var(--fomio-mobile-child-pad-x)
-        max(18px, var(--fomio-safe-bottom, 0px));
-      padding: 14px;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-      border-radius: var(--fomio-mobile-child-radius);
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-card) 98%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg)) 100%
-        );
-      box-shadow: var(--fomio-mobile-child-card-shadow);
-      overflow: clip;
-    }
-  }
-
-  // Preferences leaf — one flat surface. No nested cards and no per-group
-  // boxes; grouping comes from spacing and hairline separators. Form
-  // controls keep their own borders — that's affordance, not decoration.
-  &.user-preferences-page {
-    #main-outlet .user-main {
-      background: var(--fomio-bg);
-    }
-
-    #main-outlet .user-main .fomio-me-stack-header {
-      background: var(--fomio-bg);
-      box-shadow: none;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper {
-      margin: 0;
-      padding:
-        12px
-        var(--fomio-mobile-child-pad-x)
-        max(18px, var(--fomio-safe-bottom, 0px));
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      overflow: visible;
-    }
-
-    #main-outlet .user-main #user-content,
-    #main-outlet .user-main .user-content#user-content {
       margin: 0;
       padding: 0;
       border: 0;
       border-radius: 0;
       background: transparent;
       box-shadow: none;
+      overflow: visible;
     }
+  }
 
-    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
-      padding: 0 0 10px;
+  // Preferences leaf — one flat surface. The shared Me-leaf rules above
+  // already remove the page chrome; this block only flattens the per-group
+  // boxes. Form controls keep their own borders — that's affordance, not
+  // decoration.
+  &.user-preferences-page {
+    #main-outlet .user-main #user-content,
+    #main-outlet .user-main .user-content#user-content {
+      margin: 0;
+      padding: 0;
       border: 0;
       border-radius: 0;
       background: transparent;
@@ -1686,7 +1619,7 @@ body.fomio-surface-touch .fomio-notifications-menu--mobile {
 
 body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio-auth-mode) {
   #main-outlet .user-main .new-user-content-wrapper {
-    margin: 0 10px 16px;
+    margin: 0 0 16px;
     padding-top: 10px;
     padding-bottom: 14px;
     padding-inline-start: var(--fomio-page-pad-inline-start, 12px);
@@ -2506,50 +2439,19 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet
 // ── Parent-child account screens — final mobile design pass ──────────────────
 // This sits after native page-specific rules so the shared child-screen language
 // wins without changing Discourse's underlying account page behavior.
-// Preferences is intentionally excluded: it uses the flat one-surface
-// treatment defined earlier in this file (no card chrome to re-assert).
+// Page-level chrome stays flat (see the Me-leaf rules earlier in this file);
+// only item-level cards — rows, list items, badge cards — get the card language.
+// Preferences is excluded: forms group via hairlines, not cards.
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activity-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-notifications-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-messages-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-invites-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-badges-page {
-  #main-outlet .user-main .fomio-me-stack-header {
-    height: 54px;
-    border-bottom-color: color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-card) 97%, var(--fomio-surface)) 0%,
-        color-mix(in oklab, var(--fomio-bg) 86%, var(--fomio-surface)) 100%
-      );
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 58%),
-      0 12px 28px rgb(17 24 39 / 5%);
-  }
-
   #main-outlet .user-main .fomio-me-stack-header__back {
     min-height: 38px;
     border-radius: 999px;
     background: color-mix(in oklab, var(--fomio-surface) 88%, transparent);
     color: color-mix(in oklab, var(--fomio-primary) 76%, var(--fomio-text));
-  }
-
-  #main-outlet .user-main .new-user-content-wrapper {
-    border-color: color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-    border-radius: var(--fomio-mobile-child-radius, 26px);
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-card) 98%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg)) 100%
-      );
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 54%),
-      0 18px 42px rgb(17 24 39 / 7%);
-  }
-
-  &.fomio-messages-mode #main-outlet .user-main .new-user-content-wrapper {
-    overflow: hidden;
   }
 
   #main-outlet .user-main .user-stream > li,

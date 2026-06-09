@@ -554,9 +554,9 @@ Safe area follows the same rule. Define touch-safe insets and derived page gutte
 
 ### Touch Settings Forms
 
-Account preferences and similar form-heavy screens on touch use a **one-flat-surface pattern**: no nested card chrome, no per-control-group boxes. Grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`), which preserves calmness and makes the page fully responsive without fixed card insets.
+All Me leaf screens on touch (Activity, Notifications, Messages, Invites, Preferences, Badges) use a **one-flat-surface pattern** at the page level: no canvas gradient, no wrapper card, flat stack header, unboxed pill tracks. The page is fully responsive without fixed card insets.
 
-This contrasts with stream/list screens (Activity, Notifications, Badges) that benefit from card grouping to separate list items.
+Within that flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows.
 
 **See:** `docs/web/touch-preferences-redesign-pattern.md` for full rationale, implementation guidance, and future application rules.
 

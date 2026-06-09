@@ -1,8 +1,16 @@
 # Touch Preferences Redesign Pattern
 
-**Status:** Implemented for `/u/:username/preferences/*` on touch surface (June 2026).  
+**Status:** Implemented for `/u/:username/preferences/*` on touch surface (June 2026). Page-level flattening extended to all Me leaf screens — Activity, Notifications, Messages, Invites, Badges (June 2026).  
 **Pattern:** One flat surface, no nested card chrome.  
 **Future scope:** Extensible to other touch form/settings screens.
+
+> **Scope note:** The pattern has two levels. **Page-level** flattening (plain
+> canvas, flat stack header, no wrapper card, unboxed pill track) now applies
+> to **every** Me leaf screen on touch. **Group-level** flattening (no
+> per-control-group boxes; hairline separators instead) applies only to
+> form screens like preferences — list screens keep their item-level cards
+> (stream items, notification rows, invite rows, badge cards) for row
+> separation.
 
 ---
 
@@ -85,7 +93,7 @@ For `&.user-preferences-page` on touch (under `body.fomio-surface-touch.fomio-si
 - `.control-group`, `.pref-group` — `padding: 16px 0`, no border/radius/background
 - Adjacent groups separated by `border-top` hairline
 
-**Critical:** Remove `body.user-preferences-page` from the selector in the "final mobile design pass" block. Other pages (Activity, Notifications, Badges) continue to use the card chrome pattern; preferences is the exception.
+**Critical:** The "final mobile design pass" block in `mobile.scss` must only assert **item-level** card language (stream items, notification rows, invite rows, badge cards). It must not re-assert page-level chrome (stack-header gradient, wrapper card) — that chrome has been removed for all Me leaf screens.
 
 ### Configuration Scoping
 
@@ -109,17 +117,20 @@ This ensures the flat treatment survives landscape phones, landscape foldables, 
 
 ## Future Application
 
-### Candidates for This Pattern
+### Candidates for Group-Level Flattening (hairlines instead of boxes)
 
 - `/u/:username/preferences/security` (sessions, 2FA, trusted devices)
 - `/u/:username/preferences/notifications` (if future redesign moves away from pill-based filtering)
 - Discourse `settings_` pages that need touch optimization
 
-### When NOT to Use
+### Where Item-Level Cards Stay
 
-- **Activity, Notifications, Messages (stream lists)** — these benefit from card grouping to visually separate list items
+Page-level chrome is flat everywhere on Me leaf screens, but these keep
+their item cards:
+
+- **Activity, Notifications, Messages (stream lists)** — cards visually separate list items
 - **Discovery/hub/category pages** — reading-focused designs that group content into byte/topic cards
-- **Badges, Invites (detail-heavy lists)** — card pattern helps segment table-like content
+- **Badges, Invites (detail-heavy lists)** — cards segment table-like content
 
 ### Applying to New Screens
 
@@ -159,3 +170,4 @@ This ensures the flat treatment survives landscape phones, landscape foldables, 
 - **Branch:** `claude/account-prefs-ui-redesign-g28jt4`
 - **Commit:** `18157f2` — "Flatten account preferences to one surface on touch"
 - **Files:** `apps/web/common/common.scss` (lines 9161+), `apps/web/mobile/mobile.scss` (lines 444+)
+- **Branch:** `claude/happy-gauss-xa2wl9` — page-level flattening extended to Activity, Notifications, Messages, Invites, Badges (same two files)

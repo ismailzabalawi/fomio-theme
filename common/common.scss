@@ -8565,33 +8565,22 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   // - primary row: `.user-navigation.user-navigation-primary` (same nav-pills pattern)
   // Does not match summary / preferences / messages (no `user-activity-page`).
   &.user-activity-page {
+    // One flat surface (touch-preferences-redesign-pattern.md): plain canvas,
+    // no wrapper card — stream items keep their own card grouping.
     #main-outlet .user-main {
       max-width: 100%;
       overflow-x: hidden;
       box-sizing: border-box;
-      background:
-        radial-gradient(
-          circle at top,
-          color-mix(in oklab, var(--fomio-surface) 36%, transparent) 0%,
-          transparent 38%
-        ),
-        color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+      background: var(--fomio-bg);
     }
 
     #main-outlet .user-main .new-user-content-wrapper {
-      margin: 0 10px 14px;
-      padding: 12px 12px 14px;
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg)) 100%
-        );
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 70%, transparent);
-      border-radius: 22px;
-      box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 62%),
-        0 18px 36px rgb(17 24 39 / 5%);
+      margin: 0;
+      padding: 12px 14px 16px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
       box-sizing: border-box;
       max-width: 100%;
       width: 100%;
@@ -8659,18 +8648,14 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
         max-width: 100%;
         gap: 6px;
         margin: 0;
-        padding: 4px;
+        padding: 0 0 8px;
         list-style: none;
         box-sizing: border-box;
         overflow-x: auto;
         overflow-y: hidden;
-        border-radius: 18px;
-        border: 1px solid color-mix(
-          in oklab,
-          var(--fomio-border-soft) 66%,
-          transparent
-        );
-        background: color-mix(in oklab, var(--fomio-bg) 46%, var(--fomio-surface));
+        border-radius: 0;
+        border: 0;
+        background: transparent;
         // Visible, thin bar: clearer than hidden scroll (still width-contained above).
         scrollbar-width: thin;
         scrollbar-color: color-mix(in oklab, var(--fomio-muted) 62%, var(--fomio-border))
@@ -8922,12 +8907,12 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
       max-width: 100%;
       overflow-x: hidden;
       box-sizing: border-box;
-      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+      background: var(--fomio-bg);
     }
 
     #main-outlet .user-main .new-user-content-wrapper {
-      margin: 0 10px 12px;
-      padding: 10px 10px 12px;
+      margin: 0;
+      padding: 12px 14px 16px;
       background: transparent;
       border: 0;
       border-radius: 0;
@@ -9423,19 +9408,21 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   &.user-notifications-page,
   &.user-invites-page,
   &.user-badges-page {
+    // One flat surface: plain canvas, no wrapper card. Rows, invite tables,
+    // and badge cards keep their own item-level card grouping.
     #main-outlet .user-main {
       max-width: 100%;
       overflow-x: hidden;
       box-sizing: border-box;
-      background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+      background: var(--fomio-bg);
     }
 
     #main-outlet .user-main .new-user-content-wrapper {
-      margin: 0 10px 12px;
-      padding: 10px 10px 12px;
-      background: var(--fomio-surface);
-      border: 1px solid var(--fomio-border-soft);
-      border-radius: 16px;
+      margin: 0;
+      padding: 12px 14px 16px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
       box-sizing: border-box;
       max-width: 100%;
       width: 100%;
@@ -9931,32 +9918,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   &.user-messages-page,
   &.user-notifications-page,
   &.user-invites-page {
-    #main-outlet .user-main {
-      background:
-        radial-gradient(
-          circle at top,
-          color-mix(in oklab, var(--fomio-surface) 32%, transparent) 0%,
-          transparent 34%
-        ),
-        color-mix(in oklab, var(--fomio-bg) 90%, var(--fomio-surface));
-    }
-
-    #main-outlet .user-main .new-user-content-wrapper {
-      margin: 0 10px 16px;
-      padding: 14px 14px 16px;
-      border-radius: 24px;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 74%, transparent);
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
-        );
-      box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 55%),
-        0 18px 40px rgb(17 24 39 / 6%);
-    }
-
+    // Page canvas and wrapper stay flat — see the per-page blocks above.
     #main-outlet .user-main .user-navigation.user-navigation-primary {
       margin: 0 2px 12px;
       padding-bottom: 10px;
@@ -9974,14 +9936,10 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
       gap: 6px;
-      padding: 4px;
-      border-radius: 18px;
-      background: color-mix(in oklab, var(--fomio-bg) 46%, var(--fomio-surface));
-      border: 1px solid color-mix(
-        in oklab,
-        var(--fomio-border-soft) 66%,
-        transparent
-      );
+      padding: 0 0 8px;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
       scrollbar-color: color-mix(in oklab, var(--fomio-muted) 62%, var(--fomio-border))
         transparent;
     }
@@ -10247,16 +10205,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
       gap: 5px;
-      padding: 5px;
-      border-radius: 20px;
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-bg) 34%, var(--fomio-surface)) 0%,
-          color-mix(in oklab, var(--fomio-bg) 50%, var(--fomio-surface)) 100%
-        );
-      border-color: color-mix(in oklab, var(--fomio-border-soft) 56%, transparent);
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 44%);
+      padding: 0 0 8px;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
@@ -10321,7 +10274,7 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
       #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
         gap: 4px;
-        padding: 4px;
+        padding: 0 0 8px;
         margin: 0;
       }
 
@@ -10513,18 +10466,11 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
       gap: 5px;
-      padding: 6px;
-      border-radius: 22px;
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-bg) 30%, var(--fomio-surface)) 0%,
-          color-mix(in oklab, var(--fomio-bg) 46%, var(--fomio-surface)) 100%
-        );
-      border-color: color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
-      box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 46%),
-        0 10px 22px rgb(17 24 39 / 4%);
+      padding: 0 0 8px;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
