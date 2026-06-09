@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { fn } from "@ember/helper";
+import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import icon from "discourse/helpers/d-icon";
@@ -150,6 +150,32 @@ export default class FomioCommandPalette extends Component {
       return;
     }
 
+    if (event.key === "Tab") {
+      const palette = event.currentTarget;
+      const focusable = [...palette.querySelectorAll(FOCUSABLE_SELECTORS)].filter(
+        (element) => getComputedStyle(element).display !== "none"
+      );
+
+      if (!focusable.length) {
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey) {
+        if (document.activeElement === first || document.activeElement === palette) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+
+      return;
+    }
+
     if (!this.hasResults) {
       return;
     }
@@ -179,33 +205,6 @@ export default class FomioCommandPalette extends Component {
         event.preventDefault();
         this.selectItem(activeItem);
       }
-      return;
-    }
-
-    if (event.key !== "Tab") {
-      return;
-    }
-
-    const palette = event.currentTarget;
-    const focusable = [...palette.querySelectorAll(FOCUSABLE_SELECTORS)].filter(
-      (element) => getComputedStyle(element).display !== "none"
-    );
-
-    if (!focusable.length) {
-      return;
-    }
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (event.shiftKey) {
-      if (document.activeElement === first || document.activeElement === palette) {
-        event.preventDefault();
-        last.focus();
-      }
-    } else if (document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
     }
   }
 
@@ -256,60 +255,64 @@ export default class FomioCommandPalette extends Component {
         {{didInsert this.setupPalette}}
         {{on "keydown" this.onKeydown}}
       >
-        <div class="fomio-command-palette__search">
-          <FomioSearchInput
-            @value={{this.searchTerm}}
-            @placeholder={{this.searchPlaceholder}}
-            @onInput={{this.updateSearch}}
-            @trailingIcon="search"
-            @leadingIcon={{null}}
-            @wrapperClass="fomio-command-palette__search-wrap"
-            @inputClass="fomio-command-palette__search-input"
-          />
-        </div>
-
-        <div class="fomio-command-palette__results">
-          {{#if this.hasResults}}
-            {{#each this.visibleItems as |item|}}
-              {{#if item.isSection}}
-                <div class="fomio-command-palette__section">{{item.label}}</div>
-              {{else if item.isDivider}}
-                <div class="fomio-command-palette__divider" role="separator"></div>
-              {{else}}
-                <button
-                  type="button"
-                  class={{this.itemClass item}}
-                  disabled={{item.isDisabled}}
-                  {{on "click" (fn this.selectItem item)}}
-                >
-                  {{#if item.icon}}
-                    <span class="fomio-command-palette__item-icon" aria-hidden="true">
-                      {{icon item.icon}}
-                    </span>
-                  {{/if}}
-
-                  <span class="fomio-command-palette__item-copy">
-                    <span class="fomio-command-palette__item-label">{{item.label}}</span>
-                    {{#if item.subtitle}}
-                      <span class="fomio-command-palette__item-subtitle">{{item.subtitle}}</span>
-                    {{/if}}
-                  </span>
-
-                  {{#if item.shortcut}}
-                    <kbd class="fomio-command-palette__shortcut">{{item.shortcut}}</kbd>
-                  {{/if}}
-                </button>
-              {{/if}}
-            {{/each}}
-          {{else}}
-            <FomioEmptyState
-              @variant="inline"
-              @icon="magnifying-glass"
-              @title={{this.emptyTitle}}
-              @body={{this.emptyBody}}
+        {{#if (has-block)}}
+          {{yield (hash close=this.requestClose)}}
+        {{else}}
+          <div class="fomio-command-palette__search">
+            <FomioSearchInput
+              @value={{this.searchTerm}}
+              @placeholder={{this.searchPlaceholder}}
+              @onInput={{this.updateSearch}}
+              @trailingIcon="search"
+              @leadingIcon={{null}}
+              @wrapperClass="fomio-command-palette__search-wrap"
+              @inputClass="fomio-command-palette__search-input"
             />
-          {{/if}}
-        </div>
+          </div>
+
+          <div class="fomio-command-palette__results">
+            {{#if this.hasResults}}
+              {{#each this.visibleItems as |item|}}
+                {{#if item.isSection}}
+                  <div class="fomio-command-palette__section">{{item.label}}</div>
+                {{else if item.isDivider}}
+                  <div class="fomio-command-palette__divider" role="separator"></div>
+                {{else}}
+                  <button
+                    type="button"
+                    class={{this.itemClass item}}
+                    disabled={{item.isDisabled}}
+                    {{on "click" (fn this.selectItem item)}}
+                  >
+                    {{#if item.icon}}
+                      <span class="fomio-command-palette__item-icon" aria-hidden="true">
+                        {{icon item.icon}}
+                      </span>
+                    {{/if}}
+
+                    <span class="fomio-command-palette__item-copy">
+                      <span class="fomio-command-palette__item-label">{{item.label}}</span>
+                      {{#if item.subtitle}}
+                        <span class="fomio-command-palette__item-subtitle">{{item.subtitle}}</span>
+                      {{/if}}
+                    </span>
+
+                    {{#if item.shortcut}}
+                      <kbd class="fomio-command-palette__shortcut">{{item.shortcut}}</kbd>
+                    {{/if}}
+                  </button>
+                {{/if}}
+              {{/each}}
+            {{else}}
+              <FomioEmptyState
+                @variant="inline"
+                @icon="magnifying-glass"
+                @title={{this.emptyTitle}}
+                @body={{this.emptyBody}}
+              />
+            {{/if}}
+          </div>
+        {{/if}}
       </div>
     {{/if}}
   </template>

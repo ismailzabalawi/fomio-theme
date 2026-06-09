@@ -25,6 +25,16 @@ export default class FomioTabs extends Component {
     });
   }
 
+  get className() {
+    const classes = ["fomio-tabs"];
+
+    if (this.args.extraClass) {
+      classes.push(this.args.extraClass);
+    }
+
+    return classes.join(" ");
+  }
+
   @action
   setSelectedKey(key, tab) {
     if (tab.isDisabled) {
@@ -79,7 +89,7 @@ export default class FomioTabs extends Component {
   }
 
   <template>
-    <div class="fomio-tabs" ...attributes>
+    <div class={{this.className}} data-fomio-managed="true" ...attributes>
       <div class="fomio-tabs__list" role="tablist" aria-label={{@ariaLabel}}>
         {{#each this.tabs as |tab|}}
           <button

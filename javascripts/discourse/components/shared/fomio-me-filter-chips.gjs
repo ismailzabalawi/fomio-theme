@@ -1,11 +1,9 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { fn } from "@ember/helper";
-import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import { on } from "@ember/modifier";
+import FomioSegmentedControl from "./fomio-segmented-control";
 
 /**
  * In-screen filter chips: toggles `document.body` data-attribute only (no URL change).
@@ -112,6 +110,14 @@ export default class FomioMeFilterChips extends Component {
     return i18n(themePrefix(labelKey));
   };
 
+  get options() {
+    return (this.args.filters ?? []).map((filter) => ({
+      id: filter.id,
+      label: this.chipLabel(filter.labelKey),
+      isActive: this.activeId === filter.id,
+    }));
+  }
+
   @action
   selectFilter(id) {
     this.activeId = id;
@@ -123,24 +129,14 @@ export default class FomioMeFilterChips extends Component {
     }
   }
 
-  chipClass = (id) => {
-    const base = "fomio-me-filter-chips__chip";
-    return this.activeId === id ? `${base} ${base}--active` : base;
-  };
-
   <template>
-    <div class="fomio-me-filter-chips" role="group" aria-label={{this.groupAriaLabel}}>
-      {{#each @filters as |f|}}
-        <button
-          type="button"
-          class={{this.chipClass f.id}}
-          aria-pressed={{if (eq this.activeId f.id) "true" "false"}}
-          {{on "click" (fn this.selectFilter f.id)}}
-        >
-          {{this.chipLabel f.labelKey}}
-        </button>
-      {{/each}}
-    </div>
+    <FomioSegmentedControl
+      @wrapperClass="fomio-me-filter-chips"
+      @buttonClass="fomio-me-filter-chips__chip"
+      @ariaLabel={{this.groupAriaLabel}}
+      @options={{this.options}}
+      @onSelect={{this.selectFilter}}
+    />
     {{#if this.showEmptyState}}
       <p class="fomio-me-filter-chips__empty" role="status">
         {{this.emptyStateLabel}}

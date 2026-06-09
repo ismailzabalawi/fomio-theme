@@ -94,7 +94,7 @@ html.fomio-color-dark {
 // Fallback until resolver marks body as ready.
 // Limit this to desktop-like pointer environments so landscape phones
 // never flash the desktop sidebar before touch mode is applied.
-@media (min-width: 640px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
   body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-ready) .fomio-sidebar {
     display: flex;
   }
@@ -593,19 +593,6 @@ body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   .user-main .user-preferences .controls .btn-danger {
     opacity: 1;
     filter: none;
-  }
-}
-
-body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-rail.user-activity-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-rail.user-messages-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-rail.user-notifications-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-rail.user-invited-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-rail.user-preferences-page:not(.fomio-auth-mode) {
-  #main-outlet .user-main .user-navigation.user-navigation-primary,
-  #main-outlet .user-main .nav-pills.user-nav,
-  #main-outlet .user-main ul.nav-pills.action-list.main-nav.nav.user-nav {
-    display: none !important;
   }
 }
 
@@ -1688,14 +1675,6 @@ body.fomio-notifications-master-active.fomio-surface-rail:not(.fomio-auth-mode) 
   &.user-invited-page,
   &.user-preferences-page,
   &.user-badges-page {
-    #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
-    #main-outlet .user-main > .user-navigation.user-navigation-primary,
-    #main-outlet .user-main > .new-user-wrapper > .user-navigation.user-navigation-primary,
-    #main-outlet .user-main .nav-pills.user-nav,
-    #main-outlet .user-main ul.nav-pills.action-list.main-nav.nav.user-nav {
-      display: none !important;
-    }
-
     #main-outlet .user-main > section.about {
       margin-bottom: 18px;
     }

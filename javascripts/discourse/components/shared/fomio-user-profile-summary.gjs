@@ -5,6 +5,8 @@ import ageWithTooltip from "discourse/helpers/age-with-tooltip";
 import icon from "discourse/helpers/d-icon";
 import HtmlWithLinks from "discourse/components/html-with-links";
 import FomioAvatar from "./fomio-avatar";
+import FomioButton from "./fomio-button";
+import FomioMetaRow from "./fomio-meta-row";
 
 export default class FomioUserProfileSummary extends Component {
   get user() {
@@ -62,7 +64,7 @@ export default class FomioUserProfileSummary extends Component {
   }
 
   get showFacts() {
-    return Boolean(this.user?.location || this.websiteLabel);
+    return this.facts.length > 0;
   }
 
   get markerText() {
@@ -71,7 +73,7 @@ export default class FomioUserProfileSummary extends Component {
     }
 
     if (this.user?.admin) {
-      return "Discourse Admin";
+      return "Fomio Admin";
     }
 
     if (this.user?.moderator) {
@@ -85,6 +87,28 @@ export default class FomioUserProfileSummary extends Component {
     return this.args.stats ?? [];
   }
 
+  get facts() {
+    const facts = [];
+
+    if (this.user?.location) {
+      facts.push({
+        key: "location",
+        icon: "location-dot",
+        value: this.user.location,
+      });
+    }
+
+    if (this.websiteLabel) {
+      facts.push({
+        key: "website",
+        icon: "globe",
+        value: this.websiteLabel,
+      });
+    }
+
+    return facts;
+  }
+
   get detailsItems() {
     return this.args.detailsItems ?? [];
   }
@@ -95,6 +119,10 @@ export default class FomioUserProfileSummary extends Component {
 
   get showExpand() {
     return Boolean(this.args.showExpand && this.args.onToggleExpand);
+  }
+
+  get detailsPanelId() {
+    return "collapsed-info-panel";
   }
 
   get showAdminAction() {
@@ -126,8 +154,7 @@ export default class FomioUserProfileSummary extends Component {
   }
 
   get expandButtonClass() {
-    let className =
-      "fomio-me-hub__summary-action fomio-me-hub__summary-action--secondary user-profile-toggle-btn";
+    let className = "fomio-me-hub__summary-action user-profile-toggle-btn";
 
     if (this.useHubStyleExpandToggle) {
       className += " fomio-me-hub__summary-action--toggle";
@@ -173,24 +200,16 @@ export default class FomioUserProfileSummary extends Component {
             {{/if}}
 
             {{#if this.showFacts}}
-              <span class="fomio-me-hub__summary-facts">
-                {{#if this.user.location}}
+              <FomioMetaRow @extraClass="fomio-me-hub__summary-facts">
+                {{#each this.facts as |fact|}}
                   <span class="fomio-me-hub__summary-fact">
                     <span class="fomio-me-hub__summary-fact-icon" aria-hidden="true">{{icon
-                        "location-dot"
+                        fact.icon
                       }}</span>
-                    <span class="fomio-me-hub__summary-fact-copy">{{this.user.location}}</span>
+                    <span class="fomio-me-hub__summary-fact-copy">{{fact.value}}</span>
                   </span>
-                {{/if}}
-                {{#if this.websiteLabel}}
-                  <span class="fomio-me-hub__summary-fact">
-                    <span class="fomio-me-hub__summary-fact-icon" aria-hidden="true">{{icon
-                        "globe"
-                      }}</span>
-                    <span class="fomio-me-hub__summary-fact-copy">{{this.websiteLabel}}</span>
-                  </span>
-                {{/if}}
-              </span>
+                {{/each}}
+              </FomioMetaRow>
             {{/if}}
 
             {{#if this.bioHtml}}
@@ -202,7 +221,7 @@ export default class FomioUserProfileSummary extends Component {
             {{/if}}
 
             {{#if this.stats.length}}
-              <span class="fomio-me-hub__summary-stats">
+              <FomioMetaRow @extraClass="fomio-me-hub__summary-stats" @emphasized={{true}}>
                 {{#each this.stats as |stat|}}
                   <span class="fomio-me-hub__summary-stat">
                     <span class="fomio-me-hub__summary-stat-icon" aria-hidden="true">{{icon
@@ -212,7 +231,7 @@ export default class FomioUserProfileSummary extends Component {
                       {{stat.label}}</span>
                   </span>
                 {{/each}}
-              </span>
+              </FomioMetaRow>
             {{/if}}
           </span>
         </div>
@@ -221,23 +240,25 @@ export default class FomioUserProfileSummary extends Component {
           <div class="fomio-me-hub__summary-actions">
             {{#if this.adminFirst}}
               {{#if this.showAdminAction}}
-                <a
-                  href={{this.args.adminHref}}
-                  class="fomio-me-hub__summary-action fomio-me-hub__summary-action--secondary"
+                <FomioButton
+                  @href={{this.args.adminHref}}
+                  @variant="secondary"
+                  @size="sm"
+                  @leadingIcon="wrench"
+                  @extraClass="fomio-me-hub__summary-action"
                 >
-                  <span class="fomio-me-hub__summary-action-icon" aria-hidden="true">{{icon
-                      "wrench"
-                    }}</span>
                   <span class="fomio-me-hub__summary-action-label">{{this.args.adminLabel}}</span>
-                </a>
+                </FomioButton>
               {{/if}}
             {{/if}}
 
             {{#if this.showExpand}}
-              <button
-                type="button"
-                class={{this.expandButtonClass}}
-                aria-controls="collapsed-info-panel"
+              <FomioButton
+                @variant="secondary"
+                @size="sm"
+                @iconOnly={{this.useHubStyleExpandToggle}}
+                @extraClass={{this.expandButtonClass}}
+                aria-controls={{this.detailsPanelId}}
                 aria-expanded={{if this.args.showDetails "true" "false"}}
                 aria-label={{this.expandButtonAriaLabel}}
                 title={{this.expandButtonLabel}}
@@ -249,20 +270,20 @@ export default class FomioUserProfileSummary extends Component {
                 {{#unless this.useHubStyleExpandToggle}}
                   <span class="fomio-me-hub__summary-action-label">{{this.expandButtonLabel}}</span>
                 {{/unless}}
-              </button>
+              </FomioButton>
             {{/if}}
 
             {{#unless this.adminFirst}}
               {{#if this.showAdminAction}}
-                <a
-                  href={{this.args.adminHref}}
-                  class="fomio-me-hub__summary-action fomio-me-hub__summary-action--secondary"
+                <FomioButton
+                  @href={{this.args.adminHref}}
+                  @variant="secondary"
+                  @size="sm"
+                  @leadingIcon="wrench"
+                  @extraClass="fomio-me-hub__summary-action"
                 >
-                  <span class="fomio-me-hub__summary-action-icon" aria-hidden="true">{{icon
-                      "wrench"
-                    }}</span>
                   <span class="fomio-me-hub__summary-action-label">{{this.args.adminLabel}}</span>
-                </a>
+                </FomioButton>
               {{/if}}
             {{/unless}}
           </div>
@@ -270,7 +291,7 @@ export default class FomioUserProfileSummary extends Component {
       </div>
 
       {{#if this.showDetails}}
-        <div class="fomio-me-hub__details is-open" id="collapsed-info-panel">
+        <div class="fomio-me-hub__details is-open" id={{this.detailsPanelId}}>
           <dl>
             {{#each this.detailsItems as |item|}}
               <div>

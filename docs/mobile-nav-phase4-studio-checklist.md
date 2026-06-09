@@ -22,7 +22,7 @@ Use before release or after major touch-shell changes. Aligns with `docs/50-stud
 - [ ] **Motion:** `prefers-reduced-motion` respected for sheet animation.
 - [ ] **Safe area:** `env(safe-area-inset-*)` on dock and sheet.
 - [ ] **No horizontal scroll** on typical topic with images at touch widths.
-- [ ] **Desktop / rail / expanded:** unchanged; Master Pane still desktop-only.
+- [ ] **Desktop / rail / expanded:** unchanged; non-touch surfaces share the same Master Pane overlay model, with sidebar width as the only surface difference.
 
 ## Verdict
 

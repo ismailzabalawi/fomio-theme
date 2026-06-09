@@ -1,6 +1,12 @@
 import { apiInitializer } from "discourse/lib/api";
 import getURL, { withoutPrefix } from "discourse/lib/get-url";
 import { isFomioShellPath } from "../lib/fomio-route-mode";
+import {
+  DESKTOP_MASTER_PANE_OPEN_CLASS,
+  resolveFomioSurfaceMode,
+  reconcileFomioSurfaceState,
+  TOUCH_SHELL_OPEN_CLASS,
+} from "../lib/fomio-surface-mode";
 
 const SURFACE_CLASS_BY_MODE = {
   expanded: "fomio-surface-expanded",
@@ -32,39 +38,6 @@ function hasNoHover() {
   return window.matchMedia("(hover: none)").matches;
 }
 
-function shortestViewportSide(width) {
-  return Math.min(width, window.innerHeight || width);
-}
-
-function resolveSurfaceMode(width) {
-  const coarseTouchDevice = hasCoarsePointer() && hasNoHover();
-  const shortSide = shortestViewportSide(width);
-
-  // Authoritative Fomio surface resolver:
-  // keep touch ownership on phone-class devices in both portrait and
-  // landscape. Tablet widths must stay on the rail/desktop shell so they
-  // don't fall back to native header behavior when Discourse is not applying
-  // the mobile theme surface.
-  if (coarseTouchDevice && shortSide < 640) {
-    return "touch";
-  }
-
-  if (width < 640) {
-    return "touch";
-  }
-
-  if (width >= 1280) {
-    return "expanded";
-  }
-  if (width >= 1024) {
-    return "compact-desktop";
-  }
-  if (width >= 640) {
-    return "rail";
-  }
-  return "touch";
-}
-
 function applySurfaceModeClasses(mode) {
   const { classList } = document.body;
 
@@ -77,6 +50,8 @@ function clearSurfaceModeClasses() {
   const { classList } = document.body;
   classList.remove(...SURFACE_CLASSES);
   classList.remove(READY_CLASS);
+  classList.remove(TOUCH_SHELL_OPEN_CLASS);
+  classList.remove(DESKTOP_MASTER_PANE_OPEN_CLASS);
 }
 
 export default apiInitializer("1.8.0", (api) => {
@@ -101,13 +76,19 @@ export default apiInitializer("1.8.0", (api) => {
       return;
     }
 
-    const nextMode = resolveSurfaceMode(window.innerWidth);
+    const nextMode = resolveFomioSurfaceMode({
+      width: window.innerWidth,
+      height: window.innerHeight || window.innerWidth,
+      coarsePointer: hasCoarsePointer(),
+      noHover: hasNoHover(),
+    });
     if (nextMode === activeMode) {
       // Ensure ready class is restored if another script removed it.
       document.body.classList.add(READY_CLASS);
       return;
     }
 
+    reconcileFomioSurfaceState(document.body.classList, activeMode, nextMode);
     activeMode = nextMode;
     applySurfaceModeClasses(nextMode);
   }

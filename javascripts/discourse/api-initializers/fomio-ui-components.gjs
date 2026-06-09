@@ -25,6 +25,14 @@ import { apiInitializer } from "discourse/lib/api";
 
 // ── Dropdown ───────────────────────────────────────────────────────────────
 
+function isManagedDropdownElement(element) {
+  return element?.closest?.(".fomio-dropdown[data-fomio-managed='true']");
+}
+
+function isManagedTabsElement(element) {
+  return element?.closest?.(".fomio-tabs[data-fomio-managed='true']");
+}
+
 function openDropdown(trigger) {
   trigger.setAttribute("aria-expanded", "true");
   const panel = getDropdownPanel(trigger);
@@ -85,6 +93,10 @@ function handleDropdownClick(event) {
   const trigger = event.target.closest(".fomio-dropdown__trigger");
 
   if (trigger) {
+    if (isManagedDropdownElement(trigger)) {
+      return;
+    }
+
     event.stopPropagation();
     const isOpen = trigger.getAttribute("aria-expanded") === "true";
 
@@ -110,6 +122,14 @@ function handleDropdownClick(event) {
 
 function handleDropdownKeydown(event) {
   const { key } = event;
+  const target = event.target;
+
+  if (
+    isManagedDropdownElement(target) ||
+    isManagedDropdownElement(target?.closest?.(".fomio-dropdown__panel"))
+  ) {
+    return;
+  }
 
   // Escape — close open dropdown (or submenu first)
   if (key === "Escape") {
@@ -226,14 +246,14 @@ function selectTab(trigger) {
 
 function handleTabClick(event) {
   const trigger = event.target.closest(".fomio-tabs__trigger");
-  if (trigger) {
+  if (trigger && !isManagedTabsElement(trigger)) {
     selectTab(trigger);
   }
 }
 
 function handleTabKeydown(event) {
   const trigger = event.target.closest(".fomio-tabs__trigger");
-  if (!trigger) {
+  if (!trigger || isManagedTabsElement(trigger)) {
     return;
   }
 

@@ -165,11 +165,11 @@ export default class FomioMeHub extends Component {
 
   get adminMarker() {
     if (this.viewedUser?.admin) {
-      return i18n("admin.title");
+      return "Fomio Admin";
     }
 
     if (this.viewedUser?.moderator) {
-      return i18n("moderator");
+      return "Moderator";
     }
 
     return null;

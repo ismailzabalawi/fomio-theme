@@ -10,6 +10,7 @@ import {
   subscribeDesktopSearchPalette,
 } from "../../lib/fomio-desktop-search-palette";
 import { isFomioShellPath } from "../../lib/fomio-mobile-nav-paths";
+import { isTouchViewportWidth } from "../../lib/fomio-surface-mode";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
 function isEditableTarget(element) {
@@ -29,12 +30,12 @@ function isEditableTarget(element) {
   return ["input", "textarea", "select"].includes(tagName);
 }
 
-function isPhoneWidthViewport() {
+function isTouchWidthViewport() {
   if (typeof window === "undefined") {
     return false;
   }
 
-  return window.innerWidth < 640;
+  return isTouchViewportWidth(window.innerWidth);
 }
 
 export default class FomioDesktopSearchPalette extends Component {
@@ -53,7 +54,7 @@ export default class FomioDesktopSearchPalette extends Component {
 
     this.#unsubscribeTouch = subscribeFomioTouchShell((value) => {
       this.isTouchShell = value;
-      if (value && isPhoneWidthViewport()) {
+      if (value && isTouchWidthViewport()) {
         closeDesktopSearchPalette();
       }
     });
@@ -136,7 +137,7 @@ export default class FomioDesktopSearchPalette extends Component {
 
     // Keep the desktop palette host alive on foldables/tablet-class widths
     // even if focus/keyboard changes briefly flip the shell into touch mode.
-    return !this.isTouchShell || !isPhoneWidthViewport() || this.isSearchSheetOpen;
+    return !this.isTouchShell || !isTouchWidthViewport() || this.isSearchSheetOpen;
   }
 
   get desktopSearchInputId() {

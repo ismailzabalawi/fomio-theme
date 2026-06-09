@@ -1,20 +1,10 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
-import { on } from "@ember/modifier";
 import SearchMenu from "discourse/components/search-menu";
+import FomioCommandPalette from "./fomio-command-palette";
 
 export default class FomioMobileSearchPalette extends Component {
-  @action
-  onBackdropClick() {
-    this.args.onClose?.();
-  }
-
-  @action
-  onKeydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      this.args.onClose?.();
-    }
+  get isOpen() {
+    return this.args.open ?? this.args.isOpen ?? false;
   }
 
   get inputId() {
@@ -22,34 +12,26 @@ export default class FomioMobileSearchPalette extends Component {
   }
 
   <template>
-    {{#if @isOpen}}
-      <div
-        class="fomio-mobile-search-palette__backdrop"
-        aria-hidden="true"
-        {{on "click" this.onBackdropClick}}
-      ></div>
-      <div
-        class="fomio-mobile-search-palette"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Search Fomio"
-        tabindex="-1"
-        {{on "keydown" this.onKeydown}}
-      >
-        <div class="fomio-mobile-search-palette__surface">
-          <div class="fomio-mobile-search-palette__inner">
-            <div class="fomio-search-sheet__search search-menu">
-              <SearchMenu
-                @onClose={{@onClose}}
-                @inlineResults={{true}}
-                @autofocusInput={{true}}
-                @location="header"
-                @searchInputId={{this.inputId}}
-              />
-            </div>
-          </div>
+    <FomioCommandPalette
+      @open={{this.isOpen}}
+      @onOpenChange={{@onOpenChange}}
+      @onClose={{@onClose}}
+      @title="Search Fomio"
+      @extraClass="fomio-mobile-search-palette"
+      @backdropClass="fomio-mobile-search-palette__backdrop"
+      as |palette|
+    >
+      <div class="fomio-mobile-search-palette__content">
+        <div class="fomio-search-sheet__search search-menu">
+          <SearchMenu
+            @onClose={{palette.close}}
+            @inlineResults={{true}}
+            @autofocusInput={{true}}
+            @location="header"
+            @searchInputId={{this.inputId}}
+          />
         </div>
       </div>
-    {{/if}}
+    </FomioCommandPalette>
   </template>
 }

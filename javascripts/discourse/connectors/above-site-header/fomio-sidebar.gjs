@@ -28,7 +28,8 @@ import {
   isOwnProfileShellPath,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
-import { PENDING_RAIL_OVERLAY_KEY } from "../../lib/fomio-rail-overlay-state";
+import { subscribeMessagesState } from "../../lib/fomio-messages-state";
+import { PENDING_MASTER_PANE_OVERLAY_KEY } from "../../lib/fomio-master-pane-overlay-state";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
 const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
@@ -47,17 +48,26 @@ export default class FomioSidebar extends Component {
   @tracked isTouchSurface = false;
   @tracked isSearchSheetOpen = false;
   @tracked notificationsMenuOpen = false;
+  @tracked messagesFilter = "latest";
+  @tracked previousMasterContext = null;
+  @tracked masterContextChanged = false;
   #unsubscribeTouchShell = null;
   #unsubscribeSearchPalette = null;
   #notificationsMenuStateHandler = null;
+  #unsubscribeMessages = null;
+  #contextSwitchTimeoutId = null;
 
   constructor(owner, args) {
     super(owner, args);
+    this.#restoreHubExpandState();
     this.#unsubscribeTouchShell = subscribeFomioTouchShell((isTouchSurface) => {
       this.isTouchSurface = isTouchSurface;
     });
     this.#unsubscribeSearchPalette = subscribeDesktopSearchPalette((isOpen) => {
       this.isSearchSheetOpen = isOpen;
+    });
+    this.#unsubscribeMessages = subscribeMessagesState((s) => {
+      this.messagesFilter = s.filter;
     });
     this.#notificationsMenuStateHandler = (event) => {
       this.notificationsMenuOpen = Boolean(event?.detail?.open);
@@ -72,6 +82,7 @@ export default class FomioSidebar extends Component {
     super.willDestroy(...arguments);
     this.#unsubscribeTouchShell?.();
     this.#unsubscribeSearchPalette?.();
+    this.#unsubscribeMessages?.();
     window.removeEventListener(
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
@@ -98,6 +109,22 @@ export default class FomioSidebar extends Component {
     return document.body?.classList.contains("fomio-surface-compact-desktop");
   }
 
+  get isExpandedSurface() {
+    if (typeof document === "undefined") {
+      return false;
+    }
+
+    return document.body?.classList.contains("fomio-surface-expanded");
+  }
+
+  get isMasterPaneOverlaySurface() {
+    return (
+      this.isRailSurface ||
+      this.isCompactDesktopSurface ||
+      this.isExpandedSurface
+    );
+  }
+
   get shouldRender() {
     return isFomioShellPath(this.currentPath) && !this.isTouchSurface;
   }
@@ -106,19 +133,29 @@ export default class FomioSidebar extends Component {
   // Sidebar is the master layer. For this slice we map current routing
   // to a lightweight master context model without changing route behavior.
   get activeMasterContext() {
+    let context = "home";
     if (this.isHubsActive) {
-      return "hubs";
+      context = "hubs";
+    } else if (this.isBookmarksActive) {
+      context = "bookmarks";
+    } else if (this.isNotificationsActive) {
+      context = "notifications";
+    } else if (this.isProfileActive) {
+      context = "profile";
     }
-    if (this.isBookmarksActive) {
-      return "bookmarks";
+
+    // Detect context switch and trigger animation
+    if (context !== this.previousMasterContext && this.previousMasterContext !== null) {
+      this.masterContextChanged = true;
+      clearTimeout(this.#contextSwitchTimeoutId);
+      // Reset the flag after animation duration
+      this.#contextSwitchTimeoutId = setTimeout(() => {
+        this.masterContextChanged = false;
+      }, 200); // matches --fomio-dur-med
     }
-    if (this.isNotificationsActive) {
-      return "notifications";
-    }
-    if (this.isProfileActive) {
-      return "profile";
-    }
-    return "home";
+    this.previousMasterContext = context;
+
+    return context;
   }
 
   get masterContexts() {
@@ -231,25 +268,23 @@ export default class FomioSidebar extends Component {
     if (typeof document === "undefined") {
       return false;
     }
+
     const classes = document.body?.classList;
-    const isExpandedOrCompact =
-      classes?.contains("fomio-surface-expanded") ||
-      classes?.contains("fomio-surface-compact-desktop");
     return (
-      this.activeMasterContext === "hubs" &&
-      Boolean(isExpandedOrCompact) &&
+      this.isMasterPaneOverlaySurface &&
       classes?.contains("fomio-sidebar-active") &&
-      !classes?.contains("fomio-auth-mode")
+      !classes?.contains("fomio-auth-mode") &&
+      classes?.contains("fomio-master-pane-rail-open")
     );
   }
 
-  // Secondary Hub list is intentionally desktop-only for this skeleton.
-  // Rail stays symbolic and touch stays bottom-nav driven.
+  // Overlay surfaces use the shared master pane instead of an inline hubs tree.
   get showHubsSecondaryList() {
     return (
       this.activeMasterContext === "hubs" &&
       !this.isMasterPaneActive &&
-      !this.isRailOrTouchSurface &&
+      !this.isMasterPaneOverlaySurface &&
+      !this.isTouchSurface &&
       this.hubsWithTerets.length > 0
     );
   }
@@ -280,6 +315,16 @@ export default class FomioSidebar extends Component {
 
     return count > 99 ? "99+" : String(count);
   }
+
+  get messagesBadge() {
+    const count = this.currentUser?.unread_private_messages;
+    if (!count || count <= 0) {
+      return null;
+    }
+
+    return count > 99 ? "99+" : String(count);
+  }
+
   get signInLabel()        { return i18n(themePrefix("sidebar.sign_in")); }
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
   get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
@@ -392,6 +437,31 @@ export default class FomioSidebar extends Component {
     return url;
   }
 
+  // ── Hub expand state persistence ────────────────────────────
+
+  #restoreHubExpandState() {
+    try {
+      const stored = window.sessionStorage?.getItem("fomio_expanded_hub_id");
+      if (stored) {
+        this._expandedHubId = parseInt(stored, 10);
+      }
+    } catch (e) {
+      // sessionStorage may be blocked in some contexts
+    }
+  }
+
+  #persistHubExpandState() {
+    try {
+      if (this._expandedHubId) {
+        window.sessionStorage?.setItem("fomio_expanded_hub_id", String(this._expandedHubId));
+      } else {
+        window.sessionStorage?.removeItem("fomio_expanded_hub_id");
+      }
+    } catch (e) {
+      // sessionStorage may be blocked in some contexts
+    }
+  }
+
   // ── Actions ──────────────────────────────────────────────────
 
   @action
@@ -413,6 +483,7 @@ export default class FomioSidebar extends Component {
     e.preventDefault();
     e.stopPropagation();
     this._expandedHubId = this._expandedHubId === hubId ? null : hubId;
+    this.#persistHubExpandState();
   }
 
   // Close the mobile sidebar when a navigation link inside it is tapped.
@@ -438,23 +509,23 @@ export default class FomioSidebar extends Component {
   }
 
   @action
-  toggleRailOverlay(context, e) {
+  toggleMasterPaneOverlay(context, e) {
     if (typeof document === "undefined") {
       return;
     }
 
     const classes = document.body?.classList;
-    const canOpenRailOverlay =
-      classes?.contains("fomio-surface-rail") &&
+    const canOpenMasterPaneOverlay =
+      this.isMasterPaneOverlaySurface &&
       classes?.contains("fomio-sidebar-active") &&
       !classes?.contains("fomio-auth-mode");
 
-    if (!canOpenRailOverlay) {
+    if (!canOpenMasterPaneOverlay) {
       return;
     }
 
     if (typeof window !== "undefined" && window.sessionStorage) {
-      window.sessionStorage.setItem(PENDING_RAIL_OVERLAY_KEY, context);
+      window.sessionStorage.setItem(PENDING_MASTER_PANE_OVERLAY_KEY, context);
     }
 
     e?.preventDefault();
@@ -473,12 +544,12 @@ export default class FomioSidebar extends Component {
 
   @action
   onHubsActivate(e) {
-    this.toggleRailOverlay("hubs", e);
+    this.toggleMasterPaneOverlay("hubs", e);
   }
 
   @action
   onBookmarksActivate(e) {
-    this.toggleRailOverlay("bookmarks", e);
+    this.toggleMasterPaneOverlay("bookmarks", e);
   }
 
   @action
@@ -498,7 +569,7 @@ export default class FomioSidebar extends Component {
 
   @action
   onProfileActivate(e) {
-    this.toggleRailOverlay("profile", e);
+    this.toggleMasterPaneOverlay("profile", e);
   }
 
   <template>
@@ -513,7 +584,7 @@ export default class FomioSidebar extends Component {
       ></div>
 
       <nav
-        class="fomio-sidebar"
+        class="fomio-sidebar {{if this.masterContextChanged 'fomio-sidebar--context-switched'}}"
         data-fomio-master-context={{this.activeMasterContext}}
         aria-label={{this.ariaLabel}}
         {{on "click" this.onNavClick}}
@@ -635,6 +706,15 @@ export default class FomioSidebar extends Component {
             >
               <span class="fomio-sidebar__icon">{{icon "compass"}}</span>
               <span class="fomio-sidebar__item-label">{{this.hubsLabel}}</span>
+              {{#if this.isRailSurface}}
+                <span
+                  class="fomio-sidebar__item-affordance"
+                  aria-hidden="true"
+                  title="{{this.hubsLabel}} (expand)"
+                >
+                  {{icon "angle-right"}}
+                </span>
+              {{/if}}
             </a>
 
             {{#if this.showHubsSecondaryList}}
@@ -749,7 +829,12 @@ export default class FomioSidebar extends Component {
               class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
               {{on "click" this.onProfileActivate}}
             >
-              <span class="fomio-sidebar__icon">{{icon "user"}}</span>
+              <span class="fomio-sidebar__icon">
+                {{icon "user"}}
+                {{#if this.messagesBadge}}
+                  <span class="fomio-sidebar__badge">{{this.messagesBadge}}</span>
+                {{/if}}
+              </span>
               <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
             </a>
           {{else}}

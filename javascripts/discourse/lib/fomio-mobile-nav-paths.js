@@ -199,6 +199,22 @@ export function badgesPathForUser(user) {
 }
 
 /**
+ * Check if the current path is viewing the user's own messages.
+ * Handles both `/u/:username/messages` and `/my/messages` patterns.
+ */
+export function isOwnMessagesPath(path, user) {
+  if (!user?.username) {
+    return false;
+  }
+  const normalizedPath = normalizePath(path).toLowerCase();
+  const username = user.username.toLowerCase();
+  return (
+    normalizedPath.startsWith(`/u/${username}/messages`) ||
+    normalizedPath.startsWith("/my/messages")
+  );
+}
+
+/**
  * Staff “Manage user” in admin (`/admin/users/:id/:username`).
  */
 export function adminManageUserPathForUser(user) {

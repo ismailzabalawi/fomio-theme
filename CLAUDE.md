@@ -34,7 +34,7 @@ There is no local build step — the theme is deployed by pushing to GitHub, whi
 
 | Skill | Triggers |
 |-------|---------|
-| `fomio-web-ds` | `/web-ds`, `/token`, `/layout`, `/auth-ui`, `/editorial`, `/sidebar`, `/breakpoint` |
+| `fomio-web-ds` | `/web-ds`, `/token`, `/layout`, `/auth-ui`, `/editorial`, `/sidebar`, `/breakpoint`, `/component` (shared component updates) |
 | `discourse-theme-developer` | `/outlet`, `/transformer`, `/connector`, `/scss`, `/theme` |
 | `discourse-archeologist` | `/trace`, `/schema`, `/serialize` — when tracing what Discourse API returns |
 
@@ -158,6 +158,86 @@ Rules:
 - **Styling:** SCSS with `fomio-` class prefix, `--d-*` Discourse variables for color
 - **Source of truth for Discourse internals:** `discourse/` at repo root — read-only
 
+## Shared Component System
+
+Fomio Web uses a **three-layer design system** for reusable components. All shared components live in `javascripts/discourse/components/shared/` and are styled in `common.scss`.
+
+### Three Layers
+
+**Layer 1: Controls** — form elements and basic input components
+- `fomio-button.gjs` — Button with variants (primary, secondary, ghost, danger), sizes, loading, icons
+- `fomio-input.gjs` — Text input with label, hint, error, icons (search variant available as `fomio-search-input.gjs`)
+- `fomio-select.gjs` — Select dropdown with label, hint, error, icons
+- `fomio-textarea.gjs` — Textarea with label, hint, error
+
+**Layer 2: Content** — display and information components
+- `fomio-avatar.gjs` — User avatar with sizes, palette, online state, badge
+- `fomio-badge.gjs` — Inline badge/tag for labeling and categorization
+- `fomio-card.gjs` — Generic card container (base for byte-card, context cards, etc.)
+- `fomio-identity.gjs` — Avatar + name + subtitle composition
+- `fomio-list.gjs`, `fomio-list-item.gjs`, `fomio-list-section-header.gjs`, `fomio-list-separator.gjs` — List family
+- `fomio-meta-row.gjs` — Metadata row (label + value) for facts, stats, details
+- `fomio-empty-state.gjs` — Illustration + message + action for empty views
+
+**Layer 3: Interaction** — surface and behavior components
+- `fomio-segmented-control.gjs` — Inline selection control (pills/buttons)
+- `fomio-tabs.gjs` — Tab interface with keyboard navigation
+- `fomio-dropdown.gjs` — Dropdown menu with keyboard navigation and nested submenus
+- `fomio-command-palette.gjs` — Command/search palette with fuzzy find
+- `fomio-search-sheet.gjs` — Bottom sheet for full-screen search
+- `fomio-ephemeral-sheet.gjs` — Temporary overlay/modal surface
+- `fomio-modal.gjs` — Full modal dialog
+- `fomio-radio-group.gjs` — Radio button group
+- `fomio-toast.gjs` — Toast notification
+
+**Feature compositions** (use shared primitives, not layer-definition candidates):
+- `fomio-notifications-menu.gjs` — Product-specific notification center shell
+- `fomio-mobile-search-palette.gjs` — Mobile search UI composition
+- `fomio-composer-category-picker.gjs` — Composer category selection
+- `fomio-me-filter-chips.gjs` — "Me" filter behavior composition
+- `fomio-user-profile-summary.gjs` — Profile identity + stats + actions
+- `fomio-me-activity-nav.gjs` — Route-based activity navigation (not a selection control)
+- `fomio-byte-card.gjs` — Byte preview card composition
+
+### Interactive Behavior Layer
+
+**`api-initializers/fomio-ui-components.gjs`** manages all stateless, interactive DOM behavior:
+- **Dropdown** — `aria-expanded` toggle, click-outside close, keyboard navigation (Arrow keys, Escape, nested submenus via ArrowRight)
+- **Tabs** — `aria-selected` state, panel visibility via `aria-hidden`, keyboard navigation (Arrow keys, Home/End)
+- **Switch** — `aria-checked` toggle via click or Space/Enter
+- **Chip** — `aria-pressed` toggle; single-select groups via `data-chip-group="single"`
+- **Surface observer** — IntersectionObserver lazy-reveal for `.fomio-surface--hidden` → `.fomio-surface--observed`
+
+State lives in **aria attributes** — SCSS keys off them without extra JS class names. All handlers use document-level event delegation (one listener per event type, persists across routes).
+
+### Style Host
+
+All shared component styles are defined in `common.scss`:
+- **Section 1A** — `--fomio-*` tokens (color, typography, spacing)
+- **Section 1B** — Dark mode color overrides
+- **Sections 2–6** — Layer 1, 2, 3 component styles (`.fomio-button`, `.fomio-input`, `.fomio-dropdown`, etc.)
+
+Desktop-only and mobile-only refinements go in `desktop/desktop.scss` and `mobile/mobile.scss` respectively.
+
+### Component API Conventions
+
+All shared components follow these conventions:
+- **Props:** Use semantic names (`variant`, `size`, `disabled`, `loading`, `leadingIcon`, `trailingIcon`, `@label`, `@hint`, `@error`)
+- **Styling:** Apply only `fomio-*` classes; let SCSS handle size/variant/state appearance
+- **Accessibility:** Use ARIA attributes (`aria-expanded`, `aria-selected`, `aria-checked`, `aria-pressed`, `aria-hidden`, `aria-disabled`) for semantic meaning
+- **Display-only:** Components themselves are stateless; consumers manage state via `@args` and event handlers (`@onClick`, `@onSelect`, `@onOpenChange`)
+- **Composition:** Layer 2 and 3 components compose Layer 1 primitives where it makes sense; feature components use any layer as needed
+
+### When to Add a Shared Component
+
+Add to `components/shared/` if the component:
+1. Is used across multiple features (not feature-specific)
+2. Fits cleanly into one of the three layers (or is a composition of existing layers)
+3. Has a simple, generic API (not product-logic-heavy)
+4. Belongs in a design system (not a one-off experimental UI)
+
+If unsure, keep feature UIs local first, then extract once a second use appears. Use the audit in `docs/phase-1-shared-components-audit.md` as the authoritative layer definition.
+
 ## Current File Structure
 
 ```
@@ -196,16 +276,23 @@ apps/web/
 └── javascripts/discourse/
     ├── api-initializers/
     │   ├── theme-initializer.gjs     # Auth UI enhancements + mobile handoff (see below)
+    │   ├── fomio-ui-components.gjs   # Interactive behavior layer: dropdowns, tabs, switches, chips, surface observer
     │   ├── fomio-color-mode.gjs      # Dark mode: syncs html.fomio-color-dark
     │   ├── fomio-layout.gjs          # Sidebar layout: toggles body.fomio-sidebar-active
     │   ├── fomio-rich-editor-toolbar.gjs  # Forces rich editor mode; registers ProseMirror toolbar extension
     │   └── my-theme.gjs             # Legacy placeholder — do not add to
     ├── components/
-    │   └── shared/                   # Shared GJS components (fomio-card, fomio-button, fomio-ph-icon, …)
+    │   └── shared/                   # Shared three-layer design system components
+    │       ├── Layer 1 (Controls): fomio-button, fomio-input, fomio-search-input, fomio-select, fomio-textarea
+    │       ├── Layer 2 (Content): fomio-avatar, fomio-badge, fomio-card, fomio-identity, fomio-list*,
+    │       │                      fomio-meta-row, fomio-empty-state, fomio-byte-card
+    │       └── Layer 3 (Interaction): fomio-segmented-control, fomio-tabs, fomio-dropdown, fomio-command-palette,
+    │                                  fomio-search-sheet, fomio-ephemeral-sheet, fomio-modal, fomio-radio-group,
+    │                                  fomio-toast, fomio-notifications-menu
     ├── lib/
     │   └── fomio-selection-toolbar-extension.js  # ProseMirror floating selection toolbar
     └── connectors/
-        ├── above-site-header/fomio-sidebar.gjs   # Persistent sidebar nav (desktop)
+        ├── above-site-header/fomio-sidebar.gjs   # Persistent non-touch sidebar nav (expanded/compact/rail)
         ├── above-site-header/fomio-bottom-bar.gjs # Mobile bottom navigation bar
         ├── before-composer-controls/fomio-composer-topbar.gjs  # Composer topbar: mode label, back, close (create/edit)
         ├── before-composer-fields/fomio-fullscreen-composer-fields.gjs  # Restores title/category/tags in fullscreen
@@ -421,6 +508,17 @@ All deep links are constructed from the `fomio_app_url` theme setting. Never har
 - **No hardcoded deep links** — always use `fomio_app_url` setting
 - **No hardcoded hex values** in SCSS — use `--fomio-*` tokens from `common.scss` Section 1
 - **No forbidden terminology** in `locales/en.yml` or any component copy
+
+### Shared Component Rules
+
+- **Shared components are display-only** — no business logic, no API calls, no data fetching
+- **State management:** Components receive state as `@args`; consumers manage state and pass event handlers (`@onClick`, `@onSelect`, `@onOpenChange`)
+- **Styling via `fomio-*` classes only** — never apply Discourse classes; let SCSS handle variant/size/state styling
+- **Accessibility first** — use ARIA attributes (`aria-expanded`, `aria-selected`, `aria-checked`, `aria-disabled`) for semantic meaning; test with screen readers
+- **Keep APIs simple** — use semantic prop names (`variant`, `size`, `disabled`, `loading`, `leadingIcon`, `trailingIcon`, `@label`, `@hint`, `@error`); avoid prop proliferation
+- **Composition over specialization** — reuse Layer 1/2 components in Layer 3; avoid creating near-duplicate components
+- **Document your component** — include a brief summary comment at the top explaining its role and public props
+- **Test across surfaces** — verify behavior on desktop, tablet (768px), and mobile (<768px) breakpoints before shipping
 
 ## Design System Notes
 

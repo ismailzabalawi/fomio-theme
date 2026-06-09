@@ -104,8 +104,8 @@ export default class FomioMobileSearch extends Component {
   <template>
     {{#if this.shouldRender}}
       <FomioMobileSearchPalette
-        @isOpen={{this.isSearchSheetOpen}}
-        @onClose={{this.closeSearchSheet}}
+        @open={{this.isSearchSheetOpen}}
+        @onOpenChange={{this.closeSearchSheet}}
         @searchInputId="fomio-mobile-search-input"
       />
     {{/if}}

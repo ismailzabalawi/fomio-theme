@@ -10,6 +10,10 @@ export default class FomioButton extends Component {
     return buttonClassNames(this.args);
   }
 
+  get isLink() {
+    return Boolean(this.args.href);
+  }
+
   get buttonType() {
     return this.args.type ?? "button";
   }
@@ -18,20 +22,45 @@ export default class FomioButton extends Component {
     return isControlDisabled(this.args);
   }
 
+  get href() {
+    if (this.isDisabled) {
+      return null;
+    }
+
+    return this.args.href;
+  }
+
   <template>
-    <button
-      type={{this.buttonType}}
-      class={{this.className}}
-      disabled={{this.isDisabled}}
-      ...attributes
-    >
-      {{#if @leadingIcon}}
-        {{icon @leadingIcon}}
-      {{/if}}
-      {{yield}}
-      {{#if @trailingIcon}}
-        {{icon @trailingIcon}}
-      {{/if}}
-    </button>
+    {{#if this.isLink}}
+      <a
+        href={{this.href}}
+        class={{this.className}}
+        aria-disabled={{if this.isDisabled "true"}}
+        ...attributes
+      >
+        {{#if @leadingIcon}}
+          {{icon @leadingIcon}}
+        {{/if}}
+        {{yield}}
+        {{#if @trailingIcon}}
+          {{icon @trailingIcon}}
+        {{/if}}
+      </a>
+    {{else}}
+      <button
+        type={{this.buttonType}}
+        class={{this.className}}
+        disabled={{this.isDisabled}}
+        ...attributes
+      >
+        {{#if @leadingIcon}}
+          {{icon @leadingIcon}}
+        {{/if}}
+        {{yield}}
+        {{#if @trailingIcon}}
+          {{icon @trailingIcon}}
+        {{/if}}
+      </button>
+    {{/if}}
   </template>
 }

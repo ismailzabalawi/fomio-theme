@@ -98,6 +98,10 @@ export default class FomioDropdown extends Component {
     return this.panelRole === "listbox" ? "option" : "menuitem";
   }
 
+  get panelInert() {
+    return !this.isOpen;
+  }
+
   @action
   registerRoot(element) {
     this.rootElement = element;
@@ -235,7 +239,12 @@ export default class FomioDropdown extends Component {
   }
 
   <template>
-    <div class={{this.className}} {{didInsert this.registerRoot}} ...attributes>
+    <div
+      class={{this.className}}
+      data-fomio-managed="true"
+      {{didInsert this.registerRoot}}
+      ...attributes
+    >
       {{#if (has-block "trigger")}}
         {{yield
           (hash
@@ -271,6 +280,7 @@ export default class FomioDropdown extends Component {
         class={{this.panelClass}}
         role={{this.panelRole}}
         aria-hidden={{if this.isOpen "false" "true"}}
+        inert={{this.panelInert}}
         {{on "keydown" this.panelKeydown}}
       >
         {{#if (has-block "panel")}}

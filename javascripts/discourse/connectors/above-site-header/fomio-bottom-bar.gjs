@@ -15,6 +15,7 @@ import {
   isOwnNotificationsPath,
   meHubPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
+import { subscribeMessagesState } from "../../lib/fomio-messages-state";
 import { fomioCurrentPath } from "../../lib/fomio-router-pathname";
 import {
   closeFomioNotificationsMenu,
@@ -35,9 +36,11 @@ export default class FomioBottomBar extends Component {
 
   @tracked isHidden = false;
   @tracked notificationsMenuOpen = false;
+  @tracked messagesFilter = "latest";
   #lastScrollY = 0;
   #scrollHandler = null;
   #notificationsMenuStateHandler = null;
+  #unsubscribeMessages = null;
 
   constructor(owner, args) {
     super(owner, args);
@@ -67,6 +70,9 @@ export default class FomioBottomBar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
+    this.#unsubscribeMessages = subscribeMessagesState((s) => {
+      this.messagesFilter = s.filter;
+    });
   }
 
   willDestroy() {
@@ -76,6 +82,7 @@ export default class FomioBottomBar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
+    this.#unsubscribeMessages?.();
   }
 
   get currentPath() {
@@ -152,6 +159,15 @@ export default class FomioBottomBar extends Component {
 
   get notificationsBadge() {
     const count = this.currentUser?.all_unread_notifications_count;
+    if (!count || count <= 0) {
+      return null;
+    }
+
+    return count > 99 ? "99+" : String(count);
+  }
+
+  get messagesBadge() {
+    const count = this.currentUser?.unread_private_messages;
     if (!count || count <= 0) {
       return null;
     }
@@ -258,7 +274,12 @@ export default class FomioBottomBar extends Component {
             aria-current={{if this.isMeActive "page"}}
             title={{this.meLabel}}
           >
-            <span class="fomio-bottom-bar__icon">{{icon "user"}}</span>
+            <span class="fomio-bottom-bar__icon">
+              {{icon "user"}}
+              {{#if this.messagesBadge}}
+                <span class="fomio-bottom-bar__badge">{{this.messagesBadge}}</span>
+              {{/if}}
+            </span>
             <span class="fomio-bottom-bar__label">{{this.meLabel}}</span>
           </a>
         {{else}}

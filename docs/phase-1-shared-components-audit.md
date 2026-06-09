@@ -248,18 +248,50 @@ Current inventory:
 - Phase 1 tasks:
   - Reuse these shared interaction components before adding new bespoke shells.
 
-## Feature Components That Need Boundary Review
+## Feature Adoption Status
 
 - Files:
   - [fomio-composer-category-picker.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-composer-category-picker.gjs)
-  - [fomio-me-filter-chips.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-me-filter-chips.gjs)
-  - [fomio-me-activity-nav.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-me-activity-nav.gjs)
+  - [fomio-notifications-menu.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-notifications-menu.gjs)
   - [fomio-mobile-search-palette.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-mobile-search-palette.gjs)
-  - [fomio-user-profile-summary.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-user-profile-summary.gjs)
 - Status:
-  - `Boundary review required`
+  - `Adopted on shared primitives`
 - Why:
-  - These are likely valid shared feature compositions, but they should be consumers of Layer 1/2/3 primitives, not new primitive definitions.
+  - These feature shells now consume the shared Layer 3 components and should be treated as reference adopters, not primitive-definition candidates.
+- Ongoing cleanup:
+  - Keep product data/loading logic local.
+  - Avoid re-introducing custom interaction state that duplicates `Dropdown`, `Tabs`, or `CommandPalette`.
+
+## Reviewed Feature Compositions
+
+- [fomio-me-filter-chips.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-me-filter-chips.gjs)
+  - Status:
+    - `Resolved`
+  - Decision:
+    - Keep as a feature composition.
+    - Use `fomio-segmented-control.gjs` as the underlying Layer 3 interaction surface.
+  - Why:
+    - The component owns feature behavior beyond selection UI: filter state, `document.body` syncing, lifecycle cleanup, and empty-state detection.
+
+- [fomio-me-activity-nav.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-me-activity-nav.gjs)
+  - Status:
+    - `Resolved`
+  - Decision:
+    - Keep as a feature composition.
+    - Do not force it into `Tabs` or `SegmentedControl`.
+  - Why:
+    - It is route navigation built on anchors, not an in-place selection control with local panels or button-only interaction.
+  - Follow-up:
+    - Treat this as evidence for a future shared `pill nav / tab links` primitive.
+
+- [fomio-user-profile-summary.gjs](/Users/ismailzabalawi/Projects/Fomio/apps/web/javascripts/discourse/components/shared/fomio-user-profile-summary.gjs)
+  - Status:
+    - `Resolved`
+  - Decision:
+    - Keep the feature boundary.
+    - Improve it by composing existing shared Layer 1/2 pieces where they fit.
+  - Why:
+    - This is primarily a profile-specific composition of identity, facts, stats, actions, and expanded details rather than a primitive definition.
 
 ## Phase 1 Execution Order
 

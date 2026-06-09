@@ -1,18 +1,21 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import MenuItem from "discourse/components/user-menu/menu-item";
 import { ajax } from "discourse/lib/ajax";
 import Notification from "discourse/models/notification";
 import UserMenuNotificationItem from "discourse/lib/user-menu/notification-item";
-import icon from "discourse/helpers/d-icon";
-import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioButton from "./fomio-button";
+import FomioEmptyState from "./fomio-empty-state";
+import FomioList from "./fomio-list";
+import FomioListItem from "./fomio-list-item";
+import FomioNotificationsMenuItem from "./fomio-notifications-menu-item";
+import FomioListSectionHeader from "./fomio-list-section-header";
+import FomioTabs from "./fomio-tabs";
 import {
   FOMIO_NOTIFICATIONS_MENU_CLASS,
   FOMIO_NOTIFICATIONS_MENU_CLOSE_EVENT,
@@ -21,14 +24,70 @@ import {
 } from "../../lib/fomio-notifications-menu";
 import { notificationsMenuClassNames } from "../../lib/fomio-interaction-classes";
 import {
-  messagesPathForUser,
   notificationsPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
 
 const TAB_ALL = "all";
-const TAB_MESSAGES = "messages";
+const TAB_RESPONSES = "responses";
+const TAB_LIKES = "likes";
+const TAB_MENTIONS = "mentions";
+const TAB_EDITS = "edits";
+const TAB_LINKS = "links";
 const DEFAULT_LIMIT = 30;
-const MESSAGE_TYPES = ["private_message", "group_message_summary"];
+
+const TAB_CONFIGS = [
+  {
+    key: TAB_ALL,
+    labelKey: "user.filters.all",
+    emptyTitleKey: "notifications_overlay.empty_all",
+    icon: "bell",
+    notificationTypes: null,
+    hrefSuffix: "/notifications",
+  },
+  {
+    key: TAB_RESPONSES,
+    labelKey: "user_action_groups.5",
+    emptyTitleKey: "notifications_overlay.empty_responses",
+    icon: "reply",
+    notificationTypes: ["posted", "quoted", "replied"],
+    hrefSuffix: "/notifications/responses",
+  },
+  {
+    key: TAB_LIKES,
+    labelKey: "user_action_groups.2",
+    emptyTitleKey: "notifications_overlay.empty_likes",
+    icon: "heart",
+    notificationTypes: ["liked", "liked_consolidated", "reaction"],
+    hrefSuffix: "/notifications/likes-received",
+  },
+  {
+    key: TAB_MENTIONS,
+    labelKey: "user_action_groups.7",
+    emptyTitleKey: "notifications_overlay.empty_mentions",
+    icon: "at",
+    notificationTypes: ["mentioned", "group_mentioned"],
+    hrefSuffix: "/notifications/mentions",
+    shouldDisplay({ siteSettings }) {
+      return Boolean(siteSettings.enable_mentions);
+    },
+  },
+  {
+    key: TAB_EDITS,
+    labelKey: "user_action_groups.11",
+    emptyTitleKey: "notifications_overlay.empty_edits",
+    icon: "pencil",
+    notificationTypes: ["edited"],
+    hrefSuffix: "/notifications/edits",
+  },
+  {
+    key: TAB_LINKS,
+    labelKey: "user_action_groups.17",
+    emptyTitleKey: "notifications_overlay.empty_links",
+    icon: "link",
+    notificationTypes: ["linked", "linked_consolidated"],
+    hrefSuffix: "/notifications/links",
+  },
+];
 
 function startOfDay(date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -55,6 +114,26 @@ function dateGroupKey(value) {
   return "earlier";
 }
 
+function groupedEntriesFor(entries) {
+  const groups = new Map();
+
+  for (const entry of entries) {
+    const key = dateGroupKey(entry.createdAt);
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push(entry);
+  }
+
+  return ["today", "yesterday", "earlier"]
+    .filter((key) => groups.has(key))
+    .map((key) => ({
+      id: key,
+      label: i18n(themePrefix(`notifications_overlay.groups.${key}`)),
+      entries: groups.get(key),
+    }));
+}
+
 export default class FomioNotificationsMenu extends Component {
   DESKTOP_GAP = 12;
   DESKTOP_MARGIN = 16;
@@ -68,8 +147,7 @@ export default class FomioNotificationsMenu extends Component {
   @service siteSettings;
 
   @tracked activeTab = TAB_ALL;
-  @tracked allEntries = null;
-  @tracked messageEntries = null;
+  @tracked entriesByTab = {};
   @tracked isLoading = false;
   @tracked isMarkingRead = false;
   @tracked isOpen = false;
@@ -102,8 +180,7 @@ export default class FomioNotificationsMenu extends Component {
 
     this._handleClose = () => this.close();
     this._handleNotificationsChanged = () => {
-      this.allEntries = null;
-      this.messageEntries = null;
+      this.entriesByTab = {};
 
       if (this.isOpen) {
         this.loadActiveTab(true);
@@ -221,34 +298,14 @@ export default class FomioNotificationsMenu extends Component {
     return this.source === "mobile";
   }
 
-  get activeEntries() {
-    return this.activeTab === TAB_MESSAGES
-      ? this.messageEntries || []
-      : this.allEntries || [];
+  get allUnreadCount() {
+    return this.currentUser?.all_unread_notifications_count || 0;
   }
 
-  get groupedEntries() {
-    const groups = new Map();
-
-    for (const entry of this.activeEntries) {
-      const key = dateGroupKey(entry.createdAt);
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-      groups.get(key).push(entry);
-    }
-
-    return ["today", "yesterday", "earlier"]
-      .filter((key) => groups.has(key))
-      .map((key) => ({
-        id: key,
-        label: i18n(themePrefix(`notifications_overlay.groups.${key}`)),
-        entries: groups.get(key),
-      }));
-  }
-
-  get hasEntries() {
-    return this.activeEntries.length > 0;
+  get visibleTabs() {
+    return TAB_CONFIGS.filter(
+      (tab) => !tab.shouldDisplay || tab.shouldDisplay(this)
+    );
   }
 
   get showMarkAllRead() {
@@ -256,44 +313,28 @@ export default class FomioNotificationsMenu extends Component {
   }
 
   get activeUnreadCount() {
-    if (!this.currentUser) {
-      return 0;
-    }
-
-    if (this.activeTab === TAB_MESSAGES) {
-      return MESSAGE_TYPES.reduce((sum, type) => {
-        const typeId = this.site.notification_types[type];
-        return (
-          sum + (typeId ? this.currentUser.get(`grouped_unread_notifications.${typeId}`) || 0 : 0)
-        );
-      }, 0);
-    }
-
-    return this.currentUser.all_unread_notifications_count || 0;
+    return this.unreadCountForTab(this.activeTab);
   }
 
   get markAllReadLabel() {
     return i18n(themePrefix("notifications_overlay.mark_all_read"));
   }
 
-  get allTabLabel() {
-    return i18n(themePrefix("notifications_overlay.tabs.all"));
-  }
+  get tabs() {
+    return this.visibleTabs.map((tab) => {
+      const entries = this.entriesForTab(tab.key);
 
-  get messagesTabLabel() {
-    return i18n(themePrefix("notifications_overlay.tabs.messages"));
-  }
-
-  get allTabClass() {
-    return this.activeTab === TAB_ALL
-      ? "fomio-np-tab is-active"
-      : "fomio-np-tab";
-  }
-
-  get messagesTabClass() {
-    return this.activeTab === TAB_MESSAGES
-      ? "fomio-np-tab is-active"
-      : "fomio-np-tab";
+      return {
+        key: tab.key,
+        label: i18n(tab.labelKey),
+        badge: this.unreadCountForTab(tab.key) || null,
+        icon: tab.icon,
+        emptyTitle: i18n(themePrefix(tab.emptyTitleKey)),
+        groupedEntries: groupedEntriesFor(entries),
+        hasEntries: entries.length > 0,
+        isLoading: this.isLoading && this.activeTab === tab.key,
+      };
+    });
   }
 
   get viewAllHref() {
@@ -301,29 +342,50 @@ export default class FomioNotificationsMenu extends Component {
       return "#";
     }
 
-    return this.activeTab === TAB_MESSAGES
-      ? messagesPathForUser(this.currentUser) ?? "#"
-      : notificationsPathForUser(this.currentUser) ?? "#";
+    const activeConfig = this.tabConfigFor(this.activeTab);
+
+    if (!activeConfig) {
+      return notificationsPathForUser(this.currentUser) ?? "#";
+    }
+
+    return `${this.currentUser.path}${activeConfig.hrefSuffix}`;
   }
 
   get viewAllLabel() {
-    return i18n(
-      themePrefix(
-        this.activeTab === TAB_MESSAGES
-          ? "notifications_overlay.view_all_messages"
-          : "notifications_overlay.view_all_notifications"
-      )
-    );
+    return i18n(themePrefix("notifications_overlay.view_all_notifications"));
   }
 
-  get emptyTitle() {
-    return i18n(
-      themePrefix(
-        this.activeTab === TAB_MESSAGES
-          ? "notifications_overlay.empty_messages"
-          : "notifications_overlay.empty_all"
-      )
-    );
+  tabConfigFor(tabId) {
+    return this.visibleTabs.find((tab) => tab.key === tabId) ?? null;
+  }
+
+  entriesForTab(tabId) {
+    return this.entriesByTab[tabId] || [];
+  }
+
+  unreadCountForTypes(types) {
+    if (!this.currentUser || !types?.length) {
+      return 0;
+    }
+
+    return types.reduce((sum, type) => {
+      const typeId = this.site.notification_types[type];
+      return (
+        sum +
+        (typeId
+          ? this.currentUser.get(`grouped_unread_notifications.${typeId}`) || 0
+          : 0)
+      );
+    }, 0);
+  }
+
+  unreadCountForTab(tabId) {
+    if (tabId === TAB_ALL) {
+      return this.allUnreadCount;
+    }
+
+    const tab = this.tabConfigFor(tabId);
+    return this.unreadCountForTypes(tab?.notificationTypes);
   }
 
   async loadActiveTab(force = false) {
@@ -331,11 +393,8 @@ export default class FomioNotificationsMenu extends Component {
       return;
     }
 
-    const shouldLoad =
-      force ||
-      (this.activeTab === TAB_MESSAGES
-        ? this.messageEntries === null
-        : this.allEntries === null);
+    const currentEntries = this.entriesByTab[this.activeTab];
+    const shouldLoad = force || currentEntries === undefined;
 
     if (!shouldLoad) {
       return;
@@ -344,16 +403,15 @@ export default class FomioNotificationsMenu extends Component {
     this.isLoading = true;
 
     try {
-      const entries =
-        this.activeTab === TAB_MESSAGES
-          ? await this.fetchNotificationEntries(MESSAGE_TYPES)
-          : await this.fetchNotificationEntries();
+      const tab = this.tabConfigFor(this.activeTab);
+      const entries = await this.fetchNotificationEntries(
+        tab?.notificationTypes ?? null
+      );
 
-      if (this.activeTab === TAB_MESSAGES) {
-        this.messageEntries = entries;
-      } else {
-        this.allEntries = entries;
-      }
+      this.entriesByTab = {
+        ...this.entriesByTab,
+        [this.activeTab]: entries,
+      };
     } finally {
       this.isLoading = false;
     }
@@ -458,10 +516,12 @@ export default class FomioNotificationsMenu extends Component {
     this.isMarkingRead = true;
 
     try {
-      if (this.activeTab === TAB_MESSAGES) {
+      const activeTypes = this.tabConfigFor(this.activeTab)?.notificationTypes;
+
+      if (activeTypes?.length) {
         await ajax("/notifications/mark-read", {
           type: "PUT",
-          data: { dismiss_types: MESSAGE_TYPES.join(",") },
+          data: { dismiss_types: activeTypes.join(",") },
         });
 
         const groupedUnreadNotifications = {
@@ -469,7 +529,7 @@ export default class FomioNotificationsMenu extends Component {
         };
         let dismissedCount = 0;
 
-        MESSAGE_TYPES.forEach((type) => {
+        activeTypes.forEach((type) => {
           const typeId = this.site.notification_types[type];
           if (!typeId) {
             return;
@@ -491,17 +551,14 @@ export default class FomioNotificationsMenu extends Component {
               dismissedCount
           )
         );
-        this.currentUser.set("new_personal_messages_notifications_count", 0);
       } else {
         await ajax("/notifications/mark-read", { type: "PUT" });
         this.currentUser.set("all_unread_notifications_count", 0);
         this.currentUser.set("unread_high_priority_notifications", 0);
         this.currentUser.set("grouped_unread_notifications", {});
-        this.currentUser.set("new_personal_messages_notifications_count", 0);
       }
 
-      this.allEntries = null;
-      this.messageEntries = null;
+      this.entriesByTab = {};
       await this.loadActiveTab(true);
       this.appEvents.trigger("notifications:changed");
     } finally {
@@ -530,80 +587,84 @@ export default class FomioNotificationsMenu extends Component {
             <span class="fomio-np-title">{{this.title}}</span>
 
             {{#if this.showMarkAllRead}}
-              <button
-                type="button"
-                class="fomio-np-mark-all"
-                disabled={{this.isMarkingRead}}
+              <FomioButton
+                @variant="ghost"
+                @size="sm"
+                @loading={{this.isMarkingRead}}
+                @extraClass="fomio-np-mark-all"
                 {{on "click" this.markAllRead}}
               >
                 {{this.markAllReadLabel}}
-              </button>
+              </FomioButton>
             {{/if}}
 
             {{#if this.showMobileCloseButton}}
-              <button
-                type="button"
-                class="fomio-np-close"
+              <FomioButton
+                @variant="ghost"
+                @size="sm"
+                @iconOnly={{true}}
+                @leadingIcon="xmark"
+                @extraClass="fomio-np-close"
                 aria-label={{this.ariaLabel}}
                 {{on "click" this.close}}
-              >
-                {{icon "xmark"}}
-              </button>
+              />
             {{/if}}
           </header>
 
-          <div class="fomio-np-tabs" role="tablist" aria-label={{this.title}}>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={{if (eq this.activeTab "all") "true" "false"}}
-              class={{this.allTabClass}}
-              {{on "click" (fn this.selectTab "all")}}
-            >
-              {{this.allTabLabel}}
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={{if (eq this.activeTab "messages") "true" "false"}}
-              class={{this.messagesTabClass}}
-              {{on "click" (fn this.selectTab "messages")}}
-            >
-              {{this.messagesTabLabel}}
-            </button>
-          </div>
-
-          <div class="fomio-np-body">
-            {{#if this.isLoading}}
-              <div class="fomio-np-empty-state">
+          <FomioTabs
+            @tabs={{this.tabs}}
+            @selectedKey={{this.activeTab}}
+            @onSelect={{this.selectTab}}
+            @ariaLabel={{this.title}}
+            @extraClass="fomio-np-tabs"
+            as |tab|
+          >
+            {{#if tab.isLoading}}
+              <div class="fomio-np-loading-state">
                 <div class="spinner small"></div>
               </div>
-            {{else if this.hasEntries}}
+            {{else if tab.hasEntries}}
               <div class="fomio-np-scroll">
-                {{#each this.groupedEntries as |group|}}
-                  <section class="fomio-np-section" data-group={{group.id}}>
-                    <h3 class="fomio-np-section-title">{{group.label}}</h3>
-                    <ul class="fomio-np-list">
-                      {{#each group.entries as |entry|}}
-                        <MenuItem @item={{entry.item}} @closeUserMenu={{this.close}} />
-                      {{/each}}
-                    </ul>
-                  </section>
+                {{#each tab.groupedEntries as |group|}}
+                  <FomioList @extraClass="fomio-np-list" data-group={{group.id}}>
+                    <FomioListSectionHeader
+                      @title={{group.label}}
+                      @extraClass="fomio-np-section-title"
+                    />
+
+                    {{#each group.entries as |entry|}}
+                      <FomioNotificationsMenuItem
+                        @item={{entry.item}}
+                        @closeUserMenu={{this.close}}
+                      />
+                    {{/each}}
+                  </FomioList>
                 {{/each}}
               </div>
             {{else}}
               <div class="fomio-np-empty-state">
-                <p class="fomio-np-empty-title">{{this.emptyTitle}}</p>
+                <FomioEmptyState
+                  @variant="centered"
+                  @icon={{tab.icon}}
+                  @title={{tab.emptyTitle}}
+                  @extraClass="fomio-np-empty-card"
+                />
               </div>
             {{/if}}
-          </div>
+          </FomioTabs>
 
           <footer class="fomio-np-footer">
-            <a class="fomio-np-view-all" href={{this.viewAllHref}}>
-              <span>{{this.viewAllLabel}}</span>
-              {{icon "arrow-right"}}
-            </a>
+            <FomioList @tag="nav" @extraClass="fomio-np-footer-list" aria-label={{this.viewAllLabel}}>
+              <FomioListItem
+                @wrapperTag="div"
+                @tag="a"
+                @href={{this.viewAllHref}}
+                @title={{this.viewAllLabel}}
+                @trailingIcon="arrow-right"
+                @extraClass="fomio-np-view-all-row"
+                {{on "click" this.close}}
+              />
+            </FomioList>
           </footer>
         </div>
       </div>

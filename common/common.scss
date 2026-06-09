@@ -706,7 +706,7 @@ body.fomio-sidebar-active.has-sidebar-page.archetype-regular {
 // Flatten the outlet wrappers so crumbs can sit above the native title,
 // while deck + byline remain below it.
 #topic-title > div:not(.title-wrapper),
-#topic-title .fomio-topic-header {
+#topic-title .fomio-topic-header:not(.fomio-topic-header--pm) {
   display: contents;
 }
 
@@ -770,6 +770,103 @@ body.fomio-sidebar-active.has-sidebar-page.archetype-regular {
   line-height: 1.5;
   color: var(--fomio-ink-muted);
   text-wrap: pretty;
+}
+
+.archetype-private_message #topic-title.container {
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.archetype-private_message #topic-title .title-wrapper {
+  padding-bottom: 0;
+}
+
+.archetype-private_message #topic-title h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.3rem, 1.1rem + 0.45vw, 1.65rem);
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+
+.fomio-topic-header--pm {
+  display: grid;
+  gap: 0.85rem;
+  padding-bottom: 0.35rem;
+}
+
+.fomio-conversation-header__back {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--fomio-primary);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fomio-conversation-header__back:hover,
+.fomio-conversation-header__back:focus-visible {
+  color: var(--fomio-ink);
+}
+
+.fomio-conversation-header__identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  text-decoration: none;
+}
+
+.fomio-conversation-header__identity .fomio-identity {
+  gap: 0.75rem;
+}
+
+.fomio-conversation-header__identity .fomio-identity__meta {
+  gap: 0.15rem;
+}
+
+.fomio-conversation-header__identity .fomio-identity__name,
+.fomio-conversation-header__title {
+  color: var(--fomio-ink);
+  font-family: var(--fomio-font-ui);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.fomio-conversation-header__identity .fomio-identity__handle,
+.fomio-conversation-header__identity .fomio-identity__role {
+  display: none;
+}
+
+.fomio-conversation-header__identity--group {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.fomio-conversation-header__subtitle {
+  color: var(--fomio-ink-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 500;
+}
+
+.archetype-private_message .topic-post {
+  margin-bottom: 1.5rem;
+}
+
+.archetype-private_message .topic-post .topic-meta-data {
+  margin-bottom: 0.5rem;
+}
+
+.archetype-private_message .topic-post .cooked {
+  max-width: min(100%, 42rem);
+}
+
+.archetype-private_message #topic-footer-buttons {
+  margin-top: 1rem;
 }
 
 // ── Byline ────────────────────────────────────────────────────
@@ -1478,6 +1575,11 @@ body.fomio-sidebar-active.has-sidebar-page.archetype-regular {
   display: none !important;
 }
 
+.archetype-private_message .more-topics__container,
+.archetype-private_message #related-messages {
+  display: none !important;
+}
+
 #suggested-topics.more-topics__list {
   max-width: var(--fomio-column-w);
 }
@@ -2110,6 +2212,25 @@ body.login-page .login-body {
 
   50% {
     transform: translateY(-3px);
+  }
+}
+
+// Context switch fade animation — triggered when master context changes
+@keyframes fomio-context-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fomio-context-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -5160,12 +5281,7 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) {
   --fomio-surface-sidebar-offset: var(--fomio-sidebar-width);
 }
 
-body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode):has(.fomio-master-pane),
-body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode):has(.fomio-master-pane) {
-  --fomio-surface-sidebar-offset: calc(
-    var(--fomio-sidebar-width) + var(--fomio-master-pane-width)
-  );
-}
+// Master pane is now overlay-only, no detail surface offset needed
 
 body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
   --fomio-surface-sidebar-offset: var(--fomio-sidebar-rail-width);
@@ -5179,10 +5295,18 @@ body.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet-wrapper {
   padding-inline-start: var(--fomio-surface-sidebar-offset);
 }
 
+// Fade in detail surface when context switches
+body.fomio-sidebar-active .fomio-sidebar--context-switched:not(.fomio-auth-mode) ~ #main-outlet {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fomio-context-fade-in var(--fomio-dur-med) var(--fomio-ease) forwards;
+  }
+}
+
 :root {
-  --fomio-sidebar-width:      228px;
-  --fomio-sidebar-rail-width:  72px;
-  --fomio-master-pane-width:  320px;
+  --fomio-sidebar-width:        228px;
+  --fomio-sidebar-rail-width:    72px;
+  --fomio-master-pane-width:    320px;
+  --fomio-master-pane-gap:        8px; // gap between sidebar and floating master pane
 }
 
 // The sidebar and bottom bar are both injected at above-site-header and are
@@ -5203,6 +5327,13 @@ body.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet-wrapper {
   z-index: 900; // below Discourse modals (z-index 1000+)
   overflow-y: auto;
   overflow-x: hidden;
+
+  // Context switch animation
+  &--context-switched {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fomio-context-fade-out var(--fomio-dur-med) var(--fomio-ease) forwards;
+    }
+  }
 }
 
 .fomio-master-pane {
@@ -5213,46 +5344,14 @@ body.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet-wrapper {
   display: none;
 }
 
-// Persistent Master Pane (expanded/compact):
-// - same Hub/Teret internal list structure as rail overlay
-// - long-lived second column between sidebar and detail surface
-body.fomio-sidebar-active.fomio-surface-expanded:not(.fomio-auth-mode) .fomio-master-pane,
-body.fomio-sidebar-active.fomio-surface-compact-desktop:not(.fomio-auth-mode) .fomio-master-pane {
-  position: fixed;
-  inset-block: 0;
-  inset-inline-start: var(--fomio-sidebar-width);
-  width: var(--fomio-master-pane-width);
-  display: block;
-  z-index: 898;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--fomio-surface) 92%, #fff) 0%,
-      color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface)) 100%
-    );
-  border-inline-end: 1px solid color-mix(
-    in oklab,
-    var(--fomio-border-soft) 72%,
-    transparent
-  );
-  box-shadow:
-    inset -1px 0 0 rgb(255 255 255 / 48%),
-    18px 0 40px rgb(17 24 39 / 4%);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-// Rail overlay Master Pane:
-// - temporary contextual depth for rail-only shell
-// - always layered above content and rail, below Discourse modals
-body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane {
+// Shared non-touch master pane overlay:
+// - rail and desktop use the same structure and behavior
+// - only the sidebar offset changes by surface width
+body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(.fomio-surface-touch) .fomio-master-pane {
   position: fixed;
   inset-block: 12px;
-  inset-inline-start: calc(var(--fomio-sidebar-rail-width) + 8px);
-  width: min(
-    var(--fomio-master-pane-width),
-    calc(100vw - var(--fomio-sidebar-rail-width) - 20px)
-  );
+  inset-inline-start: calc(var(--fomio-sidebar-width) + var(--fomio-master-pane-gap));
+  width: var(--fomio-master-pane-width);
   display: block;
   z-index: 930;
   background: var(--fomio-surface);
@@ -5269,18 +5368,10 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane,
-  body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane-backdrop {
-    transition: none !important;
-    animation: none !important;
-  }
-}
-
-body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane-backdrop {
+body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(.fomio-surface-touch) .fomio-master-pane-backdrop {
   position: fixed;
   inset-block: 0;
-  inset-inline-start: var(--fomio-sidebar-rail-width);
+  inset-inline-start: var(--fomio-sidebar-width);
   inset-inline-end: 0;
   display: block;
   z-index: 920;
@@ -5288,8 +5379,32 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
   overflow-x: hidden;
 }
 
-body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) {
+body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane,
+body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane-backdrop {
+  inset-inline-start: calc(var(--fomio-sidebar-rail-width) + var(--fomio-master-pane-gap));
+}
+
+body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane {
+  width: min(
+    var(--fomio-master-pane-width),
+    calc(100vw - var(--fomio-sidebar-rail-width) - 20px)
+  );
+}
+
+body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fomio-auth-mode) .fomio-master-pane-backdrop {
+  inset-inline-start: var(--fomio-sidebar-rail-width);
+}
+
+body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(.fomio-surface-touch) {
   overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(.fomio-surface-touch) .fomio-master-pane,
+  body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(.fomio-surface-touch) .fomio-master-pane-backdrop {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 .fomio-master-pane__inner {
@@ -5315,53 +5430,17 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
 .fomio-master-pane__profile-summary .fomio-me-hub__summary-action,
 .fomio-master-pane__profile-summary a.fomio-me-hub__summary-action,
 .fomio-master-pane__profile-summary button.fomio-me-hub__summary-action {
-  appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
   min-height: var(--fomio-button-height-sm);
-  padding: 0 var(--fomio-space-md);
-  border-radius: var(--fomio-radius-sm);
-  border: 1px solid var(--fomio-border-soft);
+  padding-inline: 14px;
+  border-color: var(--fomio-border-soft);
   background: var(--fomio-card);
-  box-shadow: none;
   color: var(--fomio-text);
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
   margin-top: 14px;
-  box-sizing: border-box;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  font-weight: 600;
-  letter-spacing: var(--fomio-tracking-wide);
-  line-height: 1;
-  vertical-align: middle;
-  cursor: pointer;
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition:
-      background var(--fomio-dur-fast) var(--fomio-ease),
-      color var(--fomio-dur-fast) var(--fomio-ease),
-      border-color var(--fomio-dur-fast) var(--fomio-ease),
-      box-shadow var(--fomio-dur-fast) var(--fomio-ease),
-      opacity var(--fomio-dur-fast) var(--fomio-ease);
-  }
 
   &:hover {
     background: var(--fomio-surface);
     color: var(--fomio-text);
     border-color: var(--fomio-border-soft);
-  }
-
-  &:focus-visible {
-    border-color: var(--fomio-primary);
-    outline: 2px solid var(--fomio-primary);
-    outline-offset: 2px;
-  }
-
-  &:active {
-    opacity: 0.8;
   }
 }
 
@@ -5492,19 +5571,19 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
 .fomio-master-pane__nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .fomio-master-pane__group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
 }
 
 .fomio-master-pane__hub-row {
   display: flex;
   align-items: stretch;
-  gap: 8px;
+  gap: 12px;
 }
 
 .fomio-master-pane__item {
@@ -5550,10 +5629,11 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
   &:focus-visible {
     color: var(--fomio-text);
     background: color-mix(in oklab, var(--fomio-surface) 88%, #fff);
-    border-color: var(--fomio-primary);
-    outline: 2px solid var(--fomio-primary);
-    outline-offset: 1px;
-    box-shadow: 0 8px 16px rgb(17 24 39 / 5%);
+    border-color: color-mix(in oklab, var(--fomio-primary) 52%, var(--fomio-border));
+    outline: none;
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 28%, transparent),
+      0 8px 16px rgb(17 24 39 / 5%);
   }
 
   &.is-active {
@@ -5570,9 +5650,98 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
       var(--fomio-border)
     );
     box-shadow:
-      inset 2px 0 0 var(--fomio-primary),
+      inset 0 1px 0 rgb(255 255 255 / 58%),
       0 10px 22px rgb(17 24 39 / 6%);
     font-weight: 600;
+  }
+}
+
+// Master pane list item overrides — apply master pane item styling to list items
+// in profile, bookmarks, and notifications navigation
+.fomio-master-pane__nav-profile,
+.fomio-master-pane__nav-bookmarks,
+.fomio-master-pane__nav-notifications {
+  &.fomio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fomio-list__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    background: color-mix(in oklab, var(--fomio-surface) 66%, var(--fomio-bg));
+    border: 1px solid color-mix(
+      in oklab,
+      var(--fomio-border-soft) 68%,
+      transparent
+    );
+    font-family: var(--fomio-font-ui);
+    font-size: 0.8375rem;
+    line-height: 1.3;
+    outline: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+    }
+
+    &:hover {
+      color: var(--fomio-text);
+      background: color-mix(in oklab, var(--fomio-surface) 88%, #fff);
+      border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+      box-shadow: 0 8px 16px rgb(17 24 39 / 5%);
+      transform: translateX(1px);
+    }
+
+    &:focus-visible {
+      color: var(--fomio-text);
+      background: color-mix(in oklab, var(--fomio-surface) 88%, #fff);
+      border-color: color-mix(in oklab, var(--fomio-primary) 52%, var(--fomio-border));
+      outline: none;
+      box-shadow:
+        0 0 0 3px color-mix(in oklab, var(--fomio-primary) 28%, transparent),
+        0 8px 16px rgb(17 24 39 / 5%);
+    }
+
+    &--active,
+    &[aria-current="true"] {
+      color: var(--fomio-text);
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
+          color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-card)) 100%
+        );
+      border-color: color-mix(
+        in oklab,
+        var(--fomio-primary) 24%,
+        var(--fomio-border)
+      );
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 58%),
+        0 10px 22px rgb(17 24 39 / 6%);
+
+      .fomio-list__title {
+        font-weight: 600;
+      }
+    }
   }
 }
 
@@ -5629,11 +5798,11 @@ body.fomio-sidebar-active.fomio-surface-rail.fomio-master-pane-rail-open:not(.fo
 
 .fomio-master-pane__teret-list {
   list-style: none;
-  margin: 0 0 4px;
+  margin: 0 0 8px;
   padding: 0 0 0 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
 .fomio-master-pane__teret-item {
@@ -6125,7 +6294,17 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     max-width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-    background: color-mix(in oklab, var(--fomio-bg) 90%, var(--fomio-surface));
+    background:
+      radial-gradient(
+        circle at top left,
+        color-mix(in oklab, var(--fomio-primary) 6%, transparent) 0%,
+        transparent 30%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 78%, #f8f2e6) 0%,
+        color-mix(in oklab, var(--fomio-bg) 86%, #f2eadb) 100%
+      );
   }
 
   #main-outlet .user-main #user-content.user-content {
@@ -6149,14 +6328,14 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .stats-title {
-    margin: 0 0 10px;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    line-height: 1.2;
-    text-transform: uppercase;
-    color: color-mix(in oklab, var(--fomio-ink-muted) 90%, var(--fomio-text));
+    margin: 0 0 18px;
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.6rem, 1.45rem + 0.45vw, 2.05rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-transform: none;
+    color: color-mix(in oklab, var(--fomio-text) 96%, #221a14);
   }
 
   #main-outlet .user-main #user-content .stats-section,
@@ -6166,25 +6345,37 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     width: auto;
     float: none;
     margin: 0;
-    padding: 16px 16px 18px;
-    border-radius: 20px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
+    padding: 20px 18px 20px;
+    border-radius: 24px;
+    border: 1px solid color-mix(in oklab, #c9b9a2 36%, transparent);
     background:
       linear-gradient(
         180deg,
-        color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-surface) 93%, var(--fomio-bg)) 100%
+        color-mix(in oklab, var(--fomio-surface) 88%, #fffaf0) 0%,
+        color-mix(in oklab, var(--fomio-surface) 90%, #f5edde) 100%
       );
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 62%),
-      0 12px 30px rgb(17 24 39 / 4%);
+      inset 0 1px 0 rgb(255 255 255 / 72%),
+      0 18px 40px rgb(62 39 18 / 5%);
     box-sizing: border-box;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section > h2,
+  #main-outlet .user-main #user-content .top-categories-section > h2,
+  #main-outlet .user-main #user-content .badges-section > h2 {
+    margin: 0 0 16px;
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.45rem, 1.32rem + 0.32vw, 1.8rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: color-mix(in oklab, var(--fomio-text) 96%, #221a14);
   }
 
   #main-outlet .user-main #user-content .stats-section ul {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px 12px;
     margin: 0;
     padding: 0;
   }
@@ -6192,10 +6383,11 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .stats-section li {
     display: block;
     margin: 0;
-    padding: 10px 12px;
-    border-radius: 16px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
-    background: color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg));
+    padding: 8px 10px 6px;
+    border-radius: 0;
+    border: 0;
+    border-top: 1px solid color-mix(in oklab, #ccbca7 48%, transparent);
+    background: transparent;
   }
 
   #main-outlet .user-main #user-content .stats-section li.linked-stat {
@@ -6204,26 +6396,28 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .stats-section li.linked-stat a {
-    padding: 10px 12px;
+    padding: 8px 10px 6px;
     color: inherit;
     text-decoration: none;
   }
 
   #main-outlet .user-main #user-content .stats-section .value {
-    font-family: var(--fomio-font-ui);
-    font-size: clamp(1.1rem, 0.98rem + 0.32vw, 1.34rem);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(2.85rem, 2.35rem + 1vw, 4.6rem);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+    color: color-mix(in oklab, var(--fomio-text) 96%, #1c140f);
   }
 
   #main-outlet .user-main #user-content .stats-section .label {
-    margin-top: 3px;
-    color: color-mix(in oklab, var(--fomio-ink-muted) 92%, var(--fomio-text));
+    margin-top: 8px;
+    max-width: 11ch;
+    color: color-mix(in oklab, var(--fomio-text) 82%, #3f3023);
     font-family: var(--fomio-font-ui);
-    font-size: 0.74rem;
-    line-height: 1.35;
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.15;
   }
 
   #main-outlet .user-main #user-content .top-sub-section ul,
@@ -6239,25 +6433,45 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
 
   #main-outlet .user-main #user-content .top-sub-section li {
     margin: 0;
-    padding: 10px 0;
-    border: 0;
-    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+    padding: 14px 16px;
+    border: 1px solid color-mix(in oklab, #ccbca7 30%, transparent);
+    border-radius: 18px;
+    background: color-mix(in oklab, var(--fomio-surface) 90%, #fffdf7);
+    box-shadow: 0 10px 24px rgb(62 39 18 / 4%);
   }
 
   #main-outlet .user-main #user-content .top-sub-section li:first-child {
-    padding-top: 2px;
+    padding-top: 14px;
   }
 
   #main-outlet .user-main #user-content .top-sub-section li:last-child {
-    padding-bottom: 0;
-    border-bottom: none;
+    padding-bottom: 14px;
+    border-bottom: 1px solid color-mix(in oklab, #ccbca7 30%, transparent);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul,
+  #main-outlet .user-main #user-content .links-section ul,
+  #main-outlet .user-main #user-content .summary-user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .topic-title,
+  #main-outlet .user-main #user-content .top-sub-section li > a:first-child {
+    color: color-mix(in oklab, var(--fomio-text) 95%, #231912);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1rem, 0.96rem + 0.18vw, 1.12rem);
+    font-weight: 500;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
   }
 
   #main-outlet .user-main #user-content .top-sub-section .topic-info,
   #main-outlet .user-main #user-content .links-section .domain,
   #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .username,
   #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .user-title {
-    color: color-mix(in oklab, var(--fomio-ink-muted) 88%, var(--fomio-text));
+    color: color-mix(in oklab, var(--fomio-ink-muted) 84%, #5a4a3d);
   }
 
   #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
@@ -6287,20 +6501,18 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .links-section ul {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   #main-outlet .user-main #user-content .links-section li {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 14px 14px 15px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 56%, transparent);
+    gap: 10px;
+    padding: 16px 16px 17px;
+    border: 1px solid color-mix(in oklab, #ccbca7 30%, transparent);
     border-radius: 18px;
-    background: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%);
+    background: color-mix(in oklab, var(--fomio-surface) 90%, #fffdf7);
+    box-shadow: 0 10px 24px rgb(62 39 18 / 4%);
   }
 
   #main-outlet .user-main #user-content .links-section li:first-child,
@@ -6325,9 +6537,9 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     min-height: 28px;
     padding: 0 10px;
     border-radius: 999px;
-    background: color-mix(in oklab, var(--fomio-surface) 96%, #fff);
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
-    font-size: 0.73rem;
+    background: color-mix(in oklab, #f2e8d7 62%, var(--fomio-surface));
+    border: 1px solid color-mix(in oklab, #c8b59d 34%, transparent);
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     line-height: 1;
@@ -6354,11 +6566,12 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .links-section li > a:last-of-type {
-    color: var(--fomio-text);
-    font-size: 0.96rem;
-    font-weight: 700;
-    line-height: 1.35;
-    letter-spacing: -0.015em;
+    color: color-mix(in oklab, var(--fomio-text) 95%, #231912);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.06rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
     overflow-wrap: anywhere;
   }
 
@@ -6385,8 +6598,8 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
 
   #main-outlet .user-main #user-content .top-categories-section th,
   #main-outlet .user-main #user-content .top-categories-section td {
-    padding: 10px 8px;
-    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
+    padding: 12px 8px;
+    border-bottom: 1px solid color-mix(in oklab, #ccbca7 34%, transparent);
     font-family: var(--fomio-font-ui);
   }
 
@@ -6395,22 +6608,22 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .top-categories-section th {
-    color: color-mix(in oklab, var(--fomio-ink-muted) 88%, var(--fomio-text));
-    font-size: 0.72rem;
+    color: color-mix(in oklab, var(--fomio-ink-muted) 78%, #685646);
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
   #main-outlet .user-main #user-content .summary-user-list li {
     height: auto;
-    min-height: 52px;
+    min-height: 62px;
   }
 
   #main-outlet .user-main #user-content .summary-user-list .user-info {
     display: flex;
     align-items: center;
-    min-height: 52px;
+    min-height: 62px;
   }
 
   #main-outlet .user-main #user-content .summary-user-list .user-info .user-detail {
@@ -6422,7 +6635,10 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .summary-user-list .user-info .name-line > a {
-    color: var(--fomio-text);
+    color: color-mix(in oklab, var(--fomio-text) 95%, #231912);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.02rem;
+    font-weight: 500;
     text-decoration: none;
   }
 
@@ -6498,8 +6714,8 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
 body.fomio-sidebar-active.fomio-surface-expanded.user-summary-page:not(.fomio-auth-mode),
 body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .top-section {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
     align-items: start;
   }
 
@@ -6507,13 +6723,8 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.f
     grid-column: 1 / -1;
   }
 
-  #main-outlet .user-main #user-content .top-section > .top-sub-section {
-    grid-column: 1 / -1;
-    min-height: 0;
-  }
-
   #main-outlet .user-main #user-content .stats-section ul {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
@@ -6523,6 +6734,92 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.f
     padding: 12px 14px;
     border-radius: 14px;
     font-size: 0.83rem;
+  }
+}
+
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-summary-page {
+  .fomio-master-pane__profile-summary {
+    --fomio-master-pane-profile-inset: 14px;
+  }
+
+  .fomio-master-pane__inner {
+    padding: 22px 18px 26px;
+  }
+
+  .fomio-master-pane__profile-summary {
+    margin-bottom: 10px;
+    padding-bottom: 28px;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-link {
+    min-height: 0;
+    padding: 0 var(--fomio-master-pane-profile-inset) 8px;
+    gap: 14px;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-avatar img,
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-avatar .avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    box-shadow: 0 10px 22px rgb(62 39 18 / 8%);
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-text {
+    gap: 5px;
+    padding-top: 0;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-name {
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.32rem, 1.18rem + 0.22vw, 1.55rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-stats,
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-facts {
+    gap: 6px 8px;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__summary-actions {
+    padding: 16px var(--fomio-master-pane-profile-inset) 12px;
+    gap: 16px;
+    border-top: 0;
+  }
+
+  .fomio-master-pane__profile-summary .fomio-me-hub__details {
+    margin:
+      6px
+      var(--fomio-master-pane-profile-inset)
+      0
+      var(--fomio-master-pane-profile-inset);
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .fomio-master-pane__nav {
+    gap: 4px;
+  }
+}
+
+body.fomio-bookmarks-master-active:not(.fomio-auth-mode):not(.fomio-surface-touch) {
+  .fomio-master-pane__header {
+    margin-bottom: 28px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid color-mix(
+      in oklab,
+      var(--fomio-border-soft) 68%,
+      transparent
+    );
   }
 }
 
@@ -10757,6 +11054,46 @@ body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-n
   flex: 1;
 }
 
+.fomio-sidebar__item-affordance {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: color-mix(in oklab, var(--fomio-muted) 75%, transparent);
+  opacity: 0.6;
+
+  .d-icon {
+    display: block;
+    width: 0.75rem;
+    height: 0.75rem;
+    fill: currentColor;
+  }
+}
+
+.fomio-sidebar__item:hover .fomio-sidebar__item-affordance,
+.fomio-sidebar__item:focus-visible .fomio-sidebar__item-affordance {
+  opacity: 0.95;
+  color: var(--fomio-text);
+}
+
+// On rail surfaces, absolutely position affordance so it doesn't break flex layout
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sidebar__item-affordance {
+  position: absolute;
+  inset-inline-end: var(--fomio-space-xs);
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0; // hidden at rest
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sidebar__item:hover .fomio-sidebar__item-affordance,
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sidebar__item:focus-visible .fomio-sidebar__item-affordance {
+  opacity: 0.65; // subtle indicator on hover
+  color: var(--fomio-muted);
+}
+
 .fomio-sidebar__badge {
   display: inline-flex;
   align-items: center;
@@ -10945,12 +11282,12 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
 }
 
 .fomio-search-sheet.fomio-ephemeral-sheet,
-.fomio-mobile-search-palette__surface {
+.fomio-mobile-search-palette {
   overflow: hidden;
 }
 
-.fomio-search-sheet .fomio-ephemeral-sheet__inner,
-.fomio-mobile-search-palette__inner {
+.fomio-search-sheet__content,
+.fomio-mobile-search-palette__content {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -10959,8 +11296,14 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
 }
 
 .fomio-search-sheet,
-.fomio-mobile-search-palette__surface {
+.fomio-mobile-search-palette {
   .fomio-search-sheet__search {
+    --d-input-focused-color: color-mix(
+      in oklab,
+      var(--fomio-primary) 58%,
+      var(--fomio-border)
+    );
+
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -10984,17 +11327,53 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
       border: 1px solid color-mix(in oklab, var(--fomio-border) 88%, transparent);
       background: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-surface));
       box-shadow: none;
+      transition:
+        border-color 140ms var(--fomio-ease),
+        box-shadow 140ms var(--fomio-ease),
+        background 140ms var(--fomio-ease);
+
+      &:focus-within {
+        border-color: color-mix(in oklab, var(--fomio-primary) 56%, var(--fomio-border));
+        outline: 2px solid color-mix(in oklab, var(--fomio-primary) 30%, transparent);
+        outline-offset: -2px;
+        box-shadow:
+          inset 0 1px 0 rgb(255 255 255 / 58%),
+          0 0 0 3px color-mix(in oklab, var(--fomio-primary) 14%, transparent);
+      }
     }
 
     .search-term__input {
       font-family: var(--fomio-font-ui);
       font-size: 1.05rem;
       color: var(--fomio-text);
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
     }
 
     .search-term__input::placeholder {
       color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
       opacity: 1;
+    }
+
+    .show-advanced-search {
+      border-radius: 999px;
+      color: var(--fomio-muted);
+
+      &:hover,
+      &:focus-visible {
+        color: var(--fomio-text);
+        background: color-mix(in oklab, var(--fomio-card) 72%, var(--fomio-surface));
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
     }
 
     .results {
@@ -11234,7 +11613,7 @@ body:not(.fomio-surface-touch) .fomio-search-sheet__backdrop {
   }
 }
 
-body:not(.fomio-surface-touch) .fomio-search-sheet--desktop.fomio-ephemeral-sheet {
+body:not(.fomio-surface-touch) .fomio-search-sheet--desktop.fomio-command-palette {
   position: fixed;
   top: clamp(6rem, 20vh, 14rem);
   left: 50vw;
@@ -11258,7 +11637,7 @@ body:not(.fomio-surface-touch) .fomio-search-sheet--desktop.fomio-ephemeral-shee
 }
 
 body:not(.fomio-surface-touch) .fomio-search-sheet--desktop {
-  .fomio-ephemeral-sheet__inner {
+  .fomio-search-sheet__content {
     padding: 0.65rem 1rem 0.85rem;
   }
 
@@ -11270,10 +11649,6 @@ body:not(.fomio-surface-touch) .fomio-search-sheet--desktop {
 
   .fomio-search-sheet__search .results {
     max-height: min(52vh, 28rem);
-  }
-
-  .fomio-ephemeral-sheet__close {
-    display: none;
   }
 }
 
@@ -11295,15 +11670,19 @@ body.fomio-surface-touch .fomio-mobile-search-palette {
   left: 0;
   right: 0;
   z-index: 1890;
+  transform: none;
+  animation: none;
   padding:
     0
     var(--fomio-page-pad-inline-end, 16px)
     max(12px, var(--fomio-safe-bottom, 0px))
     var(--fomio-page-pad-inline-start, 16px);
   box-sizing: border-box;
+  width: auto;
+  max-width: none;
 }
 
-body.fomio-surface-touch .fomio-mobile-search-palette__surface {
+body.fomio-surface-touch .fomio-mobile-search-palette {
   display: flex;
   flex-direction: column;
   max-height: min(
@@ -11324,13 +11703,13 @@ body.fomio-surface-touch .fomio-mobile-search-palette__surface {
     0 20px 40px rgb(17 24 39 / 12%);
 }
 
-body.fomio-surface-touch .fomio-mobile-search-palette__inner {
+body.fomio-surface-touch .fomio-mobile-search-palette__content {
   min-height: 0;
   padding-top: 0.75rem;
   padding-bottom: max(0.75rem, var(--fomio-safe-bottom, 0px));
 }
 
-body.fomio-surface-touch .fomio-mobile-search-palette__surface .fomio-search-sheet__search {
+body.fomio-surface-touch .fomio-mobile-search-palette .fomio-search-sheet__search {
   .search-input-wrapper {
     top: 0;
   }
@@ -14980,14 +15359,15 @@ html.fomio-color-dark {
 // Custom panel DOM overrides. These come after the older native UserMenu
 // restyle rules so the owned Fomio layout wins without selector arm-wrestling.
 .fomio-notifications-menu {
+  display: flex;
+  flex-direction: column;
   min-height: 22rem;
 }
 
 .fomio-np-mark-all {
-  border: none;
-  background: transparent;
+  height: auto;
+  min-height: 0;
   color: var(--fomio-muted);
-  font-family: var(--fomio-font-ui);
   font-size: 0.95rem;
   font-weight: 600;
   padding: 0;
@@ -14999,58 +15379,95 @@ html.fomio-color-dark {
   }
 }
 
+.fomio-np-close {
+  flex: 0 0 auto;
+}
+
 .fomio-np-tabs {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--fomio-border);
-}
-
-.fomio-np-tab {
-  height: 2.5rem;
-  padding: 0 1.15rem;
-  border: 1px solid var(--fomio-border);
-  border-radius: var(--fomio-radius-pill);
-  background: transparent;
-  color: var(--fomio-muted);
-  font-family: var(--fomio-font-ui);
-  font-size: 0.95rem;
-  font-weight: 700;
-  transition:
-    color var(--fomio-dur-fast) var(--fomio-ease),
-    background var(--fomio-dur-fast) var(--fomio-ease),
-    border-color var(--fomio-dur-fast) var(--fomio-ease);
-
-  &:hover,
-  &:focus-visible {
-    color: var(--fomio-text);
-    border-color: color-mix(in oklab, var(--fomio-border) 82%, var(--fomio-text));
-  }
-
-  &.is-active {
-    background: var(--fomio-primary);
-    border-color: var(--fomio-primary);
-    color: var(--fomio-on-primary);
-  }
-}
-
-.fomio-np-body {
   flex: 1;
+  flex-basis: 0;
   min-height: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+
+  .fomio-tabs__list {
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--fomio-border);
+  }
+
+  .fomio-tabs__trigger {
+    height: 2.5rem;
+    padding: 0 1.15rem;
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-pill);
+    border-bottom-width: 1px;
+    margin-bottom: 0;
+    background: transparent;
+    color: var(--fomio-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease),
+      border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-text);
+      border-color: color-mix(in oklab, var(--fomio-border) 82%, var(--fomio-text));
+    }
+
+    &[aria-selected="true"] {
+      background: var(--fomio-primary);
+      border-color: var(--fomio-primary);
+      color: var(--fomio-on-primary);
+    }
+  }
+
+  .fomio-tabs__trigger-badge {
+    background: color-mix(in oklab, var(--fomio-border) 72%, transparent);
+    color: inherit;
+  }
+
+  .fomio-tabs__panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: none;
+    overflow: hidden;
+
+    &[aria-hidden="false"],
+    &.fomio-tabs__panel--active {
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }
 
+.fomio-np-loading-state,
 .fomio-np-scroll {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
 }
 
-.fomio-np-section {
+.fomio-np-loading-state {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.fomio-np-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fomio-np-section-title {
@@ -15079,12 +15496,8 @@ html.fomio-color-dark {
   padding: 2rem 1.5rem;
 }
 
-.fomio-np-empty-title {
-  margin: 0;
-  text-align: center;
-  font-family: var(--fomio-font-ui);
-  font-size: 0.95rem;
-  color: var(--fomio-muted);
+.fomio-np-empty-card {
+  width: min(100%, 18rem);
 }
 
 .fomio-np-footer {
@@ -15093,22 +15506,19 @@ html.fomio-color-dark {
   background: color-mix(in oklab, var(--fomio-card) 94%, var(--fomio-primary) 6%);
 }
 
-.fomio-np-view-all {
-  display: flex;
-  align-items: center;
+.fomio-np-footer-list {
+  padding: 0;
+}
+
+.fomio-np-view-all-row {
+  min-height: 4rem;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 4rem;
-  padding: 0 1rem;
   color: var(--fomio-primary);
   font-family: var(--fomio-font-serif);
   font-size: 1rem;
   font-style: italic;
   font-weight: 600;
-  text-decoration: none;
-  transition:
-    color var(--fomio-dur-fast) var(--fomio-ease),
-    background var(--fomio-dur-fast) var(--fomio-ease);
 
   &:hover,
   &:focus-visible {
@@ -15116,7 +15526,16 @@ html.fomio-color-dark {
     background: rgb(196 69 54 / 4%);
   }
 
-  .d-icon {
+  .fomio-list__content {
+    flex: 0 1 auto;
+  }
+
+  .fomio-list__title {
+    font: inherit;
+    color: inherit;
+  }
+
+  .fomio-list__icon:last-child {
     width: 0.95rem;
     height: 0.95rem;
     color: inherit;
@@ -15249,14 +15668,17 @@ html.fomio-color-dark {
 
 .fomio-notifications-menu--desktop {
   width: min(26.25rem, calc(100vw - 2rem));
+  height: min(82vh, 44rem);
   max-height: min(82vh, 44rem);
 }
 
 .fomio-notifications-menu--mobile {
+  height: min(88vh, 48rem);
   max-height: min(88vh, 48rem);
 }
 
 body.fomio-surface-touch .fomio-notifications-menu--mobile {
+  height: min(86vh, 46rem);
   max-height: min(86vh, 46rem);
 }
 
@@ -15350,7 +15772,7 @@ html.fomio-color-dark {
   }
 
   .fomio-search-sheet.fomio-ephemeral-sheet,
-  .fomio-mobile-search-palette__surface {
+  .fomio-mobile-search-palette {
     border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
     background:
       linear-gradient(
@@ -15364,7 +15786,7 @@ html.fomio-color-dark {
   }
 
   .fomio-search-sheet,
-  .fomio-mobile-search-palette__surface {
+  .fomio-mobile-search-palette {
     .search-random-quick-tip,
     .search-link .blurb,
     .search-link .search-item-category,
@@ -16361,6 +16783,7 @@ body.fomio-sidebar-active #reply-control {
   .category-input,
   .tags-input {
     display: flex;
+    flex-direction: column;
     align-items: stretch;
   }
 
@@ -16594,12 +17017,12 @@ body.fomio-sidebar-active #reply-control {
     border-radius: 14px;
     background: transparent;
     text-align: left;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: start;
-    column-gap: 0.85rem;
+    align-items: flex-start;
+    gap: 0.85rem;
 
     .fomio-list__content {
+      flex: 1 1 auto;
+      align-self: center;
       gap: 0.2rem;
     }
 
@@ -16617,15 +17040,18 @@ body.fomio-sidebar-active #reply-control {
     }
 
     .fomio-list__meta {
-      align-self: start;
+      flex: 0 0 auto;
+      align-self: center;
+      min-width: max-content;
+      margin-left: auto;
       padding-top: 0.1rem;
       font-size: var(--fomio-text-xs);
+      text-align: right;
     }
   }
 
   .fomio-composer-category-picker__item-swatch {
-    align-self: start;
-    margin-top: 0.28rem;
+    align-self: center;
   }
 
   .fomio-composer-category-picker__empty {
@@ -16851,10 +17277,13 @@ body.fomio-sidebar-active #reply-control {
     }
   }
 
-  #reply-title + .popup-tip,
+  .title-input .popup-tip,
   .category-input .popup-tip,
   .tags-input .popup-tip {
+    position: static;
+    left: auto;
     display: inline-flex;
+    align-self: flex-start;
     align-items: center;
     gap: 0.45rem;
     width: fit-content;
@@ -16892,6 +17321,10 @@ body.fomio-sidebar-active #reply-control {
     &.hide {
       display: none;
     }
+  }
+
+  .title-input .popup-tip {
+    margin-left: 1rem;
   }
 
   .category-input .select-kit-body,
@@ -17890,7 +18323,7 @@ html.fomio-color-dark {
       background: color-mix(in srgb, var(--fomio-surface) 92%, transparent);
     }
 
-    #reply-title + .popup-tip,
+    .title-input .popup-tip,
     .category-input .popup-tip,
     .tags-input .popup-tip {
       background: color-mix(in srgb, var(--fomio-danger-soft) 76%, var(--fomio-card));
@@ -18052,7 +18485,9 @@ html.fomio-color-dark {
     outline-offset: 2px;
   }
 
-  &--active {
+  &--active,
+  &.active,
+  &.is-active {
     border-color: color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border-soft));
     background:
       linear-gradient(
@@ -18389,6 +18824,32 @@ body.user-notifications-page {
     summary.notifications-filter-header.fomio-notifications-filter-header--icon::after {
       display: none !important;
     }
+  }
+}
+
+// Final shell-ownership guard for desktop/rail account surfaces.
+// Later page-specific Discourse styling can re-show native user nav rows during
+// resize or route transitions. Once the Fomio shell owns a non-touch account
+// screen, the native primary/secondary profile nav must stay suppressed.
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-notifications-page,
+  .user-invited-page,
+  .user-invites-page,
+  .user-preferences-page,
+  .user-badges-page
+) {
+  #main-outlet .user-main > a#user-nav-skip-link.skip-link__user-nav,
+  #main-outlet .user-main > .user-navigation.user-navigation-primary,
+  #main-outlet .user-main > .new-user-wrapper > .user-navigation.user-navigation-primary,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary,
+  #main-outlet .user-main .user-secondary-navigation,
+  #main-outlet .user-main .nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.action-list.main-nav.nav.user-nav {
+    display: none !important;
+    visibility: hidden !important;
   }
 }
 
@@ -20847,15 +21308,38 @@ select.fomio-input {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  height: var(--fomio-input-height, 44px);
+  width: 100%;
 
   .fomio-input {
+    flex: 1;
+    height: 100%;
     border-radius: var(--fomio-radius-pill);
-    padding-left: 40px;
+    padding: 0 var(--fomio-space-md) 0 40px;
     background: var(--fomio-surface);
     border-color: transparent;
+    line-height: var(--fomio-input-height, 44px);
+    font-size: var(--fomio-text-base);
+    vertical-align: middle;
 
     &:focus { background: var(--fomio-card); border-color: var(--fomio-primary); }
   }
+}
+
+.fomio-search-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fomio-fg-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .fomio-composer-category-picker__search.fomio-search-wrap {
@@ -20890,16 +21374,6 @@ select.fomio-input {
     color: var(--fomio-muted);
     pointer-events: none;
   }
-}
-
-.fomio-search-icon {
-  position: absolute;
-  left: 13px;
-  color: var(--fomio-fg-muted);
-  pointer-events: none;
-  display: flex;
-  width: 16px;
-  height: 16px;
 }
 
 // Field hint / validation message
@@ -22703,6 +23177,611 @@ html.fomio-color-dark {
   vertical-align: 1px;
 }
 
+// ── Bookmarks Page Search ───────────────────────────────────────
+
+.user-activity-bookmarks-page {
+  background: var(--fomio-bg);
+  padding: var(--fomio-space-lg);
+
+  // Hide native Discourse bookmark search form
+  .bookmark-search-form {
+    display: none;
+  }
+
+  // Custom Fomio bookmark search form
+  .fomio-bookmark-search-wrapper {
+    width: 100%;
+    margin-bottom: var(--fomio-space-lg);
+  }
+
+  .fomio-bookmark-search-form {
+    display: flex;
+    gap: var(--fomio-space-sm);
+    align-items: flex-end;
+    width: 100%;
+
+    // Search input field container
+    .fomio-field {
+      flex: 1 1 auto;
+      width: 100%;
+    }
+
+    // Search input wrapper
+    .fomio-search-wrap {
+      width: 100%;
+    }
+
+    // Search button
+    .fomio-bookmark-search__button {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+  }
+
+  // Style native Discourse bulk select buttons (don't replace them!)
+  .bulk-select-all,
+  .bulk-clear-all {
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-sm);
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    transition: all var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: var(--fomio-surface);
+      border-color: var(--fomio-border);
+    }
+
+    &:active {
+      opacity: 0.8;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Style the bulk-select toggle as a light inline icon control.
+  .bulk-select.btn-flat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--fomio-text-secondary);
+    cursor: pointer;
+    user-select: none;
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: transparent;
+      color: var(--fomio-text);
+    }
+
+    &:active {
+      opacity: 0.72;
+    }
+
+    &:disabled,
+    &[aria-disabled="true"] {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .d-icon {
+      display: block;
+      font-size: 1rem;
+    }
+  }
+
+  // ── Bookmark List Table ─────────────────────────────────────
+
+  .bookmark-list-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable both-edges;
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 4px;
+      border-radius: var(--fomio-radius-sm);
+    }
+
+    .topic-list.bookmark-list {
+      --fomio-bookmark-list-avatar-column: 3.25rem;
+      --fomio-bookmark-list-metadata-column: 7.5rem;
+      --fomio-bookmark-list-actions-column: 3rem;
+      --fomio-bookmark-list-bulk-column: 2.75rem;
+      border-collapse: separate;
+      border-spacing: 0 var(--fomio-space-sm);
+      width: 100%;
+      min-width: 43rem;
+      table-layout: auto;
+
+      thead.topic-list-header {
+        background: transparent;
+        border-bottom: 1px solid var(--fomio-border-soft);
+
+        tr {
+          th {
+            padding: 0 0 var(--fomio-space-md);
+            font-family: var(--fomio-font-ui);
+            font-size: var(--fomio-text-sm);
+            font-weight: 600;
+            color: var(--fomio-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: var(--fomio-tracking-wide);
+            border: none;
+            background: transparent;
+            vertical-align: middle;
+
+            &.bulk-select,
+            &.fomio-bookmark-table__col--bulk-toggle {
+              width: var(--fomio-bookmark-list-bulk-column);
+              min-width: var(--fomio-bookmark-list-bulk-column);
+              padding-inline: var(--fomio-space-xs);
+              text-align: center;
+            }
+
+            &.fomio-bookmark-table__col--topic {
+              text-align: left;
+              width: auto;
+            }
+
+            &.fomio-bookmark-table__col--avatar {
+              width: var(--fomio-bookmark-list-avatar-column);
+              min-width: var(--fomio-bookmark-list-avatar-column);
+            }
+
+            &.post-metadata,
+            &.fomio-bookmark-table__col--updated,
+            &.fomio-bookmark-table__col--activity {
+              width: var(--fomio-bookmark-list-metadata-column);
+              min-width: var(--fomio-bookmark-list-metadata-column);
+              text-align: right;
+            }
+
+            &.fomio-bookmark-table__col--actions {
+              width: var(--fomio-bookmark-list-actions-column);
+              min-width: var(--fomio-bookmark-list-actions-column);
+              text-align: right;
+            }
+          }
+        }
+      }
+
+      tbody.topic-list-body {
+        tr.bookmark-list-item {
+          transition: all var(--fomio-dur-fast) var(--fomio-ease);
+
+          &:hover {
+            td {
+              background: var(--fomio-surface);
+              border-color: var(--fomio-border);
+            }
+          }
+
+          td {
+            padding: var(--fomio-space-md);
+            vertical-align: middle;
+            background: var(--fomio-card);
+            border-top: 1px solid var(--fomio-border-soft);
+            border-bottom: 1px solid var(--fomio-border-soft);
+            transition:
+              background var(--fomio-dur-fast) var(--fomio-ease),
+              border-color var(--fomio-dur-fast) var(--fomio-ease),
+              box-shadow var(--fomio-dur-fast) var(--fomio-ease);
+
+            &:first-child {
+              border-left: 1px solid var(--fomio-border-soft);
+              border-top-left-radius: var(--fomio-radius-sm);
+              border-bottom-left-radius: var(--fomio-radius-sm);
+            }
+
+            &:last-child {
+              border-right: 1px solid var(--fomio-border-soft);
+              border-top-right-radius: var(--fomio-radius-sm);
+              border-bottom-right-radius: var(--fomio-radius-sm);
+            }
+          }
+
+          td.bulk-select {
+            width: var(--fomio-bookmark-list-bulk-column);
+            min-width: var(--fomio-bookmark-list-bulk-column);
+            padding-inline: var(--fomio-space-xs);
+            text-align: center;
+
+            label {
+              display: inline-flex;
+              align-items: center;
+              cursor: pointer;
+              margin: 0;
+            }
+
+            input.bulk-select {
+              width: 18px;
+              height: 18px;
+              cursor: pointer;
+              accent-color: var(--fomio-primary);
+            }
+          }
+
+          td.main-link.topic-list-data {
+            width: auto;
+            min-width: 22rem;
+            padding-inline-end: var(--fomio-space-lg);
+
+            .link-top-line {
+              display: flex;
+              flex-direction: column;
+              gap: var(--fomio-space-xs);
+
+              .bookmark-metadata {
+                display: flex;
+                gap: var(--fomio-space-sm);
+                flex-wrap: wrap;
+                font-size: var(--fomio-text-xs);
+                color: var(--fomio-text-secondary);
+
+                .bookmark-metadata-item {
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 4px;
+                  padding: 2px 8px;
+                  background: var(--fomio-bg);
+                  border-radius: var(--fomio-radius-xs);
+                  font-family: var(--fomio-font-ui);
+
+                  .d-icon {
+                    font-size: 14px;
+                  }
+
+                  &.bookmark-reminder {
+                    color: var(--fomio-primary);
+
+                    &.bookmark-expired-reminder {
+                      color: var(--fomio-error);
+                    }
+                  }
+                }
+              }
+
+              .bookmark-status-with-link {
+                display: flex;
+                align-items: flex-start;
+                gap: var(--fomio-space-sm);
+
+                .bookmark-pinned {
+                  flex-shrink: 0;
+                  color: var(--fomio-primary);
+                  margin-top: 2px;
+                }
+
+                a.title {
+                  flex: 1;
+                  font-family: var(--fomio-font-serif);
+                  font-size: var(--fomio-text-base);
+                  font-weight: 600;
+                  line-height: 1.4;
+                  color: var(--fomio-text);
+                  text-decoration: none;
+                  word-break: break-word;
+                  overflow-wrap: break-word;
+
+                  &:hover {
+                    color: var(--fomio-primary);
+                  }
+                }
+              }
+            }
+
+            .link-bottom-line {
+              display: flex;
+              align-items: center;
+              gap: var(--fomio-space-xs);
+              margin-top: var(--fomio-space-xs);
+              font-size: var(--fomio-text-xs);
+              flex-wrap: wrap;
+            }
+
+            p.post-excerpt {
+              margin: var(--fomio-space-xs) 0 0 0;
+              padding: 0;
+              font-family: var(--fomio-font-serif);
+              font-size: var(--fomio-text-sm);
+              color: var(--fomio-text-secondary);
+              line-height: 1.5;
+              max-height: 60px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
+          td.author-avatar {
+            width: var(--fomio-bookmark-list-avatar-column);
+            min-width: var(--fomio-bookmark-list-avatar-column);
+            text-align: center;
+
+            a.avatar {
+              display: inline-flex;
+            }
+          }
+
+          td.post-metadata.topic-list-data {
+            width: var(--fomio-bookmark-list-metadata-column);
+            min-width: var(--fomio-bookmark-list-metadata-column);
+            text-align: right;
+            font-size: var(--fomio-text-sm);
+            color: var(--fomio-text-secondary);
+            white-space: nowrap;
+          }
+
+          td:last-child {
+            width: var(--fomio-bookmark-list-actions-column);
+            min-width: var(--fomio-bookmark-list-actions-column);
+            text-align: right;
+            white-space: nowrap;
+          }
+
+          &.is-selected td {
+            background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-card));
+            border-color: color-mix(in oklab, var(--fomio-primary) 38%, var(--fomio-border));
+          }
+        }
+      }
+    }
+
+    &.is-bulk-selecting {
+      .topic-list.bookmark-list thead.topic-list-header th.fomio-bookmark-table__bulk-toggle-placeholder {
+        width: 0;
+        min-width: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .topic-list.bookmark-list thead.topic-list-header th.fomio-bookmark-table__col--topic {
+        padding-bottom: var(--fomio-space-md);
+      }
+
+      .topic-list.bookmark-list tbody.topic-list-body tr.bookmark-list-item:not(.is-selected) td {
+        background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg));
+      }
+
+      .topic-list.bookmark-list tbody.topic-list-body tr.bookmark-list-item td:last-child {
+        visibility: hidden;
+      }
+    }
+  }
+
+  .fomio-bookmark-table__topic-header {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    white-space: nowrap;
+  }
+
+  .fomio-bookmark-table__topic-label {
+    display: inline-block;
+  }
+
+  .fomio-bookmark-table__bulk-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--fomio-space-md);
+    flex-wrap: wrap;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fomio-bookmark-table__bulk-bar .bulk-select-topics,
+  .fomio-bookmark-table__bulk-actions {
+    display: contents;
+  }
+
+  .fomio-bookmark-table__bulk-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    flex: 0 0 auto;
+    min-width: fit-content;
+  }
+
+  .fomio-bookmark-table__bulk-exit {
+    flex: 0 0 auto;
+  }
+
+  .fomio-bookmark-table__bulk-controls {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--fomio-space-sm);
+    justify-content: flex-start;
+    flex: 0 0 auto;
+  }
+
+  .fomio-bookmark-table__bulk-bar .bulk-select-bookmarks-dropdown {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+  }
+
+  .fomio-bookmark-table__bulk-bar .bulk-select-bookmark-dropdown__count {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--fomio-text);
+  }
+
+  .fomio-bookmark-table__bulk-button {
+    flex: 0 0 auto;
+  }
+
+  // ── Avatars ────────────────────────────────────────────
+
+  // Avatar styling (user profile pictures)
+  a.avatar,
+  .avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--fomio-border-soft);
+    transition: all var(--fomio-dur-fast) var(--fomio-ease);
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    &:hover {
+      box-shadow: 0 0 0 2px var(--fomio-primary);
+    }
+  }
+
+  // Smaller avatar variant for mobile
+  .avatar.large {
+    width: 48px;
+    height: 48px;
+  }
+
+  // Avatar in table cells
+  td.author-avatar {
+    a.avatar {
+      margin: 0;
+    }
+  }
+
+  // Avatar in bookmark metadata
+  .bookmark-list-item {
+    a.avatar {
+      margin-top: var(--fomio-space-xs);
+    }
+  }
+
+  // ── Category Links & Tags ──────────────────────────────
+
+  // Category badge styling
+  .badge-category__wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fomio-space-xs);
+    padding: 4px 10px;
+    background: var(--fomio-bg);
+    border-radius: var(--fomio-radius-xs);
+    text-decoration: none;
+    transition: all var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: var(--fomio-surface);
+    }
+
+    .badge-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-text);
+
+      &__name {
+        display: inline;
+      }
+    }
+  }
+
+  // Tags styling
+  .discourse-tags {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-xs);
+    flex-wrap: wrap;
+
+    .discourse-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: var(--fomio-bg);
+      border-radius: var(--fomio-radius-xs);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      color: var(--fomio-text);
+      text-decoration: none;
+      transition: all var(--fomio-dur-fast) var(--fomio-ease);
+      word-break: break-word;
+
+      &:hover {
+        background: var(--fomio-surface);
+        color: var(--fomio-primary);
+      }
+
+      // Tag separators
+      &.discourse-tags__tag-separator {
+        display: none;
+      }
+    }
+  }
+
+  // ── Loading & Pagination ────────────────────────────────
+
+  // Loading spinner while fetching more bookmarks
+  .conditional-loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--fomio-space-lg);
+    margin-top: var(--fomio-space-md);
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--fomio-border-soft);
+      border-top-color: var(--fomio-primary);
+      border-radius: 50%;
+      animation: fomio-spin 0.8s linear infinite;
+    }
+  }
+
+  @keyframes fomio-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  // Load more sentinel (invisible, but we style the container)
+  .load-more-sentinel {
+    margin: var(--fomio-space-lg) 0;
+  }
+
+  .desktop-view .bookmark-list-wrapper {
+    .bulk-select.btn-flat {
+      vertical-align: middle;
+    }
+  }
+}
+
 // ── Responsive ─────────────────────────────────────────────────
 
 @media (max-width: 640px) {
@@ -22719,4 +23798,950 @@ html.fomio-color-dark {
   }
 
   .fomio-teret-time { display: none; }
+}
+
+// ============================================================
+// 8. MESSAGES — Master-Detail Workspace
+// ============================================================
+
+.fomio-conversation-card {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  &--active {
+    background-color: transparent;
+  }
+
+  &--unread {
+    background-color: transparent;
+  }
+}
+
+.fomio-conversation-card__avatar-wrapper {
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  a,
+  .avatar {
+    display: block;
+    width: 48px;
+    height: 48px;
+  }
+
+  img.avatar {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+}
+
+.fomio-conversation-card__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background-color: var(--fomio-border);
+  overflow: hidden;
+
+  &--group {
+    color: var(--fomio-secondary);
+    font-size: 20px;
+  }
+
+  .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+  }
+}
+
+.fomio-conversation-card__content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fomio-conversation-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.fomio-conversation-card__identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fomio-conversation-card__username {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fomio-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.fomio-conversation-card__meta {
+  color: var(--fomio-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fomio-conversation-card__context {
+  margin: 0;
+  color: color-mix(in oklab, var(--fomio-text) 88%, var(--fomio-muted));
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.fomio-conversation-card__timestamp {
+  font-size: 12px;
+  color: var(--fomio-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.25;
+}
+
+.fomio-conversation-card__excerpt {
+  margin: 0;
+  font-size: 13px;
+  color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.fomio-conversation-card__unread-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--fomio-primary);
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+// Grid Layout
+.fomio-messages-master-detail {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background-color: var(--fomio-bg);
+}
+
+.fomio-messages-master {
+  width: 360px;
+  min-width: 0;
+  border-right: 1px solid var(--fomio-border);
+  overflow-y: auto;
+  background-color: var(--fomio-card);
+  flex-shrink: 0;
+}
+
+.fomio-messages-master-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-messages-master-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  background: transparent;
+}
+
+.fomio-messages-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fomio-messages-title {
+  margin: 0;
+  color: var(--fomio-text);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.fomio-messages-new-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--fomio-primary) 12%, var(--fomio-bg));
+  color: var(--fomio-text);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fomio-messages-filters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.fomio-messages-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.fomio-messages-filter {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--fomio-bg) 82%, var(--fomio-surface));
+  color: var(--fomio-muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+
+  &:hover,
+  &--active,
+  &.fomio-messages-filter--active {
+    background: color-mix(in oklab, var(--fomio-primary) 12%, var(--fomio-bg));
+    color: var(--fomio-text);
+  }
+}
+
+.fomio-messages-search {
+  display: block;
+
+  input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--fomio-border);
+    border-radius: 12px;
+    background: var(--fomio-bg);
+    color: var(--fomio-text);
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: var(--fomio-primary);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--fomio-primary) 15%, transparent);
+    }
+  }
+}
+
+.fomio-conversation-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.fomio-messages-list-shell,
+.fomio-messages-group-panel {
+  display: grid;
+  gap: 16px;
+  padding: 0 0 24px;
+}
+
+.fomio-messages-section-heading {
+  display: grid;
+  gap: 6px;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  h2 {
+    color: var(--fomio-text);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  p {
+    color: var(--fomio-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+.fomio-conversation-section {
+  display: grid;
+}
+
+.fomio-conversation-section__title {
+  padding: 8px 0 10px;
+  color: var(--fomio-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fomio-group-inbox-list {
+  display: grid;
+  gap: 0;
+}
+
+.fomio-group-inbox-card {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover,
+  &--active {
+    background: transparent;
+  }
+}
+
+.fomio-group-inbox-card__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-bg));
+  font-size: 18px;
+}
+
+.fomio-group-inbox-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fomio-group-inbox-card__name {
+  color: var(--fomio-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.fomio-group-inbox-card__meta {
+  color: var(--fomio-muted);
+  font-size: 13px;
+}
+
+.fomio-messages-empty-state-card {
+  display: grid;
+  gap: 10px;
+  padding: 40px 0 24px;
+  text-align: center;
+}
+
+.fomio-messages-empty-title {
+  margin: 0;
+  color: var(--fomio-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fomio-messages-empty-copy {
+  margin: 0;
+  color: var(--fomio-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.fomio-messages-empty-action {
+  justify-self: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fomio-primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fomio-messages-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--fomio-muted);
+  font-size: 14px;
+}
+
+body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
+  #main-outlet .user-main .new-user-content-wrapper {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  .fomio-messages-shell-wrapper,
+  .fomio-messages-master-detail {
+    width: 100%;
+    max-width: none;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .fomio-messages-master {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    border-right: none;
+    border-bottom: none;
+    flex: 1 1 auto;
+  }
+
+  .fomio-messages-detail {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .fomio-messages-master-container {
+    width: 100%;
+    max-width: none;
+    padding: 0 14px 24px;
+    box-sizing: border-box;
+  }
+
+  .fomio-messages-master-detail--conversation-open .fomio-messages-master {
+    display: none;
+  }
+
+  .fomio-messages-master-detail:not(.fomio-messages-master-detail--conversation-open)
+    .fomio-messages-detail {
+    display: none;
+  }
+}
+
+// Responsive Surface Modes
+
+// compact-desktop: 1024px-1279px
+@media (max-width: 1279px) and (min-width: 1024px) {
+  .fomio-messages-master {
+    width: 300px;
+  }
+}
+
+// rail: 768px-1023px
+@media (max-width: 1023px) and (min-width: 768px) {
+  .fomio-messages-master-detail {
+    flex-direction: column;
+  }
+
+  .fomio-messages-master {
+    width: 100%;
+    height: 280px;
+    border-right: none;
+    border-bottom: 1px solid var(--fomio-border);
+    flex-shrink: 0;
+  }
+
+  .fomio-messages-detail {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+// touch: < 768px
+@media (max-width: 767px) {
+  // Compact conversation cards on touch
+  .fomio-conversation-card {
+    padding: 14px 0;
+    grid-template-columns: 40px 1fr auto;
+    gap: 10px;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+
+  .fomio-conversation-card__avatar-wrapper {
+    width: 40px;
+    height: 40px;
+
+    a,
+    .avatar {
+      width: 40px;
+      height: 40px;
+    }
+
+    img.avatar {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  .fomio-conversation-card__avatar {
+    width: 40px;
+    height: 40px;
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .fomio-conversation-card__excerpt {
+    font-size: 12px;
+    -webkit-line-clamp: 1;
+  }
+
+  .fomio-conversation-card__username {
+    font-size: 15px;
+  }
+
+  .fomio-conversation-card__context {
+    font-size: 13px;
+  }
+
+  .fomio-messages-master-header {
+    padding: 8px 0 12px;
+    gap: 12px;
+  }
+
+  .fomio-messages-title {
+    font-size: 24px;
+  }
+
+  .fomio-messages-new-button {
+    width: 34px;
+    height: 34px;
+    font-size: 22px;
+  }
+
+  .fomio-messages-filter {
+    min-height: 34px;
+    font-size: 12px;
+  }
+
+  .fomio-messages-search input {
+    min-height: 44px;
+    border-radius: 12px;
+  }
+
+  .fomio-messages-list-shell,
+  .fomio-messages-group-panel {
+    padding: 0 0 24px;
+    gap: 14px;
+  }
+
+  .fomio-conversation-section__title {
+    padding: 6px 0 8px;
+  }
+
+  .fomio-group-inbox-list {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .fomio-group-inbox-card {
+    grid-template-columns: 36px 1fr;
+    gap: 10px;
+  }
+
+  .fomio-messages-empty-state-card {
+    padding-top: 32px;
+  }
+
+  .fomio-messages-thread-header {
+    padding: 12px 0 12px;
+  }
+
+  .fomio-messages-thread-topbar {
+    margin-bottom: 10px;
+  }
+
+  .fomio-messages-back-button {
+    display: inline-flex;
+    font-size: 14px;
+  }
+
+  .fomio-messages-thread-actions {
+    gap: 8px;
+  }
+
+  .fomio-messages-thread-action {
+    width: 30px;
+    height: 30px;
+  }
+
+  .fomio-messages-thread-title {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .fomio-messages-thread-summary {
+    margin-top: 3px;
+    font-size: 12px;
+  }
+
+  .fomio-messages-thread-search {
+    margin-top: 10px;
+
+    input {
+      min-height: 38px;
+      padding-inline: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+  }
+
+  .fomio-messages-thread-info {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .fomio-messages-list {
+    padding: 14px 0 20px;
+    gap: 16px;
+  }
+
+  .fomio-message-day-group {
+    gap: 10px;
+  }
+
+  .fomio-message-row {
+    max-width: 94%;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .fomio-message-header {
+    font-size: 12px;
+  }
+
+  .fomio-message-body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .fomio-messages-composer-footer {
+    padding:
+      12px
+      0
+      max(12px, env(safe-area-inset-bottom, 0px) + 8px);
+  }
+
+  .fomio-reply-launcher {
+    min-height: 44px;
+    padding-inline: 12px;
+    border-radius: 12px;
+  }
+}
+
+.fomio-loading-skeleton,
+.fomio-empty-message-list {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--fomio-muted);
+}
+
+// Replace the native PM list only on Discourse's user messages route.
+body.user-messages-page.fomio-messages-mode {
+  #main-outlet > .container.viewing-self {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary,
+  #main-outlet .user-main #user-content {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 180px);
+    width: 100%;
+  }
+}
+
+.fomio-messages-shell-wrapper {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: calc(100vh - 180px);
+  display: flex;
+  align-self: stretch;
+}
+
+// Detail Pane
+
+.fomio-messages-detail-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--fomio-bg);
+  padding-inline:
+    max(14px, env(safe-area-inset-left, 0px) + 8px)
+    max(14px, env(safe-area-inset-right, 0px) + 8px);
+  box-sizing: border-box;
+}
+
+.fomio-messages-thread {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-messages-thread-header {
+  flex-shrink: 0;
+  padding: 18px 0 14px;
+  border-bottom: 1px solid var(--fomio-border);
+  background-color: transparent;
+}
+
+.fomio-messages-back-button {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fomio-primary);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.fomio-messages-thread-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 8px;
+}
+
+.fomio-messages-thread-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fomio-messages-thread-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--fomio-bg) 84%, var(--fomio-surface));
+  color: var(--fomio-muted);
+  cursor: pointer;
+}
+
+.fomio-messages-thread-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fomio-text);
+  line-height: 1.25;
+}
+
+.fomio-messages-thread-summary {
+  margin: 4px 0 0;
+  color: var(--fomio-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.fomio-messages-thread-search {
+  display: block;
+  margin-top: 12px;
+
+  input {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--fomio-bg) 84%, var(--fomio-surface));
+    color: var(--fomio-text);
+    font-size: 14px;
+  }
+}
+
+.fomio-messages-thread-info {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--fomio-bg) 88%, var(--fomio-surface));
+
+  p {
+    margin: 0;
+    color: var(--fomio-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+.fomio-messages-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 0 24px;
+  gap: 18px;
+}
+
+.fomio-message-day-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fomio-message-day-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    color: var(--fomio-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+.fomio-message-row {
+  max-width: min(720px, 92%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+  box-shadow: none;
+
+  &--mine {
+    align-self: flex-end;
+    background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-card));
+  }
+}
+
+.fomio-message-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+}
+
+.fomio-message-body {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fomio-text);
+
+  p {
+    margin: 0 0 12px 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.fomio-messages-composer-footer {
+  flex-shrink: 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--fomio-border);
+  background-color: transparent;
+}
+
+.fomio-reply-launcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--fomio-bg) 86%, var(--fomio-surface));
+  color: var(--fomio-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.fomio-reply-launcher__plus {
+  color: var(--fomio-text);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.fomio-reply-launcher__label {
+  color: var(--fomio-muted);
+}
+
+.fomio-detail-loading,
+.fomio-detail-error {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--fomio-muted);
+  font-size: 14px;
+}
+
+.fomio-detail-error {
+  color: var(--fomio-primary);
+}
+
+.fomio-messages-empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--fomio-muted);
+  font-size: 14px;
 }
