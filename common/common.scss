@@ -10838,6 +10838,29 @@ body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-n
   }
 }
 
+// Me leaf detail surface on expanded / compact-desktop / rail — same
+// one-flat-surface page treatment as touch
+// (docs/web/touch-preferences-redesign-pattern.md): plain canvas, no
+// wrapper card. Only the page chrome flattens here; master-pane column
+// alignment, density, and item-level cards stay with their surface blocks.
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-activity-page,
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-messages-page,
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-preferences-page,
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-badges-page,
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-invites-page,
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-notifications-page {
+  #main-outlet .user-main {
+    background: var(--fomio-bg);
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
 // ── Zones ────────────────────────────────────────────────────
 
 .fomio-sidebar__zone {

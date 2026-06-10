@@ -1,16 +1,25 @@
 # Touch Preferences Redesign Pattern
 
-**Status:** Implemented for `/u/:username/preferences/*` on touch surface (June 2026). Page-level flattening extended to all Me leaf screens — Activity, Notifications, Messages, Invites, Badges (June 2026).  
+**Status:** Implemented for `/u/:username/preferences/*` on touch surface (June 2026). Page-level flattening extended to all Me leaf screens — Activity, Notifications, Messages, Invites, Badges (June 2026). Extended to expanded / compact-desktop / rail surfaces (June 2026) — the flat treatment is now mode-independent.  
 **Pattern:** One flat surface, no nested card chrome.  
-**Future scope:** Extensible to other touch form/settings screens.
+**Future scope:** Extensible to other form/settings screens.
 
 > **Scope note:** The pattern has two levels. **Page-level** flattening (plain
 > canvas, flat stack header, no wrapper card, unboxed pill track) now applies
-> to **every** Me leaf screen on touch. **Group-level** flattening (no
-> per-control-group boxes; hairline separators instead) applies only to
-> form screens like preferences — list screens keep their item-level cards
-> (stream items, notification rows, invite rows, badge cards) for row
-> separation.
+> to **every** Me leaf screen on **every surface mode**. **Group-level**
+> flattening (no per-control-group boxes; hairline separators instead)
+> applies only to form screens like preferences — list screens keep their
+> item-level cards (stream items, notification rows, invite rows, badge
+> cards) for row separation.
+>
+> The flat treatment is a property of the **detail surface**, not of the
+> touch mode. What differs per surface mode is navigation chrome and
+> density, never the page chrome: expanded / compact-desktop keep the
+> persistent master pane beside the detail, rail collapses the master pane
+> into an overlay (`fomio-master-pane-rail-open`), touch uses the Me stack
+> header + bottom nav. This keeps surface transitions continuous per
+> `surface-adaptation-model.md` — resizing across breakpoints only swaps
+> navigation chrome around a visually stable page.
 
 ---
 
@@ -97,11 +106,19 @@ For `&.user-preferences-page` on touch (under `body.fomio-surface-touch.fomio-si
 
 ### Configuration Scoping
 
-- **Desktop (768px+):** `common.scss` preferences section handles it (no mobile.scss override needed)
-- **Touch (<768px):** Both `common.scss` AND `mobile.scss` touch shell apply; the specific preferences rules override card chrome
+- **Touch:** the touch shell block in `common.scss` (`body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode)`) owns the page-level + group-level flattening; `mobile.scss` carries only narrow-width refinements
+- **Expanded / compact-desktop / rail:** the shared Me-leaf rule in `common.scss` (`body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-*-page`) owns the page-level flattening (plain `--fomio-bg` canvas, no wrapper card); `desktop.scss` "Settings detail alignment" (Slice 6B) carries the group-level hairline treatment at desktop density plus master-pane column alignment
 - **Landscape touch (e.g., folded foldables >768px in touch mode):** Covered by `common.scss` touch shell definition under `body.fomio-surface-touch`
 
-This ensures the flat treatment survives landscape phones, landscape foldables, and any coarse-touch context wider than 767px.
+This ensures the flat treatment survives landscape phones, landscape foldables, coarse-touch contexts wider than 767px, and desktop windows resized across the rail boundary.
+
+### Per-mode division of responsibility
+
+| Mode | Navigation chrome | Detail surface |
+|------|------------------|----------------|
+| expanded / compact-desktop | Persistent master pane beside detail | Flat, `--fomio-column-w` measure |
+| rail | Master pane as overlay (`fomio-master-pane-rail-open`) | Flat, same rules as desktop (rail shares the Slice selectors) |
+| touch | Me stack header + bottom nav | Flat, touch gutters and 44px targets |
 
 ---
 
@@ -140,7 +157,7 @@ their item cards:
    - `padding: 16px 0` per `.control-group` / form section
    - `border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 70%, transparent)` between adjacent groups
 4. Use plain `--fomio-bg` for the page canvas
-5. Update both `common.scss` AND the touch-shell section of `mobile.scss`
+5. Apply to **all surface modes**: the touch shell block in `common.scss` for touch, the shared non-touch Me-leaf rule in `common.scss` for page chrome, and `desktop.scss` for desktop-density group rules — never a touch-only redesign
 6. Exclude the page from the "final mobile design pass" selector if it inherited card chrome rules
 
 ---
@@ -150,7 +167,8 @@ their item cards:
 - [ ] Inputs, selects, textareas have visible 44px touch targets
 - [ ] Form groups are visually separated by hairline, not boxes
 - [ ] Page reads as one flat surface (no nested card stacking)
-- [ ] Responsive: verify at 375px (compact phone), 390px (regular phone), 768px (tablet)
+- [ ] Responsive: verify at 375px (compact phone), 390px (regular phone), 768px (rail), 1024px (compact desktop), 1280px (expanded)
+- [ ] Resizing across the 767/768px boundary swaps navigation chrome only — page chrome stays visually stable
 - [ ] Dark mode: hairlines visible without being too strong
 - [ ] Keyboard focus visible on inputs (browser default or styled)
 - [ ] No Discourse class overrides leak through — all scoped under `fomio-` rules
@@ -171,3 +189,4 @@ their item cards:
 - **Commit:** `18157f2` — "Flatten account preferences to one surface on touch"
 - **Files:** `apps/web/common/common.scss` (lines 9161+), `apps/web/mobile/mobile.scss` (lines 444+)
 - **Branch:** `claude/happy-gauss-xa2wl9` — page-level flattening extended to Activity, Notifications, Messages, Invites, Badges (same two files)
+- **Branch:** `claude/serene-bardeen-bojnij` — flat treatment extended to expanded / compact-desktop / rail: shared Me-leaf page rule in `common.scss`, group-level hairlines replace boxed control groups in `desktop.scss` Slice 6B, messages canvas gradient removed

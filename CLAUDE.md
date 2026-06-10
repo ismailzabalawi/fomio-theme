@@ -552,11 +552,11 @@ Important: Discourse's stylesheet split is viewport-based, but Fomio's shell own
 
 Safe area follows the same rule. Define touch-safe insets and derived page gutters in the touch shell (`body.fomio-surface-touch`) and have homepage/feed/components consume those variables. Do not scatter raw `env(safe-area-inset-*)` math across individual mobile pages unless the case is truly component-specific.
 
-### Touch Settings Forms
+### Me Leaf Screens — One Flat Surface (all modes)
 
-All Me leaf screens on touch (Activity, Notifications, Messages, Invites, Preferences, Badges) use a **one-flat-surface pattern** at the page level: no canvas gradient, no wrapper card, flat stack header, unboxed pill tracks. The page is fully responsive without fixed card insets.
+All Me leaf screens (Activity, Notifications, Messages, Invites, Preferences, Badges) use a **one-flat-surface pattern** at the page level on **every surface mode**: no canvas gradient, no wrapper card, unboxed pill tracks. The flat treatment is a property of the detail surface, not of the touch mode — only navigation chrome and density vary per mode (persistent master pane on expanded/compact-desktop, overlay master pane on rail, stack header + bottom nav on touch). The page is fully responsive without fixed card insets.
 
-Within that flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows.
+Within that flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). On touch this lives in the touch shell block of `common.scss`; on desktop/rail in the "Settings detail alignment" block of `desktop.scss`. Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows.
 
 **See:** `docs/web/touch-preferences-redesign-pattern.md` for full rationale, implementation guidance, and future application rules.
 

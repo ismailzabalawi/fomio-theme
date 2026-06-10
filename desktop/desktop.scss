@@ -508,12 +508,11 @@ body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
     margin-bottom: 0.75rem;
   }
 
-  // Light, readable form and panel framing while preserving native behavior.
-  .user-main .control-group,
-  .user-main .pref-control,
+  // One flat surface (docs/web/touch-preferences-redesign-pattern.md):
+  // no per-group boxes — grouping comes from vertical rhythm and hairline
+  // separators, the same language as the touch treatment at desktop density.
   .user-main .pref-description,
-  .user-main .email-group,
-  .user-main .form-vertical .control-group {
+  .user-main .email-group {
     margin-bottom: 0.95rem;
   }
 
@@ -521,27 +520,28 @@ body.fomio-settings-master-active.fomio-surface-rail:not(.fomio-auth-mode) {
   .user-main .user-preferences .pref-group,
   .user-main .user-preferences .control-group,
   .user-main .user-content .control-group,
-  .user-main .user-content .pref-control {
+  .user-main .user-content .pref-control,
+  .user-main .form-vertical .control-group {
     display: block;
-    background: var(--fomio-card);
+    margin-bottom: 0;
+    padding: 0.95rem 0;
+    background: transparent;
     border: none;
-    border-radius: var(--fomio-radius-card);
-    padding: 0.95rem 1.05rem;
-    box-shadow: 0 10px 24px rgb(17 24 39 / 4%);
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .user-main .form-vertical {
-    background: transparent;
-    border-radius: 0;
     padding: 0;
-    box-shadow: none;
   }
 
   .user-main .user-preferences .pref-group + .pref-group,
   .user-main .user-preferences .control-group + .control-group,
   .user-main .user-content .control-group + .control-group,
-  .user-main .user-content .pref-control + .pref-control {
-    margin-top: 0.95rem;
+  .user-main .user-content .pref-control + .pref-control,
+  .user-main .form-vertical .control-group + .control-group {
+    margin-top: 0;
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 70%, transparent);
   }
 
   .user-main label,
@@ -1215,16 +1215,7 @@ body.user-messages-page.fomio-sidebar-active:not(.fomio-auth-mode),
 body.fomio-sidebar-active.fomio-surface-expanded.user-messages-page:not(.fomio-auth-mode),
 body.fomio-sidebar-active.fomio-surface-compact-desktop.user-messages-page:not(.fomio-auth-mode),
 body.fomio-sidebar-active.fomio-surface-rail.user-messages-page:not(.fomio-auth-mode) {
-  #main-outlet .user-main {
-    background:
-      radial-gradient(
-        circle at top,
-        color-mix(in oklab, var(--fomio-surface) 34%, transparent) 0%,
-        transparent 40%
-      ),
-      color-mix(in oklab, var(--fomio-bg) 90%, var(--fomio-surface));
-  }
-
+  // Flat page canvas comes from the shared Me-leaf rule in common.scss.
   #main-outlet .user-main .new-user-content-wrapper {
     margin: 0 10px 14px;
     padding: 0;
