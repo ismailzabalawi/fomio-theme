@@ -28,6 +28,33 @@ en:
     user:
       email:
         title: "Email address"
+      summary:
+        topics: "Bytes"
+        replies: "Replies"
+        top_replies: "Top replies"
+        more_replies: "More replies"
+        no_replies: "No replies yet."
+        top_topics: "Top bytes"
+        more_topics: "More bytes"
+        no_topics: "No bytes yet."
+        top_links: "Top links"
+        no_links: "No links yet."
+        most_liked_by: "Most liked by"
+        most_liked_users: "Most liked"
+        most_replied_to_users: "Often replies to"
+        no_likes: "No likes yet."
+        top_categories: "Most active in"
+        top_badges: "Top badges"
+        more_badges: "More badges"
+        no_badges: "No badges yet."
+        topics_entered: "bytes viewed"
+        posts_read: "replies read"
+        topic_count:
+          one: "byte published"
+          other: "bytes published"
+        post_count:
+          one: "reply posted"
+          other: "replies posted"
   auth_login:
     subheader: "Welcome back."
   auth_signup:
@@ -118,6 +145,11 @@ en:
     filter_sort: "Sort:"
     filter_title_only: "Title only"
     filter_has_replies: "Has replies"
+  summary_page:
+    eyebrow: "Summary"
+    title: "At a glance"
+    deck: "What %{name} has been up to on Fomio."
+    joined: "On Fomio since %{date}"
   hub_page:
     breadcrumb_hubs: "Hubs"
     bytes_section_title: "Bytes"

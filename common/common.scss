@@ -6289,34 +6289,109 @@ body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(
   }
 }
 
+// ── User profile · Summary detail surface ──────────────────────────────
+// Editorial glass redesign: translucent section cards over a warm canvas,
+// Lora serif headings, sans tabular numerals for stat values. Per-stat
+// hooks use core's stable `stats-*` li classes and the `.user-stat`
+// value/label markup (verified against discourse templates/user/summary.gjs
+// and ui-kit/d-user-stat.gjs). The hero header is rendered by
+// connectors/above-user-summary-stats/fomio-summary-hero.gjs.
 body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
+  --fomio-summary-glass: color-mix(in oklab, var(--fomio-card) 62%, transparent);
+  --fomio-summary-tile: color-mix(in oklab, var(--fomio-card) 46%, transparent);
+  --fomio-summary-tile-hover: color-mix(in oklab, var(--fomio-card) 74%, transparent);
+  --fomio-summary-hairline: color-mix(in oklab, var(--fomio-text) 9%, transparent);
+  --fomio-summary-hairline-soft: color-mix(in oklab, var(--fomio-text) 6%, transparent);
+  --fomio-summary-card-shadow:
+    0 1px 1px color-mix(in oklab, var(--fomio-shadow) 16%, transparent),
+    0 24px 48px -32px color-mix(in oklab, var(--fomio-shadow) 55%, transparent);
+  --fomio-summary-tile-shadow-hover:
+    0 14px 28px -20px color-mix(in oklab, var(--fomio-shadow) 60%, transparent);
+
+  // Stat numerals lead with the platform UI face (San Francisco on Apple
+  // hardware) and fall back to the brand sans stack.
+  --fomio-summary-numeral-font: -apple-system, "SF Pro Display", "Inter",
+    var(--fomio-font-ui);
+
   #main-outlet .user-main {
     max-width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
     background:
       radial-gradient(
-        circle at top left,
+        120% 70% at 0% 0%,
         color-mix(in oklab, var(--fomio-primary) 6%, transparent) 0%,
-        transparent 30%
+        transparent 42%
       ),
       linear-gradient(
         180deg,
-        color-mix(in oklab, var(--fomio-surface) 78%, #f8f2e6) 0%,
-        color-mix(in oklab, var(--fomio-bg) 86%, #f2eadb) 100%
+        color-mix(in oklab, var(--fomio-surface) 70%, var(--fomio-bg)) 0%,
+        var(--fomio-bg) 100%
       );
   }
 
   #main-outlet .user-main #user-content.user-content {
-    margin-top: 18px;
+    margin-top: 16px;
     padding: 0;
     background: transparent;
+  }
+
+  .fomio-summary-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 2px 24px;
+  }
+
+  .fomio-summary-hero__eyebrow {
+    font-family: var(--fomio-font-ui);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+  }
+
+  .fomio-summary-hero__title {
+    margin: 0;
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.8rem, 1.6rem + 0.7vw, 2.45rem);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--fomio-text);
+  }
+
+  .fomio-summary-hero__deck {
+    margin: 0;
+    max-width: 38rem;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--fomio-muted);
+  }
+
+  .fomio-summary-hero__joined {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    margin-top: 2px;
+    padding: 0 12px;
+    border-radius: var(--fomio-radius-pill);
+    border: 1px solid var(--fomio-summary-hairline);
+    background: var(--fomio-summary-tile);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-secondary);
   }
 
   #main-outlet .user-main #user-content .top-section {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+    align-items: stretch;
     gap: 12px;
     margin-bottom: 12px;
   }
@@ -6327,97 +6402,153 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  #main-outlet .user-main #user-content .stats-title {
-    margin: 0 0 18px;
-    font-family: var(--fomio-font-serif);
-    font-size: clamp(1.6rem, 1.45rem + 0.45vw, 2.05rem);
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
-    text-transform: none;
-    color: color-mix(in oklab, var(--fomio-text) 96%, #221a14);
-  }
-
   #main-outlet .user-main #user-content .stats-section,
   #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .top-categories-section,
   #main-outlet .user-main #user-content .badges-section {
     min-width: 0;
     width: auto;
     float: none;
     margin: 0;
-    padding: 20px 18px 20px;
+    padding: 22px 20px;
     border-radius: 24px;
-    border: 1px solid color-mix(in oklab, #c9b9a2 36%, transparent);
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 88%, #fffaf0) 0%,
-        color-mix(in oklab, var(--fomio-surface) 90%, #f5edde) 100%
-      );
+    border: 1px solid var(--fomio-summary-hairline);
+    background: var(--fomio-summary-glass);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 72%),
-      0 18px 40px rgb(62 39 18 / 5%);
+      var(--fomio-summary-card-shadow),
+      inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 55%, transparent);
     box-sizing: border-box;
   }
 
+  @supports (backdrop-filter: blur(1px)) {
+    #main-outlet .user-main #user-content .stats-section,
+    #main-outlet .user-main #user-content .top-sub-section,
+    #main-outlet .user-main #user-content .top-categories-section,
+    #main-outlet .user-main #user-content .badges-section {
+      backdrop-filter: blur(18px) saturate(1.4);
+    }
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    #main-outlet .user-main #user-content .stats-section,
+    #main-outlet .user-main #user-content .top-sub-section,
+    #main-outlet .user-main #user-content .top-categories-section,
+    #main-outlet .user-main #user-content .badges-section {
+      background: color-mix(in oklab, var(--fomio-card) 86%, var(--fomio-bg));
+    }
+  }
+
+  #main-outlet .user-main #user-content .stats-title,
   #main-outlet .user-main #user-content .top-sub-section > h2,
+  #main-outlet .user-main #user-content .top-sub-section > h3,
   #main-outlet .user-main #user-content .top-categories-section > h2,
-  #main-outlet .user-main #user-content .badges-section > h2 {
+  #main-outlet .user-main #user-content .top-categories-section > h3,
+  #main-outlet .user-main #user-content .badges-section > h2,
+  #main-outlet .user-main #user-content .badges-section > h3 {
     margin: 0 0 16px;
     font-family: var(--fomio-font-serif);
-    font-size: clamp(1.45rem, 1.32rem + 0.32vw, 1.8rem);
+    font-size: clamp(1.35rem, 1.26rem + 0.28vw, 1.65rem);
     font-weight: 500;
     line-height: 1.08;
-    letter-spacing: -0.03em;
-    color: color-mix(in oklab, var(--fomio-text) 96%, #221a14);
+    letter-spacing: -0.025em;
+    text-transform: none;
+    color: var(--fomio-text);
   }
 
   #main-outlet .user-main #user-content .stats-section ul {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px 12px;
+    grid-template-columns: repeat(auto-fit, minmax(156px, 1fr));
+    gap: 10px;
     margin: 0;
     padding: 0;
+    list-style: none;
   }
 
   #main-outlet .user-main #user-content .stats-section li {
     display: block;
     margin: 0;
-    padding: 8px 10px 6px;
-    border-radius: 0;
+    padding: 0;
     border: 0;
-    border-top: 1px solid color-mix(in oklab, #ccbca7 48%, transparent);
     background: transparent;
+  }
+
+  // Each tile: small tracked label on top, large numeral below
+  // (DOM order is value → label; column-reverse + flex-end keeps the
+  // pair pinned to the top of equal-height tiles).
+  #main-outlet .user-main #user-content .stats-section .user-stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 10px;
+    height: 100%;
+    padding: 14px 16px 13px;
+    border-radius: var(--fomio-radius-lg);
+    border: 1px solid var(--fomio-summary-hairline-soft);
+    background: var(--fomio-summary-tile);
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .value {
+    font-family: var(--fomio-summary-numeral-font);
+    font-size: clamp(1.7rem, 1.5rem + 0.7vw, 2.4rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main #user-content .stats-section .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: var(--fomio-muted);
+  }
+
+  #main-outlet .user-main #user-content .stats-section .label .d-icon {
+    font-size: 0.8rem;
+    color: color-mix(in oklab, var(--fomio-primary) 80%, var(--fomio-text));
   }
 
   #main-outlet .user-main #user-content .stats-section li.linked-stat {
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   #main-outlet .user-main #user-content .stats-section li.linked-stat a {
-    padding: 8px 10px 6px;
+    display: block;
+    height: 100%;
+    padding: 0;
+    border-radius: var(--fomio-radius-lg);
     color: inherit;
     text-decoration: none;
   }
 
-  #main-outlet .user-main #user-content .stats-section .value {
-    font-family: var(--fomio-font-serif);
-    font-size: clamp(2.85rem, 2.35rem + 1vw, 4.6rem);
-    font-weight: 600;
-    line-height: 0.9;
-    letter-spacing: -0.06em;
-    color: color-mix(in oklab, var(--fomio-text) 96%, #1c140f);
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a:focus-visible {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
   }
 
-  #main-outlet .user-main #user-content .stats-section .label {
-    margin-top: 8px;
-    max-width: 11ch;
-    color: color-mix(in oklab, var(--fomio-text) 82%, #3f3023);
-    font-family: var(--fomio-font-ui);
-    font-size: 0.98rem;
-    font-weight: 700;
-    line-height: 1.15;
+  #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat {
+    transition:
+      transform var(--fomio-dur-med) var(--fomio-ease),
+      border-color var(--fomio-dur-med) var(--fomio-ease),
+      background-color var(--fomio-dur-med) var(--fomio-ease),
+      box-shadow var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--fomio-primary) 28%, transparent);
+    background: var(--fomio-summary-tile-hover);
+    box-shadow: var(--fomio-summary-tile-shadow-hover);
   }
 
   #main-outlet .user-main #user-content .top-sub-section ul,
@@ -6426,40 +6557,37 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     max-width: 100%;
   }
 
-  #main-outlet .user-main #user-content .top-sub-section ul {
-    margin: 0;
-    padding: 0;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section li {
-    margin: 0;
-    padding: 14px 16px;
-    border: 1px solid color-mix(in oklab, #ccbca7 30%, transparent);
-    border-radius: 18px;
-    background: color-mix(in oklab, var(--fomio-surface) 90%, #fffdf7);
-    box-shadow: 0 10px 24px rgb(62 39 18 / 4%);
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section li:first-child {
-    padding-top: 14px;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section li:last-child {
-    padding-bottom: 14px;
-    border-bottom: 1px solid color-mix(in oklab, #ccbca7 30%, transparent);
-  }
-
   #main-outlet .user-main #user-content .top-sub-section ul,
   #main-outlet .user-main #user-content .links-section ul,
   #main-outlet .user-main #user-content .summary-user-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section li {
+    margin: 0;
+    padding: 13px 15px;
+    border: 1px solid var(--fomio-summary-hairline-soft);
+    border-radius: var(--fomio-radius-lg);
+    background: var(--fomio-summary-tile);
+    box-shadow: none;
+    transition:
+      border-color var(--fomio-dur-fast) var(--fomio-ease),
+      background-color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section li:hover {
+    border-color: var(--fomio-summary-hairline);
+    background: var(--fomio-summary-tile-hover);
   }
 
   #main-outlet .user-main #user-content .top-sub-section .topic-title,
   #main-outlet .user-main #user-content .top-sub-section li > a:first-child {
-    color: color-mix(in oklab, var(--fomio-text) 95%, #231912);
+    color: var(--fomio-text);
     font-family: var(--fomio-font-serif);
     font-size: clamp(1rem, 0.96rem + 0.18vw, 1.12rem);
     font-weight: 500;
@@ -6468,19 +6596,20 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .top-sub-section .topic-info,
-  #main-outlet .user-main #user-content .links-section .domain,
   #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .username,
   #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .user-title {
-    color: color-mix(in oklab, var(--fomio-ink-muted) 84%, #5a4a3d);
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
   }
 
   #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
   #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty {
     margin: 0;
     padding: 16px 18px;
-    border-radius: 18px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 56%, transparent);
-    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
+    border-radius: var(--fomio-radius-lg);
+    border: 1px dashed var(--fomio-summary-hairline);
+    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
     box-sizing: border-box;
     list-style: none;
   }
@@ -6500,28 +6629,10 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     display: none !important;
   }
 
-  #main-outlet .user-main #user-content .links-section ul {
-    gap: 12px;
-  }
-
   #main-outlet .user-main #user-content .links-section li {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 16px 16px 17px;
-    border: 1px solid color-mix(in oklab, #ccbca7 30%, transparent);
-    border-radius: 18px;
-    background: color-mix(in oklab, var(--fomio-surface) 90%, #fffdf7);
-    box-shadow: 0 10px 24px rgb(62 39 18 / 4%);
-  }
-
-  #main-outlet .user-main #user-content .links-section li:first-child,
-  #main-outlet .user-main #user-content .links-section li:last-child {
-    padding: 14px 14px 15px;
-  }
-
-  #main-outlet .user-main #user-content .links-section li:last-child {
-    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 56%, transparent);
   }
 
   #main-outlet .user-main #user-content .links-section br {
@@ -6534,14 +6645,16 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     align-self: flex-start;
     gap: 8px;
     max-width: 100%;
-    min-height: 28px;
+    min-height: 26px;
     padding: 0 10px;
-    border-radius: 999px;
-    background: color-mix(in oklab, #f2e8d7 62%, var(--fomio-surface));
-    border: 1px solid color-mix(in oklab, #c8b59d 34%, transparent);
-    font-size: 0.7rem;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 7%, transparent);
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 16%, transparent);
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--fomio-tracking-wide);
     line-height: 1;
     text-transform: uppercase;
     white-space: nowrap;
@@ -6557,16 +6670,17 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
     min-width: 1.6rem;
     padding: 0 0.35rem;
     height: 1.35rem;
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-surface));
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
     color: var(--fomio-primary);
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
   }
 
   #main-outlet .user-main #user-content .links-section li > a:last-of-type {
-    color: color-mix(in oklab, var(--fomio-text) 95%, #231912);
+    color: var(--fomio-text);
     font-family: var(--fomio-font-serif);
     font-size: 1.06rem;
     font-weight: 500;
@@ -6588,18 +6702,29 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .badges-section > .more {
     display: inline-flex;
     align-items: center;
-    margin-top: 10px;
+    gap: 6px;
+    min-height: 32px;
+    margin-top: 12px;
     color: var(--fomio-primary);
+    font-size: var(--fomio-text-sm);
+    font-weight: 700;
+    transition: color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .more:hover,
+  #main-outlet .user-main #user-content .badges-section > .more:hover {
+    color: var(--fomio-primary-dark);
   }
 
   #main-outlet .user-main #user-content .top-categories-section table {
+    width: 100%;
     border-collapse: collapse;
   }
 
   #main-outlet .user-main #user-content .top-categories-section th,
   #main-outlet .user-main #user-content .top-categories-section td {
     padding: 12px 8px;
-    border-bottom: 1px solid color-mix(in oklab, #ccbca7 34%, transparent);
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
     font-family: var(--fomio-font-ui);
   }
 
@@ -6608,22 +6733,30 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .top-categories-section th {
-    color: color-mix(in oklab, var(--fomio-ink-muted) 78%, #685646);
+    padding-top: 0;
+    color: var(--fomio-muted);
     font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: var(--fomio-tracking-wider);
     text-transform: uppercase;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section td.topic-count,
+  #main-outlet .user-main #user-content .top-categories-section td.reply-count {
+    color: var(--fomio-text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 
   #main-outlet .user-main #user-content .summary-user-list li {
     height: auto;
-    min-height: 62px;
+    min-height: 58px;
   }
 
   #main-outlet .user-main #user-content .summary-user-list .user-info {
     display: flex;
     align-items: center;
-    min-height: 62px;
+    min-height: 0;
   }
 
   #main-outlet .user-main #user-content .summary-user-list .user-info .user-detail {
@@ -6635,7 +6768,7 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .summary-user-list .user-info .name-line > a {
-    color: color-mix(in oklab, var(--fomio-text) 95%, #231912);
+    color: var(--fomio-text);
     font-family: var(--fomio-font-serif);
     font-size: 1.02rem;
     font-weight: 500;
@@ -6644,23 +6777,23 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
 
   #main-outlet .user-main #user-content .summary-user-list .replies,
   #main-outlet .user-main #user-content .summary-user-list .likes {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
 
   #main-outlet .user-main #user-content .badge-group-list {
-    gap: 12px;
+    gap: 10px;
   }
 
   #main-outlet .user-main #user-content .badge-card {
-    border-radius: 20px;
-    border-color: color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg)) 100%
-      );
+    border: 1px solid var(--fomio-summary-hairline-soft);
+    border-radius: var(--fomio-radius-card);
+    background: var(--fomio-summary-tile);
     box-shadow: none;
   }
 
@@ -6680,11 +6813,11 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .alert.alert-info {
     margin: 0;
     padding: 16px 18px;
-    border-radius: 18px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 56%, transparent);
-    background: color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface));
+    border-radius: var(--fomio-radius-lg);
+    border: 1px dashed var(--fomio-summary-hairline);
+    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
     box-sizing: border-box;
-    color: color-mix(in oklab, var(--fomio-ink-muted) 86%, var(--fomio-text));
+    color: var(--fomio-muted);
     font-family: var(--fomio-font-ui);
     font-size: var(--fomio-text-sm);
     line-height: 1.5;
@@ -6708,6 +6841,19 @@ body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
       grid-template-columns: minmax(0, 1fr);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat,
+    #main-outlet .user-main #user-content .top-sub-section li,
+    #main-outlet .user-main #user-content .top-sub-section .more,
+    #main-outlet .user-main #user-content .badges-section > .more {
+      transition: none;
+    }
+
+    #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
+      transform: none;
+    }
+  }
 }
 
 // Desktop summary rhythm: lead with full-width Stats, then balanced secondary cards.
@@ -6715,8 +6861,9 @@ body.fomio-sidebar-active.fomio-surface-expanded.user-summary-page:not(.fomio-au
 body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.fomio-auth-mode) {
   #main-outlet .user-main #user-content .top-section {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    align-items: start;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: stretch;
   }
 
   #main-outlet .user-main #user-content .top-section > .stats-section {
@@ -6724,7 +6871,8 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.f
   }
 
   #main-outlet .user-main #user-content .stats-section ul {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    gap: 12px;
   }
 
   #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
@@ -6732,7 +6880,7 @@ body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.f
   #main-outlet .user-main #user-content .top-sub-section > p,
   #main-outlet .user-main #user-content .badges-section > p {
     padding: 12px 14px;
-    border-radius: 14px;
+    border-radius: var(--fomio-radius-md);
     font-size: 0.83rem;
   }
 }
@@ -6829,12 +6977,101 @@ body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-m
   #main-outlet .user-main #user-content .top-section {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
+    margin-bottom: 10px;
   }
 
   #main-outlet .user-main #user-content .stats-section,
   #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .top-categories-section,
   #main-outlet .user-main #user-content .badges-section {
-    border-radius: 18px;
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section ul {
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  }
+}
+
+// Touch: same editorial system, tightened for one-hand reading.
+body.fomio-sidebar-active.fomio-surface-touch.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content.user-content {
+    margin-top: 12px;
+  }
+
+  .fomio-summary-hero {
+    gap: 6px;
+    margin: 2px 2px 18px;
+  }
+
+  .fomio-summary-hero__title {
+    font-size: clamp(1.55rem, 6vw, 1.9rem);
+  }
+
+  .fomio-summary-hero__deck {
+    font-size: 0.9rem;
+  }
+
+  #main-outlet .user-main #user-content .top-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section,
+  #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .top-categories-section,
+  #main-outlet .user-main #user-content .badges-section {
+    padding: 16px 14px;
+    border-radius: 20px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .user-stat {
+    gap: 8px;
+    padding: 12px 13px 11px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .value {
+    font-size: clamp(1.55rem, 5.4vw, 1.95rem);
+  }
+}
+
+// Dark mode: warm-brown glass — slightly more opaque cards and brighter
+// hairlines so depth still reads against the dark canvas. Colors continue
+// to flow from the dark token values in Section 1B.
+html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
+  --fomio-summary-glass: color-mix(in oklab, var(--fomio-card) 70%, transparent);
+  --fomio-summary-tile: color-mix(in oklab, var(--fomio-card) 52%, transparent);
+  --fomio-summary-tile-hover: color-mix(in oklab, var(--fomio-card) 82%, transparent);
+  --fomio-summary-hairline: color-mix(in oklab, var(--fomio-text) 13%, transparent);
+  --fomio-summary-hairline-soft: color-mix(in oklab, var(--fomio-text) 9%, transparent);
+
+  #main-outlet .user-main {
+    background:
+      radial-gradient(
+        120% 70% at 0% 0%,
+        color-mix(in oklab, var(--fomio-primary) 8%, transparent) 0%,
+        transparent 42%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-surface) 55%, var(--fomio-bg)) 0%,
+        var(--fomio-bg) 100%
+      );
+  }
+
+  #main-outlet .user-main #user-content .stats-section,
+  #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .top-categories-section,
+  #main-outlet .user-main #user-content .badges-section {
+    box-shadow:
+      var(--fomio-summary-card-shadow),
+      inset 0 1px 0 color-mix(in oklab, var(--fomio-text) 5%, transparent);
   }
 }
 
