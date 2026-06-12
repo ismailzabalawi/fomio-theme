@@ -7075,6 +7075,380 @@ html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-aut
   }
 }
 
+// ────────────────────────────────────────────────────────────────
+// Activity feed — editorial stream (user profile › Activity).
+// Restyles Discourse's native activity stream in place. The markup is
+// core-rendered (user-stream.gjs → post-list/index.gjs →
+// post-list/item/{index,details}.gjs, verified against discourse main),
+// so DLoadMore infinite scrolling, ExpandPost, drafts, and bulk-select
+// keep their native DOM and behavior. The action-type kicker is added
+// per item through core's `user-stream-item-above` outlet by
+// connectors/user-stream-item-above/fomio-activity-stream-kicker.gjs.
+// Cards are opaque token mixes rather than backdrop-filter glass: the
+// Me leaf canvas is flat (one-flat-surface pattern), and a long
+// infinite-scroll list of backdrop filters would tax compositing.
+// `.user-stream-item` is present on items in both the PostList markup
+// and the legacy user-stream markup; everything is scoped under
+// `body.user-activity-page` + `#user-content .user-stream` so no other
+// stream (notifications, messages, bookmarks) is touched.
+body.fomio-sidebar-active.user-activity-page:not(.fomio-auth-mode) {
+  --fomio-stream-card: color-mix(in oklab, var(--fomio-card) 86%, var(--fomio-bg));
+  --fomio-stream-card-hover: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg));
+  --fomio-stream-hairline: color-mix(in oklab, var(--fomio-text) 9%, transparent);
+  --fomio-stream-hairline-soft: color-mix(in oklab, var(--fomio-text) 6%, transparent);
+  --fomio-stream-card-shadow:
+    0 1px 1px color-mix(in oklab, var(--fomio-shadow) 14%, transparent),
+    0 22px 44px -34px color-mix(in oklab, var(--fomio-shadow) 50%, transparent);
+  --fomio-stream-card-shadow-hover:
+    0 1px 1px color-mix(in oklab, var(--fomio-shadow) 16%, transparent),
+    0 16px 34px -22px color-mix(in oklab, var(--fomio-shadow) 55%, transparent);
+
+  // Stream wrapper is core's PostList element (`.user-stream.post-list`).
+  // Column gap keeps the card rhythm append-safe for infinite-scroll
+  // batches — no per-item margins to recompute.
+  #main-outlet .user-main #user-content .user-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 4px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  // ── Item card: breathable, hairline-bordered, reading-first ──
+  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+    display: block;
+    margin: 0;
+    padding: 20px 22px 22px;
+    border: 1px solid var(--fomio-stream-hairline);
+    border-radius: 24px;
+    background: var(--fomio-stream-card);
+    box-shadow:
+      var(--fomio-stream-card-shadow),
+      inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 55%, transparent);
+    box-sizing: border-box;
+    cursor: default;
+    user-select: text;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    &:hover,
+    &:focus-within {
+      background: var(--fomio-stream-card-hover);
+      border-color: color-mix(in oklab, var(--fomio-text) 12%, transparent);
+      box-shadow:
+        var(--fomio-stream-card-shadow-hover),
+        inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 62%, transparent);
+    }
+  }
+
+  // ── Action kicker (sans metadata eyebrow, terracotta) ──
+  #main-outlet .user-main #user-content .user-stream .fomio-activity-stream-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+
+    &::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: color-mix(in oklab, var(--fomio-primary) 75%, transparent);
+    }
+  }
+
+  // ── Header: avatar · title · metadata ──
+  #main-outlet .user-main #user-content .user-stream .post-list-item__header,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .avatar-link {
+    flex: 0 0 auto;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .avatar-link img.avatar,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .draft-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .draft-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--fomio-muted) 12%, transparent);
+    color: var(--fomio-muted);
+  }
+
+  #main-outlet .user-main #user-content .user-stream .post-list-item__details,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item__details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // Byte title — Lora display voice, matching the Summary hero.
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .title a,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .stream-topic-title a {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.12rem, 1.05rem + 0.25vw, 1.3rem);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.018em;
+    text-decoration: none;
+
+    &:hover {
+      color: color-mix(in oklab, var(--fomio-primary) 78%, var(--fomio-text));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .stream-topic-title .d-icon {
+    font-size: 0.85em;
+    color: var(--fomio-muted);
+  }
+
+  // Metadata row — clean sans: teret pill, timestamp.
+  #main-outlet .user-main #user-content .user-stream .post-list-item__metadata,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item__metadata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.76rem;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .time,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .relative-date,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .post-date {
+    font-family: var(--fomio-font-ui);
+    font-size: 0.76rem;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    white-space: nowrap;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .badge-category__wrapper {
+    padding: 3px 10px;
+    border-radius: var(--fomio-radius-pill);
+    border: 1px solid var(--fomio-stream-hairline-soft);
+    background: color-mix(in oklab, var(--fomio-surface) 80%, var(--fomio-bg));
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .badge-category,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .badge-category__name {
+    font-family: var(--fomio-font-ui);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: color-mix(in oklab, var(--fomio-muted) 78%, var(--fomio-text));
+  }
+
+  // Expand / collapse affordance — quiet circular ghost control.
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .expand-item,
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .expand-post {
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--fomio-muted);
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-primary) 10%, transparent);
+      color: var(--fomio-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  // ── Content excerpt — Lora serif reading voice ──
+  // `div.excerpt` is the cooked content (post-list/item/index.gjs);
+  // `p.excerpt` is PostActionDescription's metadata line and stays sans.
+  #main-outlet .user-main #user-content .user-stream .user-stream-item div.excerpt {
+    margin: 14px 2px 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    max-width: 70ch;
+    font-family: var(--fomio-font-serif);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: color-mix(in oklab, var(--fomio-text) 86%, var(--fomio-muted));
+    overflow-wrap: anywhere;
+
+    .cooked {
+      font: inherit;
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: color-mix(in oklab, var(--fomio-primary) 45%, transparent);
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: var(--fomio-primary);
+        text-decoration-color: currentColor;
+      }
+    }
+
+    blockquote {
+      margin: 10px 0;
+      padding: 2px 0 2px 14px;
+      border-left: 2px solid var(--fomio-stream-hairline);
+      background: transparent;
+      color: var(--fomio-muted);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item p.excerpt {
+    margin: 12px 2px 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--fomio-muted);
+
+    a {
+      color: color-mix(in oklab, var(--fomio-primary) 85%, var(--fomio-text));
+      text-decoration: none;
+    }
+  }
+
+  // ── Child action rows (likes etc.) — translucent top hairline ──
+  #main-outlet .user-main #user-content .user-stream .user-stream-item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--fomio-stream-hairline-soft);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.78rem;
+    color: var(--fomio-muted);
+
+    .d-icon {
+      font-size: 0.85rem;
+      color: color-mix(in oklab, var(--fomio-primary) 75%, var(--fomio-text));
+    }
+
+    img.avatar {
+      width: 22px;
+      height: 22px;
+    }
+
+    + .user-stream-item-actions {
+      margin-top: 8px;
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item .edit-reason {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+  }
+
+  // Draft resume / discard controls keep native behavior, quieter chrome.
+  #main-outlet .user-main #user-content .user-stream .user-stream-item-draft-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+
+    .btn {
+      border-radius: var(--fomio-radius-pill);
+    }
+  }
+
+  // PostList's inline empty message (e.g. an empty Drafts stream).
+  #main-outlet .user-main #user-content .user-stream .post-list__empty-text {
+    margin: 0;
+    padding: 26px 24px;
+    border: 1px solid var(--fomio-stream-hairline-soft);
+    border-radius: 24px;
+    background: color-mix(in oklab, var(--fomio-card) 55%, var(--fomio-bg));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.92rem;
+    color: var(--fomio-muted);
+  }
+}
+
+// Tablet rail — same editorial system, slightly denser cards.
+body.fomio-sidebar-active.fomio-surface-rail.user-activity-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .user-stream {
+    gap: 12px;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+    padding: 18px 18px 20px;
+    border-radius: 20px;
+  }
+}
+
+// Dark mode: warm-brown cards, brighter hairlines, deeper shadows —
+// mirrors the Summary surface tuning; colors flow from Section 1B.
+html.fomio-color-dark body.fomio-sidebar-active.user-activity-page:not(.fomio-auth-mode) {
+  --fomio-stream-card: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+  --fomio-stream-card-hover: var(--fomio-card);
+  --fomio-stream-hairline: color-mix(in oklab, var(--fomio-text) 13%, transparent);
+  --fomio-stream-hairline-soft: color-mix(in oklab, var(--fomio-text) 9%, transparent);
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+    box-shadow:
+      var(--fomio-stream-card-shadow),
+      inset 0 1px 0 color-mix(in oklab, var(--fomio-text) 5%, transparent);
+  }
+}
+
 // Authoritative touch surface behavior (works for phones, foldables, and
 // landscape touch contexts even when viewport width is desktop-like).
 body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
@@ -10249,136 +10623,47 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
   }
 
   &.user-activity-page {
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list {
+    // Editorial stream cards come from the activity feed section above —
+    // touch keeps the same system, tightened for one-hand reading.
+    #main-outlet .user-main #user-content .user-stream {
+      gap: 10px;
       margin-top: 0;
-      overflow: hidden;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
-      border-radius: 24px;
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
-        );
-      box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 52%),
-        0 10px 24px rgb(17 24 39 / 4%);
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .item,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .stream-item {
-      margin-bottom: 0;
-      padding: 18px 18px 20px;
-      border: 0;
-      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-
-      @media (prefers-reduced-motion: no-preference) {
-        transition:
-          background 0.18s ease,
-          color 0.18s ease;
-      }
+    #main-outlet .user-main #user-content .user-stream .user-stream-item {
+      padding: 16px 16px 18px;
+      border-radius: 20px;
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .item:hover,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item:hover,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .stream-item:hover,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .item:focus-within,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item:focus-within,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .stream-item:focus-within {
-      background: color-mix(in srgb, var(--fomio-surface) 78%, var(--fomio-card));
+    #main-outlet .user-main #user-content .user-stream .fomio-activity-stream-kicker {
+      margin-bottom: 10px;
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .item:last-child,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item:last-child,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .stream-item:last-child {
-      border-bottom: 0;
-    }
-
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .post-list-item__header,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item__header {
-      align-items: flex-start;
+    #main-outlet .user-main #user-content .user-stream .post-list-item__header,
+    #main-outlet .user-main #user-content .user-stream .user-stream-item__header {
       gap: 12px;
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .post-list-item__details,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item__details {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      min-width: 0;
+    #main-outlet .user-main #user-content .user-stream .user-stream-item .avatar-link img.avatar,
+    #main-outlet .user-main #user-content .user-stream .user-stream-item .draft-icon {
+      width: 34px;
+      height: 34px;
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .post-list-item__metadata,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .user-stream-item__metadata {
-      gap: 0.125rem 0.5rem;
-      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
-      font-size: 0.75rem;
-      line-height: 1.35;
-
-      span + span::before {
-        color: color-mix(in oklab, var(--fomio-muted) 58%, transparent);
-      }
+    #main-outlet .user-main #user-content .user-stream .user-stream-item .title a,
+    #main-outlet .user-main #user-content .user-stream .user-stream-item .stream-topic-title a {
+      font-size: clamp(1.05rem, 4.2vw, 1.18rem);
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .excerpt,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .category-name,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .badge-category,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .relative-date,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .time,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .post-date,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .stream-topic-details {
-      color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
-      font-size: var(--fomio-text-xs);
+    #main-outlet .user-main #user-content .user-stream .user-stream-item div.excerpt {
+      margin-top: 12px;
+      font-size: 0.98rem;
+      line-height: 1.65;
     }
 
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .title a,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .stream-topic-title a,
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .topic-title a {
-      color: var(--fomio-text);
-      font-family: var(--fomio-font-ui);
-      font-size: clamp(1.02rem, 0.98rem + 0.12vw, 1.1rem);
-      font-weight: 600;
-      line-height: 1.34;
-      letter-spacing: -0.016em;
-      text-decoration: none;
-    }
-
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .excerpt {
-      margin-top: 0.7rem;
-      line-height: 1.6;
-      color: color-mix(in oklab, var(--fomio-text) 82%, var(--fomio-muted));
-    }
-
-    #main-outlet .user-main .user-stream.fomio-activity-stream-list .expand-post {
-      align-self: flex-start;
-    }
-
-    #main-outlet .user-main .user-stream .item,
-    #main-outlet .user-main .user-stream .user-stream-item,
-    #main-outlet .user-main .user-stream .stream-item {
-      margin-bottom: 10px;
-      padding: 13px 13px 14px;
-      border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+    #main-outlet .user-main #user-content .user-stream .post-list__empty-text {
+      padding: 20px 18px;
       border-radius: 20px;
-      background:
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--fomio-surface) 96%, #fff) 0%,
-          color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-bg)) 100%
-        );
-      box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 52%),
-        0 10px 24px rgb(17 24 39 / 4%);
-    }
-
-    #main-outlet .user-main .user-stream:not(.fomio-activity-stream-list) .item:last-child,
-    #main-outlet .user-main .user-stream:not(.fomio-activity-stream-list) .user-stream-item:last-child,
-    #main-outlet .user-main .user-stream:not(.fomio-activity-stream-list) .stream-item:last-child {
-      margin-bottom: 0;
     }
 
     #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list {

@@ -55,6 +55,9 @@ en:
         post_count:
           one: "reply posted"
           other: "replies posted"
+    # Native activity filter nav labels (core uses "Topics").
+    user_action_groups:
+      "4": "Bytes"
   auth_login:
     subheader: "Welcome back."
   auth_signup:
@@ -286,10 +289,22 @@ en:
   me_activity_nav:
     nav_aria: "Activity sections"
     all: "All Activity"
-    topics: "Topics"
+    topics: "Bytes"
     replies: "Replies"
     read: "Read"
     likes_given: "Likes Given"
+  # Action-type kicker on activity stream items —
+  # connectors/user-stream-item-above/fomio-activity-stream-kicker.gjs
+  activity_stream:
+    kicker:
+      byte: "Byte"
+      reply: "Reply"
+      like: "Liked"
+      mention: "Mention"
+      quote: "Quote"
+      edit: "Edit"
+      link: "Link"
+      draft: "Draft"
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"

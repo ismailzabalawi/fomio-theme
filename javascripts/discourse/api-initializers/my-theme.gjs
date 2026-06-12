@@ -34,13 +34,12 @@ const PHOSPHOR_ICON_REPLACEMENTS = {
 };
 
 const ACTIVITY_TOPICS_PATH = /^\/(?:u\/[^/]+|my)\/activity\/topics(?:\/.*)?(?:\?.*)?$/i;
-const ACTIVITY_STREAM_PATH =
-  /^\/(?:u\/[^/]+|my)\/activity(?:\/(?:replies|likes-given))?(?:\/.*)?(?:\?.*)?$/i;
 const ACTIVITY_TOPICS_LIST_SELECTOR = "#main-outlet .user-main #user-content .topic-list";
 const ACTIVITY_TOPICS_ITEM_SELECTOR = `${ACTIVITY_TOPICS_LIST_SELECTOR} .topic-list-item`;
-const ACTIVITY_STREAM_SELECTOR = "#main-outlet .user-main #user-content .user-stream";
-const ACTIVITY_STREAM_ITEM_SELECTOR = `${ACTIVITY_STREAM_SELECTOR} .item, ${ACTIVITY_STREAM_SELECTOR} .user-stream-item, ${ACTIVITY_STREAM_SELECTOR} .stream-item`;
 
+// The activity *stream* (All / Replies / Likes Given) is decorated by
+// api-initializers/fomio-activity-stream-list.gjs and styled by the
+// editorial activity feed section in common.scss.
 function decorateActivitySurfaces() {
   if (typeof document === "undefined" || typeof window === "undefined") {
     return;
@@ -55,16 +54,6 @@ function decorateActivitySurfaces() {
 
     document.querySelectorAll(ACTIVITY_TOPICS_ITEM_SELECTOR).forEach((item) => {
       item.classList.add("--fomio-activity-topics-card");
-    });
-  }
-
-  if (ACTIVITY_STREAM_PATH.test(currentUrl)) {
-    document.querySelectorAll(ACTIVITY_STREAM_SELECTOR).forEach((stream) => {
-      stream.classList.add("fomio-activity-stream-list", "fomio-list");
-    });
-
-    document.querySelectorAll(ACTIVITY_STREAM_ITEM_SELECTOR).forEach((item) => {
-      item.classList.add("fomio-list__item", "fomio-list__item--activity");
     });
   }
 }
@@ -217,7 +206,7 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     const currentUrl = window.location.pathname + window.location.search;
-    if (!ACTIVITY_TOPICS_PATH.test(currentUrl) && !ACTIVITY_STREAM_PATH.test(currentUrl)) {
+    if (!ACTIVITY_TOPICS_PATH.test(currentUrl)) {
       return;
     }
 
