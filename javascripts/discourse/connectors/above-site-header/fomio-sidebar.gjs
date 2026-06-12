@@ -58,6 +58,7 @@ export default class FomioSidebar extends Component {
   #notificationsMenuStateHandler = null;
   #unsubscribeMessages = null;
   #contextSwitchTimeoutId = null;
+  #colorModeObserver = null;
 
   constructor(owner, args) {
     super(owner, args);
@@ -79,8 +80,16 @@ export default class FomioSidebar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
-    window.addEventListener("fomio:dark-mode:changed", () => {
+    // html.fomio-color-dark is kept in sync with the active Discourse
+    // color scheme by fomio-color-mode.gjs; observing it keeps the
+    // sun/moon icon correct for toggles from any surface and for
+    // system-driven scheme changes.
+    this.#colorModeObserver = new MutationObserver(() => {
       this.#updateDarkModeState();
+    });
+    this.#colorModeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
     });
   }
 
@@ -93,9 +102,8 @@ export default class FomioSidebar extends Component {
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
     );
-    window.removeEventListener("fomio:dark-mode:changed", () => {
-      this.#updateDarkModeState();
-    });
+    this.#colorModeObserver?.disconnect();
+    this.#colorModeObserver = null;
   }
 
   #updateDarkModeState() {

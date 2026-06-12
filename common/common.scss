@@ -8458,6 +8458,23 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     text-align: left;
   }
 
+  // Appearance row — dark-mode switch. The row button carries role="switch";
+  // the trailing .fomio-switch (Section 2K) is purely visual and keys its
+  // track/thumb state off the mirrored aria-checked attribute.
+  .fomio-me-hub__row--appearance {
+    border: 0;
+    background: transparent;
+
+    &:hover,
+    &:active {
+      background: var(--fomio-surface);
+    }
+
+    .fomio-switch {
+      pointer-events: none;
+    }
+  }
+
   // Unread badge on Notifications / Messages rows
   .fomio-me-hub__row-badge {
     grid-column: 3;
@@ -11429,6 +11446,9 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sideba
 }
 
 // ── Color Toggle Button ──────────────────────────────────────
+// Sun/moon mode switch in the sidebar footer. Quiet at rest;
+// translucent rounded "glass" fill on hover, token-driven so the
+// tint adapts when the palette flips to dark.
 
 .fomio-sidebar__color-toggle {
   display: flex;
@@ -11439,25 +11459,34 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sideba
   min-width: 40px;
   min-height: 40px;
   padding: 0;
-  border-radius: var(--fomio-radius-sm);
+  border-radius: var(--fomio-radius-pill);
   border: none;
   background: transparent;
   color: var(--fomio-muted);
   cursor: pointer;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 
   @media (prefers-reduced-motion: no-preference) {
-    transition: color 150ms ease, background 150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
   }
 
   &:hover {
     color: var(--fomio-text);
-    background: var(--fomio-surface);
+    background: color-mix(in oklab, var(--fomio-text) 7%, transparent);
+  }
+
+  &:active {
+    background: color-mix(in oklab, var(--fomio-text) 12%, transparent);
   }
 
   &:focus-visible {
     color: var(--fomio-text);
-    background: var(--fomio-surface);
+    background: color-mix(in oklab, var(--fomio-text) 7%, transparent);
     outline: 2px solid var(--fomio-primary);
     outline-offset: 1px;
   }
@@ -15449,63 +15478,6 @@ html.fomio-color-dark .fomio-topic-context__thumb {
   box-shadow: 0 0 0 2px var(--fomio-bg);
 }
 
-// ── Color Toggle Button ──────────────────────────────────────
-
-.fomio-bottom-bar__color-toggle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  height: var(
-    --fomio-bottom-bar-safe-height,
-    calc(56px + env(safe-area-inset-bottom, 0px))
-  );
-  min-height: 100%;
-  align-self: stretch;
-  gap: 4px;
-  padding:
-    var(--fomio-space-xs)
-    var(--fomio-space-sm)
-    calc(var(--fomio-space-xs) + var(--fomio-safe-bottom, env(safe-area-inset-bottom, 0px)));
-  color: var(--fomio-muted);
-  font-family: var(--fomio-font-ui);
-  cursor: pointer;
-  border: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  -webkit-tap-highlight-color: transparent;
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition: color 150ms ease;
-  }
-
-  &:hover,
-  &:active {
-    color: var(--fomio-text);
-  }
-
-  .fomio-bottom-bar__icon {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.25rem;
-    height: 1.25rem;
-    flex-shrink: 0;
-    line-height: 0;
-    color: currentColor;
-
-    i,
-    svg {
-      display: block;
-      width: 1.25rem;
-      height: 1.25rem;
-      fill: currentColor;
-    }
-  }
-}
 
 // ============================================================
 // FOMIO NOTIFICATION PANEL

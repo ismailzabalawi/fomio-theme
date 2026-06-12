@@ -25,20 +25,55 @@ export default class FomioMeHub extends Component {
   @service router;
   @service currentUser;
   @service siteSettings;
+  @service interfaceColor;
 
   @tracked isTouchShell = false;
+  @tracked isDarkModeActive = false;
   #unsubscribeTouch = null;
+  #colorModeObserver = null;
 
   constructor(owner, args) {
     super(owner, args);
     this.#unsubscribeTouch = subscribeFomioTouchShell((v) => {
       this.isTouchShell = v;
     });
+    // html.fomio-color-dark is kept in sync with the active Discourse
+    // color scheme by fomio-color-mode.gjs; observing it keeps the switch
+    // correct for system-driven changes too, not just taps on this row.
+    this.#updateDarkModeState();
+    this.#colorModeObserver = new MutationObserver(() => {
+      this.#updateDarkModeState();
+    });
+    this.#colorModeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
   }
 
   willDestroy() {
     this.#unsubscribeTouch?.();
+    this.#colorModeObserver?.disconnect();
+    this.#colorModeObserver = null;
     super.willDestroy();
+  }
+
+  #updateDarkModeState() {
+    if (typeof document === "undefined") {
+      return;
+    }
+    this.isDarkModeActive =
+      document.documentElement.classList.contains("fomio-color-dark");
+  }
+
+  get darkModeLabel() {
+    return i18n(themePrefix("mobile_nav.me_hub_dark_mode"));
+  }
+
+  @action
+  toggleColorScheme() {
+    // Core's interfaceColor service performs the native scheme swap and
+    // persists it (user option / cookie) — no local storage involved.
+    this.interfaceColor?.toggleDarkMode?.();
   }
 
   get currentPath() {
@@ -331,6 +366,33 @@ export default class FomioMeHub extends Component {
                   <span class="fomio-me-hub__row-chevron fomio-utility-row__trailing" aria-hidden="true">{{icon "angle-right"}}</span>
                 </a>
               {{/each}}
+
+              <hr class="fomio-me-hub__section-divider" aria-hidden="true" />
+              <button
+                type="button"
+                class="fomio-me-hub__row fomio-utility-row fomio-me-hub__row--appearance"
+                role="switch"
+                aria-checked={{if this.isDarkModeActive "true" "false"}}
+                {{on "click" this.toggleColorScheme}}
+              >
+                <span class="fomio-me-hub__row-icon fomio-utility-row__icon" aria-hidden="true">{{icon "moon"}}</span>
+                <span class="fomio-me-hub__row-copy fomio-utility-row__body">
+                  <span class="fomio-me-hub__row-label fomio-utility-row__label">{{this.darkModeLabel}}</span>
+                </span>
+                <span class="fomio-utility-row__trailing" aria-hidden="true">
+                  {{! Visual only — the row button carries the switch role.
+                      No role attr here, so the fomio-ui-components switch
+                      delegation never matches this span. }}
+                  <span
+                    class="fomio-switch fomio-switch--sm"
+                    aria-checked={{if this.isDarkModeActive "true" "false"}}
+                  >
+                    <span class="fomio-switch__track">
+                      <span class="fomio-switch__thumb"></span>
+                    </span>
+                  </span>
+                </span>
+              </button>
             </div>
           </section>
 
