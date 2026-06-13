@@ -25349,3 +25349,631 @@ body.user-messages-page.fomio-messages-mode {
   color: var(--fomio-muted);
   font-size: 14px;
 }
+
+
+// ============================================================
+// FOMIO MESSAGING PRIMITIVES
+// Interaction Layer 03 — canonical CSS for the inline notice,
+// page banner, and contextual popover. Ported from the Fomio
+// Interaction Layer design spec; tones bind to semantic tokens
+// so dark/amoled flow from Section 1B overrides.
+// ============================================================
+
+// ── InlineNotice ─────────────────────────────────────────────
+.fomio-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--fomio-radius-md);
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fomio-text);
+}
+
+.fomio-notice__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+
+  .d-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.fomio-notice__content {
+  min-width: 0;
+}
+
+.fomio-notice__title {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.fomio-notice__message {
+  color: inherit;
+}
+
+.fomio-notice__dismiss {
+  margin-left: auto;
+  flex-shrink: 0;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--fomio-muted);
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.6;
+  transition: opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+.fomio-notice--info {
+  background: color-mix(in oklab, var(--fomio-info) 8%, var(--fomio-card));
+
+  .fomio-notice__icon { color: var(--fomio-info); }
+}
+
+.fomio-notice--success {
+  background: color-mix(in oklab, var(--fomio-success) 8%, var(--fomio-card));
+
+  .fomio-notice__icon { color: var(--fomio-success); }
+}
+
+.fomio-notice--warning {
+  background: color-mix(in oklab, var(--fomio-warning) 10%, var(--fomio-card));
+
+  .fomio-notice__icon { color: var(--fomio-warning); }
+}
+
+.fomio-notice--danger {
+  background: color-mix(in oklab, var(--fomio-danger) 8%, var(--fomio-card));
+
+  .fomio-notice__icon { color: var(--fomio-danger); }
+}
+
+// ── Banner ───────────────────────────────────────────────────
+.fomio-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fomio-text);
+}
+
+.fomio-banner__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  .d-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.fomio-banner__content {
+  min-width: 0;
+}
+
+.fomio-banner__action {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--fomio-primary);
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-primary-dark);
+  }
+}
+
+.fomio-banner__dismiss {
+  margin-left: auto;
+  flex-shrink: 0;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--fomio-muted);
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  transition: opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+// A banner action sitting before the dismiss button should not steal the
+// auto-margin that pushes the dismiss button to the far edge.
+.fomio-banner__action + .fomio-banner__dismiss {
+  margin-left: 0;
+}
+
+.fomio-banner--info {
+  background: color-mix(in oklab, var(--fomio-info) 8%, var(--fomio-card));
+
+  .fomio-banner__icon { color: var(--fomio-info); }
+}
+
+.fomio-banner--success {
+  background: color-mix(in oklab, var(--fomio-success) 8%, var(--fomio-card));
+
+  .fomio-banner__icon { color: var(--fomio-success); }
+}
+
+.fomio-banner--warning {
+  background: color-mix(in oklab, var(--fomio-warning) 10%, var(--fomio-card));
+
+  .fomio-banner__icon { color: var(--fomio-warning); }
+}
+
+.fomio-banner--danger {
+  background: color-mix(in oklab, var(--fomio-danger) 8%, var(--fomio-card));
+
+  .fomio-banner__icon { color: var(--fomio-danger); }
+}
+
+// ── Popover ──────────────────────────────────────────────────
+.fomio-popover {
+  position: relative;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: var(--fomio-radius-md);
+  box-shadow: 0 8px 32px -12px rgb(0 0 0 / 14%), 0 2px 8px -2px rgb(0 0 0 / 8%);
+  padding: 16px;
+  max-width: 260px;
+}
+
+.fomio-popover__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--fomio-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--fomio-radius-sm);
+  opacity: 0.7;
+  transition: opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-popover__title {
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fomio-text);
+  margin: 0 0 6px;
+  letter-spacing: 0.01em;
+}
+
+.fomio-popover__body {
+  font-family: var(--fomio-font-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-popover__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+
+// ============================================================
+// FOMIO FORM & FEEDBACK PRIMITIVES
+// Layer 1 (Controls) + Layer 2 (Content) + Layer 3 (Feedback) —
+// switch toggle, icon pill, loading spinner. Ported from the
+// account preferences screen audit; tones bind to semantic tokens
+// so dark/amoled flow from Section 1B overrides.
+// ============================================================
+
+// ── Switch (Layer 1) ──────────────────────────────────────
+.fomio-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  opacity: 1;
+  transition: opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+    border-radius: var(--fomio-radius-sm);
+  }
+}
+
+.fomio-switch__track {
+  position: absolute;
+  inset: 0;
+  background: var(--fomio-border-soft);
+  border-radius: var(--fomio-radius-pill);
+  transition: background var(--fomio-dur-med) var(--fomio-ease);
+}
+
+.fomio-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-pill);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+  transition: transform var(--fomio-dur-med) var(--fomio-ease);
+}
+
+.fomio-switch--on .fomio-switch__track {
+  background: var(--fomio-primary);
+}
+
+.fomio-switch--on .fomio-switch__thumb {
+  transform: translateX(20px);
+}
+
+// ── Icon Pill (Layer 2) ───────────────────────────────────
+.fomio-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--fomio-radius-md);
+  background: var(--fomio-surface);
+  color: var(--fomio-muted);
+  flex-shrink: 0;
+
+  .d-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.fomio-icon-pill--sm {
+  width: 24px;
+  height: 24px;
+
+  .d-icon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.fomio-icon-pill--lg {
+  width: 40px;
+  height: 40px;
+
+  .d-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.fomio-icon-pill--accent {
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary);
+}
+
+.fomio-icon-pill--danger {
+  background: color-mix(in oklab, var(--fomio-danger) 12%, var(--fomio-card));
+  color: var(--fomio-danger);
+}
+
+.fomio-icon-pill--info {
+  background: color-mix(in oklab, var(--fomio-info) 12%, var(--fomio-card));
+  color: var(--fomio-info);
+}
+
+.fomio-icon-pill--success {
+  background: color-mix(in oklab, var(--fomio-success) 12%, var(--fomio-card));
+  color: var(--fomio-success);
+}
+
+.fomio-icon-pill--warning {
+  background: color-mix(in oklab, var(--fomio-warning) 12%, var(--fomio-card));
+  color: var(--fomio-warning);
+}
+
+// ── Loading Spinner (Layer 3) ─────────────────────────────
+.fomio-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+}
+
+.fomio-spinner__svg {
+  width: 100%;
+  height: 100%;
+  animation: fomio-spinner-rotate var(--fomio-dur-slow) linear infinite;
+}
+
+.fomio-spinner__circle {
+  stroke: currentColor;
+  animation: fomio-spinner-dash var(--fomio-dur-slow) ease-in-out infinite;
+}
+
+.fomio-spinner--sm {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.fomio-spinner--md {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.fomio-spinner--lg {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+}
+
+.fomio-spinner--accent {
+  color: var(--fomio-primary);
+}
+
+.fomio-spinner--danger {
+  color: var(--fomio-danger);
+}
+
+.fomio-spinner--info {
+  color: var(--fomio-info);
+}
+
+.fomio-spinner--success {
+  color: var(--fomio-success);
+}
+
+.fomio-spinner--warning {
+  color: var(--fomio-warning);
+}
+
+@keyframes fomio-spinner-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fomio-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+
+// ============================================================
+// FOMIO PREFERENCES SCREEN
+// Account settings page composition using Layer 1/2/3 system.
+// Organizes settings into sections with toggles, dropdowns,
+// action buttons, and confirmation modals.
+// ============================================================
+
+.fomio-preferences-screen {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--fomio-space-lg) var(--fomio-space-md);
+}
+
+.fomio-preferences-section-title {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: var(--fomio-space-xl) 0 var(--fomio-space-md);
+  padding: 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &--danger {
+    color: var(--fomio-danger);
+  }
+}
+
+.fomio-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: var(--fomio-radius-card);
+  overflow: hidden;
+}
+
+.fomio-list__item {
+  margin: 0;
+  padding: 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--fomio-border-soft);
+  }
+}
+
+.fomio-list__button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--fomio-space-md) var(--fomio-space-lg);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  gap: var(--fomio-space-md);
+  transition: background-color var(--fomio-dur-fast) var(--fomio-ease);
+  appearance: none;
+
+  &:hover:not(:disabled) {
+    background-color: var(--fomio-surface);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--fomio-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--danger {
+    color: var(--fomio-danger);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in oklab, var(--fomio-danger) 8%, var(--fomio-card));
+    }
+  }
+}
+
+.fomio-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.fomio-list__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fomio-space-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.fomio-list__title {
+  display: block;
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fomio-text);
+  line-height: 1.4;
+}
+
+.fomio-list__subtitle {
+  display: block;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  color: var(--fomio-muted);
+  line-height: 1.4;
+}
+
+.fomio-list__meta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  color: var(--fomio-muted);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+// Theme selection modal grid
+.fomio-modal-theme-select {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--fomio-space-md);
+}
+
+.fomio-modal-theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fomio-space-sm);
+  padding: var(--fomio-space-lg) var(--fomio-space-md);
+  border: 2px solid var(--fomio-border-soft);
+  border-radius: var(--fomio-radius-md);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover {
+    border-color: var(--fomio-primary);
+    background-color: var(--fomio-surface);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--fomio-bg), 0 0 0 4px var(--fomio-primary);
+  }
+
+  &.active {
+    border-color: var(--fomio-primary);
+    background-color: color-mix(in oklab, var(--fomio-primary) 8%, var(--fomio-bg));
+  }
+}
+
+.fomio-modal-theme-icon {
+  font-size: 24px;
+}
+
+.fomio-modal-theme-label {
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fomio-text);
+}

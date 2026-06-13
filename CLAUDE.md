@@ -169,6 +169,7 @@ Fomio Web uses a **three-layer design system** for reusable components. All shar
 - `fomio-input.gjs` — Text input with label, hint, error, icons (search variant available as `fomio-search-input.gjs`)
 - `fomio-select.gjs` — Select dropdown with label, hint, error, icons
 - `fomio-textarea.gjs` — Textarea with label, hint, error
+- `fomio-switch.gjs` — Toggle switch for boolean settings with on/off states
 
 **Layer 2: Content** — display and information components
 - `fomio-avatar.gjs` — User avatar with sizes, palette, online state, badge
@@ -178,6 +179,7 @@ Fomio Web uses a **three-layer design system** for reusable components. All shar
 - `fomio-list.gjs`, `fomio-list-item.gjs`, `fomio-list-section-header.gjs`, `fomio-list-separator.gjs` — List family
 - `fomio-meta-row.gjs` — Metadata row (label + value) for facts, stats, details
 - `fomio-empty-state.gjs` — Illustration + message + action for empty views
+- `fomio-icon-pill.gjs` — Circular icon container with tones (accent, danger, info, success, warning) for settings rows and list items
 
 **Layer 3: Interaction** — surface and behavior components
 - `fomio-segmented-control.gjs` — Inline selection control (pills/buttons)
@@ -187,8 +189,12 @@ Fomio Web uses a **three-layer design system** for reusable components. All shar
 - `fomio-search-sheet.gjs` — Bottom sheet for full-screen search
 - `fomio-ephemeral-sheet.gjs` — Temporary overlay/modal surface
 - `fomio-modal.gjs` — Full modal dialog
+- `fomio-popover.gjs` — Contextual overlay anchored to a trigger (title, body, optional confirm/cancel) — lighter than modal
 - `fomio-radio-group.gjs` — Radio button group
 - `fomio-toast.gjs` — Toast notification
+- `fomio-notice.gjs` — Inline, in-flow status message (info/success/warning/danger) with optional dismiss
+- `fomio-banner.gjs` — Full-width, page-level announcement bar (info/success/warning/danger) with optional action + dismiss
+- `fomio-loading-spinner.gjs` — Animated loading spinner for button states and async feedback
 
 **Feature compositions** (use shared primitives, not layer-definition candidates):
 - `fomio-notifications-menu.gjs` — Product-specific notification center shell
@@ -283,12 +289,14 @@ apps/web/
     │   └── my-theme.gjs             # Legacy placeholder — do not add to
     ├── components/
     │   └── shared/                   # Shared three-layer design system components
-    │       ├── Layer 1 (Controls): fomio-button, fomio-input, fomio-search-input, fomio-select, fomio-textarea
-    │       ├── Layer 2 (Content): fomio-avatar, fomio-badge, fomio-card, fomio-identity, fomio-list*,
-    │       │                      fomio-meta-row, fomio-empty-state, fomio-byte-card
+    │       ├── Layer 1 (Controls): fomio-button, fomio-input, fomio-search-input, fomio-select, fomio-switch,
+    │       │                       fomio-textarea
+    │       ├── Layer 2 (Content): fomio-avatar, fomio-badge, fomio-card, fomio-icon-pill, fomio-identity,
+    │       │                      fomio-list*, fomio-meta-row, fomio-empty-state, fomio-byte-card
     │       └── Layer 3 (Interaction): fomio-segmented-control, fomio-tabs, fomio-dropdown, fomio-command-palette,
-    │                                  fomio-search-sheet, fomio-ephemeral-sheet, fomio-modal, fomio-radio-group,
-    │                                  fomio-toast, fomio-notifications-menu
+    │                                  fomio-search-sheet, fomio-ephemeral-sheet, fomio-modal, fomio-popover,
+    │                                  fomio-radio-group, fomio-toast, fomio-notice, fomio-banner,
+    │                                  fomio-loading-spinner, fomio-notifications-menu
     ├── lib/
     │   └── fomio-selection-toolbar-extension.js  # ProseMirror floating selection toolbar
     └── connectors/

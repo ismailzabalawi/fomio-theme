@@ -10,6 +10,55 @@ function classString(classes) {
   return classes.join(" ");
 }
 
+export function switchClassNames(args = {}) {
+  const classes = ["fomio-switch"];
+
+  if (args.checked || args.value) {
+    classes.push("fomio-switch--on");
+  }
+
+  if (args.disabled) {
+    classes.push("fomio-switch--disabled");
+  }
+
+  push(classes, args.extraClass);
+  return classString(classes);
+}
+
+export function iconPillClassNames(args = {}) {
+  const classes = ["fomio-icon-pill"];
+
+  const tone = args.tone ?? args.variant ?? "accent";
+  if (tone && tone !== "accent") {
+    classes.push(`fomio-icon-pill--${tone}`);
+  }
+
+  const size = args.size ?? "md";
+  if (size && size !== "md") {
+    classes.push(`fomio-icon-pill--${size}`);
+  }
+
+  push(classes, args.extraClass);
+  return classString(classes);
+}
+
+export function spinnerClassNames(args = {}) {
+  const classes = ["fomio-spinner"];
+
+  const size = args.size ?? "md";
+  if (size && size !== "md") {
+    classes.push(`fomio-spinner--${size}`);
+  }
+
+  const tone = args.tone ?? args.variant ?? "default";
+  if (tone && tone !== "default") {
+    classes.push(`fomio-spinner--${tone}`);
+  }
+
+  push(classes, args.extraClass);
+  return classString(classes);
+}
+
 export function normalizeDropdownAlign(args = {}) {
   return args.align ?? "start";
 }
@@ -276,6 +325,43 @@ export function toastClassNames(args = {}) {
   }
 
   push(classes, args.extraClass);
+  return classString(classes);
+}
+
+export function normalizeMessageTone(args = {}) {
+  return args.tone ?? args.variant ?? "info";
+}
+
+export function noticeClassNames(args = {}) {
+  const classes = ["fomio-notice", `fomio-notice--${normalizeMessageTone(args)}`];
+
+  if (args.dismissible) {
+    classes.push("fomio-notice--dismissible");
+  }
+
+  push(classes, args.extraClass);
+  return classString(classes);
+}
+
+export function bannerClassNames(args = {}) {
+  const classes = ["fomio-banner", `fomio-banner--${normalizeMessageTone(args)}`];
+
+  if (args.dismissible) {
+    classes.push("fomio-banner--dismissible");
+  }
+
+  push(classes, args.extraClass);
+  return classString(classes);
+}
+
+export function popoverClassNames(args = {}) {
+  const classes = ["fomio-popover"];
+
+  if (args.align === "end") {
+    classes.push("fomio-popover--align-end");
+  }
+
+  push(classes, args.extraClass ?? args.panelClass);
   return classString(classes);
 }
 
