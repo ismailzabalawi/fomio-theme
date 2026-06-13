@@ -3,7 +3,7 @@ import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
-import { eq } from "discourse/truth-helpers";
+import { eq, not } from "discourse/truth-helpers";
 import FomioModal from "./shared/fomio-modal";
 
 // Account preferences screen for the web theme. Organizes user settings into
