@@ -10025,6 +10025,128 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     #main-outlet .user-main #user-content.user-preferences .btn-primary {
       min-height: 44px;
     }
+
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.7rem;
+      min-width: 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .controls.controls-dropdown,
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls.controls-dropdown {
+      display: block;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls > .select-kit,
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls > .combo-box,
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls > input,
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls > textarea {
+      min-width: min(100%, 22rem);
+      flex: 1 1 16rem;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls > a:not(.btn),
+    #main-outlet .user-main #user-content.user-preferences .control-group .controls > button:not(.btn) {
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      font-weight: 600;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-group fieldset,
+    #main-outlet .user-main #user-content.user-preferences fieldset.control-group {
+      min-width: 0;
+      border: 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-subgroup {
+      padding: 0.8rem 0 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .control-subgroup + .control-subgroup {
+      margin-top: 0.4rem;
+      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 55%, transparent);
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-avatar .controls {
+      gap: 1rem;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-avatar .controls .avatar {
+      flex: 0 0 auto;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-email .emails,
+    #main-outlet .user-main #user-content.user-preferences .associated-accounts {
+      width: 100%;
+      margin: 0;
+      border-collapse: collapse;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-email .row.email,
+    #main-outlet .user-main #user-content.user-preferences .associated-accounts tr {
+      border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 55%, transparent);
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-email .row.email:first-child,
+    #main-outlet .user-main #user-content.user-preferences .associated-accounts tr:first-child {
+      border-top: 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-email .row.email {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.35rem 0.8rem;
+      padding: 0.8rem 0;
+      align-items: center;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-email .email-first,
+    #main-outlet .user-main #user-content.user-preferences .associated-account__name {
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .pref-email .email-second,
+    #main-outlet .user-main #user-content.user-preferences .associated-account__description {
+      color: var(--fomio-muted);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      line-height: 1.45;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .associated-account__icon,
+    #main-outlet .user-main #user-content.user-preferences .associated-account__actions {
+      vertical-align: top;
+      padding: 0.8rem 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .warning-wrap,
+    #main-outlet .user-main #user-content.user-preferences .save-theme-alert,
+    #main-outlet .user-main #user-content.user-preferences .alert {
+      margin: 0.75rem 0 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .warning,
+    #main-outlet .user-main #user-content.user-preferences .save-theme-alert {
+      padding: 0.8rem 0.95rem;
+      border-radius: var(--fomio-radius-sm);
+      border: 1px solid color-mix(in oklab, var(--d-warning, var(--fomio-primary)) 22%, var(--fomio-border-soft));
+      background: color-mix(in oklab, var(--d-warning, var(--fomio-primary)) 7%, var(--fomio-surface));
+      color: var(--fomio-text);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-sm);
+      line-height: 1.45;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences .save-theme-alert {
+      border-color: color-mix(in oklab, var(--d-success, var(--fomio-primary)) 24%, var(--fomio-border-soft));
+      background: color-mix(in oklab, var(--d-success, var(--fomio-primary)) 8%, var(--fomio-surface));
+    }
   }
 
   // Phase 3C-N4 — Notifications, Invites, Badges native leaves (Discourse templates).
@@ -25807,173 +25929,4 @@ body.user-messages-page.fomio-messages-mode {
 // action buttons, and confirmation modals.
 // ============================================================
 
-.fomio-preferences-screen {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: var(--fomio-space-lg) var(--fomio-space-md);
-}
-
-.fomio-preferences-section-title {
-  font-family: var(--fomio-font-ui);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fomio-muted);
-  margin: var(--fomio-space-xl) 0 var(--fomio-space-md);
-  padding: 0;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &--danger {
-    color: var(--fomio-danger);
-  }
-}
-
-.fomio-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid var(--fomio-border-soft);
-  border-radius: var(--fomio-radius-card);
-  overflow: hidden;
-}
-
-.fomio-list__item {
-  margin: 0;
-  padding: 0;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--fomio-border-soft);
-  }
-}
-
-.fomio-list__button {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: var(--fomio-space-md) var(--fomio-space-lg);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  text-align: left;
-  gap: var(--fomio-space-md);
-  transition: background-color var(--fomio-dur-fast) var(--fomio-ease);
-  appearance: none;
-
-  &:hover:not(:disabled) {
-    background-color: var(--fomio-surface);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--fomio-primary);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &--danger {
-    color: var(--fomio-danger);
-
-    &:hover:not(:disabled) {
-      background-color: color-mix(in oklab, var(--fomio-danger) 8%, var(--fomio-card));
-    }
-  }
-}
-
-.fomio-list__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  font-size: 16px;
-}
-
-.fomio-list__content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--fomio-space-xs);
-  flex: 1;
-  min-width: 0;
-}
-
-.fomio-list__title {
-  display: block;
-  font-family: var(--fomio-font-ui);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--fomio-text);
-  line-height: 1.4;
-}
-
-.fomio-list__subtitle {
-  display: block;
-  font-family: var(--fomio-font-ui);
-  font-size: 13px;
-  color: var(--fomio-muted);
-  line-height: 1.4;
-}
-
-.fomio-list__meta {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--fomio-font-ui);
-  font-size: 13px;
-  color: var(--fomio-muted);
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-// Theme selection modal grid
-.fomio-modal-theme-select {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--fomio-space-md);
-}
-
-.fomio-modal-theme-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--fomio-space-sm);
-  padding: var(--fomio-space-lg) var(--fomio-space-md);
-  border: 2px solid var(--fomio-border-soft);
-  border-radius: var(--fomio-radius-md);
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--fomio-dur-fast) var(--fomio-ease);
-
-  &:hover {
-    border-color: var(--fomio-primary);
-    background-color: var(--fomio-surface);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--fomio-bg), 0 0 0 4px var(--fomio-primary);
-  }
-
-  &.active {
-    border-color: var(--fomio-primary);
-    background-color: color-mix(in oklab, var(--fomio-primary) 8%, var(--fomio-bg));
-  }
-}
-
-.fomio-modal-theme-icon {
-  font-size: 24px;
-}
-
-.fomio-modal-theme-label {
-  font-family: var(--fomio-font-ui);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--fomio-text);
-}
+// Deprecated custom replacement-screen styles intentionally removed.

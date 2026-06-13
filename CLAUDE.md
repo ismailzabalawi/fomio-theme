@@ -566,6 +566,8 @@ All Me leaf screens (Activity, Notifications, Messages, Invites, Preferences, Ba
 
 Within that flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). On touch this lives in the touch shell block of `common.scss`; on desktop/rail in the "Settings detail alignment" block of `desktop.scss`. Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows.
 
+**Preferences is a native Discourse leaf.** Do not replace `/preferences/*` with a custom route body, custom settings dashboard, or controller-driven fake preferences screen. `discourse/frontend/discourse/app/templates/preferences.gjs` and its child templates remain the source of truth for fields, validation, save behavior, and plugin compatibility. Theme work may style native preferences and add small route-local enhancements through verified preferences outlets, but it must not take over the route body.
+
 **See:** `docs/web/touch-preferences-redesign-pattern.md` for full rationale, implementation guidance, and future application rules.
 
 ## Studio Protocols
