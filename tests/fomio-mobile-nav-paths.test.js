@@ -14,6 +14,7 @@ import {
   isOwnedProfileChildPath,
   isOwnNotificationsPath,
   isOwnProfileShellPath,
+  preferencesMenuPathForUser,
   isSavedPath,
   isUserProfilePath,
   shouldUseOwnProfileRootAsMeHub,
@@ -24,6 +25,11 @@ import {
   shouldHideSharedProfileHeader,
   shouldRenderInlineProfileIdentity,
 } from "../javascripts/discourse/lib/fomio-profile-identity-ownership.js";
+import {
+  hasFomioPreferencesMenuMarker,
+  isFomioPreferencesChildPath,
+  isFomioPreferencesRootPath,
+} from "../javascripts/discourse/lib/fomio-preferences-sections.js";
 
 const currentUser = {
   id: 7,
@@ -70,6 +76,29 @@ describe("fomio-mobile-nav-paths", () => {
     assert.equal(isOwnedProfileChildPath("/u/ismail/messages", currentUser), true);
     assert.equal(isUserProfilePath("/u/other/activity"), true);
     assert.equal(viewedProfileUsername("/u/other/activity"), "other");
+  });
+
+  it("separates mobile preferences menu root from child form routes", () => {
+    assert.equal(isFomioPreferencesRootPath("/my/preferences"), true);
+    assert.equal(isFomioPreferencesRootPath("/my/preferences/"), true);
+    assert.equal(isFomioPreferencesRootPath("/u/ismail/preferences"), true);
+    assert.equal(isFomioPreferencesRootPath("/my/preferences/account"), false);
+
+    assert.equal(isFomioPreferencesChildPath("/my/preferences/account"), true);
+    assert.equal(
+      isFomioPreferencesChildPath("/u/ismail/preferences/security"),
+      true
+    );
+    assert.equal(isFomioPreferencesChildPath("/my/preferences"), false);
+    assert.equal(
+      hasFomioPreferencesMenuMarker("/u/ismail/preferences/account?fomio_menu=1"),
+      true
+    );
+    assert.equal(hasFomioPreferencesMenuMarker("/my/preferences/account"), false);
+    assert.equal(
+      preferencesMenuPathForUser(currentUser),
+      "/my/preferences?fomio_menu=1"
+    );
   });
 
   it("does not classify another user's summary as an own-account shell route", () => {
@@ -223,7 +252,7 @@ describe("fomio-mobile-nav-paths", () => {
     }
   });
 
-  it("emits own-account sections with canonical URLs on owned surfaces", () => {
+  it("emits own-account sections with the mobile preferences menu entry", () => {
     const sections = getFomioCoreAccountSections({
       currentUser,
       currentPath: "/u/ismail/summary",
@@ -238,7 +267,7 @@ describe("fomio-mobile-nav-paths", () => {
         ["notifications", "/u/Ismail/notifications"],
         ["messages", "/u/Ismail/messages"],
         ["invites", "/u/Ismail/invited"],
-        ["preferences", "/my/preferences"],
+        ["preferences", "/my/preferences?fomio_menu=1"],
       ]
     );
   });
@@ -262,6 +291,11 @@ describe("fomio-mobile-nav-paths", () => {
       siteSettings: { enable_badges: true, hide_user_activity_tab: false },
       viewedUser,
     });
+
+    assert.equal(
+      sections.some((section) => section.key === "preferences"),
+      false
+    );
 
     assert.deepEqual(
       sections.map((section) => [section.key, section.href]),

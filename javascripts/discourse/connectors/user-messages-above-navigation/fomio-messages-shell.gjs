@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import FomioMessagesMaster from "../../components/fomio-messages-master";
+import FomioMessagesMasterDetail from "../../components/fomio-messages-master-detail";
 
 /**
  * Injects the Fomio messages shell into the verified `user-messages-above-navigation`
@@ -18,7 +18,7 @@ export default class FomioMessagesShell extends Component {
 
   <template>
     <div class="fomio-messages-shell-wrapper">
-      <FomioMessagesMaster @model={{@outletArgs.model}} />
+      <FomioMessagesMasterDetail @model={{@outletArgs.model}} />
     </div>
   </template>
 }

@@ -134,6 +134,11 @@ export function preferencesPathForUser(user) {
   return "/my/preferences";
 }
 
+export function preferencesMenuPathForUser(user) {
+  const base = preferencesPathForUser(user);
+  return base ? `${base}?fomio_menu=1` : null;
+}
+
 /**
  * User notifications (matches `user-nav` → `userNotifications`, `config/routes.rb`).
  */

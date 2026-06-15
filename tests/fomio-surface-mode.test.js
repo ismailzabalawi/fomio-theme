@@ -12,8 +12,13 @@ import {
 
 describe("fomio-surface-mode", () => {
   it("treats widths below 768px as touch", () => {
+    assert.equal(isTouchViewportWidth(758), true);
     assert.equal(isTouchViewportWidth(767), true);
     assert.equal(isTouchViewportWidth(768), false);
+    assert.equal(
+      resolveFomioSurfaceMode({ width: 758, height: 900, coarsePointer: false, noHover: false }),
+      "touch"
+    );
     assert.equal(
       resolveFomioSurfaceMode({ width: 767, height: 1024, coarsePointer: false, noHover: false }),
       "touch"

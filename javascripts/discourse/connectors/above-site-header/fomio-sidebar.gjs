@@ -20,6 +20,11 @@ import {
   FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
   openFomioNotificationsMenu,
 } from "../../lib/fomio-notifications-menu";
+import { openFomioPreferencesMenu } from "../../lib/fomio-preferences-menu";
+import {
+  FOMIO_USER_MENU_STATE_EVENT,
+  openFomioUserMenu,
+} from "../../lib/fomio-user-menu";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 import {
   bookmarksPathForUser,
@@ -27,6 +32,7 @@ import {
   isOwnBookmarksPath,
   isOwnNotificationsPath,
   isOwnProfileShellPath,
+  preferencesPathForUser,
   profileSummaryPathForUser,
 } from "../../lib/fomio-mobile-nav-paths";
 import { subscribeMessagesState } from "../../lib/fomio-messages-state";
@@ -49,6 +55,7 @@ export default class FomioSidebar extends Component {
   @tracked isTouchSurface = false;
   @tracked isSearchSheetOpen = false;
   @tracked notificationsMenuOpen = false;
+  @tracked userMenuOpen = false;
   @tracked messagesFilter = "latest";
   @tracked previousMasterContext = null;
   @tracked masterContextChanged = false;
@@ -56,6 +63,7 @@ export default class FomioSidebar extends Component {
   #unsubscribeTouchShell = null;
   #unsubscribeSearchPalette = null;
   #notificationsMenuStateHandler = null;
+  #userMenuStateHandler = null;
   #unsubscribeMessages = null;
   #contextSwitchTimeoutId = null;
   #colorModeObserver = null;
@@ -76,9 +84,16 @@ export default class FomioSidebar extends Component {
     this.#notificationsMenuStateHandler = (event) => {
       this.notificationsMenuOpen = Boolean(event?.detail?.open);
     };
+    this.#userMenuStateHandler = (event) => {
+      this.userMenuOpen = Boolean(event?.detail?.open);
+    };
     window.addEventListener(
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
+    );
+    window.addEventListener(
+      FOMIO_USER_MENU_STATE_EVENT,
+      this.#userMenuStateHandler
     );
     // html.fomio-color-dark is kept in sync with the active Discourse
     // color scheme by fomio-color-mode.gjs; observing it keeps the
@@ -101,6 +116,10 @@ export default class FomioSidebar extends Component {
     window.removeEventListener(
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
+    );
+    window.removeEventListener(
+      FOMIO_USER_MENU_STATE_EVENT,
+      this.#userMenuStateHandler
     );
     this.#colorModeObserver?.disconnect();
     this.#colorModeObserver = null;
@@ -213,8 +232,33 @@ export default class FomioSidebar extends Component {
     );
   }
 
+  get isPreferencesActive() {
+    const path = this.currentPath;
+    if (path === "/my/preferences" || path.startsWith("/my/preferences/")) {
+      return true;
+    }
+
+    const username = this.currentUser?.username;
+    if (!username) {
+      return false;
+    }
+
+    const escapedUsername = String(username).replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
+    return new RegExp(
+      `^/u/${escapedUsername}/preferences(?:/|$)`,
+      "i"
+    ).test(path);
+  }
+
   get isProfileActive() {
-    return isOwnProfileShellPath(this.currentPath, this.currentUser);
+    return (
+      this.userMenuOpen ||
+      (isOwnProfileShellPath(this.currentPath, this.currentUser) &&
+        !this.isPreferencesActive)
+    );
   }
 
   // ── Hub/Teret active detection ────────────────────────────────
@@ -317,6 +361,10 @@ export default class FomioSidebar extends Component {
     return bookmarksPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
   }
 
+  get preferencesUrl() {
+    return preferencesPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
+  }
+
   get profileUrl() {
     return profileSummaryPathForUser(this.currentUser) ?? WEB_LOGIN_URL;
   }
@@ -331,6 +379,7 @@ export default class FomioSidebar extends Component {
   get bookmarksLabel()     { return i18n(themePrefix("sidebar.bookmarks")); }
   get createByteLabel()    { return i18n(themePrefix("sidebar.create_byte")); }
   get notificationsLabel() { return i18n(themePrefix("sidebar.notifications")); }
+  get preferencesLabel()   { return i18n(themePrefix("sidebar.preferences")); }
   get notificationsBadge() {
     const count = this.currentUser?.all_unread_notifications_count;
     if (!count || count <= 0) {
@@ -593,8 +642,41 @@ export default class FomioSidebar extends Component {
   }
 
   @action
+  onPreferencesActivate(e) {
+    if (e?.metaKey || e?.ctrlKey || e?.shiftKey || e?.altKey) {
+      return;
+    }
+
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    if (!this.currentUser) {
+      redirectToLoginWithIntent("view_profile", this.currentPath);
+      return;
+    }
+
+    document.body.classList.remove("fomio-mobile-sidebar-open");
+    document.body.classList.remove("fomio-master-pane-rail-open");
+    openFomioPreferencesMenu("desktop", e?.currentTarget?.getBoundingClientRect?.());
+  }
+
+  @action
   onProfileActivate(e) {
-    this.toggleMasterPaneOverlay("profile", e);
+    if (e?.metaKey || e?.ctrlKey || e?.shiftKey || e?.altKey) {
+      return;
+    }
+
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    if (!this.currentUser) {
+      redirectToLoginWithIntent("view_profile", this.currentPath);
+      return;
+    }
+
+    document.body.classList.remove("fomio-mobile-sidebar-open");
+    document.body.classList.remove("fomio-master-pane-rail-open");
+    openFomioUserMenu("desktop", e?.currentTarget?.getBoundingClientRect?.());
   }
 
   @action
@@ -856,6 +938,17 @@ export default class FomioSidebar extends Component {
               <span class="fomio-sidebar__item-label">{{this.notificationsLabel}}</span>
             </button>
 
+            <a
+              href={{this.preferencesUrl}}
+              class="fomio-sidebar__item fomio-sidebar__item--preferences {{if this.isPreferencesActive 'is-active'}}"
+              aria-current={{if this.isPreferencesActive "page"}}
+              title={{this.preferencesLabel}}
+              {{on "click" this.onPreferencesActivate}}
+            >
+              <span class="fomio-sidebar__icon">{{icon "gear"}}</span>
+              <span class="fomio-sidebar__item-label">{{this.preferencesLabel}}</span>
+            </a>
+
             <div class="fomio-sidebar__color-toggle-container">
               <button
                 type="button"
@@ -875,7 +968,7 @@ export default class FomioSidebar extends Component {
 
               <a
                 href={{this.profileUrl}}
-                class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+                class="fomio-sidebar__item fomio-sidebar__item--profile {{if this.isProfileActive 'is-active'}}"
                 {{on "click" this.onProfileActivate}}
               >
                 <span class="fomio-sidebar__icon">

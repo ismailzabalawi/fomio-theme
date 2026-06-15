@@ -16,8 +16,8 @@ import {
   notificationsMentionsPathForUser,
   notificationsRepliesPathForUser,
   isOwnProfileShellPath,
+  preferencesMenuPathForUser,
   preferencesNotificationsPathForUser,
-  preferencesPathForUser,
   profileSummaryPathForUser,
   viewedProfileUsername,
 } from "./fomio-mobile-nav-paths.js";
@@ -95,10 +95,6 @@ function canShowInvites({ currentUser }) {
   return Boolean(currentUser?.can_invite_to_forum);
 }
 
-function canShowPreferences({ currentUser }) {
-  return currentUser?.can_edit !== false;
-}
-
 function canShowManageUser({ currentUser }) {
   return Boolean(currentUser?.staff);
 }
@@ -120,11 +116,7 @@ export function getFomioCoreAccountSections(context) {
       labelKey: "mobile_nav.me_hub_summary",
       href: profileSummaryPathForUser(currentUser),
       isVisible: Boolean(profileSummaryPathForUser(currentUser)),
-      isActive:
-        matchesPath(
-          currentPath,
-          `${profileBasePath}/summary`
-        ),
+      isActive: matchesPath(currentPath, `${profileBasePath}/summary`),
     },
     {
       key: "activity",
@@ -178,8 +170,8 @@ export function getFomioCoreAccountSections(context) {
       icon: "gear",
       labelKey: "mobile_nav.me_hub_preferences",
       metaKey: "mobile_nav.me_hub_settings_meta",
-      href: preferencesPathForUser(currentUser),
-      isVisible: canShowPreferences(context),
+      href: preferencesMenuPathForUser(currentUser),
+      isVisible: true,
       isActive: matchesPath(
         currentPath,
         `${profileBasePath}/preferences*`,
@@ -200,7 +192,8 @@ export function getFomioCoreAccountSections(context) {
 
 export function getFomioProfileMasterSections(context) {
   const { currentUser, currentPath, siteSettings, viewedUser } = context;
-  const viewedUsername = viewedUser?.username ?? viewedProfileUsername(currentPath);
+  const viewedUsername =
+    viewedUser?.username ?? viewedProfileUsername(currentPath);
   if (!viewedUsername) {
     return [];
   }
@@ -210,9 +203,9 @@ export function getFomioProfileMasterSections(context) {
   const activityVisible =
     viewingSelf || currentUser?.admin || !siteSettings?.hide_user_activity_tab;
   const messagesVisible =
-    Boolean(currentUser?.can_send_private_messages) && (viewingSelf || currentUser?.admin);
+    Boolean(currentUser?.can_send_private_messages) &&
+    (viewingSelf || currentUser?.admin);
   const notificationsVisible = viewingSelf || currentUser?.admin;
-  const preferencesVisible = viewingSelf;
   const invitesVisible = viewingSelf && Boolean(currentUser?.can_invite_to_forum);
   const badgesVisible = Boolean(
     siteSettings?.enable_badges && (viewedUser?.badge_count ?? 0) > 0
@@ -266,15 +259,6 @@ export function getFomioProfileMasterSections(context) {
       href: `${profileBasePath}/invited`,
       isVisible: invitesVisible,
       isActive: matchesPath(currentPath, `${profileBasePath}/invited*`),
-    },
-    {
-      key: "preferences",
-      icon: "gear",
-      labelKey: "mobile_nav.me_hub_preferences",
-      metaKey: "mobile_nav.me_hub_settings_meta",
-      href: `${profileBasePath}/preferences/account`,
-      isVisible: preferencesVisible,
-      isActive: matchesPath(currentPath, `${profileBasePath}/preferences*`, "/my/preferences*"),
     },
     {
       key: "badges",

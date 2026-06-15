@@ -2,10 +2,12 @@ import Component from "@glimmer/component";
 import { getOwner } from "@ember/owner";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import icon from "discourse/helpers/d-icon";
 import getURL from "discourse/lib/get-url";
+import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
 import FomioUserProfileSummary from "../../components/shared/fomio-user-profile-summary";
@@ -18,6 +20,7 @@ import {
   isFomioShellPath,
   isMeLandingSurfacePath,
 } from "../../lib/fomio-mobile-nav-paths";
+import { setFomioPreferencesMenuMarker } from "../../lib/fomio-preferences-sections";
 import { fomioCurrentPath } from "../../lib/fomio-router-pathname";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
@@ -315,6 +318,20 @@ export default class FomioMeHub extends Component {
     this.userController?.toggleProfile?.();
   }
 
+  @action
+  openPreferencesMenu(section, event) {
+    if (section?.key !== "preferences") {
+      return;
+    }
+    if (event?.metaKey || event?.ctrlKey || event?.shiftKey || event?.altKey) {
+      return;
+    }
+
+    event?.preventDefault();
+    setFomioPreferencesMenuMarker();
+    this.router.transitionTo(section.href);
+  }
+
   <template>
     {{#if this.shouldRender}}
       {{#if this.isLoggedInHub}}
@@ -349,6 +366,7 @@ export default class FomioMeHub extends Component {
                 <a
                   class="fomio-me-hub__row fomio-utility-row {{if section.isActive "fomio-me-hub__row--active is-active"}}"
                   href={{section.href}}
+                  {{on "click" (fn this.openPreferencesMenu section)}}
                 >
                   <span class="fomio-me-hub__row-icon fomio-utility-row__icon" aria-hidden="true">{{icon section.icon}}</span>
                   <span class="fomio-me-hub__row-copy fomio-utility-row__body">
@@ -363,7 +381,7 @@ export default class FomioMeHub extends Component {
                       aria-label="{{this.rowBadge section}} unread"
                     >{{this.rowBadge section}}</span>
                   {{/if}}
-                  <span class="fomio-me-hub__row-chevron fomio-utility-row__trailing" aria-hidden="true">{{icon "angle-right"}}</span>
+                  <span class="fomio-me-hub__row-chevron fomio-utility-row__trailing" aria-hidden="true">{{icon (if (eq section.key "preferences") "angle-up" "angle-right")}}</span>
                 </a>
               {{/each}}
 

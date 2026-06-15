@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
@@ -10,6 +11,11 @@ import {
   getFomioNotificationsChildSections,
   isOwnedActivitySectionPath,
 } from "../../lib/fomio-account-sections";
+import {
+  hasFomioPreferencesMenuMarker,
+  isFomioPreferencesChildPath,
+  setFomioPreferencesMenuMarker,
+} from "../../lib/fomio-preferences-sections";
 import {
   isActivityPath,
   isFomioShellPath,
@@ -80,11 +86,21 @@ export default class FomioMeStackHeaderConnector extends Component {
   }
 
   get shouldRenderActivityNav() {
-    return isActivityPath(this.currentPath) && isOwnedActivitySectionPath(this.currentPath);
+    return (
+      isActivityPath(this.currentPath) &&
+      isOwnedActivitySectionPath(this.currentPath)
+    );
   }
 
   get shouldRenderNotificationsNav() {
     return isNotificationsPath(this.currentPath);
+  }
+
+  get shouldRenderPreferencesButton() {
+    return (
+      isFomioPreferencesChildPath(this.currentPath) &&
+      !hasFomioPreferencesMenuMarker(this.router.currentURL || "")
+    );
   }
 
   get shouldRenderChildNav() {
@@ -112,12 +128,19 @@ export default class FomioMeStackHeaderConnector extends Component {
     }));
   }
 
+  @action
+  openPreferencesMenu() {
+    setFomioPreferencesMenuMarker();
+    this.router.transitionTo("/my/preferences?fomio_menu=1");
+  }
+
   <template>
     {{#if this.shouldRender}}
       <div class="fomio-me-stack-shell">
         <FomioMeStackHeader
           @backHref={{this.backHref}}
           @sectionTitle={{this.sectionTitle}}
+          @onPreferencesClick={{if this.shouldRenderPreferencesButton this.openPreferencesMenu}}
         />
 
         {{#if this.shouldRenderChildNav}}

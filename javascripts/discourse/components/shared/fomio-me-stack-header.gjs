@@ -19,9 +19,18 @@ export default class FomioMeStackHeader extends Component {
     return i18n(themePrefix("me_stack.back"));
   }
 
+  get preferencesLabel() {
+    return i18n(themePrefix("me_stack.preferences_menu"));
+  }
+
   @action
   handleBackClick(e) {
     this.args.onBackClick?.(e);
+  }
+
+  @action
+  handlePreferencesClick(e) {
+    this.args.onPreferencesClick?.(e);
   }
 
   <template>
@@ -40,8 +49,20 @@ export default class FomioMeStackHeader extends Component {
           {{@sectionTitle}}
         </span>
       {{/if}}
-      {{! Grid column 3 spacer — mirrors the back button width so title stays centred }}
-      <span aria-hidden="true"></span>
+      {{#if @onPreferencesClick}}
+        <button
+          type="button"
+          class="fomio-me-stack-header__prefs fomio-masthead__icon-btn"
+          aria-label={{this.preferencesLabel}}
+          title={{this.preferencesLabel}}
+          {{on "click" this.handlePreferencesClick}}
+        >
+          {{icon "gear"}}
+        </button>
+      {{else}}
+        {{! Grid column 3 spacer — mirrors the back button width so title stays centred }}
+        <span aria-hidden="true"></span>
+      {{/if}}
     </div>
   </template>
 }

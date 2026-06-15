@@ -60,7 +60,6 @@ export default apiInitializer("1.8.0", (api) => {
   // - fomio-sidebar-active (owned by fomio-layout.gjs)
   // - fomio-auth-mode (owned by fomio-layout.gjs)
   let activeMode = null;
-  let debounceTimer = null;
 
   const pointerQuery = window.matchMedia("(pointer: coarse)");
   const hoverQuery = window.matchMedia("(hover: none)");
@@ -94,12 +93,7 @@ export default apiInitializer("1.8.0", (api) => {
   }
 
   function scheduleSync() {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-    debounceTimer = setTimeout(() => {
-      syncSurfaceMode();
-    }, 100);
+    syncSurfaceMode();
   }
 
   syncSurfaceMode();

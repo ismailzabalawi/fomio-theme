@@ -12,6 +12,11 @@ import {
   bookmarksPathForUser,
   profileSummaryPathForUser,
 } from "../lib/fomio-mobile-nav-paths";
+import {
+  isPreferencesProfilePath,
+  isPreferencesSecurityPath,
+  resolveSecurityActionVariant,
+} from "../lib/fomio-preferences-security";
 
 /**
  * theme-initializer.gjs — Mobile Web → App Handoff
@@ -1084,6 +1089,144 @@ export default apiInitializer("1.8.0", (api) => {
     passkeyButton.dataset.fomioPasskeyLoadingBound = "1";
   }
 
+  function enhancePreferencesSecurityPage() {
+    if (
+      !document.body?.classList.contains("user-preferences-page") ||
+      !isPreferencesSecurityPath(window.location.pathname)
+    ) {
+      return;
+    }
+
+    const root = document.querySelector("#user-content.user-preferences");
+    if (!root) {
+      return;
+    }
+
+    const revokeLabel = i18n("user.revoke_access");
+    const undoLabel = i18n("user.undo_revoke_access");
+
+    root
+      .querySelectorAll(".pref-user-api-keys .user-api-key__actions .btn")
+      .forEach((button) => {
+        const label =
+          button.querySelector(".d-button-label")?.textContent || button.textContent || "";
+        const variant =
+          resolveSecurityActionVariant(label, { revokeLabel, undoLabel }) || "secondary";
+
+        button.dataset.fomioVariant = variant;
+      });
+
+    root.querySelectorAll(".pref-user-api-keys .user-api-key").forEach((row, index) => {
+      const scopesList = row.querySelector(".user-api-key__scopes-list");
+      const toggle = row.querySelector(".user-api-key__scopes-toggle a");
+
+      row.dataset.fomioExpanded = scopesList ? "true" : "false";
+
+      if (!toggle) {
+        return;
+      }
+
+      toggle.dataset.fomioExpanded = scopesList ? "true" : "false";
+      toggle.setAttribute("role", "button");
+      toggle.setAttribute("aria-expanded", scopesList ? "true" : "false");
+
+      if (scopesList) {
+        const listId = scopesList.id || `fomio-security-scopes-${index + 1}`;
+        scopesList.id = listId;
+        toggle.setAttribute("aria-controls", listId);
+      } else {
+        toggle.removeAttribute("aria-controls");
+      }
+    });
+  }
+
+  function enhancePreferencesProfilePage() {
+    if (
+      !document.body?.classList.contains("user-preferences-page") ||
+      !isPreferencesProfilePath(window.location.pathname)
+    ) {
+      return;
+    }
+
+    const label = document.querySelector(
+      ".user-hide-profile .pref-hide-profile .checkbox-label"
+    );
+    const input = label?.querySelector("input[type='checkbox']");
+    if (!label || !input) {
+      return;
+    }
+
+    label.classList.add("pref-hide-profile__label");
+    input.classList.add("pref-hide-profile__input");
+
+    let labelText = label.querySelector(".pref-hide-profile__text");
+    if (!labelText) {
+      const textContent = Array.from(label.childNodes)
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent)
+        .join(" ")
+        .trim();
+
+      labelText = document.createElement("span");
+      labelText.className = "pref-hide-profile__text";
+      labelText.textContent = textContent;
+
+      Array.from(label.childNodes).forEach((node) => {
+        if (node !== input && node !== labelText) {
+          if (
+            node.nodeType === Node.TEXT_NODE ||
+            (node.nodeType === Node.ELEMENT_NODE &&
+              !node.classList.contains("pref-hide-profile__switch"))
+          ) {
+            node.remove();
+          }
+        }
+      });
+
+      label.appendChild(labelText);
+    }
+
+    let switchButton = label.querySelector(".pref-hide-profile__switch");
+    if (!switchButton) {
+      switchButton = document.createElement("button");
+      switchButton.type = "button";
+      switchButton.className =
+        "fomio-switch fomio-switch--sm pref-hide-profile__switch";
+      switchButton.setAttribute("role", "switch");
+      switchButton.innerHTML =
+        '<span class="fomio-switch__track" aria-hidden="true"><span class="fomio-switch__thumb"></span></span>';
+      switchButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (input.disabled) {
+          return;
+        }
+        input.click();
+      });
+    }
+
+    if (label.lastElementChild !== switchButton) {
+      label.appendChild(switchButton);
+    }
+
+    const syncSwitchState = () => {
+      const checked = Boolean(input.checked);
+      const disabled = Boolean(input.disabled);
+      switchButton.classList.toggle("fomio-switch--on", checked);
+      switchButton.classList.toggle("fomio-switch--disabled", disabled);
+      switchButton.setAttribute("aria-checked", checked ? "true" : "false");
+      switchButton.setAttribute("aria-disabled", disabled ? "true" : "false");
+      switchButton.disabled = disabled;
+    };
+
+    if (input.dataset.fomioProfileSwitchBound !== "1") {
+      input.addEventListener("change", syncSwitchState);
+      input.dataset.fomioProfileSwitchBound = "1";
+    }
+
+    syncSwitchState();
+  }
+
   // Run immediately on initializer load — catches fresh page loads from email link taps
   // (onPageChange alone is insufficient: it hooks into Ember's router, which fires
   // after the initial render, giving users a window to interact with the Discourse page)
@@ -1094,6 +1237,8 @@ export default apiInitializer("1.8.0", (api) => {
   enhanceSecondFactorTotp();
   enhanceSecondFactorBackupCode();
   enhanceSecondFactorPasskeyLoading();
+  enhancePreferencesSecurityPage();
+  enhancePreferencesProfilePage();
 
   // Also handle subsequent Ember client-side navigations
   api.onPageChange(() => {
@@ -1103,6 +1248,8 @@ export default apiInitializer("1.8.0", (api) => {
     enhanceSecondFactorTotp();
     enhanceSecondFactorBackupCode();
     enhanceSecondFactorPasskeyLoading();
+    enhancePreferencesSecurityPage();
+    enhancePreferencesProfilePage();
   });
 
   // Forgot-password modal and 2FA forms open without a route transition; observe DOM inserts.
@@ -1118,6 +1265,8 @@ export default apiInitializer("1.8.0", (api) => {
       enhanceSecondFactorTotp();
       enhanceSecondFactorBackupCode();
       enhanceSecondFactorPasskeyLoading();
+      enhancePreferencesSecurityPage();
+      enhancePreferencesProfilePage();
     }, 50);
   });
   modalObserver.observe(document.body, { childList: true, subtree: true });
