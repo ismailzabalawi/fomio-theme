@@ -6,50 +6,33 @@
 // HOW THIS FILE RELATES TO THE SHARED PACKAGE
 // ─────────────────────────────────────────────────────────────
 // Discourse themes are static SCSS — they cannot import npm packages at
-// runtime. Instead, Section 1 below mirrors the output of
+// runtime. Section 1 below mirrors the non-colour output of
 //   toCssVariables('light')  from @fomio/design-tokens/web
-// and must be kept in sync with packages/design-tokens/tokens.js.
+// (fonts, spacing, radii, sizing) and must stay in sync with
+// packages/design-tokens/tokens.js — verify with `npm run tokens:check`.
 //
-// Dark mode: Discourse ships two color-scheme stylesheets (light / dark).
-// `javascripts/discourse/api-initializers/fomio-color-mode.gjs` toggles
-// `html.fomio-color-dark` so `--fomio-*` tokens track the active scheme.
+// Colour tokens are NOT here — they live in common/color_definitions.scss,
+// which Discourse compiles once per colour scheme (light + dark/AMOLED) and
+// swaps via the prefers-color-scheme <link>. fomio-color-mode.gjs still toggles
+// `html.fomio-color-dark` for component-level dark refinements.
 // ─────────────────────────────────────────────────────────────
 
 
 // ------------------------------------------------------------
-// 1. CANONICAL TOKENS  ← sync with packages/design-tokens/tokens.js
-// These mirror toCssVariables('light') from @fomio/design-tokens/web.
+// 1. CANONICAL TOKENS (non-colour)  ← sync with packages/design-tokens
+// Colour tokens live in common/color_definitions.scss (see header above).
 // Do NOT hardcode values elsewhere in this file — use these variables.
 // ------------------------------------------------------------
 
-// AUTO-SYNCED with @fomio/design-tokens — run `node scripts/check-theme-sync.js` to verify.
-// Last synced: 2026-04-04 — brand migration (terracotta primary, cream bg, Raleway UI font)
+// AUTO-SYNCED with @fomio/design-tokens — run `npm run tokens:check` to verify.
+// Last synced: 2026-06-19 — colour layer moved to color_definitions.scss; dark → AMOLED
 :root {
-  --fomio-bg:           #F8F7F3;
-  --fomio-surface:      #F2F1EC;
-  --fomio-card:         #FFFFFF;
-  --fomio-text:         #1A1A1A;
-  --fomio-foreground:   #1A1A1A;
-  --fomio-muted:        #6B6B72;
-  --fomio-secondary:    #5C5D67;
-  --fomio-border:       #E3E3E6;
-  --fomio-border-soft:  rgba(15, 23, 42, 0.08);
-  --fomio-primary:      #C44536;
-  --fomio-primary-soft: #F5D0CC;
-  --fomio-primary-dark: #9E3326;
-  --fomio-accent:       #1565C0;
-  --fomio-accent-soft:  rgba(79,156,249,0.14);
-  --fomio-on-accent:    #FFFFFF;
-  --fomio-danger:       #EF4444;
-  --fomio-danger-soft:  rgba(220,38,38,0.12);
-  --fomio-warning:      #F59E0B;
-  --fomio-success:      #22c55e;
-  --fomio-info:         #1565C0;
-  --fomio-shadow:       rgba(0,0,0,0.14);
+  // Colour tokens now live in common/color_definitions.scss — Discourse compiles
+  // that file once per colour scheme, so --fomio-* colours flip light↔dark
+  // (AMOLED) automatically and the brand palette is editable in Admin →
+  // Customize → Colors. active-wash derives from those vars with a
+  // mode-independent formula, so it stays here.
   --fomio-active-wash:  color-mix(in oklab, var(--fomio-primary-soft) 52%, var(--fomio-card));
-  --fomio-liked:        #EF4444;
-  --fomio-hero-overlay: rgba(0,0,0,0.7);
-  --fomio-hero-text:    #FFFFFF;
   --fomio-font-serif:   "Lora", Georgia, "Times New Roman", serif;
   --fomio-font-mono:    "Space Mono", "Courier New", monospace;
   --fomio-font-ui:      "Raleway", system-ui, sans-serif;
@@ -74,7 +57,7 @@
   --fomio-prose-w:           680px;   // reading rail — .cooked, excerpts
   --fomio-column-w:          54rem;   // page column — title, body, footer
   --fomio-content-max-width: 680px;   // legacy alias for --fomio-prose-w
-  --fomio-code-bg:           var(--fomio-surface);  // code block container — overridden in dark
+  --fomio-code-bg:           var(--fomio-surface);  // code block container — follows surface (light/dark)
   --fomio-button-height-sm:  32px;
   --fomio-button-height:     40px;
   --fomio-button-height-lg:  48px;
@@ -125,49 +108,17 @@
 
 
 // ------------------------------------------------------------
-// 1B. DARK MODE (WEB — warm brown)
-// Active when html.fomio-color-dark (see fomio-color-mode.gjs).
+// 1B. DARK MODE — handled by the colour scheme
 //
-// Intentionally NOT AMOLED here: Fomio Design System Handoff + brand guideline
-// specify warm brown for Discourse/web (#1a1917). Mobile app remains AMOLED via
-// packages/design-tokens (separate surface).
+// Dark is AMOLED (same baseline as the mobile app), delivered through
+// common/color_definitions.scss + the "Fomio Dark" colour scheme in about.json
+// — not a hardcoded html.fomio-color-dark token block. Discourse swaps the
+// per-scheme stylesheet, so every --fomio-* colour token flips automatically.
+//
+// fomio-color-mode.gjs still toggles html.fomio-color-dark for component-level
+// dark refinements (those blocks read the --fomio-* tokens, so they follow the
+// AMOLED palette without per-value edits).
 // ------------------------------------------------------------
-
-html.fomio-color-dark {
-  --fomio-bg:           #171513;
-  --fomio-surface:      #26211d;
-  --fomio-card:         #332c27;
-  --fomio-text:         #f5f3f0;
-  --fomio-foreground:   #f5f3f0;
-  --fomio-muted:        #b4ada6;
-  --fomio-secondary:    #cbc4bc;
-  --fomio-border:       #4c433d;
-  --fomio-border-soft:  rgba(255, 255, 255, 0.14);
-  --fomio-primary:      #e67458;
-  --fomio-primary-soft: #3c1b16;
-  --fomio-primary-dark: #d45944;
-  --fomio-accent:       #42a5f5;
-  --fomio-accent-soft:  rgba(124, 196, 255, 0.18);
-  --fomio-on-accent:    #000000;
-  --fomio-danger:       #f87171;
-  --fomio-danger-soft:  rgba(239, 68, 68, 0.16);
-  --fomio-warning:      #fbbf24;
-  --fomio-success:      #34d399;
-  --fomio-info:         #42a5f5;
-  --fomio-shadow:       rgba(0, 0, 0, 0.6);
-  --fomio-active-wash:  color-mix(in oklab, var(--fomio-primary-soft) 74%, var(--fomio-card));
-  --fomio-liked:        #f87171;
-  --fomio-hero-overlay: rgba(0, 0, 0, 0.72);
-  --fomio-hero-text:    #f5f3f0;
-  --fomio-font-serif:   "Lora", Georgia, "Times New Roman", serif;
-  --fomio-font-mono:    "Space Mono", "Courier New", monospace;
-  --fomio-font-ui:      "Raleway", system-ui, sans-serif;
-  --fomio-brand-cream:  #f8f7f3;
-  --fomio-brand-red:    #c44536;
-  --fomio-brand-ink:    #1a1a1a;
-  --fomio-on-primary:   #ffffff;
-  --fomio-code-bg:      #3f3832;
-}
 
 
 // ------------------------------------------------------------

@@ -252,7 +252,8 @@ apps/web/
 ├── settings.yml                      # fomio_* settings (fomio_app_url)
 ├── locales/en.yml                    # themePrefix() strings
 ├── common/
-│   ├── common.scss                   # --fomio-* tokens + all shared styles
+│   ├── common.scss                   # non-colour tokens + all shared styles
+│   ├── color_definitions.scss        # AUTO-GENERATED — per-scheme --fomio-* colours (npm run tokens:fix)
 │   ├── embedded.scss                 # Styles for Discourse embed widget (currently empty)
 │   ├── head_tag.html                 # Google Fonts preconnect + stylesheet link
 │   ├── body_tag.html                 # Trust line injection into /user-api-key/new
@@ -532,21 +533,35 @@ All deep links are constructed from the `fomio_app_url` theme setting. Never har
 
 ### Color — Shared Token System
 
-The web theme and mobile app share the same canonical palette from `packages/design-tokens/tokens.js`. `common.scss` Section 1 mirrors `toCssVariables('light')` — run `npm run tokens:check` after any token change to catch drift.
+The web theme and mobile app share the same canonical palette from `packages/design-tokens/tokens.js`.
 
-| Token | Value | Variable |
-|-------|-------|----------|
-| Primary | `#C44536` terracotta | `--fomio-primary` |
-| Background | `#F8F7F3` cream | `--fomio-bg` |
-| Text | `#1A1A1A` | `--fomio-text` |
-| UI font | Raleway | `--fomio-font-ui` |
-| Body font | Lora (serif) | `--fomio-font-serif` |
+**Colour tokens are NOT hardcoded in `common.scss`.** They are generated into
+`common/color_definitions.scss` from the token package and delivered through the
+Discourse colour-scheme system:
+
+- **`common/color_definitions.scss`** (auto-generated — do not hand-edit) defines every `--fomio-*` colour. Slot-backed tokens (`--fomio-primary` → `$tertiary`, `--fomio-bg` → `$secondary`, etc.) come from the Discourse colour scheme and are **editable in Admin → Customize → Colors**. The rest use `dark-light-choose(light, dark)` and are synced from the package. Discourse compiles this file once per colour scheme, so light↔dark flips automatically.
+- **`about.json`** `color_schemes` (`Fomio` / `Fomio Dark`) are also generated from the token package — the admin-editable palette + Discourse core chrome.
+- **`common.scss` Section 1** now holds only **non-colour** tokens (fonts, spacing, radii, sizing, motion) plus the derived `--fomio-active-wash`.
+
+Workflow: edit `packages/design-tokens/tokens.js` → `npm run tokens:fix` regenerates `color_definitions.scss` + `about.json` → `npm run tokens:check` verifies no drift. The generator lives in `scripts/generate-web-colors.js`; web-only dark deltas live in `packages/design-tokens/web.js` (`WEB_DARK_DELTAS`, `WEB_DARK_SELECTION`).
+
+| Token | Value | Variable | Source |
+|-------|-------|----------|--------|
+| Primary | `#C44536` terracotta | `--fomio-primary` | `$tertiary` slot |
+| Background | `#F8F7F3` cream | `--fomio-bg` | `$secondary` slot |
+| Text | `#1A1A1A` | `--fomio-text` | `$primary` slot |
+| UI font | Raleway | `--fomio-font-ui` | `common.scss` |
+| Body font | Lora (serif) | `--fomio-font-serif` | `common.scss` |
 
 `common.scss` also has legacy alias variables (`--fomio-ink`, `--fomio-paper`, etc.) that map to the canonical names for backwards compatibility. Use canonical names (`--fomio-text`, `--fomio-bg`) in new code.
 
-### Dark Mode
+> **Unverified against live Discourse:** the per-scheme compilation of a theme's `color_definitions.scss` (what makes `dark-light-choose` and the light/dark flip work) must be confirmed in a Discourse preview. If `--fomio-*` colours render empty, the file isn't being compiled per scheme — fall back to the `html.fomio-color-dark` class mechanism.
 
-Dark palette is defined in `about.json` (`Fomio Dark` scheme) and Section **1B** of `common.scss`. The **web theme uses warm brown** (`#1a1917` background, terracotta accent `#e67458`) per the Fomio Design System Handoff — not AMOLED. The mobile app remains AMOLED via `packages/design-tokens`. `fomio-color-mode.gjs` toggles `html.fomio-color-dark` when the active Discourse color scheme is dark. Scope dark overrides under `html.fomio-color-dark` in SCSS.
+### Dark Mode — AMOLED
+
+Web dark is **AMOLED** (`#000000` background, terracotta `#D4604F`), the same baseline as the mobile app — **no longer warm brown**. It is defined by the `Fomio Dark` colour scheme in `about.json` + `color_definitions.scss`, not a hardcoded token block. A few **web-only deltas** diverge from the literal mobile AMOLED for desktop ergonomics: `--fomio-card #141414`, `--fomio-border #2A2A2C`, `--fomio-shadow rgba(0,0,0,0.6)`, and the row `selected #1F1F1F` / `hover #161616` scheme slots.
+
+`fomio-color-mode.gjs` still toggles `html.fomio-color-dark` for **component-level** dark refinements. Those blocks read `--fomio-*` tokens, so they follow the AMOLED palette automatically — scope new component dark overrides under `html.fomio-color-dark`.
 
 ### Responsive Breakpoints
 

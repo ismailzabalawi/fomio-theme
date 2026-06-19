@@ -1,0 +1,46 @@
+// ============================================================
+// FOMIO THEME — COLOR DEFINITIONS (per colour scheme)
+// AUTO-GENERATED from @fomio/design-tokens — DO NOT EDIT BY HAND.
+// Regenerate: npm run tokens:fix    ·    Verify: npm run tokens:check
+//
+// Discourse compiles this file once per colour scheme (light + dark) and
+// swaps the stylesheet via the prefers-color-scheme <link> media toggle.
+// That is why --fomio-* colour tokens live here, not in common.scss: this
+// is the only theme stylesheet recompiled per scheme, so dark flows
+// automatically. Slot-backed tokens ($primary, $tertiary, …) are editable
+// in Admin → Customize → Colors; dark-light-choose() tokens are synced.
+// ============================================================
+
+:root {
+  // ── Brand palette — admin-editable (Discourse colour-scheme slots) ──
+  --fomio-bg:           #{$secondary};
+  --fomio-text:         #{$primary};
+  --fomio-primary:      #{$tertiary};
+  --fomio-primary-dark: #{$quaternary};
+  --fomio-primary-soft: #{$highlight};
+  --fomio-danger:       #{$danger};
+  --fomio-success:      #{$success};
+  --fomio-liked:        #{$love};
+
+  // ── Surfaces & neutrals — synced from @fomio/design-tokens ──
+  --fomio-surface:      #{dark-light-choose(#F2F1EC, #0A0A0A)};
+  --fomio-card:         #{dark-light-choose(#FFFFFF, #141414)};
+  --fomio-foreground:   #{dark-light-choose(#1A1A1A, #F5F5F7)};
+  --fomio-muted:        #{dark-light-choose(#6B6B72, #A1A1AA)};
+  --fomio-secondary:    #{dark-light-choose(#5C5D67, #A1A1AA)};
+  --fomio-border:       #{dark-light-choose(#E3E3E6, #2A2A2C)};
+  --fomio-border-soft:  #{dark-light-choose(rgba(15, 23, 42, 0.08), rgba(255,255,255,0.08))};
+
+  // ── Accent / status — synced from @fomio/design-tokens ──
+  --fomio-accent:       #{dark-light-choose(#1565C0, #42A5F5)};
+  --fomio-accent-soft:  #{dark-light-choose(rgba(79,156,249,0.14), rgba(124,196,255,0.18))};
+  --fomio-on-accent:    #{dark-light-choose(#FFFFFF, #000000)};
+  --fomio-danger-soft:  #{dark-light-choose(rgba(220,38,38,0.12), rgba(239,68,68,0.16))};
+  --fomio-warning:      #{dark-light-choose(#F59E0B, #FBBF24)};
+  --fomio-info:         #{dark-light-choose(#1565C0, #42A5F5)};
+  --fomio-shadow:       #{dark-light-choose(rgba(0,0,0,0.14), rgba(0,0,0,0.6))};
+
+  // ── Static (mode-independent) ──
+  --fomio-hero-overlay: rgba(0,0,0,0.7);
+  --fomio-hero-text:    #FFFFFF;
+}
