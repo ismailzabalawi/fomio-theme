@@ -11,9 +11,9 @@ import {
   clearFomioPreferencesMenuMarker,
   FOMIO_PREFERENCES_SECTIONS,
   hasFomioPreferencesMenuMarker,
+  isFomioPreferencesPath,
   isFomioPreferencesRootPath,
 } from "../../lib/fomio-preferences-sections";
-import { isFomioShellPath } from "../../lib/fomio-mobile-nav-paths";
 import { fomioCurrentPath } from "../../lib/fomio-router-pathname";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 
@@ -29,10 +29,21 @@ export default class FomioMobilePreferencesMenu extends Component {
     this.#unsubscribeTouch = subscribeFomioTouchShell((v) => {
       this.isTouchShell = v;
     });
+
+    // The menu marker is a sticky sessionStorage flag set when the user opens
+    // the preferences menu. Clear it as soon as they leave the preferences
+    // area so a stale marker can never resurface the menu on other screens.
+    this._onRouteDidChange = () => {
+      if (!isFomioPreferencesPath(this.currentPath)) {
+        clearFomioPreferencesMenuMarker();
+      }
+    };
+    this.router.on("routeDidChange", this._onRouteDidChange);
   }
 
   willDestroy() {
     this.#unsubscribeTouch?.();
+    this.router.off("routeDidChange", this._onRouteDidChange);
     super.willDestroy();
   }
 
@@ -48,7 +59,7 @@ export default class FomioMobilePreferencesMenu extends Component {
     return Boolean(
       this.currentUser &&
         this.isTouchShell &&
-        isFomioShellPath(this.currentPath) &&
+        isFomioPreferencesPath(this.currentPath) &&
         (isFomioPreferencesRootPath(this.currentPath) || this.hasMenuMarker)
     );
   }

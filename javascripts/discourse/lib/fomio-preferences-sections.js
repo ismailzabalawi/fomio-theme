@@ -72,6 +72,12 @@ export function isFomioPreferencesChildPath(path) {
   return /^\/(?:my\/preferences|u\/[^/]+\/preferences)\/.+/i.test(path || "");
 }
 
+export function isFomioPreferencesPath(path) {
+  return (
+    isFomioPreferencesRootPath(path) || isFomioPreferencesChildPath(path)
+  );
+}
+
 export function hasFomioPreferencesMenuMarker(currentURL) {
   if (/\bfomio_menu=1\b/.test(currentURL || "")) {
     return true;

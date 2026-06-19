@@ -28,6 +28,7 @@ import {
 import {
   hasFomioPreferencesMenuMarker,
   isFomioPreferencesChildPath,
+  isFomioPreferencesPath,
   isFomioPreferencesRootPath,
 } from "../javascripts/discourse/lib/fomio-preferences-sections.js";
 
@@ -99,6 +100,26 @@ describe("fomio-mobile-nav-paths", () => {
       preferencesMenuPathForUser(currentUser),
       "/my/preferences?fomio_menu=1"
     );
+  });
+
+  it("scopes the mobile preferences menu to the preferences area only", () => {
+    // Root and child preferences routes are both inside the preferences area,
+    // so a lingering menu marker can only ever resurface there.
+    assert.equal(isFomioPreferencesPath("/my/preferences"), true);
+    assert.equal(isFomioPreferencesPath("/u/ismail/preferences"), true);
+    assert.equal(isFomioPreferencesPath("/my/preferences/account"), true);
+    assert.equal(
+      isFomioPreferencesPath("/u/ismail/preferences/security"),
+      true
+    );
+
+    // Everything else is outside the preferences area. Even with a stale
+    // sessionStorage menu marker set, the menu must not render on these.
+    assert.equal(isFomioPreferencesPath("/"), false);
+    assert.equal(isFomioPreferencesPath("/latest"), false);
+    assert.equal(isFomioPreferencesPath("/u/ismail"), false);
+    assert.equal(isFomioPreferencesPath("/u/ismail/activity"), false);
+    assert.equal(isFomioPreferencesPath("/t/some-byte/123"), false);
   });
 
   it("does not classify another user's summary as an own-account shell route", () => {
