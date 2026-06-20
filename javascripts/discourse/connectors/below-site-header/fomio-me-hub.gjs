@@ -10,6 +10,7 @@ import getURL from "discourse/lib/get-url";
 import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import FomioPhIcon from "../../components/shared/fomio-ph-icon";
 import FomioUserProfileSummary from "../../components/shared/fomio-user-profile-summary";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import {
@@ -74,9 +75,14 @@ export default class FomioMeHub extends Component {
 
   @action
   toggleColorScheme() {
-    // Core's interfaceColor service performs the native scheme swap and
-    // persists it (user option / cookie) — no local storage involved.
-    this.interfaceColor?.toggleDarkMode?.();
+    // Keep the mobile switch binary: off => light, on => dark.
+    // Discourse persists the explicit choice through its native
+    // interface-color service.
+    if (this.isDarkModeActive) {
+      this.interfaceColor?.forceLightMode?.();
+    } else {
+      this.interfaceColor?.forceDarkMode?.();
+    }
   }
 
   get currentPath() {
@@ -393,7 +399,9 @@ export default class FomioMeHub extends Component {
                 aria-checked={{if this.isDarkModeActive "true" "false"}}
                 {{on "click" this.toggleColorScheme}}
               >
-                <span class="fomio-me-hub__row-icon fomio-utility-row__icon" aria-hidden="true">{{icon "moon"}}</span>
+                <span class="fomio-me-hub__row-icon fomio-utility-row__icon" aria-hidden="true">
+                  <FomioPhIcon @name="fomio-ph-moon" @size={{18}} />
+                </span>
                 <span class="fomio-me-hub__row-copy fomio-utility-row__body">
                   <span class="fomio-me-hub__row-label fomio-utility-row__label">{{this.darkModeLabel}}</span>
                 </span>

@@ -9,7 +9,7 @@ import { eq } from "discourse/truth-helpers";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import FomioPhIcon from "../../components/shared/fomio-ph-icon";
+import FomioInterfaceColorSelector from "../../components/shared/fomio-interface-color-selector";
 import { redirectToLoginWithIntent } from "../../lib/fomio-auth-intent";
 import { buildFomioHubCatalog } from "../../lib/fomio-hub-catalog";
 import {
@@ -59,19 +59,16 @@ export default class FomioSidebar extends Component {
   @tracked messagesFilter = "latest";
   @tracked previousMasterContext = null;
   @tracked masterContextChanged = false;
-  @tracked isDarkModeActive = false;
   #unsubscribeTouchShell = null;
   #unsubscribeSearchPalette = null;
   #notificationsMenuStateHandler = null;
   #userMenuStateHandler = null;
   #unsubscribeMessages = null;
   #contextSwitchTimeoutId = null;
-  #colorModeObserver = null;
 
   constructor(owner, args) {
     super(owner, args);
     this.#restoreHubExpandState();
-    this.#updateDarkModeState();
     this.#unsubscribeTouchShell = subscribeFomioTouchShell((isTouchSurface) => {
       this.isTouchSurface = isTouchSurface;
     });
@@ -95,17 +92,6 @@ export default class FomioSidebar extends Component {
       FOMIO_USER_MENU_STATE_EVENT,
       this.#userMenuStateHandler
     );
-    // html.fomio-color-dark is kept in sync with the active Discourse
-    // color scheme by fomio-color-mode.gjs; observing it keeps the
-    // sun/moon icon correct for toggles from any surface and for
-    // system-driven scheme changes.
-    this.#colorModeObserver = new MutationObserver(() => {
-      this.#updateDarkModeState();
-    });
-    this.#colorModeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
   }
 
   willDestroy() {
@@ -121,15 +107,6 @@ export default class FomioSidebar extends Component {
       FOMIO_USER_MENU_STATE_EVENT,
       this.#userMenuStateHandler
     );
-    this.#colorModeObserver?.disconnect();
-    this.#colorModeObserver = null;
-  }
-
-  #updateDarkModeState() {
-    if (typeof document === "undefined") {
-      return;
-    }
-    this.isDarkModeActive = document.documentElement.classList.contains("fomio-color-dark");
   }
 
   get currentPath() {
@@ -401,7 +378,6 @@ export default class FomioSidebar extends Component {
   get signInLabel()        { return i18n(themePrefix("sidebar.sign_in")); }
   get allHubsLabel()       { return i18n(themePrefix("sidebar.all_hubs")); }
   get closeMenuLabel()     { return i18n(themePrefix("sidebar.close_menu")); }
-  get toggleDarkModeLabel() { return i18n(themePrefix("sidebar.toggle_dark_mode")); }
   get searchShortcutLabel() {
     return "/";
   }
@@ -679,13 +655,6 @@ export default class FomioSidebar extends Component {
     openFomioUserMenu("desktop", e?.currentTarget?.getBoundingClientRect?.());
   }
 
-  @action
-  toggleColorScheme() {
-    // Discourse's interfaceColor service toggles between light and dark modes
-    // by updating the user's color scheme preference
-    this.interfaceColor?.toggleDarkMode?.();
-  }
-
   <template>
     {{#if this.shouldRender}}
 
@@ -923,7 +892,8 @@ export default class FomioSidebar extends Component {
 
         {{! ── Zone C — Bottom (sticky) ───────────────────── }}
         <div class="fomio-sidebar__zone fomio-sidebar__zone--bottom">
-          {{#if this.currentUser}}
+          <div class="fomio-sidebar__footer-nav">
+            {{#if this.currentUser}}
             <button
               type="button"
               class="fomio-sidebar__item {{if (eq this.activeMasterContext 'notifications') 'is-active'}}"
@@ -948,66 +918,49 @@ export default class FomioSidebar extends Component {
               <span class="fomio-sidebar__icon">{{icon "gear"}}</span>
               <span class="fomio-sidebar__item-label">{{this.preferencesLabel}}</span>
             </a>
+            {{/if}}
+          </div>
 
+          <div class="fomio-sidebar__footer-account">
             <div class="fomio-sidebar__color-toggle-container">
-              <button
-                type="button"
-                class="fomio-sidebar__color-toggle"
-                title={{this.toggleDarkModeLabel}}
-                aria-label={{this.toggleDarkModeLabel}}
-                {{on "click" this.toggleColorScheme}}
-              >
-                <span class="fomio-sidebar__icon">
-                  {{#if this.isDarkModeActive}}
-                    <FomioPhIcon @name="sun" @size="16" />
-                  {{else}}
-                    <FomioPhIcon @name="moon" @size="16" />
-                  {{/if}}
-                </span>
-              </button>
+              {{#if this.currentUser}}
+                <a
+                  href={{this.profileUrl}}
+                  class="fomio-sidebar__item fomio-sidebar__item--profile {{if this.isProfileActive 'is-active'}}"
+                  {{on "click" this.onProfileActivate}}
+                >
+                  <span class="fomio-sidebar__icon">
+                    {{icon "user"}}
+                    {{#if this.messagesBadge}}
+                      <span class="fomio-sidebar__badge">{{this.messagesBadge}}</span>
+                    {{/if}}
+                  </span>
+                  <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
+                </a>
 
-              <a
-                href={{this.profileUrl}}
-                class="fomio-sidebar__item fomio-sidebar__item--profile {{if this.isProfileActive 'is-active'}}"
-                {{on "click" this.onProfileActivate}}
-              >
-                <span class="fomio-sidebar__icon">
-                  {{icon "user"}}
-                  {{#if this.messagesBadge}}
-                    <span class="fomio-sidebar__badge">{{this.messagesBadge}}</span>
-                  {{/if}}
-                </span>
-                <span class="fomio-sidebar__item-label">{{this.currentUser.username}}</span>
-              </a>
-            </div>
-          {{else}}
-            <div class="fomio-sidebar__color-toggle-container">
-              <button
-                type="button"
-                class="fomio-sidebar__color-toggle"
-                title={{this.toggleDarkModeLabel}}
-                aria-label={{this.toggleDarkModeLabel}}
-                {{on "click" this.toggleColorScheme}}
-              >
-                <span class="fomio-sidebar__icon">
-                  {{#if this.isDarkModeActive}}
-                    <FomioPhIcon @name="sun" @size="16" />
-                  {{else}}
-                    <FomioPhIcon @name="moon" @size="16" />
-                  {{/if}}
-                </span>
-              </button>
+                {{#if this.interfaceColor.selectorAvailable}}
+                  <div class="fomio-sidebar__color-toggle">
+                    <FomioInterfaceColorSelector @variant="binary" />
+                  </div>
+                {{/if}}
+              {{else}}
+                <a
+                  href={{this.profileUrl}}
+                  class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+                  {{on "click" this.onProfileActivate}}
+                >
+                  <span class="fomio-sidebar__icon">{{icon "user"}}</span>
+                  <span class="fomio-sidebar__item-label">{{this.signInLabel}}</span>
+                </a>
 
-              <a
-                href={{this.profileUrl}}
-                class="fomio-sidebar__item {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
-                {{on "click" this.onProfileActivate}}
-              >
-                <span class="fomio-sidebar__icon">{{icon "user"}}</span>
-                <span class="fomio-sidebar__item-label">{{this.signInLabel}}</span>
-              </a>
+                {{#if this.interfaceColor.selectorAvailable}}
+                  <div class="fomio-sidebar__color-toggle">
+                    <FomioInterfaceColorSelector @variant="binary" />
+                  </div>
+                {{/if}}
+              {{/if}}
             </div>
-          {{/if}}
+          </div>
         </div>
 
       </nav>

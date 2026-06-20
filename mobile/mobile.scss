@@ -497,8 +497,8 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
 }
 
 .topic-list-item.--fomio-discovery-item:hover td.topic-list-data:not(.main-link) {
-  border-color: #d8d7db;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-color: color-mix(in oklab, var(--fomio-border) 76%, var(--fomio-text));
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--fomio-shadow) 40%, transparent);
 }
 
 // ── Hide mobile chrome our connector replaces ──────────────────
@@ -779,8 +779,8 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
 }
 
 .topic-list-item.--fomio-fresh-byte-item:hover td.topic-list-data:not(.main-link) {
-  border-color: #d8d7db;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-color: color-mix(in oklab, var(--fomio-border) 76%, var(--fomio-text));
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--fomio-shadow) 40%, transparent);
 }
 
 .topic-list-item.--fomio-fresh-byte-item div.main-link {

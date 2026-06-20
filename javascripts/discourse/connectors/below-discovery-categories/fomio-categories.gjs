@@ -20,6 +20,22 @@ export default class FomioCategories extends Component {
 
   @tracked view = "grid";
 
+  constructor(owner, args) {
+    super(owner, args);
+
+    if (typeof document !== "undefined") {
+      document.body?.classList.add("fomio-hubs-active");
+    }
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+
+    if (typeof document !== "undefined") {
+      document.body?.classList.remove("fomio-hubs-active");
+    }
+  }
+
   get hubCatalog() {
     return buildFomioHubCatalog([
       this.site?.categories,

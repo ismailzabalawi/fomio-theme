@@ -1591,8 +1591,8 @@ body.fomio-sidebar-active.has-sidebar-page.archetype-regular {
 }
 
 .topic-list-item.--fomio-fresh-byte-item:hover td.main-link {
-  border-color: #d8d7db;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-color: color-mix(in oklab, var(--fomio-border) 76%, var(--fomio-text));
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--fomio-shadow) 40%, transparent);
 }
 
 .topic-list-item.--fomio-fresh-byte-item .link-bottom-line,
@@ -12741,15 +12741,49 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-su
 }
 
 .fomio-sidebar__zone--bottom {
+  padding-top: var(--fomio-space-md);
   padding-bottom: var(--fomio-space-xl);
   border-top: 1px solid var(--fomio-border-soft);
+  gap: var(--fomio-space-sm);
+}
+
+.fomio-sidebar__footer-nav {
+  display: flex;
+  flex-direction: column;
   gap: var(--fomio-space-xs);
+}
+
+.fomio-sidebar__footer-nav:empty {
+  display: none;
+}
+
+.fomio-sidebar__footer-account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fomio-space-sm);
+  padding-top: var(--fomio-space-sm);
+  border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 78%, transparent);
+  padding-inline: var(--fomio-space-xs);
+}
+
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle-container {
+  padding: 4px;
+  border-radius: calc(var(--fomio-radius-md) + 2px);
+  border: 1px solid color-mix(in oklab, var(--fomio-border) 72%, transparent);
+  background: color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-card));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 78%, transparent);
+}
+
+.fomio-sidebar__footer-nav:empty + .fomio-sidebar__footer-account {
+  padding-top: 0;
+  border-top: 0;
 }
 
 // ── Color Toggle Container ───────────────────────────────────
 
 .fomio-sidebar__color-toggle-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--fomio-space-xs);
   width: 100%;
@@ -12825,11 +12859,151 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sideba
   }
 }
 
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+}
+
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector,
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+}
+
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--fomio-radius-pill);
+  background: transparent;
+  box-shadow: none;
+  color: var(--fomio-muted);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-text);
+    background: color-mix(in oklab, var(--fomio-text) 6%, transparent);
+  }
+
+  &:active {
+    background: color-mix(in oklab, var(--fomio-text) 10%, transparent);
+  }
+}
+
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector--binary,
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger--binary {
+  width: auto;
+  min-width: 0;
+  height: 36px;
+  min-height: 36px;
+}
+
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger--binary {
+  gap: 0.45rem;
+  padding: 0 0.45rem 0 0.55rem;
+  border-radius: 999px;
+  color: var(--fomio-muted);
+
+  .fomio-switch {
+    pointer-events: none;
+    transform: scale(0.78);
+    transform-origin: center;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-text);
+  }
+}
+
+.fomio-interface-color-selector__trigger-icon {
+  display: block;
+  color: currentColor;
+}
+
+.fomio-interface-color-selector__menu {
+  min-width: 11.5rem;
+  padding: 0.25rem;
+}
+
+.fomio-interface-color-selector__option {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: var(--fomio-radius-sm);
+  background: transparent;
+  color: var(--fomio-text);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+
+  svg {
+    flex-shrink: 0;
+    color: currentColor;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in oklab, var(--fomio-text) 4%, transparent);
+  }
+}
+
+.fomio-interface-color-selector[data-current-mode="light"] .interface-color-selector__light-option,
+.fomio-interface-color-selector[data-current-mode="dark"] .interface-color-selector__dark-option,
+.fomio-interface-color-selector[data-current-mode="auto"] .interface-color-selector__auto-option {
+  color: var(--fomio-primary);
+}
+
+.fomio-interface-color-selector[data-current-mode="light"] .interface-color-selector__light-option,
+.fomio-interface-color-selector[data-current-mode="dark"] .interface-color-selector__dark-option,
+.fomio-interface-color-selector[data-current-mode="auto"] .interface-color-selector__auto-option {
+  background: color-mix(in oklab, var(--fomio-primary) 10%, transparent);
+}
+
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger-icon,
+.fomio-sidebar__footer-account .fomio-sidebar__color-toggle .d-icon {
+  color: currentColor;
+}
+
 body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) .fomio-sidebar__color-toggle-container {
   .fomio-sidebar__color-toggle {
-    width: 100%;
-    justify-content: flex-start;
-    padding: var(--fomio-space-sm) var(--fomio-space-sm);
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    margin-inline: auto;
+  }
+
+  .fomio-sidebar__color-toggle .fomio-interface-color-selector,
+  .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .fomio-sidebar__color-toggle .fomio-interface-color-selector__trigger--binary {
+    gap: 0;
+    padding: 0;
+
+    .fomio-interface-color-selector__trigger-icon {
+      display: none;
+    }
+
+    .fomio-switch {
+      transform: scale(0.72);
+    }
   }
 }
 
@@ -13071,28 +13245,36 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  min-height: 42px;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 78%, transparent);
-  border-radius: 14px;
-  background: color-mix(in oklab, var(--fomio-surface) 94%, #fff);
-  color: inherit;
+  gap: 0;
+  min-height: var(--fomio-input-h);
+  padding-inline: 0;
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-md);
+  background: var(--fomio-bg);
+  color: var(--fomio-fg-muted);
   text-align: left;
   cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 58%),
-    0 8px 18px rgb(17 24 39 / 4%);
+  box-sizing: border-box;
+  overflow: hidden;
+  transition:
+    border-color 160ms var(--fomio-ease),
+    box-shadow 160ms var(--fomio-ease),
+    background 160ms var(--fomio-ease),
+    color 160ms var(--fomio-ease);
 
   &:hover {
-    border-color: color-mix(in oklab, var(--fomio-border) 90%, transparent);
-    background: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-surface));
+    border-color: color-mix(in oklab, var(--fomio-fg) 22%, var(--fomio-border));
+    color: var(--fomio-fg);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--fomio-primary);
-    outline-offset: 2px;
-    border-color: color-mix(in oklab, var(--fomio-primary) 24%, var(--fomio-border));
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+      inset 0 0 0 1px var(--fomio-primary);
+    color: var(--fomio-fg);
   }
 }
 
@@ -13100,26 +13282,40 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1rem;
-  height: 1rem;
+  width: 40px;
+  height: var(--fomio-input-h);
   border-radius: 0;
   background: transparent;
-  color: var(--fomio-muted);
+  color: currentColor;
   flex-shrink: 0;
+
+  .d-icon {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .fomio-sidebar__search-launcher-body {
-  display: block;
+  display: flex;
+  align-items: center;
   min-width: 0;
   flex: 1;
+  height: var(--fomio-input-h);
 }
 
 .fomio-sidebar__search-launcher-title {
-  color: var(--fomio-text);
-  font-family: var(--fomio-font-ui);
-  font-size: 0.9rem;
-  font-weight: 600;
-  line-height: 1.15;
+  color: currentColor;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  opacity: 0.72;
+}
+
+.fomio-sidebar__search-launcher:hover .fomio-sidebar__search-launcher-title,
+.fomio-sidebar__search-launcher:focus-visible .fomio-sidebar__search-launcher-title {
+  opacity: 1;
 }
 
 .fomio-sidebar__search-launcher-shortcut {
@@ -13127,20 +13323,20 @@ html.fomio-color-dark .fomio-sidebar__search-trigger {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  min-width: 1.4rem;
-  height: 1.4rem;
-  padding: 0 0.32rem;
+  min-width: 28px;
+  height: 28px;
+  margin-right: 6px;
+  padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 74%, transparent);
-  background: color-mix(in oklab, var(--fomio-surface) 78%, #fff);
-  color: var(--fomio-muted);
-  font-family: var(--fomio-font-ui);
-  font-size: 0.66rem;
+  border: 1px solid color-mix(in oklab, var(--fomio-border) 88%, transparent);
+  background: color-mix(in oklab, var(--fomio-surface) 86%, var(--fomio-bg));
+  color: var(--fomio-fg-muted);
+  font-family: var(--fomio-sans);
+  font-size: 11px;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
-  opacity: 0.78;
 }
 
 .fomio-sidebar__search-title {
@@ -13868,12 +14064,29 @@ body:not(.fomio-notifications-master-active) .fomio-notifications-detail-heading
 // ── Profile item specifics ───────────────────────────────────
 
 .fomio-sidebar__item--profile {
+  min-height: 40px;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: var(--fomio-radius-md);
+  background: transparent;
+  box-shadow: none;
   font-weight: 600;
+  gap: 0.625rem;
 
   .fomio-sidebar__item-label {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in oklab, var(--fomio-text) 4%, transparent);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    background: color-mix(in oklab, var(--fomio-primary) 10%, transparent);
   }
 }
 
@@ -13961,8 +14174,10 @@ body:not(.fomio-notifications-master-active) .fomio-notifications-detail-heading
 // Native Discourse categories table hidden via .categories-list scope.
 // ============================================================
 
-// Suppress native Discourse categories UI on the hub index page.
-body.fomio-sidebar-active.categories-list {
+// Suppress native Discourse categories UI only while the custom Fomio
+// hub index is actually mounted, so core/admin-controlled category
+// layouts can still appear when this surface is not active.
+body.fomio-sidebar-active.categories-list.fomio-hubs-active {
   .contents           { display: none; }
   .list-controls      { display: none; }
   #navigation-bar     { display: none; }
@@ -16387,14 +16602,14 @@ html.fomio-color-dark .fomio-topic-context__thumb {
 
 // Hover lifts the card border + adds a faint shadow
 .topic-list-item.--fomio-discovery-item:hover td.main-link {
-  border-color: #d8d7db;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-color: color-mix(in oklab, var(--fomio-border) 76%, var(--fomio-text));
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--fomio-shadow) 40%, transparent);
 }
 
 // Focus ring for keyboard navigation
 .topic-list-item.--fomio-discovery-item td.main-link:focus-within {
   border-color: var(--fomio-primary);
-  box-shadow: 0 0 0 2px rgba(196, 69, 54, 0.2);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-primary) 20%, transparent);
 }
 
 // ── Grid area: title (Discourse native link-top-line) ──────
@@ -17572,7 +17787,6 @@ body.fomio-surface-touch .fomio-notifications-menu--mobile {
   }
 }
 
-// ── Dark mode (warm brown) ──────────────────────────────────
 html.fomio-color-dark {
   .fomio-user-menu,
   body.fomio-preferences-menu-open.user-preferences-page #main-outlet .user-main #user-content.user-preferences,
@@ -17581,28 +17795,6 @@ html.fomio-color-dark {
     box-shadow:
       0 16px 56px -10px rgb(0 0 0 / 55%),
       0 0 0 1px rgb(255 255 255 / 4%);
-  }
-
-  .fomio-notifications-menu .quick-access-panel li.notification:hover > a,
-  .fomio-notifications-menu .quick-access-panel li.message:hover > a {
-    background: rgb(255 255 255 / 4%);
-  }
-
-  .fomio-notifications-menu .quick-access-panel li.notification.unread,
-  .fomio-notifications-menu .quick-access-panel li.message.unread {
-    background: rgb(230 116 88 / 8%);
-
-    &:hover > a {
-      background: rgb(230 116 88 / 13%);
-    }
-  }
-
-  .fomio-notifications-menu .panel-body-bottom {
-    background: rgb(230 116 88 / 9%);
-  }
-
-  .fomio-notifications-menu .icon-avatar__icon-wrapper {
-    background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
   }
 }
 
@@ -17773,7 +17965,7 @@ html.fomio-color-dark {
   &:hover,
   &:focus-visible {
     color: var(--fomio-primary-dark);
-    background: rgb(196 69 54 / 4%);
+    background: color-mix(in oklab, var(--fomio-primary) 6%, transparent);
   }
 
   .fomio-list__content {
@@ -17808,7 +18000,7 @@ html.fomio-color-dark {
   }
 
   &:hover > a {
-    background: rgb(0 0 0 / 3%);
+    background: color-mix(in oklab, var(--fomio-text) 4%, transparent);
   }
 
   .icon-avatar {
@@ -17887,7 +18079,7 @@ html.fomio-color-dark {
 
 .fomio-notifications-menu li.notification.unread,
 .fomio-notifications-menu li.message.unread {
-  background: rgb(196 69 54 / 5%);
+  background: color-mix(in oklab, var(--fomio-primary) 6%, transparent);
 
   &::before {
     content: "";
@@ -17908,7 +18100,7 @@ html.fomio-color-dark {
 
 .fomio-notifications-menu li.notification.unread:hover > a,
 .fomio-notifications-menu li.message.unread:hover > a {
-  background: rgb(196 69 54 / 8%);
+  background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
 }
 
 .fomio-notifications-menu li.notification.read .icon-avatar__icon-wrapper .d-icon,
@@ -17932,29 +18124,9 @@ body.fomio-surface-touch .fomio-notifications-menu--mobile {
   max-height: min(86vh, 46rem);
 }
 
-html.fomio-color-dark {
-  .fomio-notifications-menu li.notification:hover > a,
-  .fomio-notifications-menu li.message:hover > a {
-    background: rgb(255 255 255 / 4%);
-  }
-
-  .fomio-notifications-menu li.notification.unread,
-  .fomio-notifications-menu li.message.unread {
-    background: rgb(230 116 88 / 8%);
-
-    &:hover > a {
-      background: rgb(230 116 88 / 13%);
-    }
-  }
-
-  .fomio-np-footer {
-    background: rgb(230 116 88 / 9%);
-  }
-
-  .fomio-notifications-menu .icon-avatar__icon-wrapper {
-    background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
-    box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
-  }
+html.fomio-color-dark .fomio-notifications-menu .icon-avatar__icon-wrapper {
+  background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
 }
 
 // Create — visually emphasized center item
@@ -28060,9 +28232,9 @@ body.user-preferences-page {
       min-height: 44px;
       border: none;
       border-radius: 8px;
-      background-color: #f3f4f6;
+      background-color: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-card));
       box-shadow: none;
-      color: var(--fomio-text, #111827);
+      color: var(--fomio-text);
       padding: 12px 16px;
       font-family: var(--fomio-font-ui, inherit);
       font-size: 14px;
@@ -28082,15 +28254,15 @@ body.user-preferences-page {
     .select-kit.is-expanded .select-kit-header {
       outline: none;
       border: none;
-      background-color: #e5e7eb;
-      box-shadow: 0 0 0 2px var(--fomio-primary, #dc3545);
+      background-color: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-primary) 22%, transparent);
     }
 
     input[type="text"]::placeholder,
     input[type="email"]::placeholder,
     input[type="password"]::placeholder,
     textarea::placeholder {
-      color: var(--fomio-muted, #6b7280);
+      color: var(--fomio-muted);
       opacity: 1;
     }
 
@@ -28109,9 +28281,9 @@ body.user-preferences-page {
       min-height: 44px;
       border: none;
       border-radius: 8px;
-      background: var(--fomio-primary, #dc3545);
+      background: var(--fomio-primary);
       box-shadow: none;
-      color: #fff;
+      color: var(--fomio-on-primary);
       padding: 12px 18px;
       font-family: var(--fomio-font-ui, inherit);
       font-size: 14px;
@@ -28132,8 +28304,8 @@ body.user-preferences-page {
     .btn-primary:hover,
     .btn-primary:focus-visible {
       border: none;
-      background: var(--fomio-primary, #dc3545);
-      color: #fff;
+      background: var(--fomio-primary);
+      color: var(--fomio-on-primary);
       opacity: 0.92;
       transform: translateY(-1px);
     }
@@ -28149,8 +28321,8 @@ body.user-preferences-page {
 body .select-kit.dropdown-select-box .select-kit-body {
   border: none !important;
   border-radius: 8px !important;
-  background-color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background-color: var(--fomio-card) !important;
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--fomio-shadow) 50%, transparent) !important;
   padding: 6px !important;
   overflow: hidden;
 }
@@ -28170,16 +28342,16 @@ body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .se
 
 body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row:hover,
 body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-highlighted {
-  background-color: #f3f4f6 !important;
+  background-color: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-card)) !important;
 }
 
 body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected {
-  background-color: rgba(220, 53, 69, 0.1) !important;
-  color: #8f1d2c !important;
+  background-color: var(--fomio-active-wash) !important;
+  color: var(--fomio-primary-dark) !important;
 }
 
 body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected .name,
 body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected .texts,
 body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected .d-icon {
-  color: #8f1d2c !important;
+  color: var(--fomio-primary-dark) !important;
 }

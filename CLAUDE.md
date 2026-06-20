@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `apps/mobile/docs/00-product/product-ui-rules.md` governs all UI and copy decisions across every surface.
 
+**Senior Product UI Policy** — `docs/senior-product-ui-policy.md` (repo root) is the project-wide design bar and must be applied before any user-facing UI change: layout, copy, nav, auth surface, or AI-assisted design artifact. Key rules: content before chrome; one primary action per region; lists before cards; all critical states required; Fomio product language only; accessibility is a release bar.
+
 Terminology is non-negotiable:
 
 | Use | Never use |

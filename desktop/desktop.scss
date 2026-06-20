@@ -246,6 +246,16 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
     padding-inline: var(--fomio-space-xs);
   }
 
+  .fomio-sidebar__footer-nav,
+  .fomio-sidebar__footer-account {
+    width: 100%;
+    align-items: center;
+  }
+
+  .fomio-sidebar__footer-account {
+    padding-top: var(--fomio-space-xs);
+  }
+
   .fomio-sidebar__section {
     width: 100%;
   }
@@ -273,6 +283,23 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode) {
     padding: 0.5rem 0;
     width: 100%;
     min-height: 44px; // WCAG touch target minimum
+  }
+
+  .fomio-sidebar__color-toggle-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .fomio-sidebar__color-toggle {
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    margin-inline: auto;
   }
 
   // Scale glyphs down to feel precise rather than heavy in the narrow rail
