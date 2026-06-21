@@ -3,6 +3,7 @@ let state = {
   filter: "inbox",
   activeGroupName: null,
   activeGroupFilter: "inbox",
+  selectedTopicId: null,
   searchQuery: "",
   masterScrollTop: 0,
 };
@@ -34,6 +35,7 @@ export function resetMessagesState() {
     filter: "inbox",
     activeGroupName: null,
     activeGroupFilter: "inbox",
+    selectedTopicId: null,
     searchQuery: "",
     masterScrollTop: 0,
   };

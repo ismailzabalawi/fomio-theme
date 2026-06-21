@@ -1757,10 +1757,11 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
     justify-self: stretch;
     min-width: 0;
     max-width: 100%;
-    min-height: 36px;
-    gap: 6px;
+    min-height: 42px;
+    gap: 0;
     margin: 0;
-    padding: 0 1px 0 0;
+    padding: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
@@ -1776,13 +1777,14 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
+    min-height: 42px;
     margin: 0;
     padding: 0 13px;
-    border-radius: 999px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 62%, transparent);
-    background: color-mix(in oklab, var(--fomio-surface) 96%, var(--fomio-bg));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%);
+    border: 0;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    box-shadow: none;
     color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
     font-size: 0.8rem;
     letter-spacing: -0.01em;
@@ -1791,17 +1793,10 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
   #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip--active,
   #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip.active,
   #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip.is-active {
-    border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border-soft));
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-primary) 5%, var(--fomio-surface)) 100%
-      );
-    color: var(--fomio-text);
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 58%),
-      0 6px 14px rgb(17 24 39 / 4%);
+    border-bottom-color: var(--fomio-primary);
+    background: transparent;
+    color: var(--fomio-primary);
+    box-shadow: none;
   }
 
   #main-outlet .user-main .notification-history.user-stream > .user-notifications-filter {
@@ -2442,7 +2437,6 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #main-outlet
 // Page-level chrome stays flat (see the Me-leaf rules earlier in this file);
 // only item-level cards — rows, list items, badge cards — get the card language.
 // Preferences is excluded: forms group via hairlines, not cards.
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activity-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-notifications-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-messages-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-invites-page,
@@ -2471,6 +2465,83 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-badges-
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 52%),
       0 10px 24px rgb(17 24 39 / 4%);
+  }
+}
+
+// Profile Activity touch stack — timeline format.
+// The native Activity routes own data/pagination; touch only changes the local
+// child nav and item rhythm to match the detached profile prototype.
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activity-page {
+  #main-outlet .user-main .fomio-me-stack-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--fomio-bg);
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+  }
+
+  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-stack-header {
+    border-bottom: 0;
+  }
+
+  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav {
+    margin: 0;
+    padding: 0 var(--fomio-mobile-child-pad-x, 16px);
+  }
+
+  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav::after {
+    display: none;
+  }
+
+  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav__inner {
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav__link {
+    min-height: 42px;
+    padding: 0 13px;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+    font-size: 0.86rem;
+  }
+
+  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav__link.is-active {
+    border-bottom-color: var(--fomio-primary);
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper {
+    padding-top: 12px;
+  }
+
+  #main-outlet .user-main #user-content .user-stream {
+    gap: 0;
+    margin-top: 0;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+    padding: 16px 0 17px;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream .user-stream-item:last-child {
+    border-bottom: 0;
   }
 }
 

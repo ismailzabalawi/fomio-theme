@@ -715,6 +715,7 @@ export default class FomioMasterPane extends Component {
     }).map((section) => ({
       ...section,
       label: i18n(themePrefix(section.labelKey)),
+      subtitle: section.metaKey ? i18n(themePrefix(section.metaKey)) : null,
     }));
   }
 
@@ -839,8 +840,12 @@ export default class FomioMasterPane extends Component {
                 {{#each this.profileNavSections as |link|}}
                   <FomioListItem
                     @href={{link.href}}
+                    @leadingIcon={{link.icon}}
                     @title={{link.label}}
+                    @subtitle={{link.subtitle}}
+                    @trailingIcon="angle-right"
                     @isActive={{link.isActive}}
+                    @extraClass="fomio-master-pane__profile-link"
                   />
                 {{/each}}
               </FomioList>

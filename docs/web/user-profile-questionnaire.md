@@ -199,8 +199,8 @@ Each section's UI maps to a *different* real endpoint. Confirmed against the rou
 | 1.1 | Build model (A/B/C) | **A baseline + B for live sections** — additive restyle, but the detached card frames live native content via the plugin contract (no logic rebuild, no DOM reparenting) | 2026-06-20 / 2026-06-21 |
 | 1.2 | Me relationship | **Unified self + other**, self-only sections gated by ownership | 2026-06-20 |
 | 1.3 | v1 sections | **Summary, Activity, Bookmarks** (§9 safe cut). Notifications/Messages → v2 on native treatments; Preferences excluded (stays native) | 2026-06-21 |
-| 1.4 | Plugin dependency | **Plugin allowed (§10 option i)** — `discourse-fomio-user-shell` is installed in-repo; detached card frames real native route content per route, deep links + back button + forms stay correct | 2026-06-21 |
-| 2.1 | Canonical desktop nav | **Detached card** (via plugin contract; not DOM reparenting) | 2026-06-20 / 2026-06-21 |
+| 1.4 | Plugin dependency | **No plugin dependency** — plugin is read-only (`discourse/`), mobile-only, and doesn't mark Summary; detached card framed with pure theme CSS over native nodes instead (see §10) | 2026-06-21 |
+| 2.1 | Canonical desktop nav | **Detached card** via CSS over native content, scoped to master-pane body classes (no DOM reparenting, no plugin) | 2026-06-20 / 2026-06-21 |
 | 4.1 | Preferences = native restyle | **Yes — excluded from this work entirely; native, untouched** | 2026-06-20 |
 | (hero) | Hero treatment | **Editorial** | 2026-06-21 |
 
@@ -232,12 +232,31 @@ styling approach "additive."** This is fine — but it means **§1.4 must be ans
   their own URLs (detached visual applies to Summary; other sections are real route transitions, not
   inside the card). Lower fidelity to the prototype, zero plugin install.
 
-> **DECISION (2026-06-21): option (i).** The `discourse-fomio-user-shell` plugin is already installed
-> in-repo (`discourse/plugins/discourse-fomio-user-shell`), so the detached card will frame **real native
-> route content** for the three v1 sections (Summary, Activity, Bookmarks) via the plugin contract
-> (`.fomio-user-shell` / `data-fomio-user-section` / `data-fomio-user-content`) — **no DOM reparenting**.
-> Deep links, back button, `LoadMore`, focus, and scroll restoration all stay native-correct. Sections
-> remain **real route transitions** under `/u/:username/*` (§2.4). Hero = **editorial**.
+> **DECISION (2026-06-21): CSS-over-native (refinement of option ii).** Although the
+> `discourse-fomio-user-shell` plugin exists in-repo, it lives under the **read-only `discourse/` tree**
+> (Claude may not modify it), it defaults to **off + mobile-only**, and its section resolver **does not mark
+> the Summary route**. Rather than depend on an uneditable, partially-applicable plugin, the detached card
+> is delivered with **pure theme CSS over native nodes** — and **most of it already exists**: Activity (and
+> its Bookmarks child) is already framed as a detached **parent-child card** on desktop/rail by the
+> `…user-activity-page:has(.fomio-me-activity-nav) .new-user-content-wrapper` block in `common.scss`, and
+> Summary already has its **editorial canvas** (gradient + stat tiles), to which v1 adds the editorial hero.
+> Result: **no DOM reparenting, no `discourse/` edits, no admin toggle.** Sections remain **real route
+> transitions** under `/u/:username/*` (§2.4); desktop/rail carry the card chrome, touch flattens. Hero =
+> **editorial**. The plugin's `data-fomio-user-section` attributes remain available as a future styling
+> bonus if it is ever enabled, but v1 does not require it.
+>
+> **Repo-law reconciliation (required):** the detached card contradicts the "Me Leaf Screens — One Flat
+> Surface (all modes)" law. That rule in `apps/web/CLAUDE.md` and
+> `docs/web/touch-preferences-redesign-pattern.md` were updated to scope the flat law to
+> **Notifications/Messages/Invites/Preferences/Badges** and document **Summary, Activity, Bookmarks** as the
+> intentional Profile detached-card exceptions.
+>
+> **Implemented in:** `connectors/above-user-summary-stats/fomio-summary-hero.gjs` (editorial hero),
+> `lib/fomio-profile-summary-fields.js` (+ test), `common/common.scss` + `mobile/mobile.scss` (hero styles
+> + touch refinements), `locales/en.yml` (`profile_hero.*`). The desktop detached-card chrome is the
+> **pre-existing** Activity parent-child / Summary editorial blocks in `common.scss` — no new global card
+> block was added (an earlier attempt was removed for conflicting with them). Bookmarks self-gating already
+> enforced by `lib/fomio-account-sections.js` (omits Bookmarks for non-self) — no new gating code needed.
 
 ---
 

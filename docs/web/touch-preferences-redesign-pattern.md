@@ -1,16 +1,25 @@
 # Touch Preferences Redesign Pattern
 
-**Status:** Implemented for `/u/:username/preferences/*` on touch surface (June 2026). Page-level flattening extended to all Me leaf screens — Activity, Notifications, Messages, Invites, Badges (June 2026). Extended to expanded / compact-desktop / rail surfaces (June 2026) — the flat treatment is now mode-independent.  
+**Status:** Implemented for `/u/:username/preferences/*` on touch surface (June 2026). Page-level flattening applies to the flat-surface Me leaf screens — Notifications, Messages, Invites, Preferences, Badges — across touch / rail / compact-desktop / expanded (June 2026). **Profile detached-card exception (June 2026):** Summary, Activity, and Bookmarks keep desktop chrome (editorial canvas / parent-child card) and flatten only on touch — see scope note + `user-profile-questionnaire.md` §10.  
 **Pattern:** One flat surface, no nested card chrome.  
 **Future scope:** Extensible to other form/settings screens.
 
 > **Scope note:** The pattern has two levels. **Page-level** flattening (plain
-> canvas, flat stack header, no wrapper card, unboxed pill track) now applies
-> to **every** Me leaf screen on **every surface mode**. **Group-level**
-> flattening (no per-control-group boxes; hairline separators instead)
-> applies only to form screens like preferences — list screens keep their
-> item-level cards (stream items, notification rows, invite rows, badge
-> cards) for row separation.
+> canvas, flat stack header, no wrapper card, unboxed pill track) applies to
+> the **flat-surface Me leaf screens — Notifications, Messages, Invites,
+> Preferences, Badges — on every surface mode**. **Group-level** flattening (no
+> per-control-group boxes; hairline separators instead) applies only to form
+> screens like preferences — list screens keep their item-level cards (stream
+> items, notification rows, invite rows, badge cards) for row separation.
+>
+> **Documented exceptions (User Profile v1 — `user-profile-questionnaire.md` §10):**
+> **Summary, Activity, and Bookmarks** are the Profile "detached card" surfaces
+> and are deliberately **not** page-level flat. **Summary** keeps its editorial
+> canvas (gradient + stat tiles + editorial hero) on all modes. **Activity /
+> Bookmarks** read as a detached "parent-child" card (section rail + native
+> stream) on expanded / compact-desktop / rail, and flatten only on **touch**.
+> See the matching rule and exception list in `apps/web/CLAUDE.md` →
+> "Me Leaf Screens — One Flat Surface (with documented Profile exceptions)".
 >
 > The flat treatment is a property of the **detail surface**, not of the
 > touch mode. What differs per surface mode is navigation chrome and
@@ -102,12 +111,12 @@ For `&.user-preferences-page` on touch (under `body.fomio-surface-touch.fomio-si
 - `.control-group`, `.pref-group` — `padding: 16px 0`, no border/radius/background
 - Adjacent groups separated by `border-top` hairline
 
-**Critical:** The "final mobile design pass" block in `mobile.scss` must only assert **item-level** card language (stream items, notification rows, invite rows, badge cards). It must not re-assert page-level chrome (stack-header gradient, wrapper card) — that chrome has been removed for all Me leaf screens.
+**Critical:** The "final mobile design pass" block in `mobile.scss` must only assert **item-level** card language (stream items, notification rows, invite rows, badge cards). It must not re-assert page-level chrome (stack-header gradient, wrapper card) — that chrome has been removed for the **flat-surface** Me leaf screens (Notifications, Messages, Invites, Preferences, Badges). It does **not** govern the Profile detached-card surfaces (Summary, Activity, Bookmarks — see scope note), which keep their own chrome on desktop.
 
 ### Configuration Scoping
 
 - **Touch:** the touch shell block in `common.scss` (`body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode)`) owns the page-level + group-level flattening; `mobile.scss` carries only narrow-width refinements
-- **Expanded / compact-desktop / rail:** the shared Me-leaf rule in `common.scss` (`body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-*-page`) owns the page-level flattening (plain `--fomio-bg` canvas, no wrapper card); `desktop.scss` "Settings detail alignment" (Slice 6B) carries the group-level hairline treatment at desktop density plus master-pane column alignment
+- **Expanded / compact-desktop / rail:** the shared Me-leaf rule in `common.scss` (`body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-{activity,messages,preferences,badges,invites,notifications}-page`) owns the page-level flattening (plain `--fomio-bg` canvas, no wrapper card); `desktop.scss` "Settings detail alignment" (Slice 6B) carries the group-level hairline treatment at desktop density plus master-pane column alignment. **Note:** `user-summary-page` is intentionally **excluded** from this flat reset (editorial canvas), and `user-activity-page:has(.fomio-me-activity-nav)` is **re-carded** into the detached parent-child surface — both by design (see scope note).
 - **Landscape touch (e.g., folded foldables >768px in touch mode):** Covered by `common.scss` touch shell definition under `body.fomio-surface-touch`
 
 This ensures the flat treatment survives landscape phones, landscape foldables, coarse-touch contexts wider than 767px, and desktop windows resized across the rail boundary.
@@ -119,6 +128,8 @@ This ensures the flat treatment survives landscape phones, landscape foldables, 
 | expanded / compact-desktop | Persistent master pane beside detail | Flat, `--fomio-column-w` measure |
 | rail | Master pane as overlay (`fomio-master-pane-rail-open`) | Flat, same rules as desktop (rail shares the Slice selectors) |
 | touch | Me stack header + bottom nav | Flat, touch gutters and 44px targets |
+
+> The "Detail surface = Flat" column describes the **flat-surface** screens. For the Profile detached-card surfaces (Summary, Activity, Bookmarks) the desktop/rail detail is the editorial canvas / parent-child card, not flat; only touch flattens. See the scope note.
 
 ---
 
@@ -142,8 +153,10 @@ This ensures the flat treatment survives landscape phones, landscape foldables, 
 
 ### Where Item-Level Cards Stay
 
-Page-level chrome is flat everywhere on Me leaf screens, but these keep
-their item cards:
+Page-level chrome is flat on the flat-surface Me leaf screens (Notifications,
+Messages, Invites, Preferences, Badges); the Profile detached-card surfaces
+(Summary, Activity, Bookmarks) keep their desktop chrome per the scope note.
+Either way, these keep their item cards:
 
 - **Activity, Notifications, Messages (stream lists)** — cards visually separate list items
 - **Discovery/hub/category pages** — reading-focused designs that group content into byte/topic cards

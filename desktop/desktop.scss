@@ -1405,22 +1405,10 @@ body.fomio-sidebar-active.fomio-surface-rail.user-messages-page:not(.fomio-auth-
     padding-inline: 0;
   }
 
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls #new-private-message-btn,
   #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.new-private-message {
-    padding-inline: 14px 16px;
-    border-color: color-mix(in oklab, var(--fomio-primary) 32%, var(--fomio-border-soft));
-    background: color-mix(in oklab, var(--fomio-primary) 14%, var(--fomio-surface));
-    color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
-  }
-
-  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.new-private-message .d-icon,
-  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.new-private-message .d-button-label {
-    color: inherit;
-  }
-
-  #main-outlet .user-main .user-navigation.user-navigation-secondary .navigation-controls .btn.new-private-message:hover {
-    border-color: color-mix(in oklab, var(--fomio-primary) 42%, var(--fomio-border));
-    background: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-surface));
-    color: color-mix(in oklab, var(--fomio-primary) 88%, var(--fomio-text));
+    display: none !important;
+    visibility: hidden !important;
   }
 
   #main-outlet .user-main #user-content .topic-list {

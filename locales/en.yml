@@ -29,6 +29,7 @@ en:
       email:
         title: "Email address"
       summary:
+        stats: "Reading & engagement"
         topics: "Bytes"
         replies: "Replies"
         top_replies: "Top replies"
@@ -177,6 +178,20 @@ en:
     title: "At a glance"
     deck: "What %{name} has been up to on Fomio."
     joined: "On Fomio since %{date}"
+  profile_hero:
+    stats_aria: "Profile activity"
+    admin: "Admin"
+    edit_profile: "Edit profile"
+    bytes:
+      one: "byte"
+      other: "bytes"
+    replies:
+      one: "reply"
+      other: "replies"
+    received: "received"
+    given: "given"
+  summary_terets:
+    title: "Top terets"
   hub_page:
     breadcrumb_hubs: "Hubs"
     bytes_section_title: "Bytes"
@@ -273,6 +288,7 @@ en:
     filters:
       all: "All"
       unread: "Unread"
+      sent: "Sent"
       groups: "Groups"
     headings:
       inbox: "Inbox"
@@ -390,6 +406,11 @@ en:
     me_hub_notifications: "Notifications"
     me_hub_about: "About"
     me_hub_messages: "Messages"
+    me_hub_summary_meta: "Overview, bio, and stats"
+    me_hub_activity_meta: "Bytes, replies, read, and likes"
+    me_hub_messages_meta: "Conversations and inbox"
+    me_hub_invites_meta: "Invite people to Fomio"
+    me_hub_badges_meta: "Badges earned on Fomio"
     me_hub_sign_out: "Sign out"
     me_hub_sign_in_cta: "Your profile, activity, and messages live here."
     me_hub_sign_in: "Sign in"

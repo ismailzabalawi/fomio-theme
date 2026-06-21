@@ -1,4 +1,6 @@
 import Component from "@glimmer/component";
+import { action } from "@ember/object";
+import { on } from "@ember/modifier";
 import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
@@ -111,6 +113,16 @@ export default class FomioConversationCard extends Component {
     });
   }
 
+  @action
+  selectConversation(event) {
+    if (!this.args.onSelect) {
+      return;
+    }
+
+    event.preventDefault();
+    this.args.onSelect(this.args.conversation);
+  }
+
   <template>
     <a
       href={{@href}}
@@ -119,6 +131,7 @@ export default class FomioConversationCard extends Component {
         {{if @conversation.isUnread 'fomio-conversation-card--unread'}}"
       aria-current={{if @isActive "true"}}
       aria-label={{this.ariaLabel}}
+      {{on "click" this.selectConversation}}
     >
       <div class="fomio-conversation-card__avatar-wrapper">
         {{#if @conversation.isGroup}}

@@ -329,5 +329,18 @@ describe("fomio-mobile-nav-paths", () => {
         ["manage-user", "/admin/users/2/soma"],
       ]
     );
+
+    assert.deepEqual(
+      sections
+        .filter((section) => section.key !== "manage-user")
+        .map((section) => [section.key, section.icon, section.metaKey]),
+      [
+        ["summary", "user", "mobile_nav.me_hub_summary_meta"],
+        ["activity", "bars-staggered", "mobile_nav.me_hub_activity_meta"],
+        ["notifications", "bell", "mobile_nav.me_hub_notifications_meta"],
+        ["messages", "envelope", "mobile_nav.me_hub_messages_meta"],
+        ["badges", "certificate", "mobile_nav.me_hub_badges_meta"],
+      ]
+    );
   });
 });

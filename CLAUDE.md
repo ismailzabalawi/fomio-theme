@@ -577,11 +577,18 @@ Important: Discourse's stylesheet split is viewport-based, but Fomio's shell own
 
 Safe area follows the same rule. Define touch-safe insets and derived page gutters in the touch shell (`body.fomio-surface-touch`) and have homepage/feed/components consume those variables. Do not scatter raw `env(safe-area-inset-*)` math across individual mobile pages unless the case is truly component-specific.
 
-### Me Leaf Screens — One Flat Surface (all modes)
+### Me Leaf Screens — One Flat Surface (with documented Profile exceptions)
 
-All Me leaf screens (Activity, Notifications, Messages, Invites, Preferences, Badges) use a **one-flat-surface pattern** at the page level on **every surface mode**: no canvas gradient, no wrapper card, unboxed pill tracks. The flat treatment is a property of the detail surface, not of the touch mode — only navigation chrome and density vary per mode (persistent master pane on expanded/compact-desktop, overlay master pane on rail, stack header + bottom nav on touch). The page is fully responsive without fixed card insets.
+**Flat-surface screens — Notifications, Messages, Invites, Preferences, Badges** — use a **one-flat-surface pattern** at the page level on **every surface mode**: no canvas gradient, no wrapper card, unboxed pill tracks. The flat treatment is a property of the detail surface, not of the touch mode — only navigation chrome and density vary per mode (persistent master pane on expanded/compact-desktop, overlay master pane on rail, stack header + bottom nav on touch). The page is fully responsive without fixed card insets. Do **not** add wrapper-card chrome to these screens on any surface.
 
-Within that flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). On touch this lives in the touch shell block of `common.scss`; on desktop/rail in the "Settings detail alignment" block of `desktop.scss`. Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows.
+**Documented exceptions — the Profile "detached card" surfaces.** Summary, Activity, and Bookmarks are the accepted **User Profile v1** direction (`docs/web/user-profile-questionnaire.md` §10) and intentionally carry desktop chrome — they are **not** flat-carded:
+
+- **Summary** — editorial canvas on all modes: brand gradient + stat tiles + the editorial hero (`connectors/above-user-summary-stats/fomio-summary-hero.gjs`). Never flattened. (It is deliberately excluded from the flat `.new-user-content-wrapper` reset in `common.scss`.)
+- **Activity / Bookmarks** — on expanded / compact-desktop / rail the detail reads as a **detached "parent-child" card** (section rail + native stream), implemented by the `…user-activity-page:has(.fomio-me-activity-nav) .new-user-content-wrapper` block in `common.scss`. On **touch** these flatten to the one-flat-surface treatment.
+
+When working these three surfaces, extend the existing per-page treatments — do **not** flatten Summary/Activity/Bookmarks on desktop to satisfy the flat rule, and do not add a second, competing wrapper card on top of them.
+
+Within the flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). On touch this lives in the touch shell block of `common.scss`; on desktop/rail in the "Settings detail alignment" block of `desktop.scss`. Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows (these sit *inside* the detached card on Activity/Bookmarks desktop).
 
 **Preferences is a native Discourse leaf.** Do not replace `/preferences/*` with a custom route body, custom settings dashboard, or controller-driven fake preferences screen. `discourse/frontend/discourse/app/templates/preferences.gjs` and its child templates remain the source of truth for fields, validation, save behavior, and plugin compatibility. Theme work may style native preferences and add small route-local enhancements through verified preferences outlets, but it must not take over the route body.
 

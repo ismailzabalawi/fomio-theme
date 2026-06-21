@@ -29,6 +29,7 @@ export default class FomioMessagesMaster extends Component {
   @tracked activeGroupName = null;
   @tracked activeGroupFilter = "inbox";
   @tracked searchQuery = "";
+  @tracked selectedTopicId = null;
 
   #unsubscribeMessages = null;
 
@@ -52,6 +53,7 @@ export default class FomioMessagesMaster extends Component {
       }
 
       this.searchQuery = state.searchQuery;
+      this.selectedTopicId = state.selectedTopicId;
     });
 
     this.loadConversations(
@@ -70,6 +72,7 @@ export default class FomioMessagesMaster extends Component {
     return [
       { key: "inbox", label: i18n(themePrefix("messages_inbox.filters.all")) },
       { key: "unread", label: i18n(themePrefix("messages_inbox.filters.unread")) },
+      { key: "sent", label: i18n(themePrefix("messages_inbox.filters.sent")) },
       { key: "groups", label: i18n(themePrefix("messages_inbox.filters.groups")) },
     ];
   }
@@ -277,7 +280,20 @@ export default class FomioMessagesMaster extends Component {
         groupName,
       }
     );
+    this.ensureDesktopSelection();
     this.isLoading = false;
+  }
+
+  ensureDesktopSelection() {
+    if (
+      this.selectedTopicId ||
+      !this.conversations.length ||
+      document.body.classList.contains("fomio-surface-touch")
+    ) {
+      return;
+    }
+
+    setMessagesState({ selectedTopicId: this.conversations[0].id });
   }
 
   @action
@@ -286,6 +302,7 @@ export default class FomioMessagesMaster extends Component {
       filter,
       activeGroupName: null,
       activeGroupFilter: "inbox",
+      selectedTopicId: null,
       searchQuery: "",
     });
 
@@ -305,6 +322,7 @@ export default class FomioMessagesMaster extends Component {
       filter: "groups",
       activeGroupName: groupName,
       activeGroupFilter: "inbox",
+      selectedTopicId: null,
       searchQuery: "",
     });
 
@@ -324,6 +342,11 @@ export default class FomioMessagesMaster extends Component {
   @action
   updateSearch(event) {
     setMessagesState({ searchQuery: event.target.value });
+  }
+
+  @action
+  selectConversation(conversation) {
+    setMessagesState({ selectedTopicId: conversation.id });
   }
 
   <template>
@@ -419,7 +442,8 @@ export default class FomioMessagesMaster extends Component {
                   <FomioConversationCard
                     @conversation={{convo}}
                     @href={{convo.href}}
-                    @isActive={{false}}
+                    @isActive={{eq this.selectedTopicId convo.id}}
+                    @onSelect={{this.selectConversation}}
                   />
                 {{/each}}
               </div>
