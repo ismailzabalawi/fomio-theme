@@ -2,7 +2,8 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { service } from "@ember/service";
 import { i18n } from "discourse-i18n";
-import { themePrefix } from "virtual:theme";
+import { settings, themePrefix } from "virtual:theme";
+import FomioOwnedActivity from "../../components/fomio-owned-activity";
 import FomioMeActivityNav from "../../components/shared/fomio-me-activity-nav";
 import {
   getFomioActivityChildSections,
@@ -43,6 +44,14 @@ export default class FomioMeActivityNavDesktopConnector extends Component {
     return Boolean(this.currentUser) && isOwnedActivitySectionPath(this.currentPath);
   }
 
+  get shouldRenderOwnedActivity() {
+    return (
+      settings.fomio_owned_me_activity_enabled &&
+      Boolean(this.currentUser) &&
+      isOwnedActivitySectionPath(this.currentPath)
+    );
+  }
+
   get sections() {
     return getFomioActivityChildSections({
       currentUser: this.currentUser,
@@ -57,6 +66,10 @@ export default class FomioMeActivityNavDesktopConnector extends Component {
   <template>
     {{#if this.shouldRender}}
       <FomioMeActivityNav @sections={{this.sections}} />
+    {{/if}}
+
+    {{#if this.shouldRenderOwnedActivity}}
+      <FomioOwnedActivity />
     {{/if}}
   </template>
 }

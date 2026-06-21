@@ -280,20 +280,26 @@ export default class FomioMessagesMaster extends Component {
         groupName,
       }
     );
-    this.ensureDesktopSelection();
+    this.reconcileSelection();
     this.isLoading = false;
   }
 
-  ensureDesktopSelection() {
-    if (
-      this.selectedTopicId ||
-      !this.conversations.length ||
-      document.body.classList.contains("fomio-surface-touch")
-    ) {
+  reconcileSelection() {
+    const selectedIsVisible = this.conversations.some(
+      (conversation) => conversation.id === this.selectedTopicId
+    );
+
+    if (selectedIsVisible) {
       return;
     }
 
-    setMessagesState({ selectedTopicId: this.conversations[0].id });
+    const nextSelection = document.body.classList.contains("fomio-surface-touch")
+      ? null
+      : this.conversations[0]?.id || null;
+
+    if (nextSelection !== this.selectedTopicId) {
+      setMessagesState({ selectedTopicId: nextSelection });
+    }
   }
 
   @action
@@ -431,7 +437,7 @@ export default class FomioMessagesMaster extends Component {
         {{else if this.visibleConversations.length}}
           <section class="fomio-messages-list-shell">
             {{#each this.conversationSections as |section|}}
-              <div class="fomio-conversation-section">
+              <div class="fomio-conversation-section fomio-conversation-section--{{section.key}}">
                 {{#if section.title}}
                   <div class="fomio-conversation-section__title">
                     {{section.title}}

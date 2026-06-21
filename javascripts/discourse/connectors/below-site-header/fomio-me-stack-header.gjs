@@ -21,6 +21,7 @@ import {
   isFomioShellPath,
   isMeStackPath,
   isNotificationsPath,
+  isOwnNotificationsPath,
   meHubPathForUser,
   meSectionTitleKey,
 } from "../../lib/fomio-mobile-nav-paths";
@@ -70,7 +71,29 @@ export default class FomioMeStackHeaderConnector extends Component {
     if (!isFomioShellPath(this.currentPath)) {
       return false;
     }
+    if (this.isPrimaryNotificationsDestination) {
+      return false;
+    }
     return isMeStackPath(this.currentPath, this.currentUser);
+  }
+
+  get isPrimaryNotificationsDestination() {
+    if (!isOwnNotificationsPath(this.currentPath, this.currentUser)) {
+      return false;
+    }
+
+    const path = this.currentPath.replace(/\/+$/, "") || "/";
+
+    if (path === "/notifications" || path === "/my/notifications") {
+      return true;
+    }
+
+    if (!this.currentUser?.username) {
+      return false;
+    }
+
+    const ownPath = `/u/${this.currentUser.username}/notifications`;
+    return path.toLowerCase() === ownPath.toLowerCase();
   }
 
   get backHref() {

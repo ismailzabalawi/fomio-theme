@@ -46,7 +46,11 @@ export default class FomioMeFilterChips extends Component {
   #findListEl() {
     return (
       document.querySelector(
-        `#user-content .user-notifications-list, #user-content .user-stream`
+        [
+          "#user-content .fomio-owned-notifications__timeline",
+          "#user-content .user-notifications-list",
+          "#user-content .user-stream",
+        ].join(", ")
       ) ?? null
     );
   }
@@ -54,6 +58,18 @@ export default class FomioMeFilterChips extends Component {
   #countVisible(listEl) {
     if (!listEl) {
       return null;
+    }
+    if (listEl.classList.contains("fomio-owned-notifications__timeline")) {
+      let count = 0;
+      for (const row of listEl.querySelectorAll(
+        ".fomio-owned-notifications__row"
+      )) {
+        const style = window.getComputedStyle(row);
+        if (style.display !== "none" && style.visibility !== "hidden") {
+          count++;
+        }
+      }
+      return count;
     }
     let count = 0;
     for (const child of listEl.children) {
@@ -122,6 +138,7 @@ export default class FomioMeFilterChips extends Component {
   selectFilter(id) {
     this.activeId = id;
     this.#syncBody();
+    this.args.onSelect?.(id);
     if (id === "all") {
       this.#teardownObserver();
     } else {

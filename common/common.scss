@@ -13085,6 +13085,348 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-su
   }
 }
 
+// Fomio-owned Activity. This intentionally covers only the core Activity tabs;
+// plugin/native-only routes keep using the native stream.
+body.user-activity-page {
+  #main-outlet .user-main .new-user-content-wrapper .fomio-owned-activity {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0 0 18px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 76%, transparent);
+    border-radius: var(--fomio-radius-card);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 0%,
+        color-mix(in oklab, var(--fomio-bg) 70%, var(--fomio-card)) 100%
+      );
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 56%) inset,
+      0 18px 46px rgb(17 24 39 / 8%);
+    overflow: hidden;
+  }
+
+  .fomio-owned-activity__header {
+    padding: 24px 26px 16px;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+    background: color-mix(in oklab, var(--fomio-card) 92%, transparent);
+  }
+
+  .fomio-owned-activity__title {
+    margin: 0;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 760;
+    letter-spacing: 0;
+    line-height: 0.95;
+  }
+
+  .fomio-owned-activity__subtitle {
+    max-width: 48rem;
+    margin: 8px 0 0;
+    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.45;
+  }
+
+  .fomio-owned-activity__timeline {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 18px 26px 22px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .fomio-owned-activity__group {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 18px;
+    min-width: 0;
+  }
+
+  .fomio-owned-activity__group + .fomio-owned-activity__group {
+    margin-top: 22px;
+  }
+
+  .fomio-owned-activity__group-title {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    margin: 0;
+    padding-top: 14px;
+    color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .fomio-owned-activity__list {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      bottom: 16px;
+      left: 19px;
+      width: 1px;
+      background: color-mix(in oklab, var(--fomio-border-soft) 76%, transparent);
+    }
+  }
+
+  .fomio-owned-activity__item {
+    position: relative;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .fomio-owned-activity__item::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 18px;
+    left: 14px;
+    width: 11px;
+    height: 11px;
+    border: 2px solid color-mix(in oklab, var(--fomio-card) 90%, #fff);
+    border-radius: 999px;
+    background: var(--fomio-primary);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--fomio-primary) 35%, transparent),
+      0 0 0 5px color-mix(in oklab, var(--fomio-primary) 8%, transparent);
+  }
+
+  .fomio-owned-activity__card {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    min-width: 0;
+    padding: 14px 16px 14px 46px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--fomio-card) 94%, var(--fomio-bg));
+    color: var(--fomio-text);
+    text-decoration: none;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 45%) inset;
+    box-sizing: border-box;
+
+    &:hover,
+    &:focus-visible {
+      border-color: color-mix(in oklab, var(--fomio-primary) 30%, var(--fomio-border-soft));
+      background: color-mix(in oklab, var(--fomio-card) 98%, #fff);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
+      outline-offset: 2px;
+    }
+  }
+
+  .fomio-owned-activity__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+    color: color-mix(in oklab, var(--fomio-primary) 72%, var(--fomio-muted));
+  }
+
+  .fomio-owned-activity__body {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .fomio-owned-activity__eyebrow {
+    color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .fomio-owned-activity__item-title {
+    min-width: 0;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 760;
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+
+  .fomio-owned-activity__excerpt {
+    min-width: 0;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
+
+  .fomio-owned-activity__loading,
+  .fomio-owned-activity__state {
+    min-height: 260px;
+    padding: 34px 26px;
+  }
+
+  .fomio-owned-activity__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 650;
+  }
+
+  .fomio-owned-activity__footer {
+    display: flex;
+    justify-content: center;
+    padding: 0 26px 24px;
+  }
+}
+
+body.user-activity-page.fomio-owned-activity-ready:has(.fomio-owned-activity) {
+  #main-outlet .user-main #user-content,
+  #main-outlet .user-main .user-content#user-content {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-activity-page:has(.fomio-owned-activity) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .fomio-owned-activity {
+    grid-row: 2;
+    align-self: stretch;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content,
+  #main-outlet .user-main .user-content#user-content {
+    grid-row: 3;
+  }
+}
+
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-activity-page:has(.fomio-owned-activity) {
+  #main-outlet:has(> #main-container) .user-main .new-user-content-wrapper {
+    height: min(calc(100vh - 48px), calc(100dvh - 132px));
+  }
+}
+
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-activity-page.fomio-owned-activity-ready:has(.fomio-owned-activity) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .fomio-owned-activity {
+    height: 100%;
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-surface-touch).user-activity-page:has(.fomio-owned-activity) {
+  .fomio-owned-activity__header {
+    padding: 22px 22px 14px;
+  }
+
+  .fomio-owned-activity__timeline {
+    padding: 18px 22px 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  body.user-activity-page {
+    .fomio-owned-activity__header {
+      padding: 22px 18px 14px;
+    }
+
+    .fomio-owned-activity__timeline {
+      padding: 16px 18px 20px;
+    }
+
+    .fomio-owned-activity__group {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .fomio-owned-activity__group-title {
+      position: static;
+      padding-top: 4px;
+    }
+  }
+}
+
+// Touch shell — Activity flattens to the one-flat-surface treatment (no
+// wrapper card chrome), with editorial spacing. Scoped to the touch surface
+// so it also holds for foldables / landscape wider than 760px, not only the
+// narrow-width media query above.
+body.fomio-surface-touch.user-activity-page {
+  #main-outlet .user-main .new-user-content-wrapper .fomio-owned-activity {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .fomio-owned-activity__header {
+    padding: 8px 16px 14px;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+    background: transparent;
+  }
+
+  .fomio-owned-activity__title {
+    font-size: clamp(1.7rem, 7vw, 2.1rem);
+    line-height: 1.05;
+  }
+
+  .fomio-owned-activity__timeline {
+    padding: 14px 16px 24px;
+    overflow: visible;
+  }
+
+  .fomio-owned-activity__group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .fomio-owned-activity__group-title {
+    position: static;
+    padding-top: 2px;
+  }
+}
+
 // ── Zones ────────────────────────────────────────────────────
 
 .fomio-sidebar__zone {
@@ -21876,6 +22218,630 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-su
   }
 }
 
+// Fomio-owned Notifications inbox. The component toggles
+// `.fomio-owned-notifications-ready` only after the first successful response;
+// until then the native Discourse list remains visible as the fallback.
+body.user-notifications-page {
+  #main-outlet .user-main .notification-history.user-stream > .fomio-owned-notifications {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0 0 18px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 76%, transparent);
+    border-radius: var(--fomio-radius-card);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 0%,
+        color-mix(in oklab, var(--fomio-bg) 70%, var(--fomio-card)) 100%
+      );
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 56%) inset,
+      0 18px 46px rgb(17 24 39 / 8%);
+    overflow: hidden;
+  }
+
+  .fomio-owned-notifications__header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 16px 26px 14px;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+    background: color-mix(in oklab, var(--fomio-card) 92%, transparent);
+  }
+
+  .fomio-owned-notifications__header .fomio-me-filter-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .fomio-owned-notifications__header .fomio-me-filter-chips__chip {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+    font-size: var(--fomio-text-sm);
+    font-weight: 680;
+    letter-spacing: 0;
+
+    &:hover,
+    &:focus-visible {
+      background: transparent;
+      color: var(--fomio-text);
+    }
+
+    &.active,
+    &.is-active {
+      border-bottom-color: var(--fomio-primary);
+      background: transparent;
+      box-shadow: none;
+      color: var(--fomio-primary);
+    }
+  }
+
+  .fomio-owned-notifications__filters {
+    display: inline-flex;
+    align-items: center;
+    align-self: start;
+    gap: 4px;
+    min-width: 0;
+    padding: 4px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-card));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 50%);
+  }
+
+  .fomio-owned-notifications__filter {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+    white-space: nowrap;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
+      outline-offset: 2px;
+    }
+  }
+
+  .fomio-owned-notifications__filter--active {
+    background: color-mix(in oklab, var(--fomio-primary) 12%, var(--fomio-card));
+    color: var(--fomio-primary);
+    box-shadow: 0 1px 2px rgb(17 24 39 / 8%);
+  }
+
+  .fomio-owned-notifications__timeline {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 18px 26px 22px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .fomio-owned-notifications__group {
+    position: relative;
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 18px;
+    min-width: 0;
+  }
+
+  .fomio-owned-notifications__group + .fomio-owned-notifications__group {
+    margin-top: 22px;
+  }
+
+  .fomio-owned-notifications__group-title {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    margin: 0;
+    padding-top: 14px;
+    color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .fomio-owned-notifications__list {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      bottom: 16px;
+      left: 19px;
+      width: 1px;
+      background: color-mix(in oklab, var(--fomio-border-soft) 76%, transparent);
+    }
+  }
+
+  .fomio-owned-notifications__row {
+    position: relative;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .fomio-owned-notifications__row::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 18px;
+    left: 14px;
+    width: 11px;
+    height: 11px;
+    border: 2px solid color-mix(in oklab, var(--fomio-card) 90%, #fff);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--fomio-muted) 54%, var(--fomio-card));
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--fomio-border-soft) 70%, transparent);
+  }
+
+  .fomio-owned-notifications__row.is-unread::before,
+  .fomio-owned-notifications__row.is-high-priority::before {
+    background: var(--fomio-primary);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--fomio-primary) 45%, transparent),
+      0 0 0 5px color-mix(in oklab, var(--fomio-primary) 10%, transparent);
+  }
+
+  .fomio-owned-notifications__row > a {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    min-width: 0;
+    padding: 14px 16px 14px 46px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--fomio-card) 94%, var(--fomio-bg));
+    color: var(--fomio-text);
+    text-decoration: none;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 45%) inset;
+    box-sizing: border-box;
+
+    &:hover,
+    &:focus-visible {
+      border-color: color-mix(in oklab, var(--fomio-primary) 30%, var(--fomio-border-soft));
+      background: color-mix(in oklab, var(--fomio-card) 98%, #fff);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
+      outline-offset: 2px;
+    }
+  }
+
+  .fomio-owned-notifications__row.is-unread > a {
+    background: color-mix(in oklab, var(--fomio-primary) 7%, var(--fomio-card));
+  }
+
+  .fomio-owned-notifications__row > a > .d-icon,
+  .fomio-owned-notifications__row > a > .icon-avatar {
+    width: 24px;
+    height: 24px;
+    margin: 2px 0 0;
+    color: color-mix(in oklab, var(--fomio-primary) 72%, var(--fomio-muted));
+  }
+
+  .fomio-owned-notifications__row > a > div {
+    min-width: 0;
+  }
+
+  .fomio-owned-notifications__row .item-label {
+    display: block;
+    min-width: 0;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 760;
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+
+  .fomio-owned-notifications__row .item-description {
+    display: block;
+    min-width: 0;
+    margin-top: 3px;
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
+
+  .fomio-owned-notifications__loading,
+  .fomio-owned-notifications__state {
+    min-height: 260px;
+    padding: 34px 26px;
+  }
+
+  .fomio-owned-notifications__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 650;
+  }
+
+  .fomio-owned-notifications__footer {
+    display: flex;
+    justify-content: center;
+    padding: 0 26px 24px;
+  }
+}
+
+body.user-notifications-page.fomio-owned-notifications-ready:has(.fomio-owned-notifications) {
+  #main-outlet .user-main .notification-history.user-stream > .user-notifications-filter,
+  #main-outlet .user-main .notification-history.user-stream > .user-notifications-list,
+  #main-outlet .user-main .notification-history.user-stream > .alert.alert-info,
+  #main-outlet .user-main .notification-history.user-stream > .empty-state,
+  #main-outlet .user-main .notification-history.user-stream > .item.error,
+  #main-outlet .user-main .notification-history.user-stream > .loading-container,
+  #main-outlet .user-main .notification-history.user-stream > .load-more-sentinel,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-notifications-page:has(.fomio-owned-notifications) {
+  #main-outlet .user-main .new-user-content-wrapper,
+  #main-outlet .user-main .new-user-content-wrapper:has(.btn.dismiss-notifications) {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+    width: 100%;
+    max-width: min(1180px, calc(100vw - 48px));
+    height: calc(100vh - 48px);
+    min-height: 520px;
+    margin: 0 auto;
+    padding: 0;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 78%, transparent);
+    border-radius: var(--fomio-radius-card);
+    background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 58%) inset,
+      0 22px 54px rgb(17 24 39 / 9%);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper .user-content#user-content,
+  #main-outlet .user-main .new-user-content-wrapper .notification-history.user-stream {
+    display: contents;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-owned-notifications {
+    align-self: stretch;
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-surface-touch).user-notifications-page:has(.fomio-owned-notifications) {
+  #main-outlet .user-main .new-user-content-wrapper,
+  #main-outlet .user-main .new-user-content-wrapper:has(.btn.dismiss-notifications) {
+    max-width: min(1040px, calc(100vw - 32px));
+  }
+
+  .fomio-owned-notifications__header {
+    padding: 22px 22px 14px;
+  }
+
+  .fomio-owned-notifications__timeline {
+    padding: 18px 22px 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  body.user-notifications-page {
+    #main-outlet .user-main .new-user-content-wrapper {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    #main-outlet .user-main .notification-history.user-stream > .fomio-owned-notifications {
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      background: var(--fomio-bg);
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .fomio-owned-notifications__header {
+      top: 0;
+      gap: 8px;
+      padding: 8px 0 0;
+      border-bottom-color: color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+      background: color-mix(in oklab, var(--fomio-bg) 94%, var(--fomio-surface));
+      box-shadow: 0 1px 0 rgb(255 255 255 / 52%) inset;
+    }
+
+    .fomio-owned-notifications__header .fomio-me-filter-chips {
+      min-height: 42px;
+      padding: 0 12px;
+      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .fomio-owned-notifications__header .fomio-me-filter-chips__chip {
+      min-height: 42px;
+      padding: 0 13px;
+      font-size: 0.8rem;
+    }
+
+    .fomio-owned-notifications__filters {
+      justify-self: start;
+      max-width: 100%;
+      margin: 0 12px 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .fomio-owned-notifications__timeline {
+      padding: 0 0 20px;
+      overflow: visible;
+      scrollbar-gutter: auto;
+    }
+
+    .fomio-owned-notifications__group {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .fomio-owned-notifications__group + .fomio-owned-notifications__group {
+      margin-top: 0;
+    }
+
+    .fomio-owned-notifications__group-title {
+      position: static;
+      z-index: 2;
+      padding: 12px 16px 8px;
+      background: color-mix(in oklab, var(--fomio-bg) 96%, var(--fomio-surface));
+    }
+
+    .fomio-owned-notifications__list {
+      display: block;
+      gap: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    .fomio-owned-notifications__row::before {
+      top: 20px;
+      left: 16px;
+      width: 8px;
+      height: 8px;
+      border-width: 0;
+      box-shadow: none;
+    }
+
+    .fomio-owned-notifications__row > a {
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      min-height: 62px;
+      padding: 13px 16px 13px 36px;
+      border: 0;
+      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+
+      &:hover,
+      &:focus-visible {
+        border-color: color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+        background: color-mix(in oklab, var(--fomio-surface) 62%, transparent);
+      }
+    }
+
+    .fomio-owned-notifications__row.is-unread > a {
+      background: color-mix(in oklab, var(--fomio-primary) 5%, transparent);
+    }
+
+    .fomio-owned-notifications__loading,
+    .fomio-owned-notifications__state {
+      min-height: 240px;
+      padding: 28px 16px;
+    }
+
+    .fomio-owned-notifications__footer {
+      padding: 18px 16px 24px;
+    }
+  }
+}
+
+body.fomio-surface-touch.user-notifications-page {
+  #main-outlet .user-main .new-user-content-wrapper {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  #main-outlet .user-main .notification-history.user-stream > .fomio-owned-notifications {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--fomio-bg);
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .fomio-owned-notifications__header {
+    top: 0;
+    gap: 8px;
+    padding: 8px 0 0;
+    border-bottom-color: color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
+    background: color-mix(in oklab, var(--fomio-bg) 94%, var(--fomio-surface));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 52%) inset;
+  }
+
+  .fomio-owned-notifications__header .fomio-me-filter-chips {
+    min-height: 42px;
+    padding: 0 12px;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .fomio-owned-notifications__header .fomio-me-filter-chips__chip {
+    min-height: 42px;
+    padding: 0 13px;
+    font-size: 0.8rem;
+  }
+
+  .fomio-owned-notifications__filters {
+    max-width: 100%;
+    margin: 0 12px 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .fomio-owned-notifications__timeline {
+    padding: 0 0 20px;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+
+  .fomio-owned-notifications__group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .fomio-owned-notifications__group + .fomio-owned-notifications__group {
+    margin-top: 0;
+  }
+
+  .fomio-owned-notifications__group-title {
+    position: static;
+    z-index: 2;
+    padding: 12px 16px 8px;
+    background: color-mix(in oklab, var(--fomio-bg) 96%, var(--fomio-surface));
+  }
+
+  .fomio-owned-notifications__list {
+    display: block;
+    gap: 0;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .fomio-owned-notifications__row::before {
+    top: 20px;
+    left: 16px;
+    width: 8px;
+    height: 8px;
+    border-width: 0;
+    box-shadow: none;
+  }
+
+  .fomio-owned-notifications__row > a {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    min-height: 62px;
+    padding: 13px 16px 13px 36px;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+
+    &:hover,
+    &:focus-visible {
+      border-color: color-mix(in oklab, var(--fomio-border-soft) 58%, transparent);
+      background: color-mix(in oklab, var(--fomio-surface) 62%, transparent);
+    }
+  }
+
+  .fomio-owned-notifications__row.is-unread > a {
+    background: color-mix(in oklab, var(--fomio-primary) 5%, transparent);
+  }
+
+  .fomio-owned-notifications__loading,
+  .fomio-owned-notifications__state {
+    min-height: 240px;
+    padding: 28px 16px;
+  }
+
+  .fomio-owned-notifications__footer {
+    padding: 18px 16px 24px;
+  }
+}
+
 // Invites parent-child foundation: invite state tabs + native invite controls/table.
 body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-invites-page {
   #main-outlet .user-main .new-user-content-wrapper {
@@ -22156,6 +23122,10 @@ body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-su
 body.user-notifications-page[data-fomio-me-notifications-filter="reactions"]
   #user-content
   .user-notifications-list
+  > li.notification:not(.liked):not(.liked-consolidated):not(.reaction),
+body.user-notifications-page[data-fomio-me-notifications-filter="reactions"]
+  #user-content
+  .fomio-owned-notifications__list
   > li.notification:not(.liked):not(.liked-consolidated):not(.reaction) {
   display: none !important;
 }
@@ -22167,6 +23137,14 @@ body.user-notifications-page[data-fomio-me-notifications-filter="conversations"]
     .private-message
   ):not(.invited-to-private-message):not(.invitee-accepted):not(.posted):not(.moved-post):not(
     .linked
+  ):not(.watching-first-post):not(.group-message-summary):not(.invited-to-topic),
+body.user-notifications-page[data-fomio-me-notifications-filter="conversations"]
+  #user-content
+  .fomio-owned-notifications__list
+  > li.notification:not(.mentioned):not(.replied):not(.quoted):not(.group-mentioned):not(
+    .private-message
+  ):not(.invited-to-private-message):not(.invitee-accepted):not(.posted):not(.moved-post):not(
+    .linked
   ):not(.watching-first-post):not(.group-message-summary):not(.invited-to-topic) {
   display: none !important;
 }
@@ -22174,6 +23152,27 @@ body.user-notifications-page[data-fomio-me-notifications-filter="conversations"]
 body.user-notifications-page[data-fomio-me-notifications-filter="system"]
   #user-content
   .user-notifications-list
+  > li.notification:is(
+    .mentioned,
+    .replied,
+    .quoted,
+    .group-mentioned,
+    .private-message,
+    .invited-to-private-message,
+    .invitee-accepted,
+    .posted,
+    .moved-post,
+    .linked,
+    .watching-first-post,
+    .group-message-summary,
+    .invited-to-topic,
+    .liked,
+    .liked-consolidated,
+    .reaction
+  ),
+body.user-notifications-page[data-fomio-me-notifications-filter="system"]
+  #user-content
+  .fomio-owned-notifications__list
   > li.notification:is(
     .mentioned,
     .replied,
@@ -27111,19 +28110,27 @@ html.fomio-color-dark {
   align-items: center;
   width: 100%;
   padding: 14px 0;
+  margin-inline: 0;
   border: none;
   border-bottom: 1px solid var(--fomio-border-soft);
+  border-radius: 0;
   background: transparent;
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.15s ease;
+  box-sizing: border-box;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     background-color: transparent;
   }
 
   &--active {
-    background-color: color-mix(in oklab, var(--fomio-primary) 7%, transparent);
+    background-color: color-mix(in oklab, var(--fomio-primary) 8%, var(--fomio-card));
+    box-shadow:
+      inset 3px 0 0 var(--fomio-primary),
+      inset 0 -1px 0 color-mix(in oklab, var(--fomio-primary) 18%, transparent);
   }
 
   &--unread {
@@ -27254,7 +28261,14 @@ html.fomio-color-dark {
   flex-direction: row;
   width: 100%;
   min-height: 0;
-  background-color: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 0,
+      color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 340px,
+      color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg)) 340px,
+      color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg)) 100%
+    );
   border: 1px solid var(--fomio-border);
   border-radius: var(--fomio-radius-card);
   box-shadow:
@@ -27267,13 +28281,16 @@ html.fomio-color-dark {
   width: 340px;
   min-width: 0;
   border-right: 1px solid var(--fomio-border);
-  overflow-y: auto;
-  background-color: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg));
+  overflow: hidden;
+  background: transparent;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .fomio-messages-master-container {
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -27418,6 +28435,14 @@ html.fomio-color-dark {
 
 .fomio-conversation-section {
   display: grid;
+
+  &--older {
+    margin-top: 10px;
+
+    .fomio-conversation-section__title {
+      padding: 16px 0 14px;
+    }
+  }
 }
 
 .fomio-conversation-section__title {
@@ -27520,7 +28545,8 @@ html.fomio-color-dark {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg));
+  overflow: hidden;
+  background: transparent;
   color: var(--fomio-muted);
   font-size: 14px;
 }
@@ -27566,6 +28592,52 @@ body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
     box-sizing: border-box;
   }
 
+  .fomio-messages-thread-topbar {
+    position: static;
+    justify-content: space-between;
+  }
+
+  .fomio-messages-back-button {
+    display: inline-flex;
+  }
+
+  .fomio-messages-thread-title {
+    padding-right: 0;
+  }
+
+  .fomio-messages-master-detail--conversation-open {
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail-container,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-thread {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .fomio-messages-thread-header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
+  }
+
+  .fomio-messages-list {
+    flex: 1 1 auto;
+    overscroll-behavior: contain;
+  }
+
+  .fomio-messages-composer-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
+  }
+
   .fomio-messages-master-detail--conversation-open .fomio-messages-master {
     display: none;
   }
@@ -27603,6 +28675,17 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
 
 // compact-desktop: 1024px-1279px
 @media (max-width: 1279px) and (min-width: 1024px) {
+  .fomio-messages-master-detail {
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 0,
+        color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 300px,
+        color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg)) 300px,
+        color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg)) 100%
+      );
+  }
+
   .fomio-messages-master {
     width: 300px;
   }
@@ -27610,6 +28693,17 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
 
 // rail: 768px-1023px
 @media (max-width: 1023px) and (min-width: 768px) {
+  .fomio-messages-master-detail {
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 0,
+        color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-bg)) 300px,
+        color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg)) 300px,
+        color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg)) 100%
+      );
+  }
+
   .fomio-messages-master {
     width: 300px;
     border-right: 1px solid var(--fomio-border);
@@ -27722,17 +28816,58 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
     padding-top: 32px;
   }
 
+  .fomio-messages-master-detail--conversation-open {
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail-container,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-thread {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
   .fomio-messages-thread-header {
-    padding: 12px 0 12px;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding:
+      max(10px, env(safe-area-inset-top, 0px) + 6px)
+      0
+      12px;
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
   }
 
   .fomio-messages-thread-topbar {
-    margin-bottom: 10px;
+    position: static;
+    justify-content: space-between;
+    min-height: 44px;
+    margin-bottom: 8px;
   }
 
   .fomio-messages-back-button {
     display: inline-flex;
+    min-height: 40px;
+    max-width: 45%;
+    padding: 0 8px 0 0;
+    color: var(--fomio-text);
     font-size: 14px;
+    line-height: 1;
+  }
+
+  .fomio-messages-back-button__icon {
+    width: 28px;
+    height: 28px;
+    margin-left: -6px;
+  }
+
+  .fomio-messages-back-button__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .fomio-messages-thread-actions {
@@ -27740,18 +28875,15 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
   }
 
   .fomio-messages-thread-action {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
   }
 
   .fomio-messages-thread-title {
+    padding-right: 0;
     font-size: 20px;
     line-height: 1.2;
-  }
-
-  .fomio-messages-thread-summary {
-    margin-top: 3px;
-    font-size: 12px;
   }
 
   .fomio-messages-thread-search {
@@ -27772,8 +28904,10 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
   }
 
   .fomio-messages-list {
-    padding: 14px 0 20px;
+    flex: 1 1 auto;
+    padding: 16px 0 22px;
     gap: 16px;
+    overscroll-behavior: contain;
   }
 
   .fomio-message-day-group {
@@ -27796,15 +28930,19 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
   }
 
   .fomio-messages-composer-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
     padding:
       12px
       0
       max(12px, env(safe-area-inset-bottom, 0px) + 8px);
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
   }
 
   .fomio-reply-launcher {
-    min-height: 44px;
-    padding-inline: 12px;
+    min-height: 48px;
+    padding-inline: 14px;
     border-radius: 12px;
   }
 }
@@ -27889,9 +29027,11 @@ body.user-messages-page.fomio-messages-mode {
   flex-direction: column;
   background-color: transparent;
   padding-inline:
-    max(14px, env(safe-area-inset-left, 0px) + 8px)
-    max(14px, env(safe-area-inset-right, 0px) + 8px);
+    max(16px, env(safe-area-inset-left, 0px) + 10px)
+    max(16px, env(safe-area-inset-right, 0px) + 10px);
   box-sizing: border-box;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 .fomio-messages-thread {
@@ -27899,17 +29039,21 @@ body.user-messages-page.fomio-messages-mode {
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .fomio-messages-thread-header {
   flex-shrink: 0;
-  padding: 18px 0 14px;
-  border-bottom: 1px solid var(--fomio-border);
+  padding: 14px 0 12px;
+  border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 80%, transparent);
   background-color: transparent;
+  position: relative;
 }
 
 .fomio-messages-back-button {
-  display: inline-flex;
+  display: none;
+  align-items: center;
+  gap: 2px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -27918,14 +29062,32 @@ body.user-messages-page.fomio-messages-mode {
   font-size: 13px;
   font-weight: 700;
   text-align: left;
+  cursor: pointer;
+}
+
+.fomio-messages-back-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.fomio-messages-back-button__label {
+  min-width: 0;
 }
 
 .fomio-messages-thread-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
-  margin: 0 0 8px;
+  margin: 0;
+  position: absolute;
+  top: 14px;
+  right: 0;
+  z-index: 1;
 }
 
 .fomio-messages-thread-actions {
@@ -27949,17 +29111,12 @@ body.user-messages-page.fomio-messages-mode {
 
 .fomio-messages-thread-title {
   margin: 0;
-  font-size: 22px;
+  padding-right: 80px;
+  font-family: var(--fomio-font-serif, serif);
+  font-size: 28px;
   font-weight: 700;
   color: var(--fomio-text);
-  line-height: 1.25;
-}
-
-.fomio-messages-thread-summary {
-  margin: 4px 0 0;
-  color: var(--fomio-muted);
-  font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.12;
 }
 
 .fomio-messages-thread-search {
@@ -27995,74 +29152,101 @@ body.user-messages-page.fomio-messages-mode {
 
 .fomio-messages-list {
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  padding: 18px 0 24px;
-  gap: 18px;
+  padding: 24px 0 28px;
+  gap: 24px;
+  scrollbar-gutter: stable;
 }
 
 .fomio-message-day-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .fomio-message-day-separator {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 2px;
 
   span {
-    color: var(--fomio-muted);
-    font-size: 12px;
+    color: color-mix(in oklab, var(--fomio-muted) 78%, var(--fomio-text));
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 }
 
 .fomio-message-row {
-  max-width: min(720px, 92%);
+  max-width: min(680px, 94%);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 0;
   border: 0;
-  border-radius: 14px;
-  background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 
   &--mine {
     align-self: flex-end;
-    background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-card));
   }
 }
 
 .fomio-message-header {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui, inherit);
+  font-size: 12px;
+  font-weight: 650;
+  color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+  letter-spacing: 0.01em;
 }
 
 .fomio-message-body {
-  font-size: 15px;
-  line-height: 1.55;
+  font-family: var(--fomio-font-serif, serif);
+  font-size: 18px;
+  line-height: 1.62;
   color: var(--fomio-text);
 
   p {
-    margin: 0 0 12px 0;
+    margin: 0 0 14px 0;
 
     &:last-child {
       margin-bottom: 0;
     }
   }
+
+  ul,
+  ol {
+    margin: 14px 0;
+    padding-inline-start: 1.35em;
+  }
+
+  li + li {
+    margin-top: 6px;
+  }
+
+  a {
+    color: var(--fomio-primary);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 .fomio-messages-composer-footer {
   flex-shrink: 0;
-  padding: 16px 0 0;
-  border-top: 1px solid var(--fomio-border);
+  padding: 18px 0 0;
+  border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 82%, transparent);
   background-color: transparent;
 }
 
@@ -28118,6 +29302,146 @@ body.user-messages-page.fomio-messages-mode {
   text-align: center;
   color: var(--fomio-muted);
   font-size: 14px;
+}
+
+body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
+  .fomio-messages-master-detail--conversation-open {
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail-container,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-thread {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .fomio-messages-thread-header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
+  }
+
+  .fomio-messages-thread-topbar {
+    position: static;
+    justify-content: space-between;
+  }
+
+  .fomio-messages-back-button {
+    display: inline-flex;
+  }
+
+  .fomio-messages-thread-title {
+    padding-right: 0;
+  }
+
+  .fomio-messages-list {
+    flex: 1 1 auto;
+    overscroll-behavior: contain;
+  }
+
+  .fomio-messages-composer-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
+  }
+}
+
+@media (max-width: 767px) {
+  .fomio-messages-master-detail--conversation-open {
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-detail-container,
+  .fomio-messages-master-detail--conversation-open .fomio-messages-thread {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .fomio-messages-thread-header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding:
+      max(10px, env(safe-area-inset-top, 0px) + 6px)
+      0
+      12px;
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
+  }
+
+  .fomio-messages-thread-topbar {
+    position: static;
+    justify-content: space-between;
+    min-height: 44px;
+    margin-bottom: 8px;
+  }
+
+  .fomio-messages-back-button {
+    display: inline-flex;
+    min-height: 40px;
+    max-width: 45%;
+    padding: 0 8px 0 0;
+    color: var(--fomio-text);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .fomio-messages-back-button__icon {
+    width: 28px;
+    height: 28px;
+    margin-left: -6px;
+  }
+
+  .fomio-messages-back-button__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fomio-messages-thread-action {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+  }
+
+  .fomio-messages-thread-title {
+    padding-right: 0;
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .fomio-messages-list {
+    flex: 1 1 auto;
+    padding: 16px 0 22px;
+    gap: 16px;
+    overscroll-behavior: contain;
+  }
+
+  .fomio-messages-composer-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    padding:
+      12px
+      0
+      max(12px, env(safe-area-inset-bottom, 0px) + 8px);
+    background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-bg));
+  }
+
+  .fomio-reply-launcher {
+    min-height: 48px;
+    padding-inline: 14px;
+    border-radius: 12px;
+  }
 }
 
 

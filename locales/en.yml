@@ -326,6 +326,26 @@ en:
       reactions: "Reactions"
       system: "System"
       empty: "No notifications in this category."
+  owned_notifications:
+    title: "Notifications"
+    subtitle: "Updates from your conversations, reactions, and Fomio system notes."
+    loading: "Loading notifications..."
+    load_more: "Load more"
+    filters:
+      all: "All"
+      unread: "Unread"
+      read: "Read"
+    sections:
+      today: "Today"
+      yesterday: "Yesterday"
+      older: "Older"
+    empty:
+      title: "No notifications here."
+      body: "When something needs your attention, it will appear here."
+    error:
+      title: "Notifications could not load."
+      body: "Try again to refresh your notifications."
+      retry: "Try again"
   me_activity_nav:
     nav_aria: "Activity sections"
     all: "All Activity"
@@ -333,6 +353,27 @@ en:
     replies: "Replies"
     read: "Read"
     likes_given: "Likes Given"
+  owned_activity:
+    title: "Activity"
+    loading: "Loading activity..."
+    load_more: "Load more"
+    subtitle:
+      all: "A timeline of recent Bytes and replies."
+      topics: "Bytes started from this profile."
+      replies: "Replies added across conversations."
+      read: "Recently read Bytes."
+      likes-given: "Bytes this profile reacted to."
+    sections:
+      today: "Today"
+      yesterday: "Yesterday"
+      older: "Older"
+    empty:
+      title: "No activity here."
+      body: "When there is something to show, it will appear in this timeline."
+    error:
+      title: "Activity could not load."
+      body: "Try again to refresh your activity."
+      retry: "Try again"
   # Action-type kicker on activity stream items —
   # connectors/user-stream-item-above/fomio-activity-stream-kicker.gjs
   activity_stream:

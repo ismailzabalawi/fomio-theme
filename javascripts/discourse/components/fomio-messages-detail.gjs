@@ -169,28 +169,6 @@ export default class FomioMessagesDetail extends Component {
     );
   }
 
-  get conversationSubtitle() {
-    if (this.isGroupConversation) {
-      const count = this.participants.length;
-      return i18n(themePrefix("messages_inbox.participants_count"), { count });
-    }
-
-    const lastPostedAt =
-      this.topic?.last_posted_at || this.topic?.post_stream?.posts?.at(-1)?.created_at;
-
-    if (!lastPostedAt) {
-      return null;
-    }
-
-    const hoursAgo = (Date.now() - new Date(lastPostedAt).getTime()) / 3600000;
-
-    if (hoursAgo < 12) {
-      return i18n(themePrefix("messages_inbox.active_recently"));
-    }
-
-    return this.formatDayLabel(lastPostedAt);
-  }
-
   get participantSummary() {
     const names = this.participants
       .map((participant) => participant.name || participant.username)
@@ -255,6 +233,10 @@ export default class FomioMessagesDetail extends Component {
 
   get backToMessagesLabel() {
     return i18n(themePrefix("messages_inbox.back_to_messages"));
+  }
+
+  get messagesLabel() {
+    return i18n(themePrefix("messages_inbox.title"));
   }
 
   get openReplyLabel() {
@@ -366,9 +348,15 @@ export default class FomioMessagesDetail extends Component {
                 <button
                   type="button"
                   class="fomio-messages-back-button"
+                  aria-label={{this.backToMessagesLabel}}
                   {{on "click" this.closeConversation}}
                 >
-                  {{this.backToMessagesLabel}}
+                  <span class="fomio-messages-back-button__icon">
+                    {{icon "chevron-left"}}
+                  </span>
+                  <span class="fomio-messages-back-button__label">
+                    {{this.messagesLabel}}
+                  </span>
                 </button>
 
                 <div class="fomio-messages-thread-actions">
@@ -394,12 +382,6 @@ export default class FomioMessagesDetail extends Component {
               <h2 class="fomio-messages-thread-title">
                 {{this.conversationTitle}}
               </h2>
-
-              {{#if this.conversationSubtitle}}
-                <p class="fomio-messages-thread-summary">
-                  {{this.conversationSubtitle}}
-                </p>
-              {{/if}}
 
               {{#if this.headerSearchOpen}}
                 <label class="fomio-messages-thread-search">
