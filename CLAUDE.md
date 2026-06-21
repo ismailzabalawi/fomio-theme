@@ -577,16 +577,20 @@ Important: Discourse's stylesheet split is viewport-based, but Fomio's shell own
 
 Safe area follows the same rule. Define touch-safe insets and derived page gutters in the touch shell (`body.fomio-surface-touch`) and have homepage/feed/components consume those variables. Do not scatter raw `env(safe-area-inset-*)` math across individual mobile pages unless the case is truly component-specific.
 
-### Me Leaf Screens — One Flat Surface (with documented Profile exceptions)
+### Profile / Me — Native Navigation + Editorial Panels
 
-**Flat-surface screens — Notifications, Messages, Invites, Preferences, Badges** — use a **one-flat-surface pattern** at the page level on **every surface mode**: no canvas gradient, no wrapper card, unboxed pill tracks. The flat treatment is a property of the detail surface, not of the touch mode — only navigation chrome and density vary per mode (persistent master pane on expanded/compact-desktop, overlay master pane on rail, stack header + bottom nav on touch). The page is fully responsive without fixed card insets. Do **not** add wrapper-card chrome to these screens on any surface.
+**The Profile/Me area uses native Discourse user-profile navigation on every surface mode.** The earlier custom "Me hub" shell — touch hub-landing grid, `‹ Me` stack header, the profile/bookmarks/notifications master–detail pane, the custom activity nav rail, and the `route:user.index` redirect — has been **removed**. `/u/:username` and its leaves (Summary, Activity, Bookmarks, Notifications, Messages, Invites, Badges, Preferences) render through native Discourse routing and the native user nav. Do **not** reintroduce a Fomio-owned landing/menu over the profile, a stack-back header, or a master–detail pane for profile content. (The master pane in `connectors/above-site-header/fomio-master-pane.gjs` now serves **Hubs only**.)
 
-**Documented exceptions — the Profile "detached card" surfaces.** Summary, Activity, and Bookmarks are the accepted **User Profile v1** direction (`docs/web/user-profile-questionnaire.md` §10) and intentionally carry desktop chrome — they are **not** flat-carded:
+**What stays editorial (restyle over native, no custom navigation):**
 
-- **Summary** — editorial canvas on all modes: brand gradient + stat tiles + the editorial hero (`connectors/above-user-summary-stats/fomio-summary-hero.gjs`). Never flattened. (It is deliberately excluded from the flat `.new-user-content-wrapper` reset in `common.scss`.)
-- **Activity / Bookmarks** — on expanded / compact-desktop / rail the detail reads as a **detached "parent-child" card** (section rail + native stream), implemented by the `…user-activity-page:has(.fomio-me-activity-nav) .new-user-content-wrapper` block in `common.scss`. On **touch** these flatten to the one-flat-surface treatment.
+- **Summary** — editorial canvas on all modes: brand gradient + stat tiles + the editorial hero (`connectors/above-user-summary-stats/fomio-summary-hero.gjs`). Anchored to the native summary route; never flattened.
+- **Activity / Bookmarks** — on expanded / compact-desktop / rail the detail reads as a **detached editorial card**, implemented by the `body…user-activity-page #main-outlet .user-main .new-user-content-wrapper` block in `common.scss`. This is **pure CSS framing over the native `.user-activity-page` body class and the native secondary nav** — there is no custom rail. On **touch** it flattens to the one-flat-surface treatment. Activity content is the **native stream** (the `fomio_owned_me_*` "owned screen" experiment and its settings have been retired).
+- **Messages** — keeps its custom master-detail experience (`components/fomio-messages-*`), reached via its native `/u/:username/messages` route.
+- **Notifications** — native page body, plus the existing item-level styling.
 
-When working these three surfaces, extend the existing per-page treatments — do **not** flatten Summary/Activity/Bookmarks on desktop to satisfy the flat rule, and do not add a second, competing wrapper card on top of them.
+**Other Me leaf screens — Invites, Preferences, Badges** — use a **one-flat-surface pattern** at the page level on every surface mode: no canvas gradient, no wrapper card, unboxed pill tracks. The page is fully responsive without fixed card insets.
+
+When working Summary / Activity / Bookmarks, extend the existing per-page treatments — do **not** flatten them on desktop to satisfy the flat rule, and do not add a second, competing wrapper card on top of them.
 
 Within the flat surface, form screens (preferences) also drop per-control-group boxes — grouping comes from spacing and hairline separators (`border-top: 1px solid color-mix(...)`). On touch this lives in the touch shell block of `common.scss`; on desktop/rail in the "Settings detail alignment" block of `desktop.scss`. Stream/list screens (Activity, Notifications, Messages, Invites, Badges) keep **item-level** cards to separate rows (these sit *inside* the detached card on Activity/Bookmarks desktop).
 

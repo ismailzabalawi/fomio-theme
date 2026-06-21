@@ -1,6 +1,20 @@
 # Fomio web — Me navigation (parent → child)
 
-**Status:** Active model for touch + desktop Me surfaces in `apps/web/`.  
+> **⚠️ SUPERSEDED (2026-06-21).** The custom "Me hub" navigation model described
+> below (Fomio-owned hub landing, `‹ Me` stack header, profile/bookmarks/
+> notifications master–detail pane, custom activity nav rail, and the
+> `route:user.index` redirect) has been **removed** to ship faster. The
+> Profile/Me area now uses **native Discourse user-profile navigation on all
+> surface modes**. What remains is the editorial *content* restyle only:
+> Summary (editorial hero/canvas), Activity & Bookmarks (detached editorial card
+> framed in pure CSS over the native `.user-activity-page` nodes), the custom
+> **Messages** master-detail, and native Notifications. The master pane
+> (`connectors/above-site-header/fomio-master-pane.gjs`) now serves **Hubs only**.
+> See `apps/web/CLAUDE.md` → "Profile / Me — Native Navigation + Editorial Panels"
+> and the decision note in `user-profile-questionnaire.md` §10. The sections below
+> are kept for historical context.
+
+**Status:** Superseded — see banner above.  
 **Supersedes:** archived M2 mirrored L2 docs in [`_archive/`](./_archive/) (see `_archive/me-second-level-navigation.md` for historical route tables).
 
 ---

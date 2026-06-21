@@ -282,36 +282,6 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
       overflow-x: hidden;
     }
 
-    #main-outlet .user-main .fomio-me-stack-header {
-      height: 54px;
-      padding-inline:
-        max(10px, var(--fomio-page-pad-inline-start, 12px))
-        max(10px, var(--fomio-page-pad-inline-end, 12px));
-      border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
-      background: var(--fomio-bg);
-    }
-
-    #main-outlet .user-main .fomio-me-stack-header__back {
-      min-height: 38px;
-      padding: 0 12px 0 8px;
-      border-radius: 999px;
-      background: color-mix(in oklab, var(--fomio-surface) 88%, transparent);
-      color: color-mix(in oklab, var(--fomio-primary) 76%, var(--fomio-text));
-      font-size: 0.84rem;
-      font-weight: 760;
-
-      &:active {
-        opacity: 1;
-        transform: translateY(1px);
-      }
-    }
-
-    #main-outlet .user-main .fomio-me-stack-header__title {
-      font-size: 0.92rem;
-      font-weight: 780;
-      letter-spacing: -0.025em;
-    }
-
     #main-outlet .user-main .new-user-content-wrapper,
     #main-outlet .user-main #user-content,
     #main-outlet .user-main .user-content#user-content {
@@ -338,8 +308,7 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
     }
 
     // Pills keep their own affordance; the boxed track behind them is dropped.
-    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills,
-    #main-outlet .user-main .fomio-me-filter-chips {
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
       gap: 6px;
       padding: 0 0 10px;
       border: 0;
@@ -348,8 +317,7 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
       box-shadow: none;
     }
 
-    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a,
-    #main-outlet .user-main .fomio-me-filter-chips .fomio-me-filter-chips__chip {
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
       min-height: 38px;
       padding: 0 14px;
       border-radius: 999px;
@@ -363,10 +331,7 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
     }
 
     #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a,
-    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
-    #main-outlet .user-main .fomio-me-filter-chips .fomio-me-filter-chips__chip--active,
-    #main-outlet .user-main .fomio-me-filter-chips .fomio-me-filter-chips__chip.active,
-    #main-outlet .user-main .fomio-me-filter-chips .fomio-me-filter-chips__chip.is-active {
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active {
       border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border-soft));
       background:
         linear-gradient(
@@ -1668,12 +1633,6 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
     min-height: 36px;
   }
 
-  &:has(.fomio-me-stack-shell .fomio-me-activity-nav) {
-    #main-outlet .user-main .user-navigation.user-navigation-secondary {
-      grid-area: dismiss;
-    }
-  }
-
   #main-outlet .user-main .user-content#user-content {
     display: contents;
   }
@@ -1746,57 +1705,6 @@ body.fomio-surface-touch.user-notifications-page.fomio-sidebar-active:not(.fomio
     display: contents;
     min-width: 0;
     max-width: 100%;
-  }
-
-  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips {
-    grid-area: chips;
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    align-self: center;
-    justify-self: stretch;
-    min-width: 0;
-    max-width: 100%;
-    min-height: 42px;
-    gap: 0;
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips::-webkit-scrollbar {
-    display: none;
-  }
-
-  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    margin: 0;
-    padding: 0 13px;
-    border: 0;
-    border-radius: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    box-shadow: none;
-    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
-    font-size: 0.8rem;
-    letter-spacing: -0.01em;
-  }
-
-  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip--active,
-  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip.active,
-  #main-outlet .user-main .notification-history.user-stream > .fomio-me-filter-chips .fomio-me-filter-chips__chip.is-active {
-    border-bottom-color: var(--fomio-primary);
-    background: transparent;
-    color: var(--fomio-primary);
-    box-shadow: none;
   }
 
   #main-outlet .user-main .notification-history.user-stream > .user-notifications-filter {
@@ -2441,13 +2349,6 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-notific
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-messages-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-invites-page,
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-badges-page {
-  #main-outlet .user-main .fomio-me-stack-header__back {
-    min-height: 38px;
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--fomio-surface) 88%, transparent);
-    color: color-mix(in oklab, var(--fomio-primary) 76%, var(--fomio-text));
-  }
-
   #main-outlet .user-main .user-stream > li,
   #main-outlet .user-main .user-stream .item,
   #main-outlet .user-main .user-notifications-list > li,
@@ -2472,56 +2373,6 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-badges-
 // The native Activity routes own data/pagination; touch only changes the local
 // child nav and item rhythm to match the detached profile prototype.
 body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activity-page {
-  #main-outlet .user-main .fomio-me-stack-shell {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    background: var(--fomio-bg);
-    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
-  }
-
-  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-stack-header {
-    border-bottom: 0;
-  }
-
-  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav {
-    margin: 0;
-    padding: 0 var(--fomio-mobile-child-pad-x, 16px);
-  }
-
-  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav::after {
-    display: none;
-  }
-
-  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav__inner {
-    gap: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
-    background: transparent;
-    box-shadow: none;
-  }
-
-  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav__link {
-    min-height: 42px;
-    padding: 0 13px;
-    border: 0;
-    border-radius: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    box-shadow: none;
-    color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
-    font-size: 0.86rem;
-  }
-
-  #main-outlet .user-main .fomio-me-stack-shell .fomio-me-activity-nav__link.is-active {
-    border-bottom-color: var(--fomio-primary);
-    background: transparent;
-    box-shadow: none;
-    color: var(--fomio-primary);
-  }
-
   #main-outlet .user-main .new-user-content-wrapper {
     padding-top: 12px;
   }

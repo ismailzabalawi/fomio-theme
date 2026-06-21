@@ -507,7 +507,6 @@ export function isMeStackPath(path, currentUser) {
 
 /**
  * Returns the i18n key suffix for the current Me section.
- * Used by fomio-me-stack-header to show the section title.
  * Returns null if the path is not a recognisable Me leaf.
  */
 export function meSectionTitleKey(path) {

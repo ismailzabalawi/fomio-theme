@@ -2,11 +2,6 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
-  getFomioCoreAccountSections,
-  getFomioNotificationsChildSections,
-  getFomioProfileMasterSections,
-} from "../javascripts/discourse/lib/fomio-account-sections.js";
-import {
   isAuthPath,
   isMeHubPath,
   isMeLandingSurfacePath,
@@ -124,14 +119,6 @@ describe("fomio-mobile-nav-paths", () => {
 
   it("does not classify another user's summary as an own-account shell route", () => {
     assert.equal(isOwnProfileShellPath("/u/other/summary", currentUser), false);
-    assert.deepEqual(
-      getFomioCoreAccountSections({
-        currentUser,
-        currentPath: "/u/other/summary",
-        siteSettings: {},
-      }),
-      []
-    );
   });
 
   it("treats own summary as a native profile route, not the touch me hub", () => {
@@ -227,120 +214,4 @@ describe("fomio-mobile-nav-paths", () => {
     );
   });
 
-  it("emits notifications panel links that match Discourse user notification routes", () => {
-    const sections = getFomioNotificationsChildSections({
-      currentUser,
-      currentPath: "/u/ismail/notifications",
-    });
-
-    assert.deepEqual(
-      sections.map((section) => [section.key, section.href]),
-      [
-        ["all", "/u/Ismail/notifications"],
-        ["replies", "/u/Ismail/notifications/responses"],
-        ["mentions", "/u/Ismail/notifications/mentions"],
-        ["likes", "/u/Ismail/notifications/likes-received"],
-        ["messages", "/u/Ismail/messages"],
-        ["settings", "/u/Ismail/preferences/notifications"],
-      ]
-    );
-    assert.equal(sections[0]?.isActive, true);
-    assert.equal(sections[1]?.isActive, false);
-  });
-
-  it("marks the matching notifications panel link active on each sub-route", () => {
-    const cases = [
-      ["/u/ismail/notifications/responses", "replies"],
-      ["/u/ismail/notifications/mentions", "mentions"],
-      ["/u/ismail/notifications/likes-received", "likes"],
-      ["/u/ismail/messages", "messages"],
-      ["/u/ismail/preferences/notifications", "settings"],
-    ];
-
-    for (const [path, activeKey] of cases) {
-      const sections = getFomioNotificationsChildSections({
-        currentUser,
-        currentPath: path,
-      });
-      const active = sections.filter((section) => section.isActive);
-
-      assert.equal(
-        active.length,
-        1,
-        `expected one active notifications panel link on ${path}`
-      );
-      assert.equal(active[0]?.key, activeKey);
-    }
-  });
-
-  it("emits own-account sections with the mobile preferences menu entry", () => {
-    const sections = getFomioCoreAccountSections({
-      currentUser,
-      currentPath: "/u/ismail/summary",
-      siteSettings: {},
-    });
-
-    assert.deepEqual(
-      sections.map((section) => [section.key, section.href]),
-      [
-        ["summary", "/u/Ismail/summary"],
-        ["activity", "/u/Ismail/activity"],
-        ["notifications", "/u/Ismail/notifications"],
-        ["messages", "/u/Ismail/messages"],
-        ["invites", "/u/Ismail/invited"],
-        ["preferences", "/my/preferences?fomio_menu=1"],
-      ]
-    );
-  });
-
-  it("emits generic profile master sections for another user", () => {
-    const viewedUser = {
-      id: 2,
-      username: "Soma",
-      name: "Soma",
-      badge_count: 3,
-    };
-    const staffViewer = {
-      ...currentUser,
-      admin: true,
-      staff: true,
-    };
-
-    const sections = getFomioProfileMasterSections({
-      currentUser: staffViewer,
-      currentPath: "/u/soma/activity",
-      siteSettings: { enable_badges: true, hide_user_activity_tab: false },
-      viewedUser,
-    });
-
-    assert.equal(
-      sections.some((section) => section.key === "preferences"),
-      false
-    );
-
-    assert.deepEqual(
-      sections.map((section) => [section.key, section.href]),
-      [
-        ["summary", "/u/Soma/summary"],
-        ["activity", "/u/Soma/activity"],
-        ["notifications", "/u/Soma/notifications"],
-        ["messages", "/u/Soma/messages"],
-        ["badges", "/u/Soma/badges"],
-        ["manage-user", "/admin/users/2/soma"],
-      ]
-    );
-
-    assert.deepEqual(
-      sections
-        .filter((section) => section.key !== "manage-user")
-        .map((section) => [section.key, section.icon, section.metaKey]),
-      [
-        ["summary", "user", "mobile_nav.me_hub_summary_meta"],
-        ["activity", "bars-staggered", "mobile_nav.me_hub_activity_meta"],
-        ["notifications", "bell", "mobile_nav.me_hub_notifications_meta"],
-        ["messages", "envelope", "mobile_nav.me_hub_messages_meta"],
-        ["badges", "certificate", "mobile_nav.me_hub_badges_meta"],
-      ]
-    );
-  });
 });

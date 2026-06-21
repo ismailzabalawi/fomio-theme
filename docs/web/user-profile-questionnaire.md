@@ -258,6 +258,31 @@ styling approach "additive."** This is fine — but it means **§1.4 must be ans
 > block was added (an earlier attempt was removed for conflicting with them). Bookmarks self-gating already
 > enforced by `lib/fomio-account-sections.js` (omits Bookmarks for non-self) — no new gating code needed.
 
+### ✅ UPDATE — Me-hub navigation shell removed; native nav is canonical (2026-06-21)
+
+To reach market faster, the **custom Me-hub navigation shell was removed** while the **editorial content
+panels were kept**. This resolves the §10 "detached card vs. additive restyle" tension decisively in favour
+of **additive restyle over native navigation**:
+
+- **Removed:** touch Me hub-landing grid (`fomio-me-hub`), `‹ Me` stack header (`fomio-me-stack-header`),
+  the profile/bookmarks/notifications **master–detail pane** contexts, the custom activity nav rail
+  (`fomio-me-activity-nav`), the `route:user.index` redirect (`fomio-user-index-touch-hub`),
+  `fomio-me-hub-landing`, `fomio-account-sections`, and the settings-gated "owned screen" experiment
+  (`fomio_owned_me_*` settings + `fomio-owned-activity` / `fomio-owned-notifications` /
+  `fomio-me-filter-chips`).
+- **Kept (editorial, restyle over native):** Summary hero/canvas, the **Activity/Bookmarks detached card**
+  (re-anchored from the deleted `:has(.fomio-me-activity-nav)` hook to the native `.user-activity-page`
+  body class so it survives), the custom **Messages** master-detail, and native Notifications. Preferences
+  is unchanged.
+- **Master pane** (`connectors/above-site-header/fomio-master-pane.gjs`) now serves **Hubs only**;
+  `connectors/above-site-header/fomio-sidebar.gjs` no longer opens profile/bookmarks/notifications overlays
+  (bookmarks is a plain native link; profile/notifications/preferences still open their header menus).
+- **Activity content** is now the **native stream** inside the editorial card (the owned-activity component
+  and `fomio_owned_me_activity_enabled` default were retired).
+
+Canonical guidance now lives in `apps/web/CLAUDE.md` → "Profile / Me — Native Navigation + Editorial
+Panels". `docs/web/me-navigation.md` is marked **superseded**.
+
 ---
 
 ## 9. Recommended default path (if you just want the safe answer)

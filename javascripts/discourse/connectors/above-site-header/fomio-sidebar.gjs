@@ -39,7 +39,7 @@ import { subscribeMessagesState } from "../../lib/fomio-messages-state";
 import { PENDING_MASTER_PANE_OVERLAY_KEY } from "../../lib/fomio-master-pane-overlay-state";
 
 const WEB_LOGIN_URL = "/login?fomio_web=1";
-const MASTER_CONTEXTS = ["home", "hubs", "bookmarks", "notifications", "profile"];
+const MASTER_CONTEXTS = ["home", "hubs"];
 
 export default class FomioSidebar extends Component {
   @service router;
@@ -156,12 +156,6 @@ export default class FomioSidebar extends Component {
     let context = "home";
     if (this.isHubsActive) {
       context = "hubs";
-    } else if (this.isBookmarksActive) {
-      context = "bookmarks";
-    } else if (this.isNotificationsActive) {
-      context = "notifications";
-    } else if (this.isProfileActive) {
-      context = "profile";
     }
 
     // Detect context switch and trigger animation
@@ -598,8 +592,13 @@ export default class FomioSidebar extends Component {
   }
 
   @action
-  onBookmarksActivate(e) {
-    this.toggleMasterPaneOverlay("bookmarks", e);
+  onBookmarksActivate() {
+    // Bookmarks is a native Discourse leaf — follow the href; just dismiss
+    // any open shell overlays on the way out.
+    if (typeof document !== "undefined") {
+      document.body.classList.remove("fomio-mobile-sidebar-open");
+      document.body.classList.remove("fomio-master-pane-rail-open");
+    }
   }
 
   @action
@@ -869,7 +868,7 @@ export default class FomioSidebar extends Component {
           {{#if this.currentUser}}
             <a
               href={{this.bookmarksUrl}}
-              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'bookmarks') 'is-active'}}"
+              class="fomio-sidebar__item {{if this.isBookmarksActive 'is-active'}}"
               aria-current={{if this.isBookmarksActive "page"}}
               title={{this.bookmarksLabel}}
               {{on "click" this.onBookmarksActivate}}
@@ -896,7 +895,7 @@ export default class FomioSidebar extends Component {
             {{#if this.currentUser}}
             <button
               type="button"
-              class="fomio-sidebar__item {{if (eq this.activeMasterContext 'notifications') 'is-active'}}"
+              class="fomio-sidebar__item {{if this.isNotificationsActive 'is-active'}}"
               aria-current={{if this.isNotificationsActive "page"}}
               title={{this.notificationsLabel}}
               {{on "click" this.onNotificationsActivate}}
@@ -946,7 +945,7 @@ export default class FomioSidebar extends Component {
               {{else}}
                 <a
                   href={{this.profileUrl}}
-                  class="fomio-sidebar__item fomio-sidebar__item--profile {{if (eq this.activeMasterContext 'profile') 'is-active'}}"
+                  class="fomio-sidebar__item fomio-sidebar__item--profile {{if this.isProfileActive 'is-active'}}"
                   {{on "click" this.onProfileActivate}}
                 >
                   <span class="fomio-sidebar__icon">{{icon "user"}}</span>
