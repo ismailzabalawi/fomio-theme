@@ -38,7 +38,31 @@ function applyActivityScreenClasses() {
   }
 }
 
+// Scroll the secondary activity nav so the active tab is horizontally centred.
+// Uses double-rAF to run after Discourse has painted the updated active state.
+function scrollActiveSecondaryTabIntoView() {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const active = document.querySelector(
+        "#main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills [aria-current='location'] a, " +
+        "#main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills a.active"
+      );
+      if (active) {
+        active.scrollIntoView({ behavior: "instant", block: "nearest", inline: "center" });
+      }
+    });
+  });
+}
+
 export default apiInitializer("1.8.0", (api) => {
   applyActivityScreenClasses();
-  api.onPageChange(applyActivityScreenClasses);
+  scrollActiveSecondaryTabIntoView();
+  api.onPageChange(() => {
+    applyActivityScreenClasses();
+    scrollActiveSecondaryTabIntoView();
+  });
 });

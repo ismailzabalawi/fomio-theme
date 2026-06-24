@@ -11158,6 +11158,172 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   }
 }
 
+// Activity secondary nav — same underline-tab language as the primary profile nav.
+// "All / Bytes / Replies / Read / Drafts / Likes / Bookmarks / …" row mirrors
+// the Summary/Activity/Notifications/… row exactly: text labels, hidden icons,
+// 2px ::after underline on active, horizontal scroll, no pill/card chrome.
+// Active uses aria-current="location" (secondary nav) vs "page" (primary nav).
+body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode).user-activity-page {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 82%, transparent);
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  // Overflow lives on <ul> directly (no .horizontal-overflow-nav wrapper here).
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.15;
+    text-decoration: none;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color 0.16s ease,
+      background 0.16s ease;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a::after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    bottom: -1px;
+    left: 10px;
+    height: 2px;
+    border-radius: 999px;
+    background: transparent;
+    transition: background 0.16s ease;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a .d-icon {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a span {
+    display: inline !important;
+    color: inherit;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a:hover {
+    background: color-mix(in oklab, var(--fomio-surface) 60%, transparent);
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--fomio-primary) 36%, transparent);
+    outline-offset: -2px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+    font-weight: 700;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a::after,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active::after,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a::after {
+    background: var(--fomio-primary);
+  }
+
+  // Focus mode: when a tab is active, pull back the others so the active one
+  // reads as the clear anchor. Restores to full opacity on hover.
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills:has([aria-current="location"]) > li:not([aria-current="location"]) > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills:has(a.active) > li:not(:has(a.active)) > a {
+    opacity: 0.46;
+    transition:
+      opacity 0.16s ease,
+      color 0.16s ease,
+      background 0.16s ease;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills:has([aria-current="location"]) > li:not([aria-current="location"]):hover > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills:has(a.active) > li:not(:has(a.active)):hover > a {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode).user-activity-page {
+    #main-outlet .user-main .user-navigation.user-navigation-secondary {
+      margin: 0 0 14px;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+      min-height: 42px;
+      padding-inline: 12px;
+      font-size: 0.84rem;
+    }
+  }
+}
+
+// The generic touch leaf-page block (~line 9556) applies pill chrome
+// (border-color, background gradient, box-shadow) to secondary-nav active items
+// across all leaf pages. That block has higher specificity than the underline
+// block above, so explicitly neutralise the pill properties here with a
+// matching touch selector placed later in the cascade.
+body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode).user-activity-page {
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+  }
+}
+
 // Final profile-tab prototype alignment. The underlying DOM remains native
 // Discourse (`ul > li > a`), but the visual contract follows the supplied
 // React TabsNav exactly: one horizontal row, 40px tabs, transparent background,

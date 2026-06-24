@@ -2493,6 +2493,7 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activit
     padding-top: 12px;
   }
 
+  // Strip cards → flat hairline-divided rows (one-flat-surface pattern).
   #main-outlet .user-main #user-content .user-stream {
     gap: 0;
     margin-top: 0;
@@ -2509,6 +2510,121 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activit
 
   #main-outlet .user-main #user-content .user-stream .user-stream-item:last-child {
     border-bottom: 0;
+  }
+
+  // fomio-activity-stream-list touch refinements:
+  // tighter column gaps and smaller action label icon to recover content width
+  // on narrow viewports (the desktop values are 14px / 32px).
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__header,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__header {
+    gap: 10px;
+  }
+
+  .fomio-activity-action-label__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+
+  // Topics-list (Topics / Read / Bookmarks sub-routes): hide the posts-count
+  // column on phones so the title has maximum runway. Activity (age) is kept
+  // as an orientation anchor in the far right.
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td.posts {
+    display: none;
+  }
+
+  // The shared leaf-page pill block above (~line 449) sets border-color,
+  // background gradient, and box-shadow on secondary-nav active items.
+  // Reset those here so the underline system from common.scss wins.
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+  }
+}
+
+// ── Profile Summary — touch surface ──────────────────────────────────────────
+// Flat canvas matching the other Me-leaf treatments. Summary uses #user-content
+// directly (not .new-user-content-wrapper), so horizontal padding is applied here.
+// Secondary nav pills are excluded from the shared leaf-page block above, so
+// they get the same pill treatment here.
+body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-summary-page {
+  #main-outlet {
+    padding-top: 0;
+  }
+
+  #main-outlet .user-main {
+    min-height: calc(100svh - var(--header-offset, 50px));
+    padding-bottom: max(22px, var(--fomio-page-pad-bottom, 16px));
+    background: var(--fomio-bg);
+    overflow-x: hidden;
+  }
+
+  #main-outlet .user-main #user-content {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding:
+      16px
+      var(--fomio-mobile-child-pad-x)
+      max(18px, var(--fomio-safe-bottom, 0px));
+  }
+
+  // Tighter section rhythm on small screens.
+  #main-outlet .user-main #user-content .top-section {
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  // Long teret names would squeeze the bar track to nothing — cap the tag column.
+  .fomio-top-terets__tag {
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Secondary nav pills — same treatment as the other Me-leaf pages.
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    margin: 0 0 12px;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+    gap: 6px;
+    padding: 0 0 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.82rem;
+    font-weight: 720;
+    letter-spacing: -0.015em;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active {
+    border-color: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-border-soft));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-card) 98%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-primary) 7%, var(--fomio-surface)) 100%
+      );
+    color: var(--fomio-text);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 60%),
+      0 9px 18px rgb(17 24 39 / 5%);
   }
 }
 
@@ -2637,6 +2753,165 @@ body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
   right: 0;
   left: auto;
   min-width: 160px;
+}
+
+// Activity touch nav alignment — keep native Discourse tab links/overflow, but
+// make the primary and secondary rows read as the same editorial tab system.
+body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
+  --fomio-activity-mobile-nav-inset: var(--fomio-mobile-child-pad-x, 16px);
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary,
+  #main-outlet .user-main .new-user-content-wrapper {
+    max-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary {
+    width: auto !important;
+    margin:
+      0
+      var(--fomio-activity-mobile-nav-inset)
+      28px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--fomio-activity-hairline, var(--fomio-border-soft)) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper {
+    padding:
+      14px
+      var(--fomio-activity-mobile-nav-inset)
+      max(22px, var(--fomio-safe-bottom, 0px)) !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex !important;
+    width: 100% !important;
+    margin: 0 0 28px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--fomio-activity-hairline, var(--fomio-border-soft)) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary::-webkit-scrollbar,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-left,
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-right,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav__scroll-left,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav__scroll-right {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.user-nav,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+    width: max-content !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    list-style: none;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav::-webkit-scrollbar,
+  #main-outlet .user-main ul.nav-pills.user-nav::-webkit-scrollbar,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li,
+  #main-outlet .user-main ul.nav-pills.user-nav > li,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    width: auto !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 16px !important;
+    margin-bottom: -1px !important;
+    border: 0 !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--fomio-fg-muted) !important;
+    font-family: var(--fomio-sans) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a::after,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a::after,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a::after {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a .d-icon,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a .d-icon {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li[aria-current="page"] > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main ul.nav-pills.user-nav > li[aria-current="page"] > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="page"] > a {
+    border-bottom-color: var(--fomio-primary) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--fomio-primary) !important;
+    font-weight: 600 !important;
+  }
 }
 
 
