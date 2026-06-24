@@ -258,8 +258,124 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) #reply-contr
   border-spacing: 0 0.75rem;
 }
 
-body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode) {
+html.mobile-view body:not(.fomio-auth-mode):is(.fomio-surface-touch, .fomio-sidebar-active, .fomio-discourse-native-mode) {
   --fomio-mobile-child-pad-x: clamp(14px, 4vw, 18px);
+
+  &.user-summary-page,
+  &.user-activity-page,
+  &.user-notifications-page,
+  &.user-messages-page,
+  &.user-invites-page,
+  &.user-preferences-page,
+  &.user-badges-page {
+    #main-outlet .user-main > section.about {
+      width: auto;
+      max-width: none;
+      margin: 0 0 14px;
+      padding: 0;
+    }
+
+    #main-outlet .user-main > section.about .details {
+      padding: 22px var(--fomio-mobile-child-pad-x) 20px;
+    }
+
+    #main-outlet .user-main > section.about .staff-counters {
+      margin-bottom: 12px;
+      gap: 6px;
+      font-size: 10.5px;
+    }
+
+    #main-outlet .user-main > section.about .primary {
+      column-gap: 14px;
+      row-gap: 14px;
+    }
+
+    #main-outlet .user-main > section.about .primary-textual {
+      min-width: 0;
+    }
+
+    #main-outlet .user-main > section.about .user-profile-names__primary {
+      font-size: 26px;
+      line-height: 1.12;
+      overflow-wrap: anywhere;
+    }
+
+    #main-outlet .user-main > section.about .user-profile__location-and-website,
+    #main-outlet .user-main > section.about .user-profile-names__secondary {
+      font-size: 12.5px;
+    }
+
+    #main-outlet .user-main > section.about .bio {
+      margin-top: 18px;
+      font-size: 15.5px;
+      line-height: 1.58;
+    }
+
+    #main-outlet .user-main > section.about .controls {
+      margin: 2px 0 0;
+    }
+
+    #main-outlet .user-main > section.about .controls ul {
+      gap: 8px;
+      padding-bottom: 2px;
+    }
+
+    #main-outlet .user-main > section.about .controls .btn {
+      min-height: 36px;
+      padding-inline: 14px;
+      font-size: 12.5px;
+    }
+
+    #main-outlet .user-main > section.about .secondary {
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    #main-outlet .user-main > section.about .secondary dl {
+      gap: 16px 22px;
+    }
+
+    #main-outlet .user-main > section.about .secondary dl > div {
+      min-width: 72px;
+      max-width: 100%;
+    }
+
+    #main-outlet .user-main > section.about .secondary dd {
+      font-size: 20px;
+    }
+
+    #main-outlet .user-main > section.about .secondary dd.email,
+    #main-outlet .user-main > section.about .secondary dd.trust-level,
+    #main-outlet .user-main > section.about .secondary dd.groups {
+      max-width: min(220px, calc(100vw - (var(--fomio-mobile-child-pad-x) * 2)));
+    }
+
+    #main-outlet .user-main #user-content > .stats-section {
+      margin-bottom: 26px;
+    }
+
+    #main-outlet .user-main #user-content > .stats-section .stats-title {
+      margin-bottom: 12px;
+    }
+
+    // Flat vertical list (no horizontal tile carousel) so the summary stats
+    // read as the editorial list on phones too.
+    #main-outlet .user-main #user-content > .stats-section > ul {
+      gap: 0;
+      padding: 0;
+      margin-inline: 0;
+      overflow: visible;
+    }
+
+    #main-outlet .user-main #user-content > .stats-section > ul > li > a {
+      padding: 0;
+      border-radius: 0;
+    }
+
+    #main-outlet .user-main #user-content > .stats-section .user-stat .value {
+      font-size: 18px;
+    }
+  }
 
   // Me leaf pages — one flat surface (see
   // docs/web/touch-preferences-redesign-pattern.md). No page canvas
@@ -2433,7 +2549,6 @@ body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
     overflow: hidden !important;
   }
 
-  .fomio-messages-shell-wrapper,
   .fomio-messages-master-detail,
   .fomio-messages-master-container,
   .fomio-messages-master {
@@ -2441,7 +2556,6 @@ body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
     max-width: none !important;
   }
 
-  .fomio-messages-shell-wrapper,
   .fomio-messages-master-detail,
   .fomio-messages-master-container {
     flex: 1 1 auto !important;

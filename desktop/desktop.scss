@@ -1214,3 +1214,17 @@ body.fomio-surface-compact-desktop {
     width: 100%;
   }
 }
+
+// Activity mockup v1 uses a document-scrolling editorial list. Keep the
+// fixed-window account shell for messages/notifications, but let this activity
+// sheet grow naturally so Discourse load-more can be reached.
+body.fomio-sidebar-active.fomio-activity-screen:not(.fomio-auth-mode):not(.fomio-surface-touch) {
+  overflow: auto;
+
+  #main-outlet,
+  #main-outlet > .container,
+  #main-outlet .user-main {
+    max-height: none;
+    overflow: visible;
+  }
+}

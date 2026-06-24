@@ -2,6 +2,13 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  fomioActivityRouteClass,
+  fomioActivityRouteKind,
+  isFomioActivityMockupPath,
+  isFomioActivityStreamPath,
+  isFomioActivityTopicsPath,
+} from "../javascripts/discourse/lib/fomio-activity-paths.js";
+import {
   isAuthPath,
   isMeHubPath,
   isMeLandingSurfacePath,
@@ -17,15 +24,68 @@ import {
 } from "../javascripts/discourse/lib/fomio-mobile-nav-paths.js";
 import { fomioCurrentPath } from "../javascripts/discourse/lib/fomio-router-pathname.js";
 import {
-  shouldHideSharedProfileHeader,
-  shouldRenderInlineProfileIdentity,
-} from "../javascripts/discourse/lib/fomio-profile-identity-ownership.js";
-import {
   hasFomioPreferencesMenuMarker,
   isFomioPreferencesChildPath,
   isFomioPreferencesPath,
   isFomioPreferencesRootPath,
 } from "../javascripts/discourse/lib/fomio-preferences-sections.js";
+
+describe("fomio-activity-paths", () => {
+  it("recognizes native and plugin activity leaves for the activity shell", () => {
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity"), true);
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity/topics"), true);
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity/replies"), true);
+    assert.equal(
+      isFomioActivityMockupPath("/u/ismail/activity/likes-given"),
+      true
+    );
+    assert.equal(isFomioActivityMockupPath("/my/activity"), true);
+    assert.equal(isFomioActivityMockupPath("/my/activity?foo=1"), true);
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity/read"), true);
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity/drafts"), true);
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity/bookmarks"), true);
+    assert.equal(isFomioActivityMockupPath("/u/ismail/activity/solved"), true);
+
+    assert.equal(isFomioActivityMockupPath("/u/ismail/preferences"), false);
+  });
+
+  it("separates stream and topic-list activity routes", () => {
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity"), true);
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/replies"), true);
+    assert.equal(
+      isFomioActivityStreamPath("/u/ismail/activity/likes-given"),
+      true
+    );
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/topics"), false);
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/read"), false);
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/drafts"), true);
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/solved"), true);
+
+    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/topics"), true);
+    assert.equal(isFomioActivityTopicsPath("/my/activity/topics"), true);
+    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/read"), true);
+    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/bookmarks"), true);
+    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity"), false);
+  });
+
+  it("returns the activity route kind used for body classes", () => {
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity"), "all");
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity/topics"), "topics");
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity/replies"), "replies");
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity/read"), "read");
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity/drafts"), "drafts");
+    assert.equal(
+      fomioActivityRouteKind("/u/ismail/activity/likes-given"),
+      "likes-given"
+    );
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity/pending"), "pending");
+    assert.equal(fomioActivityRouteKind("/u/ismail/activity/solved"), "solved");
+    assert.equal(
+      fomioActivityRouteClass("/u/ismail/activity/bookmarks-with-reminders"),
+      "fomio-activity-screen--bookmarks-with-reminders"
+    );
+  });
+});
 
 const currentUser = {
   id: 7,
@@ -152,66 +212,4 @@ describe("fomio-mobile-nav-paths", () => {
       false
     );
   });
-
-  it("does not render inline profile identity once parent/master owns it", () => {
-    assert.equal(
-      shouldRenderInlineProfileIdentity({
-        currentPath: "/u/ismail",
-        viewedUser: currentUser,
-      }),
-      false
-    );
-
-    assert.equal(
-      shouldRenderInlineProfileIdentity({
-        currentPath: "/u/ismail/summary",
-        viewedUser: currentUser,
-      }),
-      false
-    );
-  });
-
-  it("hides the shared header only where parent/master owns profile identity", () => {
-    assert.equal(
-      shouldHideSharedProfileHeader({
-        currentPath: "/u/ismail",
-        currentUser,
-        isTouchShell: true,
-      }),
-      true
-    );
-    assert.equal(
-      shouldHideSharedProfileHeader({
-        currentPath: "/u/ismail/activity",
-        currentUser,
-        isTouchShell: true,
-      }),
-      true
-    );
-    assert.equal(
-      shouldHideSharedProfileHeader({
-        currentPath: "/u/other/activity",
-        currentUser,
-        isTouchShell: true,
-      }),
-      false
-    );
-    assert.equal(
-      shouldHideSharedProfileHeader({
-        currentPath: "/u/other/activity",
-        currentUser,
-        isTouchShell: false,
-      }),
-      true
-    );
-    assert.equal(
-      shouldHideSharedProfileHeader({
-        currentPath: "/login",
-        currentUser,
-        isTouchShell: false,
-      }),
-      false
-    );
-  });
-
 });

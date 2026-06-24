@@ -59,6 +59,11 @@ en:
     # Native activity filter nav labels (core uses "Topics").
     user_action_groups:
       "4": "Bytes"
+    activity_screen:
+      actions:
+        created_byte: "Created a Byte"
+        replied: "Replied"
+        liked: "Liked"
   auth_login:
     subheader: "Welcome back."
   auth_signup:
@@ -290,16 +295,6 @@ en:
       group_conversations: "No conversations in this group inbox yet."
       detail: "Choose a conversation to read it here."
       body: "Start a conversation with a member."
-  activity_stream:
-    kicker:
-      byte: "Byte"
-      reply: "Reply"
-      like: "Liked"
-      mention: "Mention"
-      quote: "Quote"
-      edit: "Edit"
-      link: "Link"
-      draft: "Draft"
   sidebar:
     aria_label: "Fomio navigation"
     search_label: "Search Fomio"

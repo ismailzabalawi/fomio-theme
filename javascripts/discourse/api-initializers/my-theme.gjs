@@ -1,6 +1,7 @@
 import { apiInitializer } from "discourse/lib/api";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
+import { isFomioActivityTopicsPath } from "../lib/fomio-activity-paths";
 
 const PHOSPHOR_ICON_REPLACEMENTS = {
   "angle-right": "fomio-ph-caret-right",
@@ -33,7 +34,6 @@ const PHOSPHOR_ICON_REPLACEMENTS = {
   xmark: "fomio-ph-x",
 };
 
-const ACTIVITY_TOPICS_PATH = /^\/(?:u\/[^/]+|my)\/activity\/topics(?:\/.*)?(?:\?.*)?$/i;
 const ACTIVITY_TOPICS_LIST_SELECTOR = "#main-outlet .user-main #user-content .topic-list";
 const ACTIVITY_TOPICS_ITEM_SELECTOR = `${ACTIVITY_TOPICS_LIST_SELECTOR} .topic-list-item`;
 
@@ -47,7 +47,7 @@ function decorateActivitySurfaces() {
 
   const currentUrl = window.location.pathname + window.location.search;
 
-  if (ACTIVITY_TOPICS_PATH.test(currentUrl)) {
+  if (isFomioActivityTopicsPath(currentUrl)) {
     document.querySelectorAll(ACTIVITY_TOPICS_LIST_SELECTOR).forEach((list) => {
       list.classList.add("fomio-activity-topics-list");
     });
@@ -76,7 +76,9 @@ function isActivityTopicsPage() {
     return false;
   }
 
-  return ACTIVITY_TOPICS_PATH.test(window.location.pathname + window.location.search);
+  return isFomioActivityTopicsPath(
+    window.location.pathname + window.location.search
+  );
 }
 
 export default apiInitializer("1.8.0", (api) => {
@@ -206,7 +208,7 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     const currentUrl = window.location.pathname + window.location.search;
-    if (!ACTIVITY_TOPICS_PATH.test(currentUrl)) {
+    if (!isFomioActivityTopicsPath(currentUrl)) {
       return;
     }
 

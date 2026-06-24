@@ -21,10 +21,6 @@ import {
   openFomioNotificationsMenu,
 } from "../../lib/fomio-notifications-menu";
 import { openFomioPreferencesMenu } from "../../lib/fomio-preferences-menu";
-import {
-  FOMIO_USER_MENU_STATE_EVENT,
-  openFomioUserMenu,
-} from "../../lib/fomio-user-menu";
 import { subscribeFomioTouchShell } from "../../lib/fomio-subscribe-touch-shell";
 import {
   bookmarksPathForUser,
@@ -55,14 +51,12 @@ export default class FomioSidebar extends Component {
   @tracked isTouchSurface = false;
   @tracked isSearchSheetOpen = false;
   @tracked notificationsMenuOpen = false;
-  @tracked userMenuOpen = false;
   @tracked messagesFilter = "latest";
   @tracked previousMasterContext = null;
   @tracked masterContextChanged = false;
   #unsubscribeTouchShell = null;
   #unsubscribeSearchPalette = null;
   #notificationsMenuStateHandler = null;
-  #userMenuStateHandler = null;
   #unsubscribeMessages = null;
   #contextSwitchTimeoutId = null;
 
@@ -81,16 +75,9 @@ export default class FomioSidebar extends Component {
     this.#notificationsMenuStateHandler = (event) => {
       this.notificationsMenuOpen = Boolean(event?.detail?.open);
     };
-    this.#userMenuStateHandler = (event) => {
-      this.userMenuOpen = Boolean(event?.detail?.open);
-    };
     window.addEventListener(
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
-    );
-    window.addEventListener(
-      FOMIO_USER_MENU_STATE_EVENT,
-      this.#userMenuStateHandler
     );
   }
 
@@ -102,10 +89,6 @@ export default class FomioSidebar extends Component {
     window.removeEventListener(
       FOMIO_NOTIFICATIONS_MENU_STATE_EVENT,
       this.#notificationsMenuStateHandler
-    );
-    window.removeEventListener(
-      FOMIO_USER_MENU_STATE_EVENT,
-      this.#userMenuStateHandler
     );
   }
 
@@ -226,9 +209,8 @@ export default class FomioSidebar extends Component {
 
   get isProfileActive() {
     return (
-      this.userMenuOpen ||
-      (isOwnProfileShellPath(this.currentPath, this.currentUser) &&
-        !this.isPreferencesActive)
+      isOwnProfileShellPath(this.currentPath, this.currentUser) &&
+      !this.isPreferencesActive
     );
   }
 
@@ -637,21 +619,10 @@ export default class FomioSidebar extends Component {
 
   @action
   onProfileActivate(e) {
-    if (e?.metaKey || e?.ctrlKey || e?.shiftKey || e?.altKey) {
-      return;
+    if (typeof document !== "undefined") {
+      document.body.classList.remove("fomio-mobile-sidebar-open");
+      document.body.classList.remove("fomio-master-pane-rail-open");
     }
-
-    e?.preventDefault();
-    e?.stopPropagation();
-
-    if (!this.currentUser) {
-      redirectToLoginWithIntent("view_profile", this.currentPath);
-      return;
-    }
-
-    document.body.classList.remove("fomio-mobile-sidebar-open");
-    document.body.classList.remove("fomio-master-pane-rail-open");
-    openFomioUserMenu("desktop", e?.currentTarget?.getBoundingClientRect?.());
   }
 
   <template>

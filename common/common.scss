@@ -5593,1284 +5593,17 @@ body.fomio-sidebar-active.fomio-master-pane-rail-open:not(.fomio-auth-mode):not(
   }
 }
 
-// Shared profile header wrapper.
-.fomio-user-profile-summary {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-#main-outlet .user-main .about .primary .fomio-user-profile-summary ~ .user-profile-avatar,
-#main-outlet .user-main .about .primary .fomio-user-profile-summary ~ .primary-textual {
-  display: none !important;
-}
-
-// Unified profile card: compact summary + native Discourse actions (PM, mute/ignore, admin, expand).
-// Discourse `user.scss` (collapsed-info, mobile): `.primary` is flex-row; `.controls` is `flex: 1 1 25%`
-// and `.primary-textual` is `flex: 1 0 80%`. We hide textual/avatar but must reset flex so the card
-// uses full width instead of a narrow “collapsed” column.
-#main-outlet .user-main .about .details .primary:has(.fomio-user-profile-summary) {
-  margin-bottom: 14px;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-  border-radius: 24px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
-      color-mix(in oklab, var(--fomio-surface) 92%, var(--fomio-bg)) 100%
-    );
-  // Visible so SelectKit / dropdown bodies from profile actions are not clipped.
-  overflow: visible;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 62%),
-    0 14px 34px rgb(17 24 39 / 5%);
-  box-sizing: border-box;
-  width: 100%;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: stretch;
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  .fomio-user-profile-summary {
-  flex: 0 0 auto;
-  width: 100%;
-  align-self: stretch;
-}
-
-#main-outlet .user-main .about.collapsed-info .details:has(.primary .fomio-user-profile-summary) {
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  .fomio-user-profile-summary
-  .fomio-me-hub__summary {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
-#main-outlet .user-main .about:has(.fomio-user-profile-summary) .staff-counters {
-  margin: 2px 0 12px;
-  padding: 13px 15px;
-  border-radius: 18px;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--fomio-surface) 95%, #fff) 0%,
-      color-mix(in oklab, var(--fomio-bg) 22%, var(--fomio-surface)) 100%
-    );
-  box-sizing: border-box;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  line-height: 1.45;
-  color: var(--fomio-muted);
-
-  a {
-    color: var(--fomio-primary);
-    font-weight: 600;
-    text-decoration: none;
-  }
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls {
-  margin: 0;
-  padding: 12px 12px 13px;
-  border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-  background: color-mix(in oklab, var(--fomio-bg) 28%, var(--fomio-surface));
-  box-sizing: border-box;
-  flex: 0 0 auto !important;
-  width: 100% !important;
-  max-width: none !important;
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  ul {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 8px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  ul
-  > li {
-  margin: 0;
-  display: flex;
-  align-items: stretch;
-  max-width: 100%;
-  // Discourse collapsed mobile: `flex: 1 1 45%` on `li` — leaves a narrow action strip.
-  flex: 1 1 auto !important;
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  .btn,
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  a.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 14px;
-  border-radius: 14px;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 600;
-  line-height: 1.2;
-  box-sizing: border-box;
-  cursor: pointer;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-
-  .d-icon {
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-  }
-
-  .d-button-label {
-    white-space: nowrap;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--fomio-primary);
-    outline-offset: 2px;
-  }
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  .btn.btn-primary {
-  background: var(--fomio-primary);
-  color: var(--fomio-primary-fg, #fff);
-  border: 1px solid color-mix(in oklab, var(--fomio-primary) 88%, #000);
-
-  &:hover {
-    filter: brightness(1.03);
-  }
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  .btn.btn-default,
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  a.btn.btn-default {
-  background: color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg));
-  color: var(--fomio-text);
-  border: 1px solid color-mix(in oklab, var(--fomio-border) 78%, transparent);
-
-  &:hover {
-    background: color-mix(in oklab, var(--fomio-surface) 94%, #fff);
-    border-color: color-mix(in oklab, var(--fomio-border-soft) 86%, transparent);
-  }
-}
-
-// Mute / ignore / normal — DropdownSelectBox (user-notifications-dropdown)
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  .select-kit.user-notifications {
-  flex: 1 1 auto;
-  min-width: min(100%, 200px);
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  .select-kit.user-notifications
-  .select-kit-header {
-  min-height: 44px;
-  padding: 8px 12px;
-  border-radius: 14px;
-  border: 1px solid color-mix(in oklab, var(--fomio-border) 78%, transparent);
-  background: color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg));
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 600;
-  color: var(--fomio-text);
-}
-
-#main-outlet
-  .user-main
-  .about
-  .details
-  .primary:has(.fomio-user-profile-summary)
-  section.controls
-  .select-kit.user-notifications
-  .select-kit-header
-  .caret-icon {
-  color: var(--fomio-muted);
-}
-
-// Expanded profile details (native CollapsedInfo / #collapsed-info-panel) — same card language.
-#main-outlet
-  .user-main
-  .about
-  .details:has(.primary .fomio-user-profile-summary)
-  .secondary#collapsed-info-panel {
-  margin: 0 0 14px;
-  padding: 16px 18px;
-  border-radius: 22px;
-  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
-      color-mix(in oklab, var(--fomio-surface) 93%, var(--fomio-bg)) 100%
-    );
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 62%),
-    0 12px 26px rgb(17 24 39 / 4%);
-  box-sizing: border-box;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  line-height: 1.45;
-  color: var(--fomio-text);
-
-  dl {
-    margin: 0;
-  }
-
-  dt {
-    margin: 0 0 2px;
-    color: var(--fomio-ink-muted);
-    font-size: var(--fomio-text-xs);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
-  dd {
-    margin: 0 0 12px;
-    color: var(--fomio-text);
-  }
-
-  .group-link {
-    color: var(--fomio-primary);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .btn-danger.btn-delete-user {
-    min-height: 44px;
-    border-radius: 12px;
-    font-family: var(--fomio-font-ui);
-    font-weight: 600;
-    font-size: var(--fomio-text-sm);
-  }
-}
-
-// ── User profile · Summary detail surface ──────────────────────────────
-// Editorial glass redesign: translucent section cards over a warm canvas,
-// Lora serif headings, sans tabular numerals for stat values. Per-stat
-// hooks use core's stable `stats-*` li classes and the `.user-stat`
-// value/label markup (verified against discourse templates/user/summary.gjs
-// and ui-kit/d-user-stat.gjs). The hero header is rendered by
-// connectors/above-user-summary-stats/fomio-summary-hero.gjs.
-body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
-  --fomio-summary-glass: color-mix(in oklab, var(--fomio-card) 62%, transparent);
-  --fomio-summary-tile: color-mix(in oklab, var(--fomio-card) 46%, transparent);
-  --fomio-summary-tile-hover: color-mix(in oklab, var(--fomio-card) 74%, transparent);
-  --fomio-summary-hairline: color-mix(in oklab, var(--fomio-text) 9%, transparent);
-  --fomio-summary-hairline-soft: color-mix(in oklab, var(--fomio-text) 6%, transparent);
-  --fomio-summary-card-shadow:
-    0 1px 1px color-mix(in oklab, var(--fomio-shadow) 16%, transparent),
-    0 24px 48px -32px color-mix(in oklab, var(--fomio-shadow) 55%, transparent);
-  --fomio-summary-tile-shadow-hover:
-    0 14px 28px -20px color-mix(in oklab, var(--fomio-shadow) 60%, transparent);
-
-  // Stat numerals lead with the platform UI face (San Francisco on Apple
-  // hardware) and fall back to the brand sans stack.
-  --fomio-summary-numeral-font: -apple-system, "SF Pro Display", "Inter",
-    var(--fomio-font-ui);
-
-  #main-outlet .user-main {
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-    background:
-      radial-gradient(
-        120% 70% at 0% 0%,
-        color-mix(in oklab, var(--fomio-primary) 6%, transparent) 0%,
-        transparent 42%
-      ),
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 70%, var(--fomio-bg)) 0%,
-        var(--fomio-bg) 100%
-      );
-  }
-
-  #main-outlet .user-main #user-content.user-content {
-    margin-top: 16px;
-    padding: 0;
-    background: transparent;
-  }
-
-  // Editorial hero (connectors/above-user-summary-stats/fomio-summary-hero.gjs)
-  // — mirrors the prototype's ProfileHeroEditorial: avatar + serif name, an
-  // eyebrow (title / admin), @handle · location · website, serif-italic bio,
-  // four serif stat blocks, and a "since … · groups" footer.
-  .fomio-summary-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-    margin: 4px 2px 28px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--fomio-summary-hairline);
-  }
-
-  // Top row: avatar | identity text | action button.
-  .fomio-summary-hero__top {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    width: 100%;
-  }
-
-  .fomio-summary-hero__top .fomio-avatar {
-    flex: none;
-  }
-
-  .fomio-summary-hero__identity-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .fomio-summary-hero__eyebrow {
-    font-family: var(--fomio-font-ui);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wider);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-
-    &.is-admin {
-      color: var(--fomio-primary);
-    }
-  }
-
-  .fomio-summary-hero__title {
-    margin: 0;
-    font-family: var(--fomio-font-serif);
-    font-size: clamp(1.8rem, 1.6rem + 0.7vw, 2.45rem);
-    font-weight: 700;
-    line-height: 1.12;
-    letter-spacing: -0.03em;
-    color: var(--fomio-text);
-  }
-
-  .fomio-summary-hero__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--fomio-muted);
-  }
-
-  .fomio-summary-hero__handle {
-    color: var(--fomio-secondary);
-    font-weight: 600;
-  }
-
-  .fomio-summary-hero__dot {
-    opacity: 0.4;
-  }
-
-  .fomio-summary-hero__website {
-    color: var(--fomio-primary);
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  // Action (self → Edit profile). Pushed to the trailing edge of the top row.
-  .fomio-summary-hero__action {
-    flex: none;
-    margin-inline-start: auto;
-    display: inline-flex;
-    align-items: center;
-    min-height: 34px;
-    padding: 0 18px;
-    border-radius: var(--fomio-radius-pill);
-    border: 1px solid var(--fomio-border);
-    background: transparent;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--fomio-text);
-
-    &:hover {
-      background: var(--fomio-surface);
-    }
-  }
-
-  .fomio-summary-hero__deck {
-    margin: 0;
-    max-width: 38rem;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.95rem;
-    line-height: 1.55;
-    color: var(--fomio-muted);
-  }
-
-  .fomio-summary-hero__bio {
-    max-width: 38rem;
-    margin: 0;
-    font-family: var(--fomio-font-serif);
-    font-style: italic;
-    font-size: 1.05rem;
-    line-height: 1.65;
-    color: var(--fomio-secondary);
-
-    p {
-      margin: 0 0 0.6em;
-    }
-
-    p:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  // Four serif stat blocks (value over uppercase label), prototype StatBlock.
-  .fomio-summary-hero__stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 36px;
-  }
-
-  .fomio-summary-hero__stat {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .fomio-summary-hero__stat-value {
-    font-family: var(--fomio-font-serif);
-    font-size: 1.4rem;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--fomio-text);
-  }
-
-  .fomio-summary-hero__stat-label {
-    font-family: var(--fomio-font-ui);
-    font-size: 0.69rem;
-    font-weight: 500;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    color: var(--fomio-muted);
-  }
-
-  // Footer: "On Fomio since …" plus non-automatic group pills.
-  .fomio-summary-hero__footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--fomio-muted);
-  }
-
-  .fomio-summary-hero__group {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 9px;
-    border-radius: var(--fomio-radius-pill);
-    background: var(--fomio-surface);
-    font-size: 0.69rem;
-    font-weight: 600;
-    color: var(--fomio-secondary);
-  }
-
-  // The hero already surfaces bytes / replies / received / given, so hide those
-  // duplicates from the native stats grid — it now reads as reading &
-  // engagement (days visited, time read, topics entered, replies read,
-  // bookmarks).
-  #main-outlet .user-main #user-content .stats-section li.stats-topic-count,
-  #main-outlet .user-main #user-content .stats-section li.stats-post-count,
-  #main-outlet .user-main #user-content .stats-section li.stats-likes-given,
-  #main-outlet .user-main #user-content .stats-section li.stats-likes-received {
-    display: none;
-  }
-
-  // The custom "Top terets" bar chart (connectors/below-user-summary-stats/
-  // fomio-top-terets.gjs) replaces the native category count table.
-  #main-outlet .user-main #user-content .top-categories-section {
-    display: none;
-  }
-
-  .fomio-top-terets {
-    margin: 0 0 12px;
-    padding: 22px 20px;
-    border-radius: 24px;
-    border: 1px solid var(--fomio-summary-hairline);
-    background: var(--fomio-summary-glass);
-    box-shadow:
-      var(--fomio-summary-card-shadow),
-      inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 55%, transparent);
-  }
-
-  @supports (backdrop-filter: blur(1px)) {
-    .fomio-top-terets {
-      backdrop-filter: blur(18px) saturate(1.4);
-    }
-  }
-
-  .fomio-top-terets__title {
-    margin: 0 0 16px;
-    font-family: var(--fomio-font-serif);
-    font-size: clamp(1.35rem, 1.26rem + 0.28vw, 1.65rem);
-    font-weight: 500;
-    line-height: 1.08;
-    letter-spacing: -0.025em;
-    color: var(--fomio-text);
-  }
-
-  .fomio-top-terets__list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .fomio-top-terets__row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .fomio-top-terets__tag {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: var(--fomio-radius-pill);
-    font-family: var(--fomio-font-ui);
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .fomio-top-terets__track {
-    flex: 1;
-    height: 6px;
-    border-radius: 3px;
-    background: var(--fomio-surface);
-    overflow: hidden;
-  }
-
-  .fomio-top-terets__bar {
-    display: block;
-    height: 100%;
-    min-width: 2px;
-    border-radius: 3px;
-    opacity: 0.65;
-  }
-
-  .fomio-top-terets__count {
-    flex: none;
-    min-width: 2rem;
-    text-align: right;
-    font-family: var(--fomio-font-mono);
-    font-size: 0.78rem;
-    color: var(--fomio-muted);
-  }
-
-  #main-outlet .user-main #user-content .top-section {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section,
-  #main-outlet .user-main #user-content .top-categories-section,
-  #main-outlet .user-main #user-content .badges-section {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  #main-outlet .user-main #user-content .stats-section,
-  #main-outlet .user-main #user-content .top-sub-section,
-  #main-outlet .user-main #user-content .top-categories-section,
-  #main-outlet .user-main #user-content .badges-section {
-    min-width: 0;
-    width: auto;
-    float: none;
-    margin: 0;
-    padding: 22px 20px;
-    border-radius: 24px;
-    border: 1px solid var(--fomio-summary-hairline);
-    background: var(--fomio-summary-glass);
-    box-shadow:
-      var(--fomio-summary-card-shadow),
-      inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 55%, transparent);
-    box-sizing: border-box;
-  }
-
-  @supports (backdrop-filter: blur(1px)) {
-    #main-outlet .user-main #user-content .stats-section,
-    #main-outlet .user-main #user-content .top-sub-section,
-    #main-outlet .user-main #user-content .top-categories-section,
-    #main-outlet .user-main #user-content .badges-section {
-      backdrop-filter: blur(18px) saturate(1.4);
-    }
-  }
-
-  @supports not (backdrop-filter: blur(1px)) {
-    #main-outlet .user-main #user-content .stats-section,
-    #main-outlet .user-main #user-content .top-sub-section,
-    #main-outlet .user-main #user-content .top-categories-section,
-    #main-outlet .user-main #user-content .badges-section {
-      background: color-mix(in oklab, var(--fomio-card) 86%, var(--fomio-bg));
-    }
-  }
-
-  #main-outlet .user-main #user-content .stats-title,
-  #main-outlet .user-main #user-content .top-sub-section > h2,
-  #main-outlet .user-main #user-content .top-sub-section > h3,
-  #main-outlet .user-main #user-content .top-categories-section > h2,
-  #main-outlet .user-main #user-content .top-categories-section > h3,
-  #main-outlet .user-main #user-content .badges-section > h2,
-  #main-outlet .user-main #user-content .badges-section > h3 {
-    margin: 0 0 16px;
-    font-family: var(--fomio-font-serif);
-    font-size: clamp(1.35rem, 1.26rem + 0.28vw, 1.65rem);
-    font-weight: 500;
-    line-height: 1.08;
-    letter-spacing: -0.025em;
-    text-transform: none;
-    color: var(--fomio-text);
-  }
-
-  #main-outlet .user-main #user-content .stats-section ul {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(156px, 1fr));
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  #main-outlet .user-main #user-content .stats-section li {
-    display: block;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  // Each tile: small tracked label on top, large numeral below
-  // (DOM order is value → label; column-reverse + flex-end keeps the
-  // pair pinned to the top of equal-height tiles).
-  #main-outlet .user-main #user-content .stats-section .user-stat {
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    gap: 10px;
-    height: 100%;
-    padding: 14px 16px 13px;
-    border-radius: var(--fomio-radius-lg);
-    border: 1px solid var(--fomio-summary-hairline-soft);
-    background: var(--fomio-summary-tile);
-    box-sizing: border-box;
-  }
-
-  #main-outlet .user-main #user-content .stats-section .value {
-    font-family: var(--fomio-summary-numeral-font);
-    font-size: clamp(1.7rem, 1.5rem + 0.7vw, 2.4rem);
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: -0.035em;
-    font-variant-numeric: tabular-nums lining-nums;
-    color: var(--fomio-text);
-  }
-
-  #main-outlet .user-main #user-content .stats-section .label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wider);
-    text-transform: uppercase;
-    line-height: 1.2;
-    color: var(--fomio-muted);
-  }
-
-  #main-outlet .user-main #user-content .stats-section .label .d-icon {
-    font-size: 0.8rem;
-    color: color-mix(in oklab, var(--fomio-primary) 80%, var(--fomio-text));
-  }
-
-  #main-outlet .user-main #user-content .stats-section li.linked-stat {
-    padding: 0;
-    overflow: visible;
-  }
-
-  #main-outlet .user-main #user-content .stats-section li.linked-stat a {
-    display: block;
-    height: 100%;
-    padding: 0;
-    border-radius: var(--fomio-radius-lg);
-    color: inherit;
-    text-decoration: none;
-  }
-
-  #main-outlet .user-main #user-content .stats-section li.linked-stat a:focus-visible {
-    outline: 2px solid var(--fomio-primary);
-    outline-offset: 2px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat {
-    transition:
-      transform var(--fomio-dur-med) var(--fomio-ease),
-      border-color var(--fomio-dur-med) var(--fomio-ease),
-      background-color var(--fomio-dur-med) var(--fomio-ease),
-      box-shadow var(--fomio-dur-med) var(--fomio-ease);
-  }
-
-  #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
-    transform: translateY(-2px);
-    border-color: color-mix(in oklab, var(--fomio-primary) 28%, transparent);
-    background: var(--fomio-summary-tile-hover);
-    box-shadow: var(--fomio-summary-tile-shadow-hover);
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section ul,
-  #main-outlet .user-main #user-content .top-categories-section table,
-  #main-outlet .user-main #user-content .badge-group-list {
-    max-width: 100%;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section ul,
-  #main-outlet .user-main #user-content .links-section ul,
-  #main-outlet .user-main #user-content .summary-user-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section li {
-    margin: 0;
-    padding: 13px 15px;
-    border: 1px solid var(--fomio-summary-hairline-soft);
-    border-radius: var(--fomio-radius-lg);
-    background: var(--fomio-summary-tile);
-    box-shadow: none;
-    transition:
-      border-color var(--fomio-dur-fast) var(--fomio-ease),
-      background-color var(--fomio-dur-fast) var(--fomio-ease);
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section li:hover {
-    border-color: var(--fomio-summary-hairline);
-    background: var(--fomio-summary-tile-hover);
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section .topic-title,
-  #main-outlet .user-main #user-content .top-sub-section li > a:first-child {
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-serif);
-    font-size: clamp(1rem, 0.96rem + 0.18vw, 1.12rem);
-    font-weight: 500;
-    line-height: 1.22;
-    letter-spacing: -0.02em;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section .topic-info,
-  #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .username,
-  #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .user-title {
-    color: var(--fomio-secondary);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
-  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty {
-    margin: 0;
-    padding: 16px 18px;
-    border-radius: var(--fomio-radius-lg);
-    border: 1px dashed var(--fomio-summary-hairline);
-    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
-    box-sizing: border-box;
-    list-style: none;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty::before,
-  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty::before {
-    content: attr(data-fomio-empty-message);
-    display: block;
-    color: color-mix(in oklab, var(--fomio-ink-muted) 86%, var(--fomio-text));
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    line-height: 1.5;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty > *,
-  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty > * {
-    display: none !important;
-  }
-
-  #main-outlet .user-main #user-content .links-section li {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  #main-outlet .user-main #user-content .links-section br {
-    display: none;
-  }
-
-  #main-outlet .user-main #user-content .links-section .domain {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    gap: 8px;
-    max-width: 100%;
-    min-height: 26px;
-    padding: 0 10px;
-    border-radius: var(--fomio-radius-pill);
-    background: color-mix(in oklab, var(--fomio-primary) 7%, transparent);
-    border: 1px solid color-mix(in oklab, var(--fomio-primary) 16%, transparent);
-    color: var(--fomio-secondary);
-    font-family: var(--fomio-font-ui);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wide);
-    line-height: 1;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  #main-outlet .user-main #user-content .links-section .domain::after {
-    content: attr(data-clicks);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.6rem;
-    padding: 0 0.35rem;
-    height: 1.35rem;
-    border-radius: var(--fomio-radius-pill);
-    background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
-    color: var(--fomio-primary);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0;
-    font-variant-numeric: tabular-nums;
-  }
-
-  #main-outlet .user-main #user-content .links-section li > a:last-of-type {
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-serif);
-    font-size: 1.06rem;
-    font-weight: 500;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-    overflow-wrap: anywhere;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section a,
-  #main-outlet .user-main #user-content .top-categories-section a,
-  #main-outlet .user-main #user-content .badges-section > .more {
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section .more,
-  #main-outlet .user-main #user-content .badges-section > .more {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 32px;
-    margin-top: 12px;
-    color: var(--fomio-primary);
-    font-size: var(--fomio-text-sm);
-    font-weight: 700;
-    transition: color var(--fomio-dur-fast) var(--fomio-ease);
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section .more:hover,
-  #main-outlet .user-main #user-content .badges-section > .more:hover {
-    color: var(--fomio-primary-dark);
-  }
-
-  #main-outlet .user-main #user-content .top-categories-section table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  #main-outlet .user-main #user-content .top-categories-section th,
-  #main-outlet .user-main #user-content .top-categories-section td {
-    padding: 12px 8px;
-    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
-    font-family: var(--fomio-font-ui);
-  }
-
-  #main-outlet .user-main #user-content .top-categories-section tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  #main-outlet .user-main #user-content .top-categories-section th {
-    padding-top: 0;
-    color: var(--fomio-muted);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wider);
-    text-transform: uppercase;
-  }
-
-  #main-outlet .user-main #user-content .top-categories-section td.topic-count,
-  #main-outlet .user-main #user-content .top-categories-section td.reply-count {
-    color: var(--fomio-text);
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-
-  #main-outlet .user-main #user-content .summary-user-list li {
-    height: auto;
-    min-height: 58px;
-  }
-
-  #main-outlet .user-main #user-content .summary-user-list .user-info {
-    display: flex;
-    align-items: center;
-    min-height: 0;
-  }
-
-  #main-outlet .user-main #user-content .summary-user-list .user-info .user-detail {
-    min-width: 0;
-  }
-
-  #main-outlet .user-main #user-content .summary-user-list .user-info .name-line {
-    gap: 6px;
-  }
-
-  #main-outlet .user-main #user-content .summary-user-list .user-info .name-line > a {
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-serif);
-    font-size: 1.02rem;
-    font-weight: 500;
-    text-decoration: none;
-  }
-
-  #main-outlet .user-main #user-content .summary-user-list .replies,
-  #main-outlet .user-main #user-content .summary-user-list .likes {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--fomio-primary);
-    font-family: var(--fomio-font-ui);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-
-  #main-outlet .user-main #user-content .badge-group-list {
-    gap: 10px;
-  }
-
-  #main-outlet .user-main #user-content .badge-card {
-    border: 1px solid var(--fomio-summary-hairline-soft);
-    border-radius: var(--fomio-radius-card);
-    background: var(--fomio-summary-tile);
-    box-shadow: none;
-  }
-
-  #main-outlet .user-main #user-content .badge-card .badge-link {
-    color: var(--fomio-text);
-    font-weight: 600;
-  }
-
-  #main-outlet .user-main #user-content .badge-card .badge-summary,
-  #main-outlet .user-main #user-content .badge-card .badge-granted {
-    color: color-mix(in oklab, var(--fomio-ink-muted) 88%, var(--fomio-text));
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section > p,
-  #main-outlet .user-main #user-content .badges-section > p,
-  #main-outlet .user-main #user-content .empty-state,
-  #main-outlet .user-main #user-content .alert.alert-info {
-    margin: 0;
-    padding: 16px 18px;
-    border-radius: var(--fomio-radius-lg);
-    border: 1px dashed var(--fomio-summary-hairline);
-    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
-    box-sizing: border-box;
-    color: var(--fomio-muted);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    line-height: 1.5;
-  }
-
-  #main-outlet .user-main #user-content .empty-state .empty-state__title {
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-base);
-    font-weight: 700;
-    letter-spacing: -0.015em;
-  }
-
-  #main-outlet .user-main #user-content .empty-state .empty-state__container {
-    max-width: 32rem;
-    margin-inline: auto;
-  }
-
-  @media (width <= 900px) {
-    #main-outlet .user-main #user-content .top-section {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat,
-    #main-outlet .user-main #user-content .top-sub-section li,
-    #main-outlet .user-main #user-content .top-sub-section .more,
-    #main-outlet .user-main #user-content .badges-section > .more {
-      transition: none;
-    }
-
-    #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
-      transform: none;
-    }
-  }
-}
 
 // Desktop summary rhythm: lead with full-width Stats, then balanced secondary cards.
-body.fomio-sidebar-active.fomio-surface-expanded.user-summary-page:not(.fomio-auth-mode),
-body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.fomio-auth-mode) {
-  #main-outlet .user-main #user-content .top-section {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 14px;
-    align-items: stretch;
-  }
-
-  #main-outlet .user-main #user-content .top-section > .stats-section {
-    grid-column: 1 / -1;
-  }
-
-  #main-outlet .user-main #user-content .stats-section ul {
-    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-    gap: 12px;
-  }
-
-  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
-  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty,
-  #main-outlet .user-main #user-content .top-sub-section > p,
-  #main-outlet .user-main #user-content .badges-section > p {
-    padding: 12px 14px;
-    border-radius: var(--fomio-radius-md);
-    font-size: 0.83rem;
-  }
-}
 
 // Tablet rail should keep the desktop summary/detail surface instead of
 // collapsing into the narrow mobile-like summary stack.
-body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode) {
-  #main-outlet .user-main #user-content .top-section {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section,
-  #main-outlet .user-main #user-content .top-sub-section,
-  #main-outlet .user-main #user-content .top-categories-section,
-  #main-outlet .user-main #user-content .badges-section {
-    padding: 18px 16px;
-    border-radius: 20px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section ul {
-    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  }
-}
 
 // Touch: same editorial system, tightened for one-hand reading.
-body.fomio-sidebar-active.fomio-surface-touch.user-summary-page:not(.fomio-auth-mode) {
-  #main-outlet .user-main #user-content.user-content {
-    margin-top: 12px;
-  }
-
-  .fomio-summary-hero {
-    gap: 14px;
-    margin: 2px 2px 18px;
-    padding-bottom: 20px;
-  }
-
-  .fomio-summary-hero__title {
-    font-size: clamp(1.55rem, 6vw, 1.9rem);
-  }
-
-  .fomio-summary-hero__deck {
-    font-size: 0.9rem;
-  }
-
-  .fomio-summary-hero__top {
-    gap: 14px;
-  }
-
-  .fomio-summary-hero__bio {
-    font-size: 1rem;
-  }
-
-  // Stats stay on one calm wrapping row, tightened for narrow widths.
-  .fomio-summary-hero__stats {
-    gap: 10px 24px;
-  }
-
-  .fomio-summary-hero__stat-value {
-    font-size: 1.25rem;
-  }
-
-  #main-outlet .user-main #user-content .top-section {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section,
-  #main-outlet .user-main #user-content .top-sub-section,
-  #main-outlet .user-main #user-content .top-categories-section,
-  #main-outlet .user-main #user-content .badges-section {
-    padding: 16px 14px;
-    border-radius: 20px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section ul {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section .user-stat {
-    gap: 8px;
-    padding: 12px 13px 11px;
-  }
-
-  #main-outlet .user-main #user-content .stats-section .value {
-    font-size: clamp(1.55rem, 5.4vw, 1.95rem);
-  }
-}
 
 // Dark mode: warm-brown glass — slightly more opaque cards and brighter
 // hairlines so depth still reads against the dark canvas. Colors continue
 // to flow from the dark token values in Section 1B.
-html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
-  --fomio-summary-glass: color-mix(in oklab, var(--fomio-card) 70%, transparent);
-  --fomio-summary-tile: color-mix(in oklab, var(--fomio-card) 52%, transparent);
-  --fomio-summary-tile-hover: color-mix(in oklab, var(--fomio-card) 82%, transparent);
-  --fomio-summary-hairline: color-mix(in oklab, var(--fomio-text) 13%, transparent);
-  --fomio-summary-hairline-soft: color-mix(in oklab, var(--fomio-text) 9%, transparent);
-
-  #main-outlet .user-main {
-    background:
-      radial-gradient(
-        120% 70% at 0% 0%,
-        color-mix(in oklab, var(--fomio-primary) 8%, transparent) 0%,
-        transparent 42%
-      ),
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 55%, var(--fomio-bg)) 0%,
-        var(--fomio-bg) 100%
-      );
-  }
-
-  #main-outlet .user-main #user-content .stats-section,
-  #main-outlet .user-main #user-content .top-sub-section,
-  #main-outlet .user-main #user-content .top-categories-section,
-  #main-outlet .user-main #user-content .badges-section {
-    box-shadow:
-      var(--fomio-summary-card-shadow),
-      inset 0 1px 0 color-mix(in oklab, var(--fomio-text) 5%, transparent);
-  }
-}
 
 // ────────────────────────────────────────────────────────────────
 // Activity feed — editorial stream (user profile › Activity).
@@ -6878,9 +5611,7 @@ html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-aut
 // core-rendered (user-stream.gjs → post-list/index.gjs →
 // post-list/item/{index,details}.gjs, verified against discourse main),
 // so DLoadMore infinite scrolling, ExpandPost, drafts, and bulk-select
-// keep their native DOM and behavior. The action-type kicker is added
-// per item through core's `user-stream-item-above` outlet by
-// connectors/user-stream-item-above/fomio-activity-stream-kicker.gjs.
+// keep their native DOM and behavior.
 // Cards are opaque token mixes rather than backdrop-filter glass: the
 // Me leaf canvas is flat (one-flat-surface pattern), and a long
 // infinite-scroll list of backdrop filters would tax compositing.
@@ -6945,28 +5676,6 @@ body.fomio-sidebar-active.user-activity-page:not(.fomio-auth-mode) {
       box-shadow:
         var(--fomio-stream-card-shadow-hover),
         inset 0 1px 0 color-mix(in oklab, var(--fomio-card) 62%, transparent);
-    }
-  }
-
-  // ── Action kicker (sans metadata eyebrow, terracotta) ──
-  #main-outlet .user-main #user-content .user-stream .fomio-activity-stream-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 12px;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: var(--fomio-tracking-wider);
-    text-transform: uppercase;
-    color: var(--fomio-primary);
-
-    &::before {
-      content: "";
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: color-mix(in oklab, var(--fomio-primary) 75%, transparent);
     }
   }
 
@@ -7626,416 +6335,9 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
     min-width: 0;
   }
 
-  // User profile: compact summary stacks above primary tab nav on touch (paint + layout).
-  #main-outlet .user-main .about .details .primary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  #main-outlet .user-main .about .details .primary:has(.fomio-user-profile-summary) {
-    margin: 0 0 12px;
-    position: relative;
-    z-index: 3;
-    width: 100%;
-    max-width: none;
-  }
-
-  #main-outlet .user-main .about:has(.fomio-user-profile-summary) .staff-counters {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  #main-outlet
-    .user-main
-    .about
-    .details:has(.primary .fomio-user-profile-summary)
-    .secondary#collapsed-info-panel {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
   #main-outlet .user-main > .new-user-wrapper .user-navigation {
     position: relative;
     z-index: 2;
-  }
-
-  // Editorial profile identity summary on touch (native profile header).
-  .fomio-me-hub__summary {
-    border-radius: 24px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
-    background:
-      radial-gradient(
-        circle at top left,
-        color-mix(in oklab, var(--fomio-primary) 11%, transparent) 0%,
-        transparent 44%
-      ),
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 98%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg)) 100%
-      );
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 62%),
-      0 16px 34px rgb(17 24 39 / 7%);
-    overflow: hidden;
-  }
-
-  .fomio-me-hub__summary-link {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 104px;
-    padding: 22px 20px 12px;
-    text-decoration: none;
-    color: var(--fomio-text);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: -2px;
-    }
-
-    &:active {
-      background: var(--fomio-card);
-    }
-  }
-
-  button.fomio-me-hub__summary-link {
-    appearance: none;
-    border: none;
-    background: transparent;
-    text-align: left;
-  }
-
-  .fomio-me-hub__summary-link--static {
-    cursor: default;
-
-    &:active {
-      background: transparent;
-    }
-  }
-
-  .fomio-me-hub__summary-avatar {
-    flex-shrink: 0;
-    position: relative;
-
-    img,
-    .avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 24px;
-      box-shadow:
-        0 12px 24px rgb(17 24 39 / 10%),
-        0 0 0 4px color-mix(in oklab, var(--fomio-surface) 82%, transparent);
-    }
-  }
-
-  .fomio-me-hub__summary-text {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding-top: 4px;
-  }
-
-  .fomio-me-hub__summary-name-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px 10px;
-  }
-
-  .fomio-me-hub__summary-kicker {
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    min-width: 0;
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    color: color-mix(in oklab, var(--fomio-ink-muted) 92%, var(--fomio-text));
-    font-family: var(--fomio-font-ui);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    line-height: 1.3;
-  }
-
-  .fomio-me-hub__summary-name {
-    font-family: var(--fomio-font-ui);
-    font-size: clamp(1.18rem, 1.06rem + 0.42vw, 1.34rem);
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    overflow-wrap: anywhere;
-  }
-
-  .fomio-me-hub__summary-meta {
-    font-family: var(--fomio-font-ui);
-    font-size: 1rem;
-    color: color-mix(in oklab, var(--fomio-ink-muted) 92%, var(--fomio-text));
-    line-height: 1.2;
-    overflow-wrap: anywhere;
-  }
-
-  .fomio-me-hub__summary-marker {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: color-mix(in oklab, var(--fomio-primary) 48%, var(--fomio-text));
-  }
-
-  .fomio-me-hub__summary-marker-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 0;
-
-    .d-icon {
-      width: 0.95rem;
-      height: 0.95rem;
-      display: block;
-    }
-  }
-
-  .fomio-me-hub__summary-marker-copy {
-    font-family: var(--fomio-font-ui);
-    font-size: 0.75rem;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-  }
-
-  .fomio-me-hub__summary-facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 10px;
-    padding-top: 1px;
-  }
-
-  .fomio-me-hub__summary-fact {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    color: color-mix(in oklab, var(--fomio-muted) 82%, var(--fomio-text));
-  }
-
-  .fomio-me-hub__summary-fact-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 0;
-    color: color-mix(in oklab, var(--fomio-primary) 52%, var(--fomio-text));
-
-    .d-icon {
-      width: 0.825rem;
-      height: 0.825rem;
-      display: block;
-    }
-  }
-
-  .fomio-me-hub__summary-fact-copy {
-    min-width: 0;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.75rem;
-    font-weight: 500;
-    line-height: 1.3;
-    overflow-wrap: anywhere;
-  }
-
-  .fomio-me-hub__summary-bio {
-    display: block;
-    padding-top: 6px;
-    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
-    font-family: var(--fomio-font-ui);
-    font-size: 0.8125rem;
-    line-height: 1.55;
-
-    p {
-      margin: 0;
-    }
-
-    a {
-      color: inherit;
-      text-decoration-color: color-mix(in oklab, var(--fomio-primary) 42%, transparent);
-    }
-  }
-
-  .fomio-me-hub__summary-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding-top: 2px;
-  }
-
-  .fomio-me-hub__summary-stat {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--fomio-surface) 84%, transparent);
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-    color: color-mix(in oklab, var(--fomio-muted) 78%, var(--fomio-text));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 40%);
-  }
-
-  .fomio-me-hub__summary-stat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 0;
-    color: var(--fomio-primary);
-
-    .d-icon {
-      width: 0.875rem;
-      height: 0.875rem;
-      display: block;
-    }
-  }
-
-  .fomio-me-hub__summary-stat-copy {
-    min-width: 0;
-    font-family: var(--fomio-font-ui);
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: 0.01em;
-  }
-
-  .fomio-me-hub__summary-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 0 20px 18px;
-    border-top: 1px solid color-mix(in oklab, var(--fomio-border-soft) 54%, transparent);
-  }
-
-  .fomio-me-hub__summary-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-    min-height: 42px;
-    padding: 0 15px;
-    border-radius: 14px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 76%, transparent);
-    background: color-mix(in oklab, var(--fomio-surface) 90%, transparent);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
-    color: color-mix(in oklab, var(--fomio-muted) 74%, var(--fomio-text));
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    margin-top: 14px;
-    box-sizing: border-box;
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 2px;
-    }
-
-    &:active {
-      background: color-mix(in oklab, var(--fomio-surface) 76%, var(--fomio-bg));
-    }
-  }
-
-  .fomio-me-hub__summary-action-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 0;
-    color: var(--fomio-primary);
-
-    .d-icon {
-      width: 0.9rem;
-      height: 0.9rem;
-      display: block;
-    }
-  }
-
-  .fomio-me-hub__summary-action-label {
-    font-family: var(--fomio-font-ui);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: 0.01em;
-  }
-
-  .fomio-me-hub__details {
-    margin: 0 20px 18px;
-    padding: 16px 18px;
-    border-radius: 18px;
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 66%, transparent);
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--fomio-surface) 97%, #fff) 0%,
-        color-mix(in oklab, var(--fomio-surface) 93%, var(--fomio-bg)) 100%
-      );
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 62%),
-      0 12px 26px rgb(17 24 39 / 4%);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    line-height: 1.45;
-    color: var(--fomio-text);
-
-    dl {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px 16px;
-      margin: 0;
-    }
-
-    dt {
-      margin: 0 0 2px;
-      color: var(--fomio-ink-muted);
-      font-size: var(--fomio-text-xs);
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-    }
-
-    dd {
-      margin: 0;
-      color: var(--fomio-text);
-    }
-  }
-
-  @media (max-width: 380px) {
-    .fomio-me-hub__details dl {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  .fomio-me-hub__summary-chevron {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    margin-top: 4px;
-    border-radius: 999px;
-    line-height: 0;
-    color: color-mix(in oklab, var(--fomio-muted) 76%, var(--fomio-text));
-    background: color-mix(in oklab, var(--fomio-surface) 84%, transparent);
-    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 60%, transparent);
-    opacity: 0.9;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 36%);
-
-    .d-icon {
-      width: 0.9rem;
-      height: 0.9rem;
-      display: block;
-    }
   }
 
   .fomio-mobile-preferences-menu {
@@ -11307,10 +9609,6 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
       border-radius: 20px;
     }
 
-    #main-outlet .user-main #user-content .user-stream .fomio-activity-stream-kicker {
-      margin-bottom: 10px;
-    }
-
     #main-outlet .user-main #user-content .user-stream .post-list-item__header,
     #main-outlet .user-main #user-content .user-stream .user-stream-item__header {
       gap: 12px;
@@ -11997,15 +10295,1022 @@ body.fomio-sidebar-active.fomio-surface-touch:not(.fomio-auth-mode) {
 
 }
 
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-summary-page,
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-activity-page,
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-messages-page,
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-preferences-page,
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-badges-page,
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-invites-page,
-body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-notifications-page {
+body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-preferences-page,
+  .user-badges-page,
+  .user-invites-page,
+  .user-notifications-page
+) {
   #main-outlet .user-main > section.about {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: var(--fomio-fg);
+  }
+
+  #main-outlet .user-main > section.about .user-profile-image {
+    display: none;
+  }
+
+  #main-outlet .user-main > section.about .staff-counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 0;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.35;
+  }
+
+  #main-outlet .user-main > section.about .staff-counters a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 2px 9px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border) 78%, transparent);
+    border-radius: var(--fomio-radius-pill);
+    color: color-mix(in oklab, var(--fomio-primary) 84%, var(--fomio-fg));
+    background: color-mix(in oklab, var(--fomio-surface) 88%, transparent);
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main > section.about .details {
+    min-width: 0;
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--fomio-border);
+    background: transparent;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main > section.about .primary {
+    align-items: flex-start;
+    column-gap: 16px;
+    row-gap: 16px;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-avatar {
+    margin: 0;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-avatar .avatar {
+    border-radius: 50%;
+    background: rgb(214 201 168);
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main > section.about .primary-textual {
+    min-width: min(200px, 100%);
+    max-width: 600px;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-names {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-names__title {
+    order: -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 6px;
+    color: var(--fomio-primary);
+    font-family: var(--fomio-sans);
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-names__primary {
+    margin: 0 0 6px;
+    color: var(--fomio-fg);
+    font-family: var(--fomio-serif);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-names__primary .d-icon {
+    width: 0.78em;
+    height: 0.78em;
+    margin-inline-start: 6px;
+    color: var(--fomio-primary);
+    vertical-align: 0.02em;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-names__secondary,
+  #main-outlet .user-main > section.about .user-profile__location-and-website,
+  #main-outlet .user-main > section.about .user-profile__location-and-website a {
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  #main-outlet .user-main > section.about .user-profile-names__secondary {
+    color: var(--fomio-fg-secondary);
+  }
+
+  #main-outlet .user-main > section.about .user-profile__location-and-website {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0;
+  }
+
+  #main-outlet .user-main > section.about .user-profile__location-and-website > div {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main > section.about .user-profile__location-and-website > div + div::before {
+    content: "·";
+    margin-inline-end: 3px;
+    color: color-mix(in oklab, var(--fomio-fg-muted) 35%, transparent);
+  }
+
+  #main-outlet .user-main > section.about .user-profile__location-and-website .d-icon {
+    width: 12px;
+    height: 12px;
+    color: var(--fomio-primary);
+  }
+
+  #main-outlet .user-main > section.about .user-profile__location-and-website a {
+    color: var(--fomio-primary);
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main > section.about .bio {
+    max-width: 600px;
+    margin: 20px 0 0;
+    color: var(--fomio-fg-secondary);
+    font-family: var(--fomio-serif);
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.65;
+  }
+
+  #main-outlet .user-main > section.about .bio p {
+    margin: 0;
+  }
+
+  #main-outlet .user-main > section.about .controls {
+    margin-top: 4px;
+  }
+
+  #main-outlet .user-main > section.about .controls ul {
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+  }
+
+  #main-outlet .user-main > section.about .controls .btn {
+    min-height: 34px;
+    padding: 8px 16px;
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-pill);
+    background: transparent;
+    color: var(--fomio-fg);
+    box-shadow: none;
+    font-family: var(--fomio-sans);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  #main-outlet .user-main > section.about .controls .btn:hover,
+  #main-outlet .user-main > section.about .controls .btn:focus-visible {
+    border-color: color-mix(in oklab, var(--fomio-primary) 32%, var(--fomio-border));
+    background: color-mix(in oklab, var(--fomio-surface) 82%, transparent);
+    color: var(--fomio-fg);
+  }
+
+  #main-outlet .user-main > section.about .controls .btn .d-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  #main-outlet .user-main > section.about .secondary {
+    margin: 24px 0 0;
+  }
+
+  #main-outlet .user-main > section.about .secondary dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 24px;
+    margin: 0;
+  }
+
+  #main-outlet .user-main > section.about .secondary dl > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+    min-width: max-content;
+  }
+
+  #main-outlet .user-main > section.about .secondary dt {
+    margin: 0;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main > section.about .secondary dd {
+    margin: 0;
+    color: var(--fomio-fg);
+    font-family: var(--fomio-serif);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  #main-outlet .user-main > section.about .secondary dd.email,
+  #main-outlet .user-main > section.about .secondary dd.trust-level,
+  #main-outlet .user-main > section.about .secondary dd.groups {
+    max-width: 220px;
+    overflow: hidden;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section {
+    width: min(880px, 100%);
+    margin: 0 auto 24px;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section .stats-title {
+    margin: 0 0 10px;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(172px, 1fr);
+    gap: 14px;
+    margin: 0;
+    padding: 2px 2px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    list-style: none;
+    scrollbar-width: thin;
+    align-items: stretch;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--fomio-border) 92%, transparent);
+    border-radius: 999px;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul > li {
+    min-width: 0;
+    margin: 0;
+    scroll-snap-align: start;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul > li > a,
+  #main-outlet .user-main #user-content > .stats-section > ul > li > .user-stat {
+    position: relative;
+    display: block;
+    height: 100%;
+    padding: 16px 18px;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--fomio-border) 82%, transparent);
+    border-radius: 14px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-primary) 3%, var(--fomio-card)) 0%,
+        var(--fomio-card) 40%
+      );
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 10px 18px -16px var(--fomio-shadow);
+    text-decoration: none;
+    transition:
+      border-color var(--fomio-dur-fast) var(--fomio-ease),
+      box-shadow var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul > li > a::before,
+  #main-outlet .user-main #user-content > .stats-section > ul > li > .user-stat::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--fomio-primary) 72%, white),
+      color-mix(in oklab, var(--fomio-primary) 18%, transparent)
+    );
+    opacity: 0.62;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section .user-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section .user-stat .value {
+    color: var(--fomio-fg);
+    font-family: var(--fomio-serif);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section .user-stat .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section .user-stat .label .d-icon {
+    width: 11px;
+    height: 11px;
+  }
+
+  #main-outlet .user-main #user-content > .stats-section > ul > li > a:hover,
+  #main-outlet .user-main #user-content > .stats-section > ul > li > a:focus-visible {
+    border-color: color-mix(in oklab, var(--fomio-primary) 28%, var(--fomio-border));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-primary) 4%, var(--fomio-card)) 0%,
+        color-mix(in oklab, var(--fomio-surface) 18%, var(--fomio-card)) 100%
+      );
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.78) inset,
+      0 14px 22px -18px var(--fomio-shadow);
+    outline: none;
+  }
+
+  body.fomio-color-dark #main-outlet .user-main #user-content > .stats-section > ul > li > a,
+  body.fomio-color-dark #main-outlet .user-main #user-content > .stats-section > ul > li > .user-stat {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 14px 22px -18px rgba(0, 0, 0, 0.58);
+  }
+}
+
+// User profile primary nav: native Discourse user-nav styled as the Fomio
+// profile tab bar across expanded, compact, rail, and touch surfaces.
+body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-preferences-page,
+  .user-badges-page,
+  .user-invites-page,
+  .user-notifications-page
+) {
+  #main-outlet .user-main .user-navigation.user-navigation-primary {
+    display: block !important;
+    width: min(880px, calc(100vw - 48px));
+    max-width: 100%;
+    margin: 0 auto 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav {
+    display: flex !important;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-left,
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-right {
     display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.user-nav {
+    display: flex !important;
+    flex: 1 1 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 5px;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 5px;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 82%, transparent);
+    border-radius: 18px;
+    background: color-mix(in oklab, var(--fomio-card) 76%, var(--fomio-surface));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 58%),
+      0 12px 28px rgb(17 24 39 / 6%);
+    list-style: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--fomio-muted) 52%, var(--fomio-border)) transparent;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav::-webkit-scrollbar,
+  #main-outlet .user-main ul.nav-pills.user-nav::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav::-webkit-scrollbar-track,
+  #main-outlet .user-main ul.nav-pills.user-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav::-webkit-scrollbar-thumb,
+  #main-outlet .user-main ul.nav-pills.user-nav::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--fomio-muted) 56%, var(--fomio-border));
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li,
+  #main-outlet .user-main ul.nav-pills.user-nav > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 13px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    background: transparent;
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 86%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.83rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.15;
+    text-decoration: none;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 0.16s ease,
+        background 0.16s ease,
+        border-color 0.16s ease,
+        box-shadow 0.16s ease,
+        transform 0.16s ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: color-mix(in oklab, var(--fomio-border-soft) 74%, transparent);
+        background: color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-card));
+        color: var(--fomio-text);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 36%, transparent);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a .d-icon {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+    color: color-mix(in oklab, var(--fomio-muted) 72%, var(--fomio-text));
+    opacity: 0.86;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a span,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a span {
+    min-width: 0;
+    color: inherit;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li[aria-current="page"] > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main ul.nav-pills.user-nav > li[aria-current="page"] > a {
+    border-color: color-mix(in oklab, var(--fomio-primary) 20%, var(--fomio-border-soft));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-card) 98%, #fff) 0%,
+        color-mix(in oklab, var(--fomio-primary) 7%, var(--fomio-surface)) 100%
+      );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 64%),
+      0 7px 16px rgb(17 24 39 / 5%);
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li.active > a .d-icon,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a.active .d-icon,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li[aria-current="page"] > a .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li.active > a .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a.active .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li[aria-current="page"] > a .d-icon {
+    color: color-mix(in oklab, var(--fomio-primary) 60%, var(--fomio-text));
+    opacity: 1;
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-preferences-page,
+  .user-badges-page,
+  .user-invites-page,
+  .user-notifications-page
+) {
+  #main-outlet .user-main .user-navigation.user-navigation-primary {
+    width: min(760px, calc(100vw - 32px));
+    margin-bottom: 18px;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.user-nav {
+    gap: 4px;
+    padding: 4px;
+    border-radius: 16px;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a {
+    min-height: 38px;
+    padding-inline: 11px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+}
+
+body.fomio-surface-touch:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-preferences-page,
+  .user-badges-page,
+  .user-invites-page,
+  .user-notifications-page
+) {
+  #main-outlet .user-main .user-navigation.user-navigation-primary {
+    display: block !important;
+    width: auto;
+    max-width: none;
+    margin: 0 var(--fomio-mobile-child-pad-x, 16px) 14px;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.user-nav {
+    gap: 4px;
+    padding: 4px;
+    border-radius: 16px;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav::-webkit-scrollbar,
+  #main-outlet .user-main ul.nav-pills.user-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a {
+    min-height: 42px;
+    padding-inline: 12px;
+    border-radius: 12px;
+    font-size: 0.81rem;
+  }
+}
+
+// Prototype correction: keep Discourse's native overflow behavior, but make the
+// primary profile nav read like the supplied React tabs: text-first, no pill
+// track, active underline, and horizontal scroll at constrained widths.
+body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-preferences-page,
+  .user-badges-page,
+  .user-invites-page,
+  .user-notifications-page
+) {
+  #main-outlet .user-main .user-navigation.user-navigation-primary {
+    display: block !important;
+    width: min(880px, calc(100vw - 48px));
+    margin: 0 auto 24px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fomio-border-soft) 82%, transparent);
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav {
+    display: flex !important;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-left,
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-right {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.user-nav {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    list-style: none;
+    overflow: visible;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav::-webkit-scrollbar,
+  #main-outlet .user-main ul.nav-pills.user-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li,
+  #main-outlet .user-main ul.nav-pills.user-nav > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.15;
+    text-decoration: none;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color 0.16s ease,
+      background 0.16s ease;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a::after,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    bottom: -1px;
+    left: 12px;
+    height: 2px;
+    border-radius: 999px;
+    background: transparent;
+    transition: background 0.16s ease;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a .d-icon {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a span,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a span {
+    display: inline !important;
+    min-width: 0;
+    color: inherit;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a:hover,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a:hover {
+    background: color-mix(in oklab, var(--fomio-surface) 60%, transparent);
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a:focus-visible,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--fomio-primary) 36%, transparent);
+    outline-offset: -2px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li[aria-current="page"] > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main ul.nav-pills.user-nav > li[aria-current="page"] > a {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+    font-weight: 700;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li.active > a::after,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a.active::after,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li[aria-current="page"] > a::after,
+  #main-outlet .user-main ul.nav-pills.user-nav > li.active > a::after,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a.active::after,
+  #main-outlet .user-main ul.nav-pills.user-nav > li[aria-current="page"] > a::after {
+    background: var(--fomio-primary);
+  }
+}
+
+@media (max-width: 767px) {
+  body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+    .user-summary-page,
+    .user-activity-page,
+    .user-messages-page,
+    .user-preferences-page,
+    .user-badges-page,
+    .user-invites-page,
+    .user-notifications-page
+  ) {
+    #main-outlet .user-main .user-navigation.user-navigation-primary {
+      width: auto;
+      margin: 0 var(--fomio-mobile-child-pad-x, 16px) 16px;
+    }
+
+    #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+    #main-outlet .user-main ul.nav-pills.user-nav > li > a {
+      min-height: 42px;
+      padding-inline: 14px;
+      font-size: 0.84rem;
+    }
+  }
+}
+
+// Final profile-tab prototype alignment. The underlying DOM remains native
+// Discourse (`ul > li > a`), but the visual contract follows the supplied
+// React TabsNav exactly: one horizontal row, 40px tabs, transparent background,
+// active 2px bottom border, muted inactive labels, hidden scrollbar.
+body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+  .user-summary-page,
+  .user-activity-page,
+  .user-messages-page,
+  .user-preferences-page,
+  .user-badges-page,
+  .user-invites-page,
+  .user-notifications-page
+) {
+  #main-outlet .user-main .user-navigation.user-navigation-primary {
+    display: flex !important;
+    gap: 0;
+    width: min(880px, calc(100vw - 48px));
+    max-width: 100%;
+    margin: 0 auto 28px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-border-soft);
+    background: transparent;
+    box-shadow: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav {
+    display: flex !important;
+    flex: 0 0 auto;
+    min-width: 100%;
+    max-width: none;
+    overflow: visible;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
+  #main-outlet .user-main ul.nav-pills.user-nav {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li,
+  #main-outlet .user-main ul.nav-pills.user-nav > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 16px;
+    margin-bottom: -1px;
+    cursor: pointer;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 200ms,
+      border-color 200ms;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a::after,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a::after {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a .d-icon,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a .d-icon {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a span,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a span {
+    display: inline !important;
+    color: inherit;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a:hover,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a:hover {
+    background: transparent;
+    color: var(--fomio-fg);
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li[aria-current="page"] > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li.active > a,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a.active,
+  #main-outlet .user-main ul.nav-pills.user-nav > li[aria-current="page"] > a {
+    border-bottom-color: var(--fomio-primary);
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a:focus-visible,
+  #main-outlet .user-main ul.nav-pills.user-nav > li > a:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
+    outline-offset: -3px;
+  }
+}
+
+@media (max-width: 767px) {
+  body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mode):is(
+    .user-summary-page,
+    .user-activity-page,
+    .user-messages-page,
+    .user-preferences-page,
+    .user-badges-page,
+    .user-invites-page,
+    .user-notifications-page
+  ) {
+    #main-outlet .user-main .user-navigation.user-navigation-primary {
+      width: auto;
+      margin: 0 var(--fomio-mobile-child-pad-x, 16px) 28px;
+    }
   }
 }
 
@@ -13532,7 +12837,6 @@ body:not(.fomio-notifications-master-active) .fomio-notifications-detail-heading
 .fomio-mobile-menu-btn {
   display: none;
 }
-
 
 // ============================================================
 // OTP confirm step — minimal chrome inside same layout
@@ -16985,156 +16289,6 @@ body.fomio-surface-touch .fomio-notifications-menu--mobile {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-// ── Floating user menu ──────────────────────────────────────
-.fomio-user-menu-shell {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background: rgb(15 23 42 / 0.2);
-}
-
-.fomio-user-menu {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg));
-  border: 1px solid var(--fomio-border);
-  border-radius: var(--fomio-radius-card);
-  box-shadow:
-    0 16px 56px -10px rgb(0 0 0 / 16%),
-    0 0 0 1px rgb(0 0 0 / 3%);
-}
-
-.fomio-user-menu__header {
-  flex-shrink: 0;
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 12px 0 18px;
-  border-bottom: 1px solid var(--fomio-border);
-}
-
-.fomio-user-menu__identity {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.fomio-user-menu__title {
-  min-width: 0;
-  font-family: var(--fomio-font-serif);
-  font-style: italic;
-  font-weight: 600;
-  font-size: 17px;
-  line-height: 1;
-  color: var(--fomio-text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fomio-user-menu__subtitle {
-  min-width: 0;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--fomio-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fomio-user-menu__close {
-  flex: 0 0 auto;
-}
-
-.fomio-user-menu__list {
-  flex: 1;
-  min-height: 0;
-  margin: 0;
-  padding: 10px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--fomio-border) transparent;
-}
-
-.fomio-user-menu__list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.fomio-user-menu__list::-webkit-scrollbar-thumb {
-  background: var(--fomio-border);
-  border-radius: 2px;
-}
-
-.fomio-user-menu .fomio-list__item.fomio-user-menu__item {
-  min-height: 50px;
-  padding: 8px 10px;
-  border-radius: var(--fomio-radius-sm);
-  color: var(--fomio-muted);
-  background: transparent;
-  border: 0;
-  text-decoration: none;
-}
-
-.fomio-user-menu .fomio-list__item.fomio-user-menu__item:hover,
-.fomio-user-menu .fomio-list__item.fomio-user-menu__item:focus-visible {
-  color: var(--fomio-text);
-  background: color-mix(in oklab, var(--fomio-text) 6%, transparent);
-}
-
-.fomio-user-menu .fomio-list__item.fomio-user-menu__item[aria-current="true"] {
-  color: var(--fomio-primary);
-  background: var(--fomio-primary-soft);
-}
-
-.fomio-user-menu .fomio-user-menu__item .fomio-list__icon {
-  width: 20px;
-  height: 20px;
-  color: currentColor;
-}
-
-.fomio-user-menu .fomio-user-menu__item .fomio-list__title {
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-sm);
-  font-weight: 700;
-  color: var(--fomio-text);
-}
-
-.fomio-user-menu .fomio-user-menu__item[aria-current="true"] .fomio-list__title {
-  color: var(--fomio-primary);
-}
-
-.fomio-user-menu .fomio-user-menu__item .fomio-list__subtitle {
-  margin-top: 2px;
-  font-family: var(--fomio-font-ui);
-  font-size: var(--fomio-text-xs);
-  line-height: 1.35;
-  color: var(--fomio-muted);
-}
-
-.fomio-user-menu--desktop {
-  top: max(1rem, env(safe-area-inset-top, 0px) + 1rem);
-  left: max(1rem, env(safe-area-inset-left, 0px) + 1rem);
-  width: min(20rem, calc(100vw - 2rem));
-  max-height: min(76vh, 38.75rem);
-}
-
-.fomio-user-menu--mobile {
-  inset-inline: 0;
-  bottom: 0;
-  width: 100%;
-  max-height: min(76vh, 38.75rem);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
 @media screen and (min-width: 768px) {
   body.fomio-preferences-menu-open.user-preferences-page:not(.fomio-surface-touch) {
     overflow: hidden;
@@ -17187,7 +16341,7 @@ body.fomio-surface-touch .fomio-notifications-menu--mobile {
 }
 
 html.fomio-color-dark {
-  .fomio-user-menu,
+
   body.fomio-preferences-menu-open.user-preferences-page #main-outlet .user-main #user-content.user-preferences,
   .fomio-preferences-menu,
   .fomio-notifications-menu {
@@ -24782,608 +23936,6 @@ html.fomio-color-dark {
 
 // ── Bookmarks Page Search ───────────────────────────────────────
 
-.user-activity-bookmarks-page {
-  background: var(--fomio-bg);
-  padding: var(--fomio-space-lg);
-
-  // Hide native Discourse bookmark search form
-  .bookmark-search-form {
-    display: none;
-  }
-
-  // Custom Fomio bookmark search form
-  .fomio-bookmark-search-wrapper {
-    width: 100%;
-    margin-bottom: var(--fomio-space-lg);
-  }
-
-  .fomio-bookmark-search-form {
-    display: flex;
-    gap: var(--fomio-space-sm);
-    align-items: flex-end;
-    width: 100%;
-
-    // Search input field container
-    .fomio-field {
-      flex: 1 1 auto;
-      width: 100%;
-    }
-
-    // Search input wrapper
-    .fomio-search-wrap {
-      width: 100%;
-    }
-
-    // Search button
-    .fomio-bookmark-search__button {
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-  }
-
-  // Style native Discourse bulk select buttons (don't replace them!)
-  .bulk-select-all,
-  .bulk-clear-all {
-    background: var(--fomio-card);
-    border: 1px solid var(--fomio-border-soft);
-    border-radius: var(--fomio-radius-sm);
-    color: var(--fomio-text);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    padding: var(--fomio-space-sm) var(--fomio-space-md);
-    transition: all var(--fomio-dur-fast) var(--fomio-ease);
-
-    &:hover {
-      background: var(--fomio-surface);
-      border-color: var(--fomio-border);
-    }
-
-    &:active {
-      opacity: 0.8;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  // Style the bulk-select toggle as a light inline icon control.
-  .bulk-select.btn-flat {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.125rem;
-    height: 1.125rem;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    color: var(--fomio-text-secondary);
-    cursor: pointer;
-    user-select: none;
-    transition:
-      color var(--fomio-dur-fast) var(--fomio-ease),
-      opacity var(--fomio-dur-fast) var(--fomio-ease);
-
-    &:hover {
-      background: transparent;
-      color: var(--fomio-text);
-    }
-
-    &:active {
-      opacity: 0.72;
-    }
-
-    &:disabled,
-    &[aria-disabled="true"] {
-      opacity: 0.42;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .d-icon {
-      display: block;
-      font-size: 1rem;
-    }
-  }
-
-  // ── Bookmark List Table ─────────────────────────────────────
-
-  .bookmark-list-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-gutter: stable both-edges;
-
-    &:focus-visible {
-      outline: 2px solid var(--fomio-primary);
-      outline-offset: 4px;
-      border-radius: var(--fomio-radius-sm);
-    }
-
-    .topic-list.bookmark-list {
-      --fomio-bookmark-list-avatar-column: 3.25rem;
-      --fomio-bookmark-list-metadata-column: 7.5rem;
-      --fomio-bookmark-list-actions-column: 3rem;
-      --fomio-bookmark-list-bulk-column: 2.75rem;
-      border-collapse: separate;
-      border-spacing: 0 var(--fomio-space-sm);
-      width: 100%;
-      min-width: 43rem;
-      table-layout: auto;
-
-      thead.topic-list-header {
-        background: transparent;
-        border-bottom: 1px solid var(--fomio-border-soft);
-
-        tr {
-          th {
-            padding: 0 0 var(--fomio-space-md);
-            font-family: var(--fomio-font-ui);
-            font-size: var(--fomio-text-sm);
-            font-weight: 600;
-            color: var(--fomio-text-secondary);
-            text-transform: uppercase;
-            letter-spacing: var(--fomio-tracking-wide);
-            border: none;
-            background: transparent;
-            vertical-align: middle;
-
-            &.bulk-select,
-            &.fomio-bookmark-table__col--bulk-toggle {
-              width: var(--fomio-bookmark-list-bulk-column);
-              min-width: var(--fomio-bookmark-list-bulk-column);
-              padding-inline: var(--fomio-space-xs);
-              text-align: center;
-            }
-
-            &.fomio-bookmark-table__col--topic {
-              text-align: left;
-              width: auto;
-            }
-
-            &.fomio-bookmark-table__col--avatar {
-              width: var(--fomio-bookmark-list-avatar-column);
-              min-width: var(--fomio-bookmark-list-avatar-column);
-            }
-
-            &.post-metadata,
-            &.fomio-bookmark-table__col--updated,
-            &.fomio-bookmark-table__col--activity {
-              width: var(--fomio-bookmark-list-metadata-column);
-              min-width: var(--fomio-bookmark-list-metadata-column);
-              text-align: right;
-            }
-
-            &.fomio-bookmark-table__col--actions {
-              width: var(--fomio-bookmark-list-actions-column);
-              min-width: var(--fomio-bookmark-list-actions-column);
-              text-align: right;
-            }
-          }
-        }
-      }
-
-      tbody.topic-list-body {
-        tr.bookmark-list-item {
-          transition: all var(--fomio-dur-fast) var(--fomio-ease);
-
-          &:hover {
-            td {
-              background: var(--fomio-surface);
-              border-color: var(--fomio-border);
-            }
-          }
-
-          td {
-            padding: var(--fomio-space-md);
-            vertical-align: middle;
-            background: var(--fomio-card);
-            border-top: 1px solid var(--fomio-border-soft);
-            border-bottom: 1px solid var(--fomio-border-soft);
-            transition:
-              background var(--fomio-dur-fast) var(--fomio-ease),
-              border-color var(--fomio-dur-fast) var(--fomio-ease),
-              box-shadow var(--fomio-dur-fast) var(--fomio-ease);
-
-            &:first-child {
-              border-left: 1px solid var(--fomio-border-soft);
-              border-top-left-radius: var(--fomio-radius-sm);
-              border-bottom-left-radius: var(--fomio-radius-sm);
-            }
-
-            &:last-child {
-              border-right: 1px solid var(--fomio-border-soft);
-              border-top-right-radius: var(--fomio-radius-sm);
-              border-bottom-right-radius: var(--fomio-radius-sm);
-            }
-          }
-
-          td.bulk-select {
-            width: var(--fomio-bookmark-list-bulk-column);
-            min-width: var(--fomio-bookmark-list-bulk-column);
-            padding-inline: var(--fomio-space-xs);
-            text-align: center;
-
-            label {
-              display: inline-flex;
-              align-items: center;
-              cursor: pointer;
-              margin: 0;
-            }
-
-            input.bulk-select {
-              width: 18px;
-              height: 18px;
-              cursor: pointer;
-              accent-color: var(--fomio-primary);
-            }
-          }
-
-          td.main-link.topic-list-data {
-            width: auto;
-            min-width: 22rem;
-            padding-inline-end: var(--fomio-space-lg);
-
-            .link-top-line {
-              display: flex;
-              flex-direction: column;
-              gap: var(--fomio-space-xs);
-
-              .bookmark-metadata {
-                display: flex;
-                gap: var(--fomio-space-sm);
-                flex-wrap: wrap;
-                font-size: var(--fomio-text-xs);
-                color: var(--fomio-text-secondary);
-
-                .bookmark-metadata-item {
-                  display: inline-flex;
-                  align-items: center;
-                  gap: 4px;
-                  padding: 2px 8px;
-                  background: var(--fomio-bg);
-                  border-radius: var(--fomio-radius-xs);
-                  font-family: var(--fomio-font-ui);
-
-                  .d-icon {
-                    font-size: 14px;
-                  }
-
-                  &.bookmark-reminder {
-                    color: var(--fomio-primary);
-
-                    &.bookmark-expired-reminder {
-                      color: var(--fomio-error);
-                    }
-                  }
-                }
-              }
-
-              .bookmark-status-with-link {
-                display: flex;
-                align-items: flex-start;
-                gap: var(--fomio-space-sm);
-
-                .bookmark-pinned {
-                  flex-shrink: 0;
-                  color: var(--fomio-primary);
-                  margin-top: 2px;
-                }
-
-                a.title {
-                  flex: 1;
-                  font-family: var(--fomio-font-serif);
-                  font-size: var(--fomio-text-base);
-                  font-weight: 600;
-                  line-height: 1.4;
-                  color: var(--fomio-text);
-                  text-decoration: none;
-                  word-break: break-word;
-                  overflow-wrap: break-word;
-
-                  &:hover {
-                    color: var(--fomio-primary);
-                  }
-                }
-              }
-            }
-
-            .link-bottom-line {
-              display: flex;
-              align-items: center;
-              gap: var(--fomio-space-xs);
-              margin-top: var(--fomio-space-xs);
-              font-size: var(--fomio-text-xs);
-              flex-wrap: wrap;
-            }
-
-            p.post-excerpt {
-              margin: var(--fomio-space-xs) 0 0 0;
-              padding: 0;
-              font-family: var(--fomio-font-serif);
-              font-size: var(--fomio-text-sm);
-              color: var(--fomio-text-secondary);
-              line-height: 1.5;
-              max-height: 60px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-          }
-
-          td.author-avatar {
-            width: var(--fomio-bookmark-list-avatar-column);
-            min-width: var(--fomio-bookmark-list-avatar-column);
-            text-align: center;
-
-            a.avatar {
-              display: inline-flex;
-            }
-          }
-
-          td.post-metadata.topic-list-data {
-            width: var(--fomio-bookmark-list-metadata-column);
-            min-width: var(--fomio-bookmark-list-metadata-column);
-            text-align: right;
-            font-size: var(--fomio-text-sm);
-            color: var(--fomio-text-secondary);
-            white-space: nowrap;
-          }
-
-          td:last-child {
-            width: var(--fomio-bookmark-list-actions-column);
-            min-width: var(--fomio-bookmark-list-actions-column);
-            text-align: right;
-            white-space: nowrap;
-          }
-
-          &.is-selected td {
-            background: color-mix(in oklab, var(--fomio-primary) 10%, var(--fomio-card));
-            border-color: color-mix(in oklab, var(--fomio-primary) 38%, var(--fomio-border));
-          }
-        }
-      }
-    }
-
-    &.is-bulk-selecting {
-      .topic-list.bookmark-list thead.topic-list-header th.fomio-bookmark-table__bulk-toggle-placeholder {
-        width: 0;
-        min-width: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-
-      .topic-list.bookmark-list thead.topic-list-header th.fomio-bookmark-table__col--topic {
-        padding-bottom: var(--fomio-space-md);
-      }
-
-      .topic-list.bookmark-list tbody.topic-list-body tr.bookmark-list-item:not(.is-selected) td {
-        background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg));
-      }
-
-      .topic-list.bookmark-list tbody.topic-list-body tr.bookmark-list-item td:last-child {
-        visibility: hidden;
-      }
-    }
-  }
-
-  .fomio-bookmark-table__topic-header {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--fomio-space-sm);
-    white-space: nowrap;
-  }
-
-  .fomio-bookmark-table__topic-label {
-    display: inline-block;
-  }
-
-  .fomio-bookmark-table__bulk-bar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--fomio-space-md);
-    flex-wrap: wrap;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .fomio-bookmark-table__bulk-bar .bulk-select-topics,
-  .fomio-bookmark-table__bulk-actions {
-    display: contents;
-  }
-
-  .fomio-bookmark-table__bulk-summary {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--fomio-space-sm);
-    flex: 0 0 auto;
-    min-width: fit-content;
-  }
-
-  .fomio-bookmark-table__bulk-exit {
-    flex: 0 0 auto;
-  }
-
-  .fomio-bookmark-table__bulk-controls {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--fomio-space-sm);
-    justify-content: flex-start;
-    flex: 0 0 auto;
-  }
-
-  .fomio-bookmark-table__bulk-bar .bulk-select-bookmarks-dropdown {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--fomio-space-sm);
-  }
-
-  .fomio-bookmark-table__bulk-bar .bulk-select-bookmark-dropdown__count {
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-sm);
-    font-weight: 600;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--fomio-text);
-  }
-
-  .fomio-bookmark-table__bulk-button {
-    flex: 0 0 auto;
-  }
-
-  // ── Avatars ────────────────────────────────────────────
-
-  // Avatar styling (user profile pictures)
-  a.avatar,
-  .avatar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: var(--fomio-border-soft);
-    transition: all var(--fomio-dur-fast) var(--fomio-ease);
-    flex-shrink: 0;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    &:hover {
-      box-shadow: 0 0 0 2px var(--fomio-primary);
-    }
-  }
-
-  // Smaller avatar variant for mobile
-  .avatar.large {
-    width: 48px;
-    height: 48px;
-  }
-
-  // Avatar in table cells
-  td.author-avatar {
-    a.avatar {
-      margin: 0;
-    }
-  }
-
-  // Avatar in bookmark metadata
-  .bookmark-list-item {
-    a.avatar {
-      margin-top: var(--fomio-space-xs);
-    }
-  }
-
-  // ── Category Links & Tags ──────────────────────────────
-
-  // Category badge styling
-  .badge-category__wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--fomio-space-xs);
-    padding: 4px 10px;
-    background: var(--fomio-bg);
-    border-radius: var(--fomio-radius-xs);
-    text-decoration: none;
-    transition: all var(--fomio-dur-fast) var(--fomio-ease);
-
-    &:hover {
-      background: var(--fomio-surface);
-    }
-
-    .badge-category {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-xs);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: var(--fomio-tracking-wide);
-      color: var(--fomio-text);
-
-      &__name {
-        display: inline;
-      }
-    }
-  }
-
-  // Tags styling
-  .discourse-tags {
-    display: flex;
-    align-items: center;
-    gap: var(--fomio-space-xs);
-    flex-wrap: wrap;
-
-    .discourse-tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      background: var(--fomio-bg);
-      border-radius: var(--fomio-radius-xs);
-      font-family: var(--fomio-font-ui);
-      font-size: var(--fomio-text-xs);
-      color: var(--fomio-text);
-      text-decoration: none;
-      transition: all var(--fomio-dur-fast) var(--fomio-ease);
-      word-break: break-word;
-
-      &:hover {
-        background: var(--fomio-surface);
-        color: var(--fomio-primary);
-      }
-
-      // Tag separators
-      &.discourse-tags__tag-separator {
-        display: none;
-      }
-    }
-  }
-
-  // ── Loading & Pagination ────────────────────────────────
-
-  // Loading spinner while fetching more bookmarks
-  .conditional-loading-spinner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--fomio-space-lg);
-    margin-top: var(--fomio-space-md);
-
-    .loading-spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--fomio-border-soft);
-      border-top-color: var(--fomio-primary);
-      border-radius: 50%;
-      animation: fomio-spin 0.8s linear infinite;
-    }
-  }
-
-  @keyframes fomio-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  // Load more sentinel (invisible, but we style the container)
-  .load-more-sentinel {
-    margin: var(--fomio-space-lg) 0;
-  }
-
-  .desktop-view .bookmark-list-wrapper {
-    .bulk-select.btn-flat {
-      vertical-align: middle;
-    }
-  }
-}
 
 // ── Responsive ─────────────────────────────────────────────────
 
@@ -25865,8 +24417,6 @@ body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
     box-shadow: none;
     overflow: hidden;
   }
-
-  .fomio-messages-shell-wrapper,
   .fomio-messages-master-detail {
     width: 100%;
     max-width: none;
@@ -25957,12 +24507,6 @@ body.user-messages-page.fomio-messages-mode:not(.fomio-surface-touch) {
     height: calc(100vh - 48px);
     min-height: 0;
     overflow: hidden;
-  }
-
-  .fomio-messages-shell-wrapper {
-    max-width: min(1180px, calc(100vw - 48px));
-    height: calc(100vh - 48px);
-    margin: 0 auto;
   }
 
   .fomio-messages-master-detail {
@@ -26289,13 +24833,421 @@ body.user-messages-page.fomio-messages-mode {
   }
 }
 
-.fomio-messages-shell-wrapper {
-  width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  align-self: stretch;
+// Fomio Activity mockup v1.
+// Theme-only treatment over native Discourse routes/data:
+// - route links, permissions, load-more, and MessageBus updates stay native
+// - the full treatment is limited to All / Bytes / Replies / Likes given
+body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
+  --fomio-activity-surface: var(--fomio-bg);
+  --fomio-activity-hairline: color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+  --fomio-activity-icon-bg: color-mix(in oklab, var(--fomio-surface) 78%, var(--fomio-bg));
+  --fomio-activity-icon-fg: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+
+  overflow: auto;
+
+  #main-outlet,
+  #main-outlet > .container,
+  #main-outlet .user-main {
+    max-height: none;
+    overflow: visible;
+  }
+
+  #main-outlet .user-main {
+    background: var(--fomio-activity-surface);
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper {
+    display: block !important;
+    width: 100%;
+    max-width: min(880px, calc(100vw - 48px));
+    height: auto;
+    min-height: 520px;
+    margin-inline: auto;
+    padding: 22px 0 48px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: flex !important;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    margin: 0 auto 28px !important;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-activity-hairline);
+    background: transparent;
+    box-shadow: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+    display: flex !important;
+    flex: 0 0 auto;
+    min-width: 100%;
+    max-width: none;
+    height: auto;
+    overflow: visible;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    align-items: stretch !important;
+    gap: 0;
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    list-style: none;
+    scrollbar-width: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    height: 40px;
+    min-height: 40px;
+    width: auto;
+    padding: 0 16px;
+    margin-bottom: -1px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 200ms,
+      border-color 200ms;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: transparent;
+        color: var(--fomio-fg);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
+      outline-offset: -3px;
+    }
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="page"] > a {
+    border-bottom-color: var(--fomio-primary);
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-primary);
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a .d-icon {
+    display: none !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a span {
+    display: inline !important;
+    color: inherit;
+  }
+
+  #main-outlet .user-main #user-content,
+  #main-outlet .user-main .new-user-content-wrapper > .user-content,
+  #main-outlet .user-main .new-user-content-wrapper > .user-content.--loaded {
+    width: 100%;
+    max-width: 760px;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    margin-inline: auto;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item {
+    margin: 0;
+    padding: 16px 0;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-activity-hairline);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__header,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: start;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item:has(.fomio-activity-action-label) .avatar-link {
+    display: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .stream-topic-title a,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .title a {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .stream-topic-title a:hover,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .title a:hover {
+    color: color-mix(in oklab, var(--fomio-primary) 76%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__metadata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-top: 6px;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 500;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .excerpt {
+    margin: 8px 0 0;
+    padding-left: 0;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-serif);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .excerpt .cooked {
+    max-height: 4.75em;
+    overflow: hidden;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__details,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__body,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__details,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__body {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item:last-child {
+    border-bottom: 0;
+  }
+
+  .fomio-activity-action-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    margin: 0 0 6px;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .fomio-activity-action-label__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--fomio-activity-icon-bg);
+    color: var(--fomio-activity-icon-fg);
+    flex: 0 0 auto;
+  }
+
+  .fomio-activity-action-label[data-fomio-activity-action="created_byte"] .fomio-activity-action-label__icon {
+    background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
+    color: var(--fomio-primary);
+  }
+
+  .fomio-activity-action-label[data-fomio-activity-action="liked"] .fomio-activity-action-label__icon {
+    background: color-mix(in oklab, var(--fomio-primary) 8%, transparent);
+    color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
+  }
+
+  .fomio-activity-action-label__text {
+    color: inherit;
+  }
+
+  .fomio-activity-action-label__teret {
+    display: inline-flex;
+    align-items: center;
+    max-width: min(180px, 36vw);
+    overflow: hidden;
+    padding: 3px 9px;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 9%, transparent);
+    color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item:hover,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item:focus-within {
+    transform: none;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td {
+    padding-block: 16px;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-activity-hairline);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td.main-link {
+    padding-inline: 0 18px;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-top-line,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .title,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .raw-topic-link {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .topic-excerpt,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-topic-context__text {
+    margin-top: 6px;
+    color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-serif);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-bottom-line,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-topic-context__meta,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-topic-context__footer {
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 500;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list td.posts,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list td.views,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list td.activity {
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item:last-child td {
+    border-bottom: 0;
+  }
 }
+
+body.user-activity-page.fomio-activity-screen.fomio-surface-touch:not(.fomio-auth-mode) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    max-width: 100%;
+    min-height: 0;
+    padding: 14px 16px 22px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    margin-bottom: 16px !important;
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    min-height: 32px;
+    padding-inline: 12px;
+    font-size: 0.82rem;
+  }
+}
+
 
 @media (max-width: 767px) {
   body.user-messages-page.fomio-messages-mode {
@@ -26312,12 +25264,6 @@ body.user-messages-page.fomio-messages-mode {
       height: auto;
       min-height: 0;
       overflow: visible;
-    }
-
-    .fomio-messages-shell-wrapper {
-      height: auto;
-      min-height: 0;
-      max-width: 100%;
     }
   }
 }
@@ -27208,7 +26154,7 @@ body.fomio-surface-touch.user-messages-page.fomio-messages-mode {
 // Keep Discourse's structural wrapper because it contains the real form, but
 // remove the native secondary rail now that navigation lives in the floating
 // preferences menu.
-body.user-preferences-page {
+body.fomio-sidebar-active.user-preferences-page {
   #main-outlet .user-main .new-user-content-wrapper {
     display: block !important;
     width: 100%;
@@ -27230,7 +26176,7 @@ body.user-preferences-page {
 }
 
 // Native preferences detail pane: borderless filled form controls.
-body.user-preferences-page {
+body.fomio-sidebar-active.user-preferences-page {
   #main-outlet .user-main #user-content.user-preferences {
     .control-group {
       margin: 0 0 18px;
@@ -27387,4 +26333,656 @@ body.user-messages-page.fomio-messages-mode #main-outlet .user-main #new-private
 body.user-messages-page.fomio-messages-mode #main-outlet .user-main .btn.new-private-message {
   display: none !important;
   visibility: hidden !important;
+}
+
+
+// =========================================================================
+// Restored: User profile · Summary detail surface (editorial design)
+// Recovered from committed main; pairs with fomio-top-terets.gjs.
+// See CLAUDE.md "Profile / Me — Editorial Panels".
+// =========================================================================
+// ── User profile · Summary detail surface ──────────────────────────────
+// Editorial glass redesign: translucent section cards over a warm canvas,
+// Lora serif headings, sans tabular numerals for stat values. Per-stat
+// hooks use core's stable `stats-*` li classes and the `.user-stat`
+// value/label markup (verified against discourse templates/user/summary.gjs
+// and ui-kit/d-user-stat.gjs). The editorial hero has been removed; the
+// native Discourse profile header carries identity on the Summary tab.
+
+// Hide the native "Top Categories" count table on every surface — the custom
+// "Top terets" bar chart (connectors/below-user-summary-stats/fomio-top-terets.gjs)
+// replaces it. Surface-independent (not gated on .fomio-sidebar-active) and
+// targets the inner .summary-category-list so it can never leak through.
+body.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-categories-section,
+  #main-outlet .user-main #user-content .summary-category-list {
+    display: none;
+  }
+}
+
+body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
+  // Flat, border-first surfaces wired straight to the Discourse colour scheme
+  // (--fomio-* tokens are generated into color_definitions.scss from the active
+  // scheme and are admin-editable). No translucent glass, no gradient — solid
+  // card + hairline borders, matching the prototype.
+  --fomio-summary-glass: var(--fomio-card);
+  --fomio-summary-tile: var(--fomio-card);
+  --fomio-summary-tile-hover: var(--fomio-surface);
+  --fomio-summary-hairline: var(--fomio-border);
+  --fomio-summary-hairline-soft: var(--fomio-border-soft);
+  --fomio-summary-card-shadow: none;
+  --fomio-summary-tile-shadow-hover: none;
+
+  // Stat numerals lead with the platform UI face (San Francisco on Apple
+  // hardware) and fall back to the brand sans stack.
+  --fomio-summary-numeral-font: -apple-system, "SF Pro Display", "Inter",
+    var(--fomio-font-ui);
+
+  #main-outlet .user-main {
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background: var(--fomio-bg);
+  }
+
+  #main-outlet .user-main #user-content.user-content {
+    margin-top: 16px;
+    padding: 0;
+    background: transparent;
+  }
+
+  // The hero already surfaces bytes / replies / received / given, so hide those
+  // duplicates from the native stats grid. We also trim recent-read and
+  // bookmarks so the grid reads as exactly the prototype's four "reading &
+  // engagement" tiles: days visited, posts read, topics entered, time read.
+  // (Remove the recent-read / bookmark-count lines below to restore them.)
+  #main-outlet .user-main #user-content .stats-section li.stats-topic-count,
+  #main-outlet .user-main #user-content .stats-section li.stats-post-count,
+  #main-outlet .user-main #user-content .stats-section li.stats-likes-given,
+  #main-outlet .user-main #user-content .stats-section li.stats-likes-received,
+  #main-outlet .user-main #user-content .stats-section li.stats-recent-read,
+  #main-outlet .user-main #user-content .stats-section li.stats-bookmark-count {
+    display: none;
+  }
+
+  // The custom "Top terets" bar chart (connectors/below-user-summary-stats/
+  // fomio-top-terets.gjs) replaces the native category count table.
+  #main-outlet .user-main #user-content .top-categories-section {
+    display: none;
+  }
+
+  // Flat, boxless section — sits directly on the page like the editorial list.
+  .fomio-top-terets {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .fomio-top-terets__title {
+    margin: 0 0 14px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+  }
+
+  .fomio-top-terets__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fomio-top-terets__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fomio-top-terets__tag {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--fomio-radius-pill);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .fomio-top-terets__track {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--fomio-surface);
+    overflow: hidden;
+  }
+
+  .fomio-top-terets__bar {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 3px;
+    opacity: 0.65;
+  }
+
+  .fomio-top-terets__count {
+    flex: none;
+    min-width: 2rem;
+    text-align: right;
+    font-family: var(--fomio-font-mono);
+    font-size: 0.78rem;
+    color: var(--fomio-muted);
+  }
+
+  // Sections stack full-width in a single editorial column, separated by
+  // generous vertical rhythm rather than sitting in a two-up card grid.
+  #main-outlet .user-main #user-content .top-section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  // Boxless sections: no border, radius, fill, or padding — content sits
+  // directly on the page and is delimited by per-row hairlines instead.
+  #main-outlet .user-main #user-content .stats-section,
+  #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .top-categories-section,
+  #main-outlet .user-main #user-content .badges-section {
+    min-width: 0;
+    width: auto;
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main #user-content .stats-title,
+  #main-outlet .user-main #user-content .top-sub-section > h2,
+  #main-outlet .user-main #user-content .top-sub-section > h3,
+  #main-outlet .user-main #user-content .top-categories-section > h2,
+  #main-outlet .user-main #user-content .top-categories-section > h3,
+  #main-outlet .user-main #user-content .badges-section > h2,
+  #main-outlet .user-main #user-content .badges-section > h3 {
+    margin: 0 0 14px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+  }
+
+  #main-outlet .user-main #user-content .stats-section ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  // Each stat is a flat row: tracked label on the left, numeral on the right,
+  // delimited by a hairline (DOM order is value → label; row-reverse puts the
+  // label first visually).
+  #main-outlet .user-main #user-content .stats-section .user-stat {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li:last-child .user-stat {
+    border-bottom: 0;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .value {
+    font-family: var(--fomio-summary-numeral-font);
+    font-size: clamp(1.2rem, 1.1rem + 0.3vw, 1.45rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main #user-content .stats-section .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: var(--fomio-muted);
+  }
+
+  #main-outlet .user-main #user-content .stats-section .label .d-icon {
+    font-size: 0.8rem;
+    color: color-mix(in oklab, var(--fomio-primary) 80%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat {
+    padding: 0;
+    overflow: visible;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a {
+    display: block;
+    height: 100%;
+    padding: 0;
+    border-radius: var(--fomio-radius-lg);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a:focus-visible {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat {
+    transition:
+      transform var(--fomio-dur-med) var(--fomio-ease),
+      border-color var(--fomio-dur-med) var(--fomio-ease),
+      background-color var(--fomio-dur-med) var(--fomio-ease),
+      box-shadow var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
+    background: var(--fomio-summary-tile-hover);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul,
+  #main-outlet .user-main #user-content .top-categories-section table,
+  #main-outlet .user-main #user-content .badge-group-list {
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul,
+  #main-outlet .user-main #user-content .links-section ul,
+  #main-outlet .user-main #user-content .summary-user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // Flat list rows: hairline divider instead of a bordered tile card.
+  #main-outlet .user-main #user-content .top-sub-section li {
+    margin: 0;
+    padding: 14px 0;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
+    background: none;
+    transition: background-color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section li:last-child {
+    border-bottom: 0;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section li:hover {
+    background: var(--fomio-summary-tile-hover);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .topic-title,
+  #main-outlet .user-main #user-content .top-sub-section li > a:first-child {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1rem, 0.96rem + 0.18vw, 1.12rem);
+    font-weight: 500;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .topic-info,
+  #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .username,
+  #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .user-title {
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty {
+    margin: 0;
+    padding: 16px 18px;
+    border-radius: var(--fomio-radius-lg);
+    border: 1px dashed var(--fomio-summary-hairline);
+    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
+    box-sizing: border-box;
+    list-style: none;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty::before,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty::before {
+    content: attr(data-fomio-empty-message);
+    display: block;
+    color: color-mix(in oklab, var(--fomio-ink-muted) 86%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.5;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty > *,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty > * {
+    display: none !important;
+  }
+
+  #main-outlet .user-main #user-content .links-section li {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #main-outlet .user-main #user-content .links-section br {
+    display: none;
+  }
+
+  #main-outlet .user-main #user-content .links-section .domain {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 8px;
+    max-width: 100%;
+    min-height: 26px;
+    padding: 0 10px;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 7%, transparent);
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 16%, transparent);
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #main-outlet .user-main #user-content .links-section .domain::after {
+    content: attr(data-clicks);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6rem;
+    padding: 0 0.35rem;
+    height: 1.35rem;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
+    color: var(--fomio-primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .links-section li > a:last-of-type {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.06rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section a,
+  #main-outlet .user-main #user-content .top-categories-section a,
+  #main-outlet .user-main #user-content .badges-section > .more {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .more,
+  #main-outlet .user-main #user-content .badges-section > .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    margin-top: 12px;
+    color: var(--fomio-primary);
+    font-size: var(--fomio-text-sm);
+    font-weight: 700;
+    transition: color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .more:hover,
+  #main-outlet .user-main #user-content .badges-section > .more:hover {
+    color: var(--fomio-primary-dark);
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section th,
+  #main-outlet .user-main #user-content .top-categories-section td {
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
+    font-family: var(--fomio-font-ui);
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section th {
+    padding-top: 0;
+    color: var(--fomio-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section td.topic-count,
+  #main-outlet .user-main #user-content .top-categories-section td.reply-count {
+    color: var(--fomio-text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list li {
+    height: auto;
+    min-height: 58px;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info .user-detail {
+    min-width: 0;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info .name-line {
+    gap: 6px;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info .name-line > a {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.02rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .replies,
+  #main-outlet .user-main #user-content .summary-user-list .likes {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .badge-group-list {
+    gap: 10px;
+  }
+
+  #main-outlet .user-main #user-content .badge-card {
+    border: 1px solid var(--fomio-summary-hairline-soft);
+    border-radius: var(--fomio-radius-card);
+    background: var(--fomio-summary-tile);
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .badge-card .badge-link {
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main #user-content .badge-card .badge-summary,
+  #main-outlet .user-main #user-content .badge-card .badge-granted {
+    color: color-mix(in oklab, var(--fomio-ink-muted) 88%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section > p,
+  #main-outlet .user-main #user-content .badges-section > p,
+  #main-outlet .user-main #user-content .empty-state,
+  #main-outlet .user-main #user-content .alert.alert-info {
+    margin: 0;
+    padding: 16px 18px;
+    border-radius: var(--fomio-radius-lg);
+    border: 1px dashed var(--fomio-summary-hairline);
+    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
+    box-sizing: border-box;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.5;
+  }
+
+  #main-outlet .user-main #user-content .empty-state .empty-state__title {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  #main-outlet .user-main #user-content .empty-state .empty-state__container {
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+
+  @media (width <= 900px) {
+    #main-outlet .user-main #user-content .top-section {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat,
+    #main-outlet .user-main #user-content .top-sub-section li,
+    #main-outlet .user-main #user-content .top-sub-section .more,
+    #main-outlet .user-main #user-content .badges-section > .more {
+      transition: none;
+    }
+
+    #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
+      transform: none;
+    }
+  }
+}
+
+// Desktop summary rhythm: a single editorial column with generous spacing
+// between the stacked list sections.
+body.fomio-sidebar-active.fomio-surface-expanded.user-summary-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-section {
+    gap: 36px;
+    margin-bottom: 36px;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty,
+  #main-outlet .user-main #user-content .top-sub-section > p,
+  #main-outlet .user-main #user-content .badges-section > p {
+    padding: 12px 14px;
+    border-radius: var(--fomio-radius-md);
+    font-size: 0.83rem;
+  }
+}
+
+// Tablet rail should keep the desktop summary/detail surface instead of
+// collapsing into the narrow mobile-like summary stack.
+body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-section {
+    gap: 28px;
+    margin-bottom: 28px;
+  }
+}
+
+// Touch: same editorial system, tightened for one-hand reading.
+body.fomio-sidebar-active.fomio-surface-touch.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content.user-content {
+    margin-top: 12px;
+  }
+
+  #main-outlet .user-main #user-content .top-section {
+    gap: 26px;
+    margin-bottom: 26px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .user-stat {
+    gap: 12px;
+    padding: 13px 0;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .value {
+    font-size: clamp(1.15rem, 4vw, 1.4rem);
+  }
+}
+
+// Dark mode (AMOLED): same flat, border-first surfaces. Colours flow from the
+// dark token values in Section 1B / color_definitions.scss (admin-editable),
+// so the cards track the active Discourse colour scheme automatically.
+html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
+  --fomio-summary-glass: var(--fomio-card);
+  --fomio-summary-tile: var(--fomio-card);
+  --fomio-summary-tile-hover: var(--fomio-surface);
+  --fomio-summary-hairline: var(--fomio-border);
+  --fomio-summary-hairline-soft: var(--fomio-border-soft);
+
+  #main-outlet .user-main {
+    background: var(--fomio-bg);
+  }
 }
