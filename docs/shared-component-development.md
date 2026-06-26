@@ -232,7 +232,9 @@ All component styles live in `common.scss`. Use BEM naming with the `fomio-` pre
 - Use ARIA attributes for state selection (`[aria-expanded="true"]`, `[aria-selected="true"]`, `[aria-disabled="true"]`)
 - Avoid JS-managed class names like `.is-open` or `.active` — use ARIA instead
 - Scoped dark mode via `html.fomio-color-dark .fomio-button { ... }`
-- Desktop/mobile refinements in `desktop/desktop.scss` and `mobile/mobile.scss`
+- Touch-shell behavior (overlays, safe areas, thumb targets) belongs in `common/common.scss` under `body.fomio-surface-touch` — not only in `mobile/mobile.scss`, which is width-gated and will miss landscape phones and foldables
+- Narrow-width density refinements go in `mobile/mobile.scss`; wide-layout and sidebar refinements go in `desktop/desktop.scss`
+- Read `docs/responsive-design.md` before writing any surface-adaptive styles
 
 ## Example: Building a Layer 3 Component (Dropdown)
 
@@ -500,10 +502,11 @@ describe('FomioButton', () => {
 2. **Hardcoded styling** — Use `--fomio-*` CSS variables. Never inline hex colors.
 3. **Managing ARIA manually** — Let `fomio-ui-components.gjs` set aria-expanded, aria-selected, etc. Don't hardcode them in templates.
 4. **Avoiding composition** — If a shared component exists for what you need, use it. Don't build custom versions.
-5. **Responsive via media queries alone** — Use ARIA or CSS classes that respect surface context (desktop vs. touch shell).
+5. **Responsive via media queries alone** — `mobile/mobile.scss` is width-gated (< 640px). A touch phone in landscape or a foldable unfolded to 800px never receives it. Use `body.fomio-surface-touch` in `common.scss` for touch behavior. See `docs/responsive-design.md`.
 
 ## Resources
 
+- **Responsive design:** `docs/responsive-design.md` — read before writing any surface-adaptive CSS
 - **Design system audit:** `docs/phase-1-shared-components-audit.md`
 - **Component styles:** `common/common.scss` (especially Sections 1A for tokens, Sections 2–6 for component styles)
 - **Interactive behavior:** `javascripts/discourse/api-initializers/fomio-ui-components.gjs`

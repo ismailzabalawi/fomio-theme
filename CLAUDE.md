@@ -10,6 +10,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Senior Product UI Policy** — `docs/senior-product-ui-policy.md` (repo root) is the project-wide design bar and must be applied before any user-facing UI change: layout, copy, nav, auth surface, or AI-assisted design artifact. Key rules: content before chrome; one primary action per region; lists before cards; all critical states required; Fomio product language only; accessibility is a release bar.
 
+**Responsive Design Reference** — `apps/web/docs/responsive-design.md` must be read before writing any CSS that targets a screen size, surface mode, or device type. It covers how Discourse delivers stylesheets, the surface model breakpoints, which file owns which styles, SCSS patterns, and anti-patterns.
+
+**Design Philosophy** — `apps/web/docs/design-philosophy.md` must be read before designing or reviewing any screen, component, flow, or AI-assisted draft. It defines the "Read first. Act clearly. Reveal complexity gradually." principles, the 10 design rules, the 6 AI anti-patterns to reject, the state matrix requirement, and the AI-genericness self-check metrics.
+
 Terminology is non-negotiable:
 
 | Use | Never use |
@@ -225,7 +229,7 @@ All shared component styles are defined in `common.scss`:
 - **Section 1B** — Dark mode color overrides
 - **Sections 2–6** — Layer 1, 2, 3 component styles (`.fomio-button`, `.fomio-input`, `.fomio-dropdown`, etc.)
 
-Desktop-only and mobile-only refinements go in `desktop/desktop.scss` and `mobile/mobile.scss` respectively.
+Touch-shell behavior (overlays, safe areas, thumb targets) goes in `common/common.scss` scoped to `body.fomio-surface-touch` — never only in `mobile/mobile.scss`, which is width-gated and misses landscape phones and foldables. Narrow-width density refinements go in `mobile/mobile.scss`. Wide-layout and sidebar refinements go in `desktop/desktop.scss`. See `docs/responsive-design.md` for the full decision tree.
 
 ### Component API Conventions
 
@@ -529,7 +533,11 @@ All deep links are constructed from the `fomio_app_url` theme setting. Never har
 - **Keep APIs simple** — use semantic prop names (`variant`, `size`, `disabled`, `loading`, `leadingIcon`, `trailingIcon`, `@label`, `@hint`, `@error`); avoid prop proliferation
 - **Composition over specialization** — reuse Layer 1/2 components in Layer 3; avoid creating near-duplicate components
 - **Document your component** — include a brief summary comment at the top explaining its role and public props
-- **Test across surfaces** — verify behavior on desktop, tablet (768px), and mobile (<768px) breakpoints before shipping
+- **Test across surfaces** — verify behavior at all four surface modes before shipping: expanded (≥ 1280px), compact-desktop (1024–1279px), rail (768–1023px), touch (< 768px). See `docs/responsive-design.md`
+- **One primary action per region** — every component exposes 1 persistent primary action; 0–1 secondary; all others in overflow. Never expose every system action at once
+- **Full state coverage** — every interactive component must define hover, focus, pressed, selected, disabled, loading, success, and error behavior where applicable. Every critical flow must have all 6 states (empty, loading, error, long-content, permissions, moderation) designed before visual polish begins
+- **Lists before cards** — use lists for repetitive scan tasks; cards only when grouping a self-contained subject. Card saturation above 50% of major content regions is a risk signal
+- **No AI-generic defaults** — reject: perfect symmetry everywhere, generic SaaS nav labels (Dashboard/Users/Analytics), persistent action overload (4+ per item), decorative gradients on every surface, happy-path-only designs with no state matrix. See `docs/design-philosophy.md`
 
 ## Design System Notes
 
@@ -615,4 +623,8 @@ See "Web Theme Adaptations" in `.cursor/rules/studio.mdc`.
 - [ ] Quality audit passed (all 6 passes)
 - [ ] Terminology check: `node apps/mobile/scripts/check-terminology.js`
 - [ ] Token sync check: `npm run tokens:check`
-- [ ] Verified in both desktop and mobile Discourse preview
+- [ ] Verified at all four surface modes: expanded (≥ 1280px), compact-desktop (1024–1279px), rail (768–1023px), touch (< 768px)
+- [ ] State matrix complete: every critical flow has empty, loading, error, long-content, permissions, and moderation states designed
+- [ ] One primary action per region: no screen region has more than 1 persistent primary + 1 secondary visible at once
+- [ ] AI-genericness self-check passed: card saturation ≤ 35%, ≤ 2 persistent actions per item, nav labels are Fomio-specific, no decorative gradients without purpose
+- [ ] Accessibility bar met: focus visible + not obscured, touch targets ≥ 44×44px, text contrast ≥ 4.5:1, no color-only signaling

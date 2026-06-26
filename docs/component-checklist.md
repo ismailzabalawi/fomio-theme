@@ -34,17 +34,22 @@ Use this checklist when building or updating shared components.
 
 ## Styling
 
-- [ ] All styles in `common/common.scss` (or `desktop/mobile.scss` for refinements only)
+Read `docs/responsive-design.md` before writing any styles. It is the authority on which file owns which styles and what patterns to use.
+
+- [ ] All styles in `common/common.scss` (or `desktop/desktop.scss` / `mobile/mobile.scss` for refinements only)
 - [ ] All class names prefixed with `fomio-`
 - [ ] All colors use `--fomio-*` CSS variables, never hardcoded hex
 - [ ] States use ARIA attributes, not `.is-*` or `.active` class names
-- [ ] Responsive variants in `@media` queries (not separate mobile.scss logic)
+- [ ] Hover states gated on `(hover: hover) and (pointer: fine)` — not applied to touch
+- [ ] Interactive elements have `min-height: 44px` (WCAG 2.5.5 touch target)
 - [ ] Dark mode support via `html.fomio-color-dark .fomio-componentname { ... }`
+- [ ] Surface-mode variants use body class scoping, not raw media queries
 
 Example structure:
 ```scss
 .fomio-button {
-  /* base styles */
+  /* base styles — common.scss */
+  min-height: 44px; /* WCAG touch target */
 }
 
 .fomio-button--variant {
@@ -55,14 +60,19 @@ Example structure:
   /* disabled state */
 }
 
-html.fomio-color-dark .fomio-button {
-  /* dark mode overrides */
+/* Hover — fine pointer only */
+@media (hover: hover) and (pointer: fine) {
+  .fomio-button:hover { ... }
 }
 
-@media (max-width: 768px) {
-  .fomio-button {
-    /* mobile refinements */
-  }
+/* Surface-mode adaptation */
+body.fomio-surface-touch .fomio-button {
+  /* touch shell overrides — common.scss, NOT mobile.scss */
+}
+
+/* Dark mode */
+html.fomio-color-dark .fomio-button {
+  /* dark mode overrides */
 }
 ```
 
@@ -73,6 +83,51 @@ html.fomio-color-dark .fomio-button {
 - [ ] Behavior uses document-level event delegation, not component listeners
 - [ ] ARIA state drives visual changes, not JS-managed class names
 
+## Design Philosophy
+
+Read `docs/design-philosophy.md` before designing or reviewing. Reject AI-generic patterns before they reach implementation.
+
+- [ ] Content before chrome: component shows meaningful content/state before decoration
+- [ ] One primary action per region: 1 persistent primary, 0–1 secondary, rest in overflow
+- [ ] Lists before cards: component uses a list unless the subject genuinely needs grouping/containment
+- [ ] No generic labels: any text in the component uses Fomio nouns/tasks, not SaaS defaults
+- [ ] No decorative motion: any animation teaches state change, hierarchy, or spatial transition — or it's removed
+
+### State Matrix (required for interactive components and every critical flow)
+
+Before visual polish begins, all six states must be designed:
+
+- [ ] **Empty** — explains why and what to do next; includes a next action if meaningful
+- [ ] **Loading** — skeleton (known layout shape) / spinner (unknown duration) / progress (measurable)
+- [ ] **Error** — states what failed, where, and what the user can do; always textual
+- [ ] **Long content** — truncation rule defined; expand/collapse preserves focus position
+- [ ] **Permissions** — unavailable actions explained when learnable (use `fomio-permission-notice`); hidden when not. See `docs/dsp-001-permission-state.md`
+- [ ] **Moderation** — everyday actions separated from management; context preserved before irreversible decisions. Use `fomio-moderation-bar` + review surface composition. See `docs/dsp-002-moderation-surface.md`
+
+### AI-Genericness Self-Check
+
+- [ ] Card saturation ≤ 35% of major content regions on scan-heavy pages
+- [ ] ≤ 2 persistent actions per list/feed item (3 → review; 4+ → reject)
+- [ ] Top-level nav labels are Fomio-specific, not generic SaaS nouns
+- [ ] No decorative gradients or glass effects on every surface
+- [ ] Not a happy-path-only design — state matrix complete
+
+## Responsive Design
+
+Read `docs/responsive-design.md` before designing the component's adaptive behavior.
+
+- [ ] Component base styles go in `common/common.scss`
+- [ ] Touch-specific behavior (safe areas, overlay layout, bottom-sheet patterns) scoped to `body.fomio-surface-touch` in `common/common.scss` — NOT only in `mobile/mobile.scss`
+- [ ] Rail-specific adaptations (icon-only, label tooltips) scoped to `body.fomio-surface-rail`
+- [ ] Narrow-width density refinements go in `mobile/mobile.scss`
+- [ ] Desktop layout refinements go in `desktop/desktop.scss`
+- [ ] Component renders correctly at all four surface modes:
+  - expanded (≥ 1280px) — full labels, generous spacing
+  - compact-desktop (1024–1279px) — tighter spacing, same interaction model
+  - rail (768–1023px) — icon-only where applicable, floating labels
+  - touch (< 768px or coarse pointer) — bottom-bar nav, thumb targets, overlays
+- [ ] No raw `@media (max-width: Xpx)` as the sole source of touch behavior
+
 ## Testing
 
 - [ ] Unit tests in `__tests__/components/shared/` directory
@@ -80,7 +135,7 @@ html.fomio-color-dark .fomio-button {
 - [ ] Test event handlers (`@onClick`, `@onChange`, etc.)
 - [ ] Test ARIA attributes
 - [ ] Test keyboard navigation (if applicable)
-- [ ] Test on desktop (768px+), tablet (768px), mobile (<768px)
+- [ ] Test at all four surface modes (expanded, compact-desktop, rail, touch)
 - [ ] Test dark mode appearance
 
 Example test file:
@@ -151,10 +206,13 @@ Example comment block:
 - [ ] Verified on desktop (Chrome, Safari)
 - [ ] Verified on mobile (iPhone, Android simulator)
 - [ ] Verified in dark mode
-- [ ] All three breakpoints work: desktop (768px+), tablet (768px), mobile (<768px)
+- [ ] All four surface modes work: expanded, compact-desktop, rail, touch
 - [ ] No hardcoded strings or hex colors
 - [ ] No console errors or warnings
 - [ ] Design critique passed (for new components or significant changes)
+- [ ] State matrix complete: all 6 states designed for every critical flow
+- [ ] AI-genericness self-check passed: ≤ 35% card saturation, ≤ 2 persistent actions/item, Fomio-specific labels
+- [ ] Accessibility bar: focus visible + not obscured, touch targets ≥ 44×44px, contrast ≥ 4.5:1 text / 3:1 non-text
 
 ## Code Review Checklist
 
@@ -172,6 +230,9 @@ When reviewing a shared component PR:
 - [ ] No duplicate functionality with existing shared components?
 - [ ] File in correct directory (`components/shared/`)?
 - [ ] Styles in `common.scss` (not component-scoped CSS)?
+- [ ] One primary action per region — not multiple equally-weighted persistent actions?
+- [ ] State matrix present — not just the happy-path ideal state?
+- [ ] No AI-generic patterns: no card saturation, no generic labels, no decorative motion?
 
 ## Common Issues & Solutions
 
