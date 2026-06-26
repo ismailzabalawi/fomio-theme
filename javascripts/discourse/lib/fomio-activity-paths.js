@@ -42,15 +42,60 @@ export function isFomioActivityMockupPath(url = "") {
   return Boolean(fomioActivityRouteKind(url));
 }
 
-export function isFomioActivityStreamPath(url = "") {
-  return Boolean(fomioActivityRouteKind(url)) && !isFomioActivityTopicsPath(url);
+const TOPIC_LIST_ACTIVITY_KINDS = [
+  "topics",
+  "read",
+  "bookmarks",
+  "bookmarks-with-reminders",
+];
+
+export function isFomioActivityTopicListPath(url = "") {
+  const kind = fomioActivityRouteKind(url);
+  return TOPIC_LIST_ACTIVITY_KINDS.includes(kind);
 }
 
+export function isFomioActivityStreamPath(url = "") {
+  const kind = fomioActivityRouteKind(url);
+  if (!kind) {
+    return false;
+  }
+
+  return !isFomioActivityTopicListPath(url);
+}
+
+/** Bytes tab only (`/activity/topics`). */
+export function isFomioActivityBytesPath(url = "") {
+  return fomioActivityRouteKind(url) === "topics";
+}
+
+/** @deprecated Use isFomioActivityBytesPath — kept for call-site clarity during M2. */
 export function isFomioActivityTopicsPath(url = "") {
+  return isFomioActivityBytesPath(url);
+}
+
+export function isFomioActivityReadPath(url = "") {
+  return fomioActivityRouteKind(url) === "read";
+}
+
+export function isFomioActivityBookmarksPath(url = "") {
+  const kind = fomioActivityRouteKind(url);
+  return kind === "bookmarks" || kind === "bookmarks-with-reminders";
+}
+
+export function isFomioActivityPendingPath(url = "") {
+  return fomioActivityRouteKind(url) === "pending";
+}
+
+/** M1 timeline stream tabs only (All / Replies / Likes given). */
+export function isFomioActivityM1TimelineRoute(routeName = "") {
   return [
-    "topics",
-    "read",
-    "bookmarks",
-    "bookmarks-with-reminders",
-  ].includes(fomioActivityRouteKind(url));
+    "userActivity.index",
+    "userActivity.replies",
+    "userActivity.likesGiven",
+  ].includes(routeName);
+}
+
+/** M2 Bytes tab (`userActivity.topics`). */
+export function isFomioActivityM2BytesRoute(routeName = "") {
+  return routeName === "userActivity.topics";
 }

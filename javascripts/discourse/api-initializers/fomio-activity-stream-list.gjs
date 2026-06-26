@@ -1,5 +1,12 @@
 import { apiInitializer } from "discourse/lib/api";
-import { isFomioActivityStreamPath } from "../lib/fomio-activity-paths";
+import {
+  isFomioActivityPendingPath,
+  isFomioActivityStreamPath,
+} from "../lib/fomio-activity-paths";
+
+function shouldDecorateActivityStream(url = "") {
+  return isFomioActivityStreamPath(url) && !isFomioActivityPendingPath(url);
+}
 
 const STREAM_SELECTOR = "#main-outlet .user-main #user-content .user-stream";
 const ACTIVITY_STREAM_LIST_CLASS = "fomio-activity-stream-list";
@@ -10,7 +17,7 @@ function decorateActivityStream() {
   }
 
   const currentUrl = window.location.pathname + window.location.search;
-  if (!isFomioActivityStreamPath(currentUrl)) {
+  if (!shouldDecorateActivityStream(currentUrl)) {
     return;
   }
 
@@ -41,7 +48,7 @@ export default apiInitializer("1.8.0", (api) => {
 
     const currentUrl = window.location.pathname + window.location.search;
     if (
-      !isFomioActivityStreamPath(currentUrl) ||
+      !shouldDecorateActivityStream(currentUrl) ||
       typeof MutationObserver === "undefined"
     ) {
       return;

@@ -1,7 +1,7 @@
 import { apiInitializer } from "discourse/lib/api";
 import { i18n } from "discourse-i18n";
 import { themePrefix } from "virtual:theme";
-import { isFomioActivityTopicsPath } from "../lib/fomio-activity-paths";
+import { isFomioActivityBytesPath } from "../lib/fomio-activity-paths";
 
 const PHOSPHOR_ICON_REPLACEMENTS = {
   "angle-right": "fomio-ph-caret-right",
@@ -35,7 +35,6 @@ const PHOSPHOR_ICON_REPLACEMENTS = {
 };
 
 const ACTIVITY_TOPICS_LIST_SELECTOR = "#main-outlet .user-main #user-content .topic-list";
-const ACTIVITY_TOPICS_ITEM_SELECTOR = `${ACTIVITY_TOPICS_LIST_SELECTOR} .topic-list-item`;
 
 // The activity *stream* (All / Replies / Likes Given) is decorated by
 // api-initializers/fomio-activity-stream-list.gjs and styled by the
@@ -47,13 +46,9 @@ function decorateActivitySurfaces() {
 
   const currentUrl = window.location.pathname + window.location.search;
 
-  if (isFomioActivityTopicsPath(currentUrl)) {
+  if (isFomioActivityBytesPath(currentUrl)) {
     document.querySelectorAll(ACTIVITY_TOPICS_LIST_SELECTOR).forEach((list) => {
       list.classList.add("fomio-activity-topics-list");
-    });
-
-    document.querySelectorAll(ACTIVITY_TOPICS_ITEM_SELECTOR).forEach((item) => {
-      item.classList.add("--fomio-activity-topics-card");
     });
   }
 }
@@ -71,12 +66,12 @@ function scheduleActivityDecoration() {
   });
 }
 
-function isActivityTopicsPage() {
+function isActivityBytesPage() {
   if (typeof window === "undefined") {
     return false;
   }
 
-  return isFomioActivityTopicsPath(
+  return isFomioActivityBytesPath(
     window.location.pathname + window.location.search
   );
 }
@@ -113,7 +108,7 @@ export default apiInitializer("1.8.0", (api) => {
       classes.push("--fomio-fresh-bytes-list");
     }
 
-    if (context.listContext === "user-activity" && isActivityTopicsPage()) {
+    if (context.listContext === "user-activity" && isActivityBytesPage()) {
       classes.push("fomio-activity-topics-list");
     }
 
@@ -131,17 +126,14 @@ export default apiInitializer("1.8.0", (api) => {
         classes.push("--fomio-fresh-byte-item");
       }
 
-      if (context.listContext === "user-activity" && isActivityTopicsPage()) {
-        classes.push("--fomio-activity-topics-card");
-      }
-
       return classes;
     }
   );
 
   api.registerValueTransformer("topic-list-columns", ({ value: columns, context }) => {
-    if (context.listContext === "user-activity" && isActivityTopicsPage()) {
+    if (context.listContext === "user-activity" && isActivityBytesPage()) {
       columns.delete("views");
+      columns.delete("posts");
       return columns;
     }
 
@@ -208,7 +200,7 @@ export default apiInitializer("1.8.0", (api) => {
     }
 
     const currentUrl = window.location.pathname + window.location.search;
-    if (!isFomioActivityTopicsPath(currentUrl)) {
+    if (!isFomioActivityBytesPath(currentUrl)) {
       return;
     }
 

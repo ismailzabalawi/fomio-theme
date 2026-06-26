@@ -4,8 +4,15 @@ import { describe, it } from "node:test";
 import {
   fomioActivityRouteClass,
   fomioActivityRouteKind,
+  isFomioActivityBookmarksPath,
+  isFomioActivityBytesPath,
+  isFomioActivityM1TimelineRoute,
+  isFomioActivityM2BytesRoute,
   isFomioActivityMockupPath,
+  isFomioActivityPendingPath,
+  isFomioActivityReadPath,
   isFomioActivityStreamPath,
+  isFomioActivityTopicListPath,
   isFomioActivityTopicsPath,
 } from "../javascripts/discourse/lib/fomio-activity-paths.js";
 import {
@@ -60,12 +67,42 @@ describe("fomio-activity-paths", () => {
     assert.equal(isFomioActivityStreamPath("/u/ismail/activity/read"), false);
     assert.equal(isFomioActivityStreamPath("/u/ismail/activity/drafts"), true);
     assert.equal(isFomioActivityStreamPath("/u/ismail/activity/solved"), true);
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/pending"), true);
+    assert.equal(isFomioActivityStreamPath("/u/ismail/activity/bookmarks"), false);
+
+    assert.equal(isFomioActivityTopicListPath("/u/ismail/activity/topics"), true);
+    assert.equal(isFomioActivityTopicListPath("/u/ismail/activity/read"), true);
+    assert.equal(
+      isFomioActivityTopicListPath("/u/ismail/activity/bookmarks"),
+      true
+    );
+    assert.equal(isFomioActivityTopicListPath("/u/ismail/activity"), false);
+
+    assert.equal(isFomioActivityBytesPath("/u/ismail/activity/topics"), true);
+    assert.equal(isFomioActivityBytesPath("/my/activity/topics"), true);
+    assert.equal(isFomioActivityBytesPath("/u/ismail/activity/read"), false);
+    assert.equal(isFomioActivityBytesPath("/u/ismail/activity/bookmarks"), false);
 
     assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/topics"), true);
-    assert.equal(isFomioActivityTopicsPath("/my/activity/topics"), true);
-    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/read"), true);
-    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/bookmarks"), true);
+    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/read"), false);
+    assert.equal(isFomioActivityTopicsPath("/u/ismail/activity/bookmarks"), false);
     assert.equal(isFomioActivityTopicsPath("/u/ismail/activity"), false);
+
+    assert.equal(isFomioActivityReadPath("/u/ismail/activity/read"), true);
+    assert.equal(isFomioActivityReadPath("/u/ismail/activity/topics"), false);
+
+    assert.equal(
+      isFomioActivityBookmarksPath("/u/ismail/activity/bookmarks"),
+      true
+    );
+    assert.equal(
+      isFomioActivityBookmarksPath("/u/ismail/activity/bookmarks-with-reminders"),
+      true
+    );
+    assert.equal(isFomioActivityBookmarksPath("/u/ismail/activity/topics"), false);
+
+    assert.equal(isFomioActivityPendingPath("/u/ismail/activity/pending"), true);
+    assert.equal(isFomioActivityPendingPath("/u/ismail/activity"), false);
   });
 
   it("returns the activity route kind used for body classes", () => {
@@ -84,6 +121,21 @@ describe("fomio-activity-paths", () => {
       fomioActivityRouteClass("/u/ismail/activity/bookmarks-with-reminders"),
       "fomio-activity-screen--bookmarks-with-reminders"
     );
+  });
+
+  it("gates M1 timeline connector routes", () => {
+    assert.equal(isFomioActivityM1TimelineRoute("userActivity.index"), true);
+    assert.equal(isFomioActivityM1TimelineRoute("userActivity.replies"), true);
+    assert.equal(isFomioActivityM1TimelineRoute("userActivity.likesGiven"), true);
+    assert.equal(isFomioActivityM1TimelineRoute("userActivity.drafts"), false);
+    assert.equal(isFomioActivityM1TimelineRoute("userActivity.topics"), false);
+    assert.equal(isFomioActivityM1TimelineRoute("userActivity.solved"), false);
+  });
+
+  it("gates M2 Bytes connector routes", () => {
+    assert.equal(isFomioActivityM2BytesRoute("userActivity.topics"), true);
+    assert.equal(isFomioActivityM2BytesRoute("userActivity.index"), false);
+    assert.equal(isFomioActivityM2BytesRoute("userActivity.read"), false);
   });
 });
 

@@ -2513,17 +2513,21 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activit
   }
 
   // fomio-activity-stream-list touch refinements:
-  // tighter column gaps and smaller action label icon to recover content width
-  // on narrow viewports (the desktop values are 14px / 32px).
+  // tighter column gaps and smaller leading icon on narrow viewports.
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__header,
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__header {
     gap: 10px;
   }
 
-  .fomio-activity-action-label__icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
+  body.user-activity-page.fomio-activity-screen {
+    --fomio-activity-icon-size: 28px;
+    --fomio-activity-icon-radius: 7px;
+  }
+
+  .fomio-activity-timeline-leading__icon {
+    width: var(--fomio-activity-icon-size);
+    height: var(--fomio-activity-icon-size);
+    border-radius: var(--fomio-activity-icon-radius);
   }
 
   // Topics-list (Topics / Read / Bookmarks sub-routes): hide the posts-count

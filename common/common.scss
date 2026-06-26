@@ -5648,7 +5648,8 @@ body.fomio-sidebar-active.user-activity-page:not(.fomio-auth-mode) {
   }
 
   // ── Item card: breathable, hairline-bordered, reading-first ──
-  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+  // M1 timeline rows (.fomio-activity-stream-list) use flat hairline layout instead.
+  #main-outlet .user-main #user-content .user-stream:not(.fomio-activity-stream-list) .user-stream-item {
     display: block;
     margin: 0;
     padding: 20px 22px 22px;
@@ -5930,11 +5931,11 @@ body.fomio-sidebar-active.user-activity-page:not(.fomio-auth-mode) {
 
 // Tablet rail — same editorial system, slightly denser cards.
 body.fomio-sidebar-active.fomio-surface-rail.user-activity-page:not(.fomio-auth-mode) {
-  #main-outlet .user-main #user-content .user-stream {
+  #main-outlet .user-main #user-content .user-stream:not(.fomio-activity-stream-list) {
     gap: 12px;
   }
 
-  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+  #main-outlet .user-main #user-content .user-stream:not(.fomio-activity-stream-list) .user-stream-item {
     padding: 18px 18px 20px;
     border-radius: 20px;
   }
@@ -5948,7 +5949,7 @@ html.fomio-color-dark body.fomio-sidebar-active.user-activity-page:not(.fomio-au
   --fomio-stream-hairline: color-mix(in oklab, var(--fomio-text) 13%, transparent);
   --fomio-stream-hairline-soft: color-mix(in oklab, var(--fomio-text) 9%, transparent);
 
-  #main-outlet .user-main #user-content .user-stream .user-stream-item {
+  #main-outlet .user-main #user-content .user-stream:not(.fomio-activity-stream-list) .user-stream-item {
     box-shadow:
       var(--fomio-stream-card-shadow),
       inset 0 1px 0 color-mix(in oklab, var(--fomio-text) 5%, transparent);
@@ -25008,6 +25009,10 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   --fomio-activity-hairline: color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
   --fomio-activity-icon-bg: color-mix(in oklab, var(--fomio-surface) 78%, var(--fomio-bg));
   --fomio-activity-icon-fg: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+  --fomio-activity-row-pad-y: 16px;
+  --fomio-activity-row-gap: 14px;
+  --fomio-activity-icon-size: 32px;
+  --fomio-activity-icon-radius: 8px;
 
   overflow: auto;
 
@@ -25187,33 +25192,121 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
     box-shadow: none;
   }
 
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item {
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item.user-stream-item {
+    display: grid;
+    grid-template-columns: var(--fomio-activity-icon-size) minmax(0, 1fr) auto;
+    column-gap: var(--fomio-activity-row-gap);
     margin: 0;
-    padding: 16px 0;
+    padding: var(--fomio-activity-row-pad-y) 0;
     border: 0;
     border-bottom: 1px solid var(--fomio-activity-hairline);
     border-radius: 0;
     background: transparent;
     box-shadow: none;
+    box-sizing: border-box;
+  }
+
+  .fomio-activity-timeline-row-prefix {
+    display: contents;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .fomio-activity-timeline-leading {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: start;
   }
 
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__header,
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__header {
+    grid-column: 2 / 4;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item:has(.fomio-activity-action-label) .avatar-link {
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item:has(.fomio-activity-timeline-leading) .avatar-link {
     display: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__details,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__details {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1;
+    min-width: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__metadata {
+    order: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    padding: 0;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .stream-topic-title {
+    order: 2;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .fomio-activity-timeline-type-label {
+    flex: 0 0 auto;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata .time,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__metadata .time {
+    margin-left: auto;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata .badge-category__wrapper,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .stream-post-category .badge-category__wrapper {
+    padding: 3px 9px;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 9%, transparent);
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata .badge-category,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata .badge-category__name {
+    color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .expand-post,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .expand-item {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
   }
 
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .stream-topic-title a,
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .title a {
     color: var(--fomio-text);
     font-family: var(--fomio-font-serif);
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.3;
@@ -25225,17 +25318,10 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
     color: color-mix(in oklab, var(--fomio-primary) 76%, var(--fomio-text));
   }
 
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__metadata,
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__metadata {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px 10px;
-    margin-top: 6px;
-    color: var(--fomio-muted);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 500;
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .excerpt,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-action-description,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item-actions {
+    grid-column: 2 / 4;
   }
 
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .excerpt {
@@ -25243,78 +25329,67 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
     padding-left: 0;
     color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
     font-family: var(--fomio-font-serif);
-    font-size: 0.92rem;
+    font-size: 14px;
     line-height: 1.55;
   }
 
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .excerpt .cooked {
-    max-height: 4.75em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
-  }
-
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__details,
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .post-list-item__body,
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__details,
-  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item__body {
-    background: transparent;
-    box-shadow: none;
+    margin: 0;
+    max-height: none;
   }
 
   #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item:last-child {
     border-bottom: 0;
   }
 
-  .fomio-activity-action-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    max-width: 100%;
-    margin: 0 0 6px;
-    color: var(--fomio-muted);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 500;
-    line-height: 1.2;
-    white-space: nowrap;
-  }
-
-  .fomio-activity-action-label__icon {
+  .fomio-activity-timeline-leading__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: var(--fomio-activity-icon-size);
+    height: var(--fomio-activity-icon-size);
+    border-radius: var(--fomio-activity-icon-radius);
     background: var(--fomio-activity-icon-bg);
     color: var(--fomio-activity-icon-fg);
     flex: 0 0 auto;
   }
 
-  .fomio-activity-action-label[data-fomio-activity-action="created_byte"] .fomio-activity-action-label__icon {
+  .fomio-activity-timeline-leading[data-fomio-activity-action="created_byte"] .fomio-activity-timeline-leading__icon {
     background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
     color: var(--fomio-primary);
   }
 
-  .fomio-activity-action-label[data-fomio-activity-action="liked"] .fomio-activity-action-label__icon {
-    background: color-mix(in oklab, var(--fomio-primary) 8%, transparent);
-    color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
+  .fomio-activity-timeline-leading[data-fomio-activity-action="replied"] .fomio-activity-timeline-leading__icon,
+  .fomio-activity-timeline-leading[data-fomio-activity-action="liked"] .fomio-activity-timeline-leading__icon {
+    background: var(--fomio-surface);
+    color: var(--fomio-fg-muted);
   }
 
-  .fomio-activity-action-label__text {
-    color: inherit;
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .user-stream-item-actions {
+    margin-top: 6px;
+    padding-top: 0;
+    border-top: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    color: var(--fomio-fg-muted);
   }
 
-  .fomio-activity-action-label__teret {
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .expand-post,
+  #main-outlet .user-main #user-content .user-stream.fomio-activity-stream-list .expand-item {
     display: inline-flex;
     align-items: center;
-    max-width: min(180px, 36vw);
-    overflow: hidden;
-    padding: 3px 9px;
-    border-radius: var(--fomio-radius-pill);
-    background: color-mix(in oklab, var(--fomio-primary) 9%, transparent);
-    color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
-    font-size: 0.72rem;
-    text-overflow: ellipsis;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--fomio-muted);
   }
 
   #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list {
@@ -25343,7 +25418,108 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td.main-link {
-    padding-inline: 0 18px;
+    padding-inline: 0 14px;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td.posts,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td.views {
+    display: none;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item td.activity {
+    width: 1%;
+    padding-inline: 0;
+    padding-block: 16px;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  .fomio-activity-bytes-row-prefix {
+    display: contents;
+  }
+
+  #main-outlet
+    .user-main
+    #user-content
+    .topic-list.fomio-activity-topics-list
+    tbody
+    tr.topic-list-item:has(.fomio-activity-bytes-leading)
+    td.main-link {
+    display: grid !important;
+    grid-template-columns: var(--fomio-activity-icon-size) minmax(0, 1fr);
+    column-gap: var(--fomio-activity-row-gap);
+    align-items: start;
+    padding: 0 14px 0 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #main-outlet
+    .user-main
+    #user-content
+    .topic-list.fomio-activity-topics-list
+    tbody
+    tr.topic-list-item:has(.fomio-activity-bytes-leading)
+    .fomio-activity-bytes-leading {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    align-self: start;
+  }
+
+  #main-outlet
+    .user-main
+    #user-content
+    .topic-list.fomio-activity-topics-list
+    tbody
+    tr.topic-list-item:has(.fomio-activity-bytes-leading)
+    .link-bottom-line {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  #main-outlet
+    .user-main
+    #user-content
+    .topic-list.fomio-activity-topics-list
+    tbody
+    tr.topic-list-item:has(.fomio-activity-bytes-leading)
+    .link-top-line {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+  }
+
+  #main-outlet
+    .user-main
+    #user-content
+    .topic-list.fomio-activity-topics-list
+    tbody
+    tr.topic-list-item:has(.fomio-activity-bytes-leading)
+    .topic-excerpt {
+    grid-column: 2;
+    grid-row: 3;
+    margin: 6px 0 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-top-line,
@@ -25358,32 +25534,38 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
     text-decoration: none;
   }
 
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .topic-excerpt,
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-topic-context__text {
-    margin-top: 6px;
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .topic-excerpt {
     color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
     font-family: var(--fomio-font-serif);
-    font-size: 0.92rem;
+    font-size: 0.875rem;
     line-height: 1.55;
   }
 
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-bottom-line,
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-topic-context__meta,
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-topic-context__footer {
-    color: var(--fomio-muted);
-    font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
-    font-weight: 500;
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-bottom-line .badge-category__wrapper,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-bottom-line .badge-category,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .link-bottom-line .badge-category__name {
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
   }
 
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list td.posts,
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list td.views,
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list td.activity {
-    color: var(--fomio-muted);
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list .fomio-activity-timeline-type-label {
+    flex: 0 0 auto;
+    color: var(--fomio-fg-muted);
     font-family: var(--fomio-font-ui);
-    font-size: var(--fomio-text-xs);
+    font-size: 12px;
     font-weight: 500;
-    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  #main-outlet
+    .user-main
+    #user-content
+    .topic-list.fomio-activity-topics-list
+    .link-bottom-line
+    .fomio-activity-timeline-type-label {
+    margin-inline-end: 0;
   }
 
   #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item:last-child td {
