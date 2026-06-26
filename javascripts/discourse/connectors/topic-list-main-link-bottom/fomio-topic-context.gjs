@@ -2,6 +2,7 @@ import Component from "@glimmer/component";
 import { service } from "@ember/service";
 import FomioByteCard from "../../components/shared/fomio-byte-card";
 import { isFomioActivityM2BytesRoute } from "../../lib/fomio-activity-paths";
+import FomioActivityTopicRow from "../../components/fomio-activity-topic-row";
 
 export default class FomioTopicContext extends Component {
   @service router;
@@ -10,12 +11,14 @@ export default class FomioTopicContext extends Component {
     return this.args.outletArgs.topic;
   }
 
-  get shouldRender() {
-    return !isFomioActivityM2BytesRoute(this.router.currentRouteName);
+  get isActivityTopics() {
+    return isFomioActivityM2BytesRoute(this.router.currentRouteName);
   }
 
   <template>
-    {{#if this.shouldRender}}
+    {{#if this.isActivityTopics}}
+      <FomioActivityTopicRow @topic={{this.topic}} />
+    {{else}}
       <FomioByteCard @topic={{this.topic}} />
     {{/if}}
   </template>

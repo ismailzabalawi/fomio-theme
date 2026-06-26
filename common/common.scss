@@ -27334,3 +27334,215 @@ html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-aut
     background: var(--fomio-bg);
   }
 }
+
+
+// ============================================================
+// ACTIVITY PROFILE STRIP  (fomio-activity-profile-strip.gjs)
+// Compact identity header rendered above the user profile header
+// when on any userActivity.* route. Provides author context on
+// deep-link entry without replacing the Discourse profile header.
+// ============================================================
+
+.fomio-activity-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  pointer-events: none; // aria-hidden: decorative context strip only
+}
+
+.fomio-activity-strip__avatar-wrap {
+  display: flex;
+  flex-shrink: 0;
+  // Floating effect: ring of background + shadow lifts the avatar off the page
+  .fomio-avatar {
+    box-shadow:
+      0 0 0 3px var(--fomio-bg, var(--fomio-surface)),
+      0 4px 16px var(--fomio-shadow),
+      0 1px 4px rgba(0, 0, 0, 0.08);
+    transition: box-shadow var(--fomio-dur-med) var(--fomio-ease);
+  }
+}
+
+.fomio-activity-strip__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fomio-activity-strip__name {
+  font-family: var(--fomio-font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fomio-text);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fomio-activity-strip__handle {
+  font-family: var(--fomio-font-ui);
+  font-size: 0.8125rem;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+
+// ============================================================
+// ACTIVITY TOPIC ROW  (fomio-activity-topic-row.gjs)
+// Compact editorial row for topics in user activity lists.
+// Replaces the full ByteCard when on userActivity.* routes via
+// the topic-list-main-link-bottom connector.
+// ============================================================
+
+// Container reset — override ByteCard wrapper styles that fire for
+// .--fomio-activity-topics-card; the compact row needs no padding.
+.topic-list-item.--fomio-activity-topics-card .fomio-atr {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.fomio-atr {
+  // Full-row: link fills the entire row
+}
+
+.fomio-atr__link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--fomio-activity-hairline, var(--fomio-border-soft));
+  text-decoration: none;
+  color: inherit;
+  transition: none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .fomio-atr__title {
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+.topic-list-item.--fomio-activity-topics-card:last-of-type .fomio-atr__link {
+  border-bottom: 0;
+}
+
+.fomio-atr__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fomio-atr__title {
+  display: block;
+  font-family: var(--fomio-font-serif);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fomio-text);
+  line-height: 1.42;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+  transition: color var(--fomio-dur-fast) var(--fomio-ease);
+}
+
+.fomio-atr__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--fomio-font-ui);
+  font-size: 0.75rem;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+.fomio-atr__teret {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: var(--fomio-radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.fomio-atr__sep {
+  color: var(--fomio-border);
+  font-size: 0.6875rem;
+  user-select: none;
+}
+
+.fomio-atr__age {
+  color: var(--fomio-muted);
+  font-size: 0.75rem;
+}
+
+.fomio-atr__stats {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  color: color-mix(in oklab, var(--fomio-muted) 70%, var(--fomio-border));
+  font-family: var(--fomio-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.fomio-atr__stat-icon {
+  display: inline-flex;
+  align-items: center;
+
+  .d-icon {
+    width: 12px;
+    height: 12px;
+    color: inherit;
+    opacity: 0.75;
+  }
+}
+
+.fomio-atr__stat-count {
+  color: inherit;
+}
+
+// Touch: slightly larger tap targets
+@media (max-width: 767px) {
+  .fomio-atr__link {
+    padding: 14px 0;
+  }
+
+  .fomio-atr__title {
+    font-size: 0.9rem;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// Dark mode: hairline follows the dark token
+html.fomio-color-dark .fomio-atr__link {
+  border-bottom-color: var(--fomio-border-soft);
+}
+
+// Dark mode: strip avatar glow is softer to avoid flare on AMOLED
+html.fomio-color-dark .fomio-activity-strip__avatar-wrap .fomio-avatar {
+  box-shadow:
+    0 0 0 3px var(--fomio-bg, #0A0A0A),
+    0 4px 20px rgba(0, 0, 0, 0.55),
+    0 1px 4px rgba(0, 0, 0, 0.32);
+}

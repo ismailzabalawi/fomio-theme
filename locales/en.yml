@@ -59,6 +59,10 @@ en:
     # Native activity filter nav labels (core uses "Topics").
     user_action_groups:
       "4": "Bytes"
+    activity_topics:
+      replies: "replies"
+      empty: "No bytes yet."
+      load_more: "Show older bytes"
     activity_screen:
       actions:
         created_byte: "Created a Byte"
