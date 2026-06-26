@@ -27400,9 +27400,8 @@ html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-aut
 // the topic-list-main-link-bottom connector.
 // ============================================================
 
-// Container reset — override ByteCard wrapper styles that fire for
-// .--fomio-activity-topics-card; the compact row needs no padding.
-.topic-list-item.--fomio-activity-topics-card .fomio-atr {
+// Container reset — fomio-atr fills the cell with no extra chrome.
+.topic-list.fomio-activity-topics-list .topic-list-item .fomio-atr {
   display: block;
   width: 100%;
   margin: 0;
@@ -27431,7 +27430,7 @@ html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-aut
   }
 }
 
-.topic-list-item.--fomio-activity-topics-card:last-of-type .fomio-atr__link {
+.topic-list.fomio-activity-topics-list .topic-list-item:last-of-type .fomio-atr__link {
   border-bottom: 0;
 }
 
@@ -27545,4 +27544,53 @@ html.fomio-color-dark .fomio-activity-strip__avatar-wrap .fomio-avatar {
     0 0 0 3px var(--fomio-bg, #0A0A0A),
     0 4px 20px rgba(0, 0, 0, 0.55),
     0 1px 4px rgba(0, 0, 0, 0.32);
+}
+
+// ============================================================
+// BYTES TAB — native element suppression for fomio-atr compact rows
+//
+// body.fomio-activity-screen--topics is added by fomio-activity-screen.gjs
+// when the route is userActivity.topics. The extra class gives this block
+// higher specificity than the base .fomio-activity-screen rules, so
+// !important declarations here override the M2 grid layout and the touch
+// border-spacing without requiring cascade hacks.
+// ============================================================
+
+body.user-activity-page.fomio-activity-screen.fomio-activity-screen--topics:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list {
+    // Collapse any border-spacing gap that touch/rail adds between rows —
+    // fomio-atr__link handles its own vertical spacing and hairline.
+    border-spacing: 0 !important;
+    border-collapse: collapse !important;
+
+    // Reset every td: fomio-atr__link owns all padding and the hairline.
+    tbody tr.topic-list-item td {
+      padding: 0 !important;
+      border-bottom: 0 !important;
+    }
+
+    // Reset td.main-link: override the M2 two-column grid so fomio-atr
+    // fills the cell as a simple block.
+    tbody tr.topic-list-item td.main-link {
+      display: block !important;
+      grid-template-columns: none !important;
+      grid-template-areas: none !important;
+      padding: 0 !important;
+      border: 0 !important;
+
+      // Suppress the M2 leading icon/label and all native Discourse row
+      // content — fomio-atr renders title, teret, date, and reply count.
+      .fomio-activity-bytes-row-prefix,
+      .link-top-line,
+      .link-bottom-line,
+      .topic-excerpt {
+        display: none !important;
+      }
+    }
+
+    // fomio-atr already shows reply count; drop the native activity column.
+    tbody tr.topic-list-item td.activity {
+      display: none !important;
+    }
+  }
 }
