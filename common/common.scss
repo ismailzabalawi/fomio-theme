@@ -27547,50 +27547,305 @@ html.fomio-color-dark .fomio-activity-strip__avatar-wrap .fomio-avatar {
 }
 
 // ============================================================
-// BYTES TAB — native element suppression for fomio-atr compact rows
+// BYTES TAB — 4-column topic list (Byte · Replies · Views · Activity)
 //
 // body.fomio-activity-screen--topics is added by fomio-activity-screen.gjs
 // when the route is userActivity.topics. The extra class gives this block
-// higher specificity than the base .fomio-activity-screen rules, so
-// !important declarations here override the M2 grid layout and the touch
-// border-spacing without requiring cascade hacks.
+// higher specificity than the base .fomio-activity-screen rules.
+//
+// Layout: native Discourse <table> columns, not replaced.
+//   td.main-link  → fomio-atr (title + teret; no stats/age on desktop)
+//   td.posts      → reply count (sans, tabular-nums)
+//   td.views      → view count (sans, tabular-nums)
+//   td.activity   → last-active timestamp (sans, muted)
+//   thead         → column header row (styled, hidden on touch)
+//
+// Hairline ownership: the outer <td> carries the row hairline on this
+// screen, so fomio-atr__link has its own border zeroed out.
+//
+// Mobile (≤ 767px): metric columns collapse; fomio-atr__stats + age
+// re-surface to keep reply count and date visible in the main cell.
 // ============================================================
 
 body.user-activity-page.fomio-activity-screen.fomio-activity-screen--topics:not(.fomio-auth-mode) {
-  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list {
-    // Collapse any border-spacing gap that touch/rail adds between rows —
-    // fomio-atr__link handles its own vertical spacing and hairline.
-    border-spacing: 0 !important;
-    border-collapse: collapse !important;
+  #main-outlet .user-main .new-user-content-wrapper {
+    max-width: min(780px, calc(100vw - 48px));
+    padding: 24px 28px 32px;
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: 24px;
+    background: var(--fomio-card);
+    box-shadow: 0 24px 60px -44px rgba(28, 16, 10, 0.22);
+  }
 
-    // Reset every td: fomio-atr__link owns all padding and the hairline.
-    tbody tr.topic-list-item td {
-      padding: 0 !important;
-      border-bottom: 0 !important;
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    margin-bottom: 20px !important;
+    border-bottom-color: var(--fomio-border-soft);
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    height: 32px;
+    min-height: 32px;
+    padding-inline: 12px;
+    font-size: 13px;
+  }
+
+  #main-outlet .user-main #user-content,
+  #main-outlet .user-main .new-user-content-wrapper > .user-content,
+  #main-outlet .user-main .new-user-content-wrapper > .user-content.--loaded {
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-spacing: 0 !important;
+    border-collapse: separate !important;
+
+    // ── Column header ─────────────────────────────────────────────
+    thead.topic-list-header {
+      display: block !important;
+
+      tr {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 64px 96px;
+        gap: 16px;
+        align-items: center;
+        padding: 0 4px 10px !important;
+        border-bottom: 1px solid var(--fomio-border) !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      tr:has(> th.views) {
+        grid-template-columns: minmax(0, 1fr) 64px 64px 96px;
+      }
+
+      tr > th {
+        display: flex !important;
+        align-items: center;
+        justify-self: stretch;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        font-family: var(--fomio-font-ui);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--fomio-fg-muted);
+
+        // Discourse renders sortable column headers as buttons; normalise.
+        button,
+        .default > span,
+        .sortable > span {
+          display: inline-flex !important;
+          align-items: center;
+          color: inherit !important;
+          font: inherit !important;
+          letter-spacing: inherit !important;
+          text-transform: inherit !important;
+        }
+      }
+
+      tr > th.main-link,
+      tr > th.default {
+        text-align: left !important;
+        justify-content: flex-start;
+      }
+
+      tr > th.posts,
+      tr > th.views,
+      tr > th.activity {
+        justify-content: flex-end;
+        text-align: right !important;
+
+        button,
+        .sortable > span {
+          justify-content: flex-end;
+          width: 100%;
+          text-align: right;
+        }
+      }
+
+      // Hide columns we don't surface
+      tr > th.posters,
+      tr > th.bulk-select,
+      tr > th.likes {
+        display: none !important;
+      }
     }
 
-    // Reset td.main-link: override the M2 two-column grid so fomio-atr
-    // fills the cell as a simple block.
+    tbody {
+      display: block !important;
+    }
+
+    tbody tr.topic-list-item {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 64px 96px;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 4px !important;
+      border: 0;
+      border-bottom: 1px solid var(--fomio-activity-hairline);
+      background: transparent !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    tbody tr.topic-list-item:has(> td.views) {
+      grid-template-columns: minmax(0, 1fr) 64px 64px 96px;
+    }
+
+    tbody tr.topic-list-item:last-child {
+      border-bottom: 0;
+    }
+
+    // ── Row hairline lives on the td, not on fomio-atr__link ──────
+    tbody tr.topic-list-item td {
+      display: block !important;
+      min-width: 0;
+      padding: 0 !important;
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      vertical-align: middle !important;
+    }
+
+    // ── Main-link column: title + teret via fomio-atr ────────────
     tbody tr.topic-list-item td.main-link {
       display: block !important;
       grid-template-columns: none !important;
       grid-template-areas: none !important;
       padding: 0 !important;
-      border: 0 !important;
+      min-width: 0 !important;
 
-      // Suppress the M2 leading icon/label and all native Discourse row
-      // content — fomio-atr renders title, teret, date, and reply count.
+      // Suppress M2 leading icon/label and all native row markup.
       .fomio-activity-bytes-row-prefix,
       .link-top-line,
       .link-bottom-line,
       .topic-excerpt {
         display: none !important;
       }
+
+      // Strip fomio-atr's own hairline; the outer td carries the row line.
+      .fomio-atr__link {
+        border-bottom: 0 !important;
+        padding: 0 !important;
+        align-items: center;
+      }
+
+      .fomio-atr__body {
+        gap: 6px;
+      }
+
+      .fomio-atr__title {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+
+      // Desktop: hide per-row reply count and creation date —
+      // posts and activity columns provide them.
+      .fomio-atr__stats,
+      .fomio-atr__age,
+      .fomio-atr__sep {
+        display: none !important;
+      }
     }
 
-    // fomio-atr already shows reply count; drop the native activity column.
+    // ── Metric columns — show and style ───────────────────────────
+    // Override the base .fomio-activity-screen rule that hides posts/views.
+    tbody tr.topic-list-item td.posts,
+    tbody tr.topic-list-item td.views {
+      display: flex !important;
+      width: auto !important;
+      max-width: none !important;
+      justify-content: flex-end;
+      align-items: center;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody tr.topic-list-item td.posts .num,
+    tbody tr.topic-list-item td.views .num {
+      font-family: var(--fomio-font-mono);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: color-mix(in oklab, var(--fomio-muted) 84%, var(--fomio-text));
+      letter-spacing: -0.01em;
+    }
+
+    // Override the --topics block's earlier display:none !important.
     tbody tr.topic-list-item td.activity {
+      display: flex !important;
+      width: auto !important;
+      max-width: none !important;
+      justify-content: flex-end;
+      align-items: center;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody tr.topic-list-item td.activity .age,
+    tbody tr.topic-list-item td.activity a {
+      font-family: var(--fomio-font-ui);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--fomio-fg-muted);
+      text-decoration: none;
+    }
+
+    // ── Posters column: always hidden ─────────────────────────────
+    tbody tr.topic-list-item td.posters {
       display: none !important;
+    }
+
+    .fomio-activity-bytes-row-prefix {
+      display: none !important;
+    }
+
+    // ── Mobile (≤ 767px): collapse metric columns ─────────────────
+    @media (max-width: 767px) {
+      thead.topic-list-header {
+        display: none !important;
+      }
+
+      tbody tr.topic-list-item,
+      tbody tr.topic-list-item:has(> td.views) {
+        display: block !important;
+        padding: 14px 0 !important;
+      }
+
+      tbody tr.topic-list-item td.posts,
+      tbody tr.topic-list-item td.views,
+      tbody tr.topic-list-item td.activity {
+        display: none !important;
+      }
+
+      tbody tr.topic-list-item td.main-link {
+        display: block !important;
+
+        .fomio-atr__link {
+          padding-inline-end: 0 !important;
+        }
+
+        .fomio-atr__stats {
+          display: flex !important;
+        }
+
+        .fomio-atr__age,
+        .fomio-atr__sep {
+          display: inline !important;
+        }
+      }
     }
   }
 }
