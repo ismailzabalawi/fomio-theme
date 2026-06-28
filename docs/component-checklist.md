@@ -121,12 +121,20 @@ Read `docs/responsive-design.md` before designing the component's adaptive behav
 - [ ] Rail-specific adaptations (icon-only, label tooltips) scoped to `body.fomio-surface-rail`
 - [ ] Narrow-width density refinements go in `mobile/mobile.scss`
 - [ ] Desktop layout refinements go in `desktop/desktop.scss`
-- [ ] Component renders correctly at all four surface modes:
-  - expanded (≥ 1280px) — full labels, generous spacing
-  - compact-desktop (1024–1279px) — tighter spacing, same interaction model
-  - rail (768–1023px) — icon-only where applicable, floating labels
-  - touch (< 768px or coarse pointer) — bottom-bar nav, thumb targets, overlays
+- [ ] Component behavior is scoped to the owning surface mode, not justified by "it looked right at 3 viewport widths"
 - [ ] No raw `@media (max-width: Xpx)` as the sole source of touch behavior
+
+### Surface-Mode Verification Checklist
+
+Do not sign off responsive behavior from a generic 3-breakpoint pass. Verify the component against the four Fomio surface modes that actually drive shell behavior:
+
+- [ ] `expanded` (`body.fomio-surface-expanded`, `>= 1280px`) — full desktop layout, full labels, no touch-only affordances leaking in
+- [ ] `compact-desktop` (`body.fomio-surface-compact-desktop`, `1024-1279px`) — tighter desktop density without changing the interaction model
+- [ ] `rail` (`body.fomio-surface-rail`, `768-1023px`) — rail/sidebar-adjacent adaptations work without assuming a full-width desktop shell
+- [ ] `touch` (`body.fomio-surface-touch`, `< 768px` or coarse pointer) — thumb targets, overlays, and safe-area behavior work even when Discourse serves the desktop bundle
+- [ ] If the component changes by input model, hover/fine-pointer behavior is verified separately from width-based surface behavior
+- [ ] If the component has no visible difference in one or more surface modes, that is an explicit decision rather than an untested gap
+- [ ] Verification includes the 640-767px band where Discourse uses the desktop bundle but Fomio still uses the touch surface
 
 ## Testing
 
@@ -135,7 +143,7 @@ Read `docs/responsive-design.md` before designing the component's adaptive behav
 - [ ] Test event handlers (`@onClick`, `@onChange`, etc.)
 - [ ] Test ARIA attributes
 - [ ] Test keyboard navigation (if applicable)
-- [ ] Test at all four surface modes (expanded, compact-desktop, rail, touch)
+- [ ] Test the component against the surface-mode verification checklist (`expanded`, `compact-desktop`, `rail`, `touch`, plus the 640-767px touch/desktop-bundle band when relevant)
 - [ ] Test dark mode appearance
 
 Example test file:
@@ -206,7 +214,7 @@ Example comment block:
 - [ ] Verified on desktop (Chrome, Safari)
 - [ ] Verified on mobile (iPhone, Android simulator)
 - [ ] Verified in dark mode
-- [ ] All four surface modes work: expanded, compact-desktop, rail, touch
+- [ ] Surface-mode verification checklist completed: expanded, compact-desktop, rail, touch, and the 640-767px touch/desktop-bundle band when relevant
 - [ ] No hardcoded strings or hex colors
 - [ ] No console errors or warnings
 - [ ] Design critique passed (for new components or significant changes)
