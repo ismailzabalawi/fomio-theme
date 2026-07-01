@@ -2537,6 +2537,29 @@ body.fomio-surface-touch.fomio-sidebar-active:not(.fomio-auth-mode).user-activit
     display: none;
   }
 
+  // Activity Bytes rows already render the compact `fomio-atr` card.
+  // On phones, hide the native duplicate title/meta block so the card can
+  // use the full row width without stacking two competing layouts.
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item .fomio-activity-bytes-row-prefix,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item .pull-right,
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item .topic-item-stats {
+    display: none !important;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item .main-link {
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item .main-link > a.raw-topic-link {
+    display: none !important;
+  }
+
+  #main-outlet .user-main #user-content .topic-list.fomio-activity-topics-list tbody tr.topic-list-item .fomio-atr {
+    width: 100%;
+  }
+
   // The shared leaf-page pill block above (~line 449) sets border-color,
   // background gradient, and box-shadow on secondary-nav active items.
   // Reset those here so the underline system from common.scss wins.
@@ -2915,6 +2938,38 @@ body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-
     box-shadow: none !important;
     color: var(--fomio-primary) !important;
     font-weight: 600 !important;
+  }
+}
+
+body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-screen.fomio-activity-screen--replies:not(.fomio-auth-mode) {
+  #main-outlet .user-main .new-user-content-wrapper {
+    padding:
+      0
+      var(--fomio-activity-mobile-nav-inset, var(--fomio-mobile-child-pad-x, 16px))
+      max(22px, var(--fomio-safe-bottom, 0px)) !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    margin-bottom: 20px !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding-inline: 12px !important;
+    font-size: 13px !important;
+  }
+
+  #main-outlet .user-main #user-content .loading-container[data-loading="false"],
+  #main-outlet .user-main #user-content .loading-container:not(.visible) {
+    display: block !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 }
 

@@ -6,6 +6,7 @@ import {
   actionKeyFromItem,
   bindBytesTypeLabelToMeta,
   bindTimelineTypeLabelToMetadata,
+  fallbackLabelForActionKey,
   iconForActionKey,
 } from "../javascripts/discourse/lib/fomio-activity-timeline.js";
 
@@ -29,6 +30,13 @@ describe("fomio-activity-timeline", () => {
     assert.equal(iconForActionKey("replied"), "fomio-ph-arrow-bend-up-left");
     assert.equal(iconForActionKey("liked"), "fomio-ph-heart");
     assert.equal(iconForActionKey("unknown"), "fomio-ph-rows");
+  });
+
+  it("returns plain fallback labels for activity rows", () => {
+    assert.equal(fallbackLabelForActionKey("created_byte"), "Created a Byte");
+    assert.equal(fallbackLabelForActionKey("replied"), "Replied");
+    assert.equal(fallbackLabelForActionKey("liked"), "Liked");
+    assert.equal(fallbackLabelForActionKey("unknown"), null);
   });
 
   it("no-ops when prefix or metadata is missing", () => {

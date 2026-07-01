@@ -14,6 +14,12 @@ export const ICONS_BY_ACTION_KEY = {
   liked: "fomio-ph-heart",
 };
 
+export const FALLBACK_LABELS_BY_ACTION_KEY = {
+  created_byte: "Created a Byte",
+  replied: "Replied",
+  liked: "Liked",
+};
+
 export function valueFor(object, key) {
   if (!object) {
     return null;
@@ -45,6 +51,10 @@ export function actionKeyFromItem(item) {
 
 export function iconForActionKey(actionKey) {
   return ICONS_BY_ACTION_KEY[actionKey] || "fomio-ph-rows";
+}
+
+export function fallbackLabelForActionKey(actionKey) {
+  return FALLBACK_LABELS_BY_ACTION_KEY[actionKey] || null;
 }
 
 /**

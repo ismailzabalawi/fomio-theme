@@ -8,6 +8,7 @@ import FomioPhIcon from "../../components/shared/fomio-ph-icon";
 import { isFomioActivityM2BytesRoute } from "../../lib/fomio-activity-paths";
 import {
   bindBytesTypeLabelToMeta,
+  fallbackLabelForActionKey,
   iconForActionKey,
 } from "../../lib/fomio-activity-timeline";
 
@@ -21,7 +22,8 @@ export default class FomioActivityBytesTimelineRow extends Component {
   }
 
   get label() {
-    return i18n(themePrefix(`activity_screen.actions.${BYTES_ACTION_KEY}`));
+    const translation = i18n(themePrefix(`activity_screen.actions.${BYTES_ACTION_KEY}`));
+    return translation?.startsWith("[") ? fallbackLabelForActionKey(BYTES_ACTION_KEY) : translation;
   }
 
   get icon() {

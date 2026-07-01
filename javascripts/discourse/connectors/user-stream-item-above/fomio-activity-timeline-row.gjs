@@ -9,6 +9,7 @@ import { isFomioActivityM1TimelineRoute } from "../../lib/fomio-activity-paths";
 import {
   actionKeyFromItem,
   bindTimelineTypeLabelToMetadata,
+  fallbackLabelForActionKey,
   iconForActionKey,
 } from "../../lib/fomio-activity-timeline";
 
@@ -35,7 +36,8 @@ export default class FomioActivityTimelineRow extends Component {
       return null;
     }
 
-    return i18n(themePrefix(`activity_screen.actions.${this.actionKey}`));
+    const translation = i18n(themePrefix(`activity_screen.actions.${this.actionKey}`));
+    return translation?.startsWith("[") ? fallbackLabelForActionKey(this.actionKey) : translation;
   }
 
   get icon() {
