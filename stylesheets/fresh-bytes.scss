@@ -1,0 +1,290 @@
+// ============================================================
+// FRESH BYTES
+// Suggested topics re-framed as a quiet editorial continuation block.
+// Discourse still owns the underlying suggestion/unread logic.
+// ============================================================
+
+.more-topics__container {
+  max-width: var(--fomio-column-w);
+  margin: 3rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid var(--fomio-border-soft);
+}
+
+.more-topics__browse-more {
+  display: none !important;
+}
+
+.archetype-private_message .more-topics__container,
+.archetype-private_message #related-messages {
+  display: none !important;
+}
+
+#suggested-topics.more-topics__list {
+  max-width: var(--fomio-column-w);
+}
+
+#suggested-topics .user-tip {
+  display: none;
+}
+
+#suggested-topics .more-topics__list-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--fomio-font-serif);
+  font-size: clamp(1.4rem, 1.2rem + 0.4vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-ink);
+}
+
+.topic-list.--fomio-fresh-bytes-list {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.875rem;
+  table-layout: fixed;
+}
+
+.topic-list.--fomio-fresh-bytes-list .topic-list-header,
+.topic-list.--fomio-fresh-bytes-list .topic-list-data.posters,
+.topic-list.--fomio-fresh-bytes-list .num.posts-map,
+.topic-list.--fomio-fresh-bytes-list .num.activity {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item {
+  background: transparent !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item td {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  vertical-align: top;
+}
+
+.topic-list-item.--fomio-fresh-byte-item td.main-link {
+  padding: 0.875rem 1.125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  box-sizing: content-box;
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  background: var(--fomio-card);
+  overflow: hidden;
+  transition:
+    border-color var(--fomio-dur-med) var(--fomio-ease),
+    box-shadow var(--fomio-dur-med) var(--fomio-ease);
+}
+
+.topic-list-item.--fomio-fresh-byte-item:hover td.main-link {
+  border-color: color-mix(in oklab, var(--fomio-border) 76%, var(--fomio-text));
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--fomio-shadow) 40%, transparent);
+}
+
+.topic-list-item.--fomio-fresh-byte-item .link-bottom-line,
+.topic-list-item.--fomio-fresh-byte-item .main-link > .topic-excerpt,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__text,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__thumb,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__author .avatar,
+.topic-list-item.--fomio-fresh-byte-item .topic-post-badges,
+.topic-list-item.--fomio-fresh-byte-item .topic-statuses,
+.topic-list-item.--fomio-fresh-byte-item .badge-posts,
+.topic-list-item.--fomio-fresh-byte-item .post-activity {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .link-top-line {
+  display: block;
+  flex: 1 1 auto;
+  margin: 0;
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context {
+  display: contents;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__meta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  min-width: 0;
+  font-size: var(--fomio-text-xs);
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__teret {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+  font-family: var(--fomio-font-ui);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .main-link a.title,
+.topic-list-item.--fomio-fresh-byte-item .main-link .raw-topic-link {
+  display: -webkit-box;
+  margin: 0;
+  color: var(--fomio-ink);
+  font-family: var(--fomio-font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .main-link a.title::after,
+.topic-list-item.--fomio-fresh-byte-item .main-link .raw-topic-link::after {
+  display: none;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .topic-statuses,
+.topic-list-item.--fomio-fresh-byte-item .topic-post-badges {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .main-link a.title:hover,
+.topic-list-item.--fomio-fresh-byte-item .main-link .raw-topic-link:hover,
+.topic-list-item.--fomio-fresh-byte-item .main-link a.title:focus-visible,
+.topic-list-item.--fomio-fresh-byte-item .main-link .raw-topic-link:focus-visible {
+  color: var(--fomio-primary);
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__footer {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: nowrap;
+  margin-top: 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  color: var(--fomio-ink-muted);
+  white-space: nowrap;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__author,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__date {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__sep::before {
+  content: "·";
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__sep {
+  width: auto;
+  height: auto;
+  background: none;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__author,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__meta-dot,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__pin,
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__read-time {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__stat {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.3125rem;
+  color: var(--fomio-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__stat svg {
+  flex-shrink: 0;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .fomio-topic-context__unread {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--fomio-primary);
+  margin-left: 0;
+}
+
+#topic-footer-buttons {
+  border-top: none;
+  padding-top: 0.5rem;
+}
+
+.timeline-container,
+.topic-navigation {
+  display: none;
+}
+
+.topic-area {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+nav.post-controls .actions {
+  gap: 0.35rem;
+}
+
+nav.post-controls .actions button,
+nav.post-controls .actions .d-button-label {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  color: var(--fomio-ink-muted);
+}
+
+
+// ------------------------------------------------------------
+// 14. POLISH PASS
+// Final spacing and hierarchy tuning for phase one
+// ------------------------------------------------------------
+
+.navigation-topics #list-area,
+.navigation-categories #list-area,
+.navigation-category #list-area {
+  padding-top: 0.5rem;
+}
+
+.topic-list.--fomio-discovery-list .topic-list-header .topic-list-data {
+  padding-top: 0.2rem;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+  text-wrap: balance;
+}
+
+.fomio-topic-reading-meta {
+  max-width: 60rem;
+}
+
+.topic-post article {
+  max-width: 70rem;
+  position: relative;
+}
+
+.topic-post .topic-meta-data {
+  padding-bottom: 0.35rem;
+}
+
+.topic-post .cooked h2,
+.topic-post .cooked h3,
+.topic-post .cooked h4 {
+  margin-top: 2.2rem;
+}
+
+.topic-post .cooked > :last-child {
+  margin-bottom: 0;
+}

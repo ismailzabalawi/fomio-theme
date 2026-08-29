@@ -1,0 +1,2056 @@
+// ============================================================
+// FOMIO UI COMPONENT LIBRARY
+// Cross-surface primitives: buttons, menus, dropdowns, surfaces.
+//
+// Mirrors apps/mobile/src/components/ui/ token usage so that
+// Expo and web share the same visual language.
+//
+// Rules:
+//   - All values reference --fomio-* tokens; no raw hex.
+//   - Dark mode overrides scoped under html.fomio-color-dark.
+//   - Interactive states (open/closed, observed/hidden) are toggled
+//     by fomio-ui-components.gjs via aria-attributes and data attrs.
+// ============================================================
+
+
+// ------------------------------------------------------------
+// BUTTONS
+// Variants: primary (default), secondary, outline, ghost, destructive, link
+// Sizes:    default, --sm, --lg, --icon
+// ------------------------------------------------------------
+
+.fomio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fomio-space-sm);
+  height: var(--fomio-button-height);
+  padding: 0 var(--fomio-space-lg);
+  border: none;
+  border-radius: var(--fomio-radius-sm);
+  cursor: pointer;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  transition:
+    background var(--fomio-dur-fast) var(--fomio-ease),
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    border-color var(--fomio-dur-fast) var(--fomio-ease),
+    box-shadow var(--fomio-dur-fast) var(--fomio-ease),
+    opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+  // ── Primary (default) — terracotta fill ──────────────────────
+  background: var(--fomio-primary);
+  color: var(--fomio-on-primary);
+
+  &:hover {
+    background: var(--fomio-primary-dark);
+  }
+
+  &:active {
+    background: var(--fomio-primary-dark);
+    opacity: 0.88;
+  }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.42;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // ── Secondary — surface bg + soft border ────────────────────
+  &--secondary {
+    background: var(--fomio-card);
+    color: var(--fomio-text);
+    border: 1px solid var(--fomio-border-soft);
+
+    &:hover {
+      background: var(--fomio-surface);
+    }
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
+
+  // ── Outline — transparent + soft border ─────────────────────
+  &--outline {
+    background: transparent;
+    color: var(--fomio-text);
+    border: 1px solid var(--fomio-border-soft);
+
+    &:hover {
+      background: var(--fomio-border-soft);
+    }
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
+
+  // ── Ghost — no background, no border ────────────────────────
+  &--ghost {
+    background: transparent;
+    color: var(--fomio-text);
+
+    &:hover {
+      background: var(--fomio-border-soft);
+    }
+
+    &:active {
+      background: color-mix(in oklab, var(--fomio-border-soft) 160%, transparent);
+    }
+  }
+
+  // ── Destructive — danger fill ────────────────────────────────
+  &--destructive {
+    background: var(--fomio-danger);
+    color: var(--fomio-card);
+    border: none;
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-danger) 88%, #000);
+    }
+
+    &:active {
+      opacity: 0.88;
+    }
+  }
+
+  // ── Link — inline text affordance ───────────────────────────
+  &--link {
+    background: transparent;
+    color: var(--fomio-primary);
+    padding: 0;
+    height: auto;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: transparent;
+
+    &:hover {
+      text-decoration-color: var(--fomio-primary);
+    }
+  }
+
+  // ── Size: small ──────────────────────────────────────────────
+  &--sm {
+    height: var(--fomio-button-height-sm);
+    padding: 0 var(--fomio-space-md);
+    font-size: var(--fomio-text-xs);
+  }
+
+  // ── Size: large ──────────────────────────────────────────────
+  &--lg {
+    height: var(--fomio-button-height-lg);
+    padding: 0 var(--fomio-space-xl);
+    font-size: var(--fomio-text-base);
+  }
+
+  // ── Icon-only — square proportions ───────────────────────────
+  &--icon {
+    padding: 0;
+    width: var(--fomio-button-height);
+
+    &.fomio-btn--sm {
+      width: var(--fomio-button-height-sm);
+    }
+
+    &.fomio-btn--lg {
+      width: var(--fomio-button-height-lg);
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// MENUS
+// Navigation or contextual menus. Composes into dropdowns and
+// sidebars. Handles items, section labels, dividers, badges,
+// and active / danger / disabled item states.
+// ------------------------------------------------------------
+
+.fomio-menu {
+  list-style: none;
+  margin: 0;
+  padding: var(--fomio-space-xs) 0;
+
+  &__section-label {
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    pointer-events: none;
+  }
+
+  &__divider {
+    height: 1px;
+    background: var(--fomio-border-soft);
+    margin: var(--fomio-space-xs) 0;
+    pointer-events: none;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    color: var(--fomio-text);
+    border-radius: var(--fomio-radius-sm);
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: var(--fomio-border-soft);
+    }
+
+    &:active {
+      background: color-mix(in oklab, var(--fomio-border-soft) 160%, transparent);
+    }
+
+    // Active route / selected
+    &--active,
+    &[aria-current="page"],
+    &[aria-selected="true"] {
+      background: var(--fomio-primary-soft);
+      color: var(--fomio-primary);
+      font-weight: 600;
+
+      &:hover {
+        background: color-mix(in oklab, var(--fomio-primary-soft) 120%, var(--fomio-border-soft));
+      }
+    }
+
+    // Destructive action
+    &--danger {
+      color: var(--fomio-danger);
+
+      &:hover {
+        background: var(--fomio-danger-soft);
+      }
+    }
+
+    // Disabled
+    &--disabled,
+    &[aria-disabled="true"] {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    // Icon slot (left)
+    &-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      opacity: 0.72;
+      color: inherit;
+    }
+
+    // Badge / count (right-aligned)
+    &-badge {
+      margin-left: auto;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 var(--fomio-space-xs);
+      background: var(--fomio-danger);
+      color: var(--fomio-card);
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      font-weight: 700;
+      line-height: 1;
+      border-radius: var(--fomio-radius-pill);
+    }
+
+    // Trailing chevron for sub-menu items
+    &-chevron {
+      margin-left: auto;
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(-45deg);
+      opacity: 0.5;
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// DROPDOWNS
+// Composed of a trigger button and a floating panel.
+// Panel visibility is driven by aria-expanded on the trigger,
+// toggled by fomio-ui-components.gjs.
+// ------------------------------------------------------------
+
+.fomio-dropdown {
+  position: relative;
+  display: inline-block;
+
+  // ── Trigger ──────────────────────────────────────────────────
+  &__trigger {
+    cursor: pointer;
+    user-select: none;
+
+    // Chevron indicator
+    &::after {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-left: var(--fomio-space-sm);
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform var(--fomio-dur-fast) var(--fomio-ease);
+      vertical-align: middle;
+    }
+
+    &[aria-expanded="true"]::after {
+      transform: rotate(-135deg) translateY(2px);
+    }
+  }
+
+  // ── Panel ────────────────────────────────────────────────────
+  &__panel {
+    position: absolute;
+    top: calc(100% + var(--fomio-space-xs));
+    left: 0;
+    min-width: 200px;
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-md);
+    box-shadow:
+      0 2px 8px color-mix(in oklab, var(--fomio-shadow) 60%, transparent),
+      0 8px 24px var(--fomio-shadow);
+    padding: var(--fomio-space-xs) 0;
+    z-index: 200;
+
+    // Closed by default
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px) scale(0.98);
+    transform-origin: top left;
+    transition:
+      opacity var(--fomio-dur-fast) var(--fomio-ease),
+      transform var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  // Open state — set by fomio-ui-components.gjs via aria-expanded
+  &__trigger[aria-expanded="true"] ~ &__panel,
+  &--open &__panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  // Right-aligned panel
+  &--align-end &__panel {
+    left: auto;
+    right: 0;
+    transform-origin: top right;
+  }
+
+  // Upward-opening panel (above trigger)
+  &--align-top &__panel {
+    top: auto;
+    bottom: calc(100% + var(--fomio-space-xs));
+    transform-origin: bottom left;
+  }
+
+  &--align-top.fomio-dropdown--align-end .fomio-dropdown__panel {
+    transform-origin: bottom right;
+  }
+
+  // ── Items — inherits menu item layout ─────────────────────────
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    color: var(--fomio-text);
+    border-radius: var(--fomio-radius-sm);
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: var(--fomio-border-soft);
+    }
+
+    &--active,
+    &[aria-selected="true"] {
+      background: var(--fomio-primary-soft);
+      color: var(--fomio-primary);
+      font-weight: 600;
+    }
+
+    &--danger {
+      color: var(--fomio-danger);
+
+      &:hover {
+        background: var(--fomio-danger-soft);
+      }
+    }
+
+    &--disabled,
+    &[aria-disabled="true"] {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  &__divider {
+    height: 1px;
+    background: var(--fomio-border-soft);
+    margin: var(--fomio-space-xs) 0;
+    pointer-events: none;
+  }
+
+  &__section-label {
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    pointer-events: none;
+  }
+}
+
+
+// ------------------------------------------------------------
+// SURFACES
+// Semantic layer tokens matching apps/mobile/src/components/ui/primitives/Surface.tsx.
+//
+// Layer variants:
+//   (default)  — surface level   → --fomio-surface
+//   --screen   — page background → --fomio-bg
+//   --raised   — panel / sidebar → --fomio-surface + border
+//   --card     — content card    → --fomio-card + shadow
+//   --frost    — frosted glass overlay
+//
+// Visibility states (toggled by fomio-ui-components.gjs):
+//   --hidden   — off-screen or pre-scroll; entrance pending
+//   --observed — entered viewport or manually activated
+//   --dormant  — mounted but intentionally inactive (split-view)
+// ------------------------------------------------------------
+
+.fomio-surface {
+  background: var(--fomio-surface);
+  color: var(--fomio-text);
+
+  // ── Layer: screen ─────────────────────────────────────────────
+  &--screen {
+    background: var(--fomio-bg);
+  }
+
+  // ── Layer: raised (panels, sidebars, popovers) ────────────────
+  &--raised {
+    background: var(--fomio-surface);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-lg);
+  }
+
+  // ── Layer: card ───────────────────────────────────────────────
+  &--card {
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-card);
+    box-shadow: 0 1px 4px color-mix(in oklab, var(--fomio-shadow) 50%, transparent);
+  }
+
+  // ── Layer: frost (glass overlay — headers, drawers) ───────────
+  &--frost {
+    background: color-mix(in oklab, var(--fomio-card) 76%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid var(--fomio-border-soft);
+
+    html.fomio-color-dark & {
+      background: color-mix(in oklab, var(--fomio-bg) 80%, transparent);
+    }
+  }
+
+  // ── Visibility: hidden (pre-scroll entrance state) ────────────
+  // Applied by default on surfaces that should animate in.
+  // The JS observer removes this class and adds --observed.
+  &--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition:
+      opacity var(--fomio-dur-med) var(--fomio-ease),
+      transform var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  // ── Visibility: observed (in viewport, fully interactive) ─────
+  // Set by IntersectionObserver in fomio-ui-components.gjs, or
+  // manually via JS for panels/drawers that open programmatically.
+  &--observed {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition:
+      opacity var(--fomio-dur-med) var(--fomio-ease),
+      transform var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  // ── Visibility: dormant (mounted, not active — e.g. split view) ─
+  &--dormant {
+    opacity: 0.48;
+    pointer-events: none;
+    transition: opacity var(--fomio-dur-med) var(--fomio-ease);
+  }
+}
+
+// Respect reduced-motion preferences for all component transitions
+@media (prefers-reduced-motion: reduce) {
+  .fomio-btn,
+  .fomio-menu__item,
+  .fomio-dropdown__panel,
+  .fomio-dropdown__trigger::after,
+  .fomio-surface--hidden,
+  .fomio-surface--observed {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .fomio-surface--hidden {
+    transform: none;
+  }
+}
+
+
+// ============================================================
+// PHASE 2: ADDITIONAL UI COMPONENTS
+// Extends the Fomio UI component library (phase 1 above).
+// All values reference --fomio-* tokens; no raw hex.
+// Dark mode via html.fomio-color-dark.
+// ============================================================
+
+
+// ------------------------------------------------------------
+// 2A. PATCHES TO PHASE 1 COMPONENTS
+// ------------------------------------------------------------
+
+// Button: tonal — primary-soft bg, warm secondary emphasis
+.fomio-btn--tonal {
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary);
+  border: none;
+
+  &:hover {
+    background: color-mix(in oklab, var(--fomio-primary-soft) 80%, var(--fomio-primary));
+  }
+
+  &:active {
+    opacity: 0.88;
+  }
+}
+
+// Button: plain — transparent, no border, text-only affordance
+.fomio-btn--plain {
+  background: transparent;
+  color: var(--fomio-muted);
+  border: none;
+
+  &:hover {
+    background: var(--fomio-border-soft);
+    color: var(--fomio-text);
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+// Button: loading — spins a ring over hidden content
+.fomio-btn--loading {
+  position: relative;
+  pointer-events: none;
+  cursor: wait;
+
+  > * {
+    opacity: 0;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in oklab, var(--fomio-on-primary) 35%, transparent);
+    border-top-color: var(--fomio-on-primary);
+    animation: fomio-spin 600ms linear infinite;
+  }
+}
+
+// Loading spinner colour overrides for non-primary button backgrounds
+.fomio-btn--secondary.fomio-btn--loading::after,
+.fomio-btn--ghost.fomio-btn--loading::after,
+.fomio-btn--outline.fomio-btn--loading::after,
+.fomio-btn--tonal.fomio-btn--loading::after,
+.fomio-btn--plain.fomio-btn--loading::after {
+  border-color: var(--fomio-border-soft);
+  border-top-color: var(--fomio-primary);
+}
+
+.fomio-btn--destructive.fomio-btn--loading::after {
+  border-color: color-mix(in oklab, var(--fomio-card) 35%, transparent);
+  border-top-color: var(--fomio-card);
+}
+
+// Dropdown: loading item
+.fomio-dropdown__item--loading {
+  pointer-events: none;
+  cursor: wait;
+  opacity: 0.6;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 1.5px solid var(--fomio-border-soft);
+    border-top-color: var(--fomio-muted);
+    animation: fomio-spin 600ms linear infinite;
+    margin-right: var(--fomio-space-xs);
+  }
+}
+
+// Dropdown: submenu item — positions a nested panel to the right
+.fomio-dropdown__item[data-submenu] {
+  position: relative;
+
+  [data-submenu-panel] {
+    position: absolute;
+    left: 100%;
+    top: calc(0px - var(--fomio-space-xs));
+    min-width: 180px;
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-md);
+    box-shadow:
+      0 2px 8px color-mix(in oklab, var(--fomio-shadow) 55%, transparent),
+      0 8px 24px var(--fomio-shadow);
+    padding: var(--fomio-space-xs) 0;
+    z-index: 201;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-4px);
+    transition:
+      opacity var(--fomio-dur-fast) var(--fomio-ease),
+      transform var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &[aria-expanded="true"] [data-submenu-panel] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2B. ANIMATION KEYFRAMES
+// ------------------------------------------------------------
+
+@keyframes fomio-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fomio-shimmer {
+  0% {
+    background-position: -600px 0;
+  }
+  100% {
+    background-position: 600px 0;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2C. SPINNER
+// ------------------------------------------------------------
+
+.fomio-spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--fomio-border-soft);
+  border-top-color: var(--fomio-primary);
+  animation: fomio-spin 600ms linear infinite;
+
+  &--sm {
+    width: 16px;
+    height: 16px;
+    border-width: 1.5px;
+  }
+
+  &--lg {
+    width: 28px;
+    height: 28px;
+    border-width: 3px;
+  }
+
+  &--muted {
+    border-top-color: var(--fomio-muted);
+  }
+
+  &--on-primary {
+    border-color: color-mix(in oklab, var(--fomio-on-primary) 35%, transparent);
+    border-top-color: var(--fomio-on-primary);
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2D. BADGE
+// Inline status indicator. Pill-shaped, Raleway UI font.
+// ------------------------------------------------------------
+
+.fomio-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fomio-space-xs);
+  padding: 0 var(--fomio-space-sm);
+  height: 18px;
+  border-radius: var(--fomio-radius-pill);
+  border: 1px solid var(--fomio-border-soft);
+  background: var(--fomio-surface);
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+
+  // ── Tones ──────────────────────────────────────────────────
+
+  &--primary {
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    border-color: transparent;
+  }
+
+  &--accent {
+    background: var(--fomio-accent-soft);
+    color: var(--fomio-accent);
+    border-color: color-mix(in oklab, var(--fomio-accent) 20%, transparent);
+  }
+
+  &--danger {
+    background: var(--fomio-danger-soft);
+    color: var(--fomio-danger);
+    border-color: color-mix(in oklab, var(--fomio-danger) 22%, transparent);
+  }
+
+  &--success {
+    background: color-mix(in oklab, var(--fomio-success) 14%, transparent);
+    color: var(--fomio-success);
+    border-color: color-mix(in oklab, var(--fomio-success) 22%, transparent);
+  }
+
+  &--warning {
+    background: color-mix(in oklab, var(--fomio-warning) 14%, transparent);
+    color: color-mix(in oklab, var(--fomio-warning) 82%, var(--fomio-text));
+    border-color: color-mix(in oklab, var(--fomio-warning) 24%, transparent);
+  }
+
+  // ── Sizes ──────────────────────────────────────────────────
+
+  &--sm {
+    height: 16px;
+    padding: 0 var(--fomio-space-xs);
+    font-size: 9px;
+  }
+
+  &--lg {
+    height: 22px;
+    padding: 0 var(--fomio-space-md);
+    font-size: 11px;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2E. CHIP
+// Selectable filter / tag pill. Selected state via aria-pressed
+// (toggled by fomio-ui-components.gjs).
+// ------------------------------------------------------------
+
+.fomio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fomio-space-xs);
+  height: 28px;
+  padding: 0 var(--fomio-space-md);
+  border-radius: var(--fomio-radius-pill);
+  border: 1px solid var(--fomio-border-soft);
+  background: transparent;
+  color: var(--fomio-text);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--fomio-dur-fast) var(--fomio-ease),
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover {
+    background: var(--fomio-border-soft);
+  }
+
+  // Selected — set by JS via aria-pressed="true"
+  &[aria-pressed="true"],
+  &--selected {
+    background: var(--fomio-primary-soft);
+    color: var(--fomio-primary);
+    border-color: color-mix(in oklab, var(--fomio-primary) 28%, transparent);
+    font-weight: 600;
+  }
+
+  // ── Tones (selected state only) ────────────────────────────
+
+  &--accent[aria-pressed="true"],
+  &--accent.fomio-chip--selected {
+    background: var(--fomio-accent-soft);
+    color: var(--fomio-accent);
+    border-color: color-mix(in oklab, var(--fomio-accent) 28%, transparent);
+  }
+
+  &--danger[aria-pressed="true"],
+  &--danger.fomio-chip--selected {
+    background: var(--fomio-danger-soft);
+    color: var(--fomio-danger);
+    border-color: color-mix(in oklab, var(--fomio-danger) 28%, transparent);
+  }
+
+  &--success[aria-pressed="true"],
+  &--success.fomio-chip--selected {
+    background: color-mix(in oklab, var(--fomio-success) 14%, transparent);
+    color: var(--fomio-success);
+    border-color: color-mix(in oklab, var(--fomio-success) 28%, transparent);
+  }
+
+  // ── States ─────────────────────────────────────────────────
+
+  &--disabled,
+  &[aria-disabled="true"],
+  &:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // ── Slots ──────────────────────────────────────────────────
+
+  &__icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: inherit;
+  }
+
+  &__remove {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin-left: 2px;
+    opacity: 0.5;
+    transition: opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2F. SKELETON
+// Loading placeholder with animated shimmer sweep.
+// ------------------------------------------------------------
+
+.fomio-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--fomio-surface);
+  border-radius: var(--fomio-radius-sm);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklab, var(--fomio-card) 65%, transparent) 50%,
+      transparent 100%
+    );
+    background-size: 1200px 100%;
+    animation: fomio-shimmer 1.4s ease-in-out infinite;
+  }
+
+  &--text {
+    height: 1em;
+    border-radius: 4px;
+  }
+
+  &--circle {
+    border-radius: 50%;
+  }
+
+  &--rect {
+    border-radius: var(--fomio-radius-card);
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2G. SEPARATOR
+// ------------------------------------------------------------
+
+.fomio-separator {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--fomio-border-soft);
+  border: none;
+  margin: var(--fomio-space-md) 0;
+
+  &--thick {
+    height: 2px;
+  }
+
+  &--flush {
+    margin: 0;
+  }
+
+  &--vertical {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    vertical-align: middle;
+    margin: 0 var(--fomio-space-sm);
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2H. CARD
+// Content card — flat layer above the page surface.
+// Variants: --flat (no shadow), --interactive (hover lift).
+// ------------------------------------------------------------
+
+.fomio-card {
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: var(--fomio-radius-card);
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--fomio-shadow) 50%, transparent);
+  overflow: hidden;
+
+  &--flat {
+    box-shadow: none;
+  }
+
+  &--interactive {
+    cursor: pointer;
+    transition:
+      transform var(--fomio-dur-fast) var(--fomio-ease),
+      box-shadow var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 4px 12px color-mix(in oklab, var(--fomio-shadow) 55%, transparent),
+        0 1px 4px color-mix(in oklab, var(--fomio-shadow) 30%, transparent);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // ── Sub-elements ───────────────────────────────────────────
+
+  &__image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--fomio-surface);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  // Positioned badge anchored to __image top-right
+  &__badge {
+    position: absolute;
+    top: var(--fomio-space-sm);
+    right: var(--fomio-space-sm);
+    z-index: 1;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    padding: var(--fomio-space-md) var(--fomio-space-lg);
+  }
+
+  &__title {
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-lg);
+    font-weight: 600;
+    line-height: var(--fomio-leading-snug);
+    color: var(--fomio-text);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 500;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    margin: 0;
+  }
+
+  &__body {
+    padding: var(--fomio-space-sm) var(--fomio-space-lg) var(--fomio-space-md);
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-sm);
+    line-height: var(--fomio-leading-relaxed);
+    color: var(--fomio-text);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    padding: var(--fomio-space-sm) var(--fomio-space-lg);
+    border-top: 1px solid var(--fomio-border-soft);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2I. LIST
+// Structural content rows with icon, title, subtitle,
+// meta, and action slots. 44px minimum touch target.
+// ------------------------------------------------------------
+
+.fomio-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__section-header {
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    pointer-events: none;
+  }
+
+  &__separator {
+    height: 1px;
+    background: var(--fomio-border-soft);
+    margin: var(--fomio-space-xs) 0;
+
+    &--inset {
+      // Indented to clear the icon column width
+      margin-left: calc(var(--fomio-space-xl) + var(--fomio-space-md));
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--fomio-space-sm);
+    min-height: 44px;
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    color: var(--fomio-text);
+    transition: background var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: var(--fomio-border-soft);
+    }
+
+    &--active,
+    &[aria-current="true"] {
+      background: var(--fomio-primary-soft);
+
+      .fomio-list__title {
+        color: var(--fomio-primary);
+        font-weight: 600;
+      }
+    }
+
+    &--danger {
+      &:hover {
+        background: var(--fomio-danger-soft);
+      }
+
+      .fomio-list__title {
+        color: var(--fomio-danger);
+      }
+    }
+
+    &--disabled,
+    &[aria-disabled="true"] {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fomio-muted);
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__title {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    color: var(--fomio-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__subtitle {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    flex-shrink: 0;
+    margin-left: auto;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+    white-space: nowrap;
+  }
+
+  &__action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2I-A. SETTINGS LIST
+// Structured control surfaces: grouped panels, quiet inset
+// dividers, trailing controls/values, segmented choices.
+// ------------------------------------------------------------
+
+.fomio-settings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-card);
+  overflow: hidden;
+}
+
+.fomio-settings-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--fomio-space-lg);
+  padding: 15px var(--fomio-space-xl);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--fomio-dur-fast) var(--fomio-ease);
+
+  & + .fomio-settings-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: calc(var(--fomio-space-xl) + 34px + var(--fomio-space-lg));
+    height: 1px;
+    background: var(--fomio-border-soft);
+  }
+
+  &--button {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--fomio-surface);
+    }
+  }
+
+  &--danger {
+    .fomio-settings-row__label {
+      color: var(--fomio-danger);
+    }
+
+    .fomio-settings-row__icon {
+      background: color-mix(in oklab, var(--fomio-danger) 12%, transparent);
+      color: var(--fomio-danger);
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-danger) 8%, transparent);
+    }
+  }
+
+  &.is-disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--fomio-primary);
+    border-radius: var(--fomio-radius-sm);
+  }
+}
+
+.fomio-settings-row__icon {
+  grid-column: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--fomio-radius-sm);
+  background: var(--fomio-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fomio-fg-secondary);
+  flex-shrink: 0;
+
+  .d-icon,
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.fomio-settings-row__body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.fomio-settings-row__label {
+  font-family: var(--fomio-font-ui);
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: 0.005em;
+  color: var(--fomio-text);
+  line-height: 1.3;
+}
+
+.fomio-settings-row__description {
+  margin-top: 3px;
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--fomio-muted);
+  text-wrap: pretty;
+}
+
+.fomio-settings-row__trailing {
+  grid-column: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fomio-space-md);
+  flex-shrink: 0;
+}
+
+.fomio-settings-row__value {
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 13.5px;
+  color: var(--fomio-muted);
+  white-space: nowrap;
+}
+
+.fomio-settings-row__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 23px;
+  padding: 0 11px;
+  border-radius: var(--fomio-radius-pill);
+  font-family: var(--fomio-font-ui);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &--accent {
+    background: var(--fomio-primary-soft);
+    color: var(--fomio-primary-dark);
+  }
+
+  &--success {
+    background: color-mix(in oklab, var(--fomio-success) 16%, transparent);
+    color: var(--fomio-success);
+  }
+
+  &--warning {
+    background: color-mix(in oklab, var(--fomio-warning) 18%, transparent);
+    color: var(--fomio-warning);
+  }
+
+  &--off {
+    background: var(--fomio-surface);
+    color: var(--fomio-muted);
+  }
+}
+
+.fomio-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+  width: 44px;
+  height: 26px;
+  border-radius: var(--fomio-radius-pill);
+  background: color-mix(in oklab, var(--fomio-fg-muted) 38%, transparent);
+  cursor: pointer;
+  transition: background var(--fomio-dur-med) var(--fomio-ease);
+
+  &[aria-checked="true"] {
+    background: var(--fomio-primary);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--fomio-bg), 0 0 0 4px var(--fomio-primary);
+  }
+}
+
+.fomio-switch__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform var(--fomio-dur-med) var(--fomio-ease);
+
+  .fomio-switch[aria-checked="true"] & {
+    transform: translateX(18px);
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2I-B. UTILITY LIST
+// Lightweight action/navigation rows for menus, sheets, and
+// shell-side destination lists.
+// ------------------------------------------------------------
+
+.fomio-utility-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--fomio-space-xs);
+  display: flex;
+  flex-direction: column;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-card);
+
+  &--bare {
+    background: transparent;
+    padding: 0;
+  }
+}
+
+.fomio-utility-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--fomio-space-md);
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: var(--fomio-radius-md);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    background: var(--fomio-surface);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--fomio-primary);
+  }
+
+  &.is-active,
+  &--active {
+    background: var(--fomio-active-wash);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      bottom: 9px;
+      width: 3px;
+      border-radius: var(--fomio-radius-pill);
+      background: var(--fomio-primary);
+    }
+  }
+
+  &.is-disabled,
+  &--disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &--danger {
+    .fomio-utility-row__label,
+    .fomio-utility-row__icon {
+      color: var(--fomio-danger);
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--fomio-danger) 8%, transparent);
+    }
+  }
+}
+
+.fomio-utility-row__icon {
+  grid-column: 1;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fomio-fg-secondary);
+  flex-shrink: 0;
+
+  .d-icon,
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.fomio-utility-row__body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.fomio-utility-row__label {
+  font-family: var(--fomio-font-ui);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  color: var(--fomio-text);
+}
+
+.fomio-utility-row__meta {
+  margin-top: 1px;
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 11.5px;
+  color: var(--fomio-muted);
+}
+
+.fomio-utility-row__trailing {
+  grid-column: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fomio-space-sm);
+  flex-shrink: 0;
+}
+
+
+// ------------------------------------------------------------
+// 2J. TABS
+// Tabbed panel navigation.
+// aria-selected managed by fomio-ui-components.gjs.
+// ------------------------------------------------------------
+
+.fomio-tabs {
+  display: flex;
+  flex-direction: column;
+
+  &__list {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--fomio-border-soft);
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fomio-space-xs);
+    height: var(--fomio-button-height-sm);
+    padding: 0 var(--fomio-space-md);
+    background: transparent;
+    border: none;
+    // Bottom indicator sits flush over the list's border-bottom
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 500;
+    color: var(--fomio-muted);
+    white-space: nowrap;
+    user-select: none;
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      color: var(--fomio-text);
+    }
+
+    &[aria-selected="true"] {
+      color: var(--fomio-primary);
+      border-bottom-color: var(--fomio-primary);
+      font-weight: 600;
+    }
+
+    &-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      background: var(--fomio-border-soft);
+      color: var(--fomio-muted);
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: var(--fomio-radius-pill);
+      transition:
+        background var(--fomio-dur-fast) var(--fomio-ease),
+        color var(--fomio-dur-fast) var(--fomio-ease);
+
+      [aria-selected="true"] & {
+        background: var(--fomio-primary-soft);
+        color: var(--fomio-primary);
+      }
+    }
+  }
+
+  &__panel {
+    display: none;
+
+    &[aria-hidden="false"],
+    &--active {
+      display: block;
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2K. SWITCH
+// Toggle control. aria-checked managed by fomio-ui-components.gjs.
+// Track (44×24px default) + thumb (20×20px).
+// ------------------------------------------------------------
+
+.fomio-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fomio-space-sm);
+  cursor: pointer;
+  user-select: none;
+
+  &__track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-surface);
+    border: 1.5px solid var(--fomio-border);
+    flex-shrink: 0;
+    transition:
+      background var(--fomio-dur-med) var(--fomio-ease),
+      border-color var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  &__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--fomio-muted);
+    transition:
+      transform var(--fomio-dur-med) var(--fomio-ease),
+      background var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  &__label {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-text);
+  }
+
+  // Checked — aria-checked="true" toggled by JS
+  &[aria-checked="true"] {
+    .fomio-switch__track {
+      background: var(--fomio-primary);
+      border-color: var(--fomio-primary);
+    }
+
+    // thumb travels to right edge (track 44 - thumb 20 - padding 4 = 20px)
+    .fomio-switch__thumb {
+      transform: translateX(20px);
+      background: var(--fomio-on-primary);
+    }
+  }
+
+  &[aria-disabled="true"],
+  &--disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Small variant: 36×20 track, 16×16 thumb
+  &--sm {
+    .fomio-switch__track {
+      width: 36px;
+      height: 20px;
+    }
+
+    .fomio-switch__thumb {
+      width: 16px;
+      height: 16px;
+    }
+
+    // 36 - 16 - 4 = 16px
+    &[aria-checked="true"] .fomio-switch__thumb {
+      transform: translateX(16px);
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2L. INPUT / TEXT FIELD
+// Border and focus ring live on __wrap; __field is borderless.
+// ------------------------------------------------------------
+
+.fomio-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fomio-space-xs);
+
+  &__label {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-text);
+
+    &--required::after {
+      content: " *";
+      color: var(--fomio-primary);
+    }
+  }
+
+  // Flex container that owns the border + focus ring
+  &__wrap {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-sm);
+    background: var(--fomio-card);
+    overflow: hidden;
+    transition:
+      border-color var(--fomio-dur-fast) var(--fomio-ease),
+      box-shadow var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:focus-within {
+      border-color: var(--fomio-primary);
+      box-shadow: 0 0 0 3px var(--fomio-primary-soft);
+    }
+  }
+
+  // Borderless field fills the remaining space
+  &__field {
+    flex: 1;
+    height: var(--fomio-input-height);
+    padding: 0 var(--fomio-space-md);
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-base);
+    color: var(--fomio-text);
+
+    &::placeholder {
+      color: var(--fomio-muted);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // Icon slots — fixed-width flex items inside __wrap
+  &__icon-left,
+  &__icon-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: var(--fomio-input-height);
+    color: var(--fomio-muted);
+    pointer-events: none;
+  }
+
+  &__hint {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+  }
+
+  &__error {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-danger);
+  }
+
+  // Error modifier — danger ring on focus
+  &--error &__wrap {
+    border-color: var(--fomio-danger);
+
+    &:focus-within {
+      border-color: var(--fomio-danger);
+      box-shadow: 0 0 0 3px var(--fomio-danger-soft);
+    }
+  }
+
+  // Filled — surface tint instead of card white
+  &--filled &__wrap {
+    background: var(--fomio-surface);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2M. TEXTAREA
+// ------------------------------------------------------------
+
+.fomio-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fomio-space-xs);
+
+  &__label {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wide);
+    color: var(--fomio-text);
+
+    &--required::after {
+      content: " *";
+      color: var(--fomio-primary);
+    }
+  }
+
+  &__field {
+    width: 100%;
+    // Matches input.multilineMinHeight token (96px)
+    min-height: 96px;
+    padding: var(--fomio-space-sm) var(--fomio-space-md);
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-sm);
+    font-family: var(--fomio-font-serif);
+    font-size: var(--fomio-text-base);
+    color: var(--fomio-text);
+    resize: vertical;
+    transition:
+      border-color var(--fomio-dur-fast) var(--fomio-ease),
+      box-shadow var(--fomio-dur-fast) var(--fomio-ease);
+
+    &::placeholder {
+      color: var(--fomio-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--fomio-primary);
+      box-shadow: 0 0 0 3px var(--fomio-primary-soft);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  &__hint {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+  }
+
+  &__error {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-danger);
+  }
+
+  &--error &__field {
+    border-color: var(--fomio-danger);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--fomio-danger-soft);
+    }
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2N. FORM LAYOUT
+// Structural grouping for field sets. Flex column by default;
+// __row creates side-by-side columns.
+// ------------------------------------------------------------
+
+.fomio-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fomio-space-lg);
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fomio-space-lg);
+  }
+
+  &__row {
+    display: flex;
+    gap: var(--fomio-space-md);
+    align-items: flex-start;
+
+    > * {
+      flex: 1;
+    }
+  }
+
+  &__section {
+    padding-top: var(--fomio-space-xl);
+    border-top: 1px solid var(--fomio-border-soft);
+  }
+
+  &__section-title {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+    margin: 0 0 var(--fomio-space-lg);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--fomio-space-sm);
+    justify-content: flex-end;
+
+    &--centered {
+      justify-content: center;
+    }
+
+    &--start {
+      justify-content: flex-start;
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// 2O. SCROLLBAR
+// Thin, token-coloured scrollbar for WebKit + Firefox.
+// Dark mode picks up token changes automatically.
+// ------------------------------------------------------------
+
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fomio-border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--fomio-border);
+  border-radius: var(--fomio-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fomio-muted);
+}
+
+
+// ------------------------------------------------------------
+// 2P. REDUCED-MOTION EXTENSION
+// Extends the phase 1 block above with new component selectors.
+// ------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  .fomio-spinner,
+  .fomio-skeleton::after,
+  .fomio-dropdown__item--loading::before,
+  .fomio-btn--loading::after,
+  .fomio-chip,
+  .fomio-card--interactive,
+  .fomio-tabs__trigger,
+  .fomio-tabs__trigger-badge,
+  .fomio-switch__track,
+  .fomio-switch__thumb,
+  .fomio-input__wrap,
+  .fomio-textarea__field,
+  .fomio-chip__remove,
+  .fomio-dropdown__item[data-submenu] [data-submenu-panel] {
+    transition: none !important;
+    animation: none !important;
+  }
+}

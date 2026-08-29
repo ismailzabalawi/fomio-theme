@@ -1,0 +1,101 @@
+// ------------------------------------------------------------
+// 15. MOBILE APP HANDOFF (theme-initializer.gjs)
+// Full-viewport overlay — tokens only, no raw hex in theme JS.
+// ------------------------------------------------------------
+
+@keyframes fomio-mobile-handoff-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fomio-mobile-handoff {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: var(--fomio-bg);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fomio-mobile-handoff__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 24rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.fomio-mobile-handoff__eyebrow {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: 0 0 var(--fomio-space-lg);
+}
+
+.fomio-mobile-handoff__rule {
+  width: 2.5rem;
+  height: 1px;
+  background-color: var(--fomio-primary);
+  margin: 0 auto var(--fomio-space-xl);
+}
+
+.fomio-mobile-handoff__title {
+  font-family: var(--fomio-font-serif);
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 700;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-text);
+  margin: 0 0 var(--fomio-space-md);
+  max-width: 14ch;
+}
+
+.fomio-mobile-handoff__subtitle {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-normal);
+  color: var(--fomio-muted);
+  margin: 0 0 var(--fomio-space-2xl);
+}
+
+.fomio-mobile-handoff__spinner {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: var(--fomio-space-2xl);
+  border: 2px solid var(--fomio-border);
+  border-top-color: var(--fomio-primary);
+  border-radius: 50%;
+  animation: fomio-mobile-handoff-spin 0.9s linear infinite;
+}
+
+.fomio-mobile-handoff__fallback {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  line-height: var(--fomio-leading-normal);
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-mobile-handoff__link {
+  color: var(--fomio-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fomio-mobile-handoff__link:hover,
+.fomio-mobile-handoff__link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

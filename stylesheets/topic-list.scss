@@ -1,0 +1,232 @@
+// ------------------------------------------------------------
+// 11. TOPIC LIST RAIL
+// Discovery lists become editorial reading rails
+// ------------------------------------------------------------
+
+.topic-list.--fomio-discovery-list {
+  border-collapse: separate;
+  border-spacing: 0 1.75rem; // breathing room between entries
+}
+
+.topic-list.--fomio-discovery-list .topic-list-header tr {
+  border-bottom: none;
+}
+
+.topic-list.--fomio-discovery-list .topic-list-header .topic-list-data,
+.topic-list.--fomio-discovery-list .topic-list-header .num {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-ink-muted);
+  border-bottom: none;
+  padding-bottom: 0.2rem;
+}
+
+.topic-list-item.--fomio-discovery-item td {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  padding-top: 0;
+  padding-bottom: 1.25rem;
+  vertical-align: top;
+}
+
+.topic-list-item.--fomio-discovery-item td:first-child {
+  padding-left: 0;
+  width: auto;
+}
+
+.topic-list-item.--fomio-discovery-item td:last-child {
+  padding-right: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link {
+  width: 100%;
+}
+
+.topic-list-item.--fomio-discovery-item .link-top-line {
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.topic-list-item.--fomio-discovery-item .link-bottom-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+  margin-bottom: 0.85rem;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+  color: var(--fomio-ink);
+  font-size: clamp(1.2rem, 1.1rem + 0.45vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.28;
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title:hover,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link:hover {
+  color: var(--fomio-red);
+}
+
+.topic-list-item.--fomio-discovery-item .category-name,
+.topic-list-item.--fomio-discovery-item .discourse-tags .discourse-tag {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+}
+
+.fomio-topic-context {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+// Text column — grows to fill; the thumbnail (if present) anchors right
+.fomio-topic-context__text {
+  display: grid;
+  gap: 0.6rem;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+// Thumbnail — topic.image_url (OG image for link posts, or first image)
+.fomio-topic-context__thumb {
+  flex: 0 0 auto;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: var(--fomio-radius-sm);
+  background: var(--fomio-surface); // placeholder while loading
+}
+
+.fomio-topic-context__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1rem;
+  color: var(--fomio-ink-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+}
+
+.fomio-topic-context__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--fomio-ink);
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  z-index: 1; // stays above the stretched-link overlay
+}
+
+.fomio-topic-context__author .avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.fomio-topic-context__author .fomio-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+}
+
+.fomio-topic-context__author .fomio-identity {
+  gap: 0.5rem;
+}
+
+.fomio-topic-context__author .fomio-identity__meta {
+  gap: 0;
+}
+
+.fomio-topic-context__author-name {
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+.fomio-topic-context__author .fomio-identity__name {
+  letter-spacing: var(--fomio-tracking-wide);
+  font-size: inherit;
+  color: inherit;
+}
+
+.fomio-topic-context__author .fomio-identity__handle,
+.fomio-topic-context__author .fomio-identity__role {
+  display: none;
+}
+
+.fomio-topic-context__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fomio-topic-context__label {
+  text-transform: uppercase;
+  letter-spacing: var(--fomio-tracking-wider);
+  color: var(--fomio-ink-muted);
+}
+
+.fomio-topic-context__excerpt {
+  color: var(--fomio-ink-muted);
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-base);
+  line-height: var(--fomio-leading-relaxed);
+  // Clamp to 2 lines — enough to preview, not enough to replace reading
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Forum metrics are not reading signals — hidden in the editorial feed.
+.topic-list-item.--fomio-discovery-item .posts-map,
+.topic-list-item.--fomio-discovery-item .activity {
+  display: none;
+}
+
+
+// ------------------------------------------------------------
+// 12. SIDEBAR SUPPRESSION ON PUBLIC WEB SURFACES
+// Discovery and regular topics should read as focused, single-pane pages.
+// Keep admin/sidebar behavior intact elsewhere.
+// ------------------------------------------------------------
+
+body.fomio-sidebar-active.has-sidebar-page.navigation-topics,
+body.fomio-sidebar-active.has-sidebar-page.navigation-categories,
+body.fomio-sidebar-active.has-sidebar-page.navigation-category,
+body.fomio-sidebar-active.has-sidebar-page.archetype-regular {
+  .sidebar-wrapper,
+  #d-sidebar,
+  .header-sidebar-toggle {
+    display: none !important;
+  }
+
+  #main-outlet-wrapper {
+    grid-template-columns: 0 minmax(0, 1fr) 0;
+    gap: 0;
+    padding-right: 0;
+  }
+
+  #main-outlet {
+    max-width: unset;
+  }
+
+  .d-header > .wrap .contents {
+    grid-template-areas: "logo extra-info panel";
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .home-logo-wrapper-outlet {
+    margin-left: 0;
+  }
+}

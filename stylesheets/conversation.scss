@@ -1,0 +1,63 @@
+// ============================================================
+// PHASE 2D — CONVERSATION LAYER
+// Replies as readable conversation entries, not Discourse UI blocks.
+// OP = article. Replies = lightweight, flat conversation.
+// ============================================================
+
+// ── 1. Reply density — breathing room between posts ──────────
+
+// Adjacent posts get a soft separator via spacing + faint rule.
+// The OP flows directly from the byline rule — no top margin needed.
+.topic-post + .topic-post {
+  margin-top: 2.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--fomio-border-soft);
+}
+
+// ── 2. Reply header — hide noise, keep identity ───────────────
+
+// Post-number permalink, wiki badge, read count are chrome, not content.
+.topic-post .topic-meta-data .post-info .post-number,
+.topic-post .topic-meta-data .post-info .wiki,
+.topic-post .topic-meta-data .post-info .reads,
+.topic-post .topic-meta-data .post-info .raw-views,
+.topic-post .topic-meta-data .post-info .badge-notification {
+  display: none;
+}
+
+// ── 3. Reply actions — muted by default, revealed on hover ───
+
+// nav.post-controls was previously hidden for ALL posts via display:none !important.
+// We restored it for replies by scoping the hide to [data-post-number="1"] only.
+// Now explicitly ensure reply posts show the bar and fade it softly.
+// data-post-number sits on .topic-post itself, so :not() targets it directly.
+.topic-post:not([data-post-number="1"]) nav.post-controls {
+  display: block;
+  opacity: 0.45;
+  transition: opacity 0.18s ease;
+}
+
+.topic-post:not([data-post-number="1"]):hover nav.post-controls {
+  opacity: 1;
+}
+
+// ── 4. Reply content — enforce prose width ────────────────────
+
+// Replies should read inside the same rail as the article body.
+// (max-width already set on .topic-post .cooked — this enforces the avatar column
+//  doesn't stretch the body beyond the reading rail.)
+.topic-post .topic-body {
+  min-width: 0;
+}
+
+// ── 5. Actions-summary — mute the "X people liked this" row ──
+
+.topic-post .actions-summary {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-ink-muted);
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+// ── Dark mode adjustments ─────────────────────────────────────

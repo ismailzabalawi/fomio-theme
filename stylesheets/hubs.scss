@@ -1,0 +1,967 @@
+// ============================================================
+// HUBS INDEX PAGE  (/categories)
+// Fomio-branded Hub grid/list injected via below-discovery-categories outlet.
+// Native Discourse categories table hidden via .categories-list scope.
+// ============================================================
+
+// Suppress native Discourse categories UI only while the custom Fomio
+// hub index is actually mounted, so core/admin-controlled category
+// layouts can still appear when this surface is not active.
+body.fomio-sidebar-active.categories-list.fomio-hubs-active {
+  .contents           { display: none; }
+  .list-controls      { display: none; }
+  #navigation-bar     { display: none; }
+}
+
+// ── Page wrapper ─────────────────────────────────────────────
+.fomio-hubs {
+  max-width: var(--fomio-column-w);
+  margin: 0 auto;
+  padding: 44px 36px 80px;
+  font-family: var(--fomio-font-ui);
+}
+
+// ── Header row (title + view toggle) ─────────────────────────
+.fomio-hubs__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--fomio-space-md);
+  margin-bottom: 24px;
+}
+
+.fomio-hubs__title {
+  margin: 0;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--fomio-text);
+}
+
+.fomio-hubs__description {
+  margin: 10px 0 0;
+  max-width: 52ch;
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-md);
+  line-height: 1.5;
+  color: var(--fomio-muted);
+}
+
+.fomio-hubs__stat {
+  margin: 10px 0 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// ── View toggle ───────────────────────────────────────────────
+.fomio-hubs__view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--fomio-surface);
+  border: 1px solid var(--fomio-border);
+  border-radius: 8px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.fomio-hubs__view-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--fomio-muted);
+  transition: background 120ms, border-color 120ms, color 120ms, box-shadow 120ms;
+  font: inherit;
+
+  .d-icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  &.is-active {
+    background: var(--fomio-card);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  }
+
+  &:hover:not(.is-active) {
+    color: var(--fomio-text);
+  }
+}
+
+// ── Search bar ────────────────────────────────────────────────
+.fomio-hubs__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 38px;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 11px;
+  padding: 0 14px;
+  margin-bottom: 20px;
+  gap: 10px;
+
+  &:focus-within {
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+  }
+}
+
+.fomio-hubs__search-icon {
+  color: var(--fomio-muted);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  .d-icon { width: 15px; height: 15px; }
+}
+
+.fomio-hubs__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  color: var(--fomio-text);
+  padding: 0;
+
+  &::placeholder { color: var(--fomio-muted); }
+  &::-webkit-search-cancel-button { display: none; }
+}
+
+.fomio-hubs__overview {
+  margin-top: 4px;
+  padding: 20px 22px;
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  background: var(--fomio-card);
+}
+
+.fomio-hubs__overview-intro {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.fomio-hubs__overview-copy {
+  margin: 0;
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-md);
+  line-height: 1.55;
+  color: var(--fomio-text);
+}
+
+.fomio-hubs__overview-hint {
+  margin: 10px 0 0;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  line-height: 1.45;
+  color: var(--fomio-muted);
+}
+
+.fomio-hubs__overview-band {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.fomio-hubs__overview-stat-card,
+.fomio-hubs__overview-lead {
+  min-width: 0;
+  padding: 16px 17px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 68%, transparent);
+  background: color-mix(in oklab, var(--fomio-surface) 74%, var(--fomio-bg));
+}
+
+.fomio-hubs__overview-stat-card {
+  display: grid;
+  gap: 9px;
+}
+
+.fomio-hubs__overview-stat-label,
+.fomio-hubs__overview-lead-title {
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+}
+
+.fomio-hubs__overview-stat-value {
+  font-family: var(--fomio-font-serif);
+  font-size: 1.18rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--fomio-text);
+}
+
+.fomio-hubs__overview-lead {
+  display: grid;
+  gap: 12px;
+}
+
+.fomio-hubs__overview-lead-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fomio-hubs__overview-lead-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 13px;
+  text-decoration: none;
+  color: var(--fomio-text);
+  background: color-mix(in oklab, var(--fomio-surface) 86%, #fff);
+  border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in oklab, var(--fomio-primary) 26%, var(--fomio-border));
+    box-shadow: 0 8px 18px rgb(17 24 39 / 6%);
+    transform: translateY(-1px);
+  }
+}
+
+.fomio-hubs__overview-lead-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.fomio-hubs__overview-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.fomio-hubs__overview-lead-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--fomio-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.fomio-hubs__overview-lead-meta {
+  flex: 0 0 auto;
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+}
+
+// ── Shared hub swatch ─────────────────────────────────────────
+.fomio-hub-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 14px;
+  font-style: italic;
+
+  &--lg {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+}
+
+// ── Grid ──────────────────────────────────────────────────────
+.fomio-hubs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.fomio-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 120ms, box-shadow 120ms, transform 120ms;
+
+  &:hover {
+    border-color: var(--fomio-border-hover);
+    box-shadow: var(--fomio-shadow-card);
+    transform: translateY(-1px);
+  }
+}
+
+.fomio-hub-card__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fomio-hub-card__name {
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--fomio-text);
+}
+
+.fomio-hub-card__count {
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.fomio-hub-card__desc {
+  margin: 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--fomio-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fomio-hub-card__terets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--fomio-border);
+}
+
+.fomio-hub-card__teret-pill {
+  font-family: var(--fomio-font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: var(--fomio-surface);
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+// ── List ──────────────────────────────────────────────────────
+.fomio-hubs__list {
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.fomio-hub-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 22px;
+  border-bottom: 1px solid var(--fomio-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 100ms;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--fomio-surface); }
+}
+
+.fomio-hub-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fomio-hub-row__top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.fomio-hub-row__name {
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
+  color: var(--fomio-text);
+  white-space: nowrap;
+}
+
+.fomio-hub-row__terets {
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  color: var(--fomio-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fomio-hub-row__desc {
+  margin: 3px 0 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--fomio-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fomio-hub-row__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.fomio-hub-row__count {
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fomio-text);
+}
+
+.fomio-hub-row__label {
+  font-family: var(--fomio-font-ui);
+  font-size: 10px;
+  color: var(--fomio-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fomio-hub-row__chevron {
+  color: var(--fomio-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+
+  .d-icon {
+    width: 13px;
+    height: 13px;
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
+  .fomio-hubs {
+    padding:
+      24px
+      var(--fomio-page-pad-inline-end, 14px)
+      calc(82px + var(--fomio-safe-bottom, 0px))
+      var(--fomio-page-pad-inline-start, 14px);
+  }
+
+  .fomio-hubs__header {
+    position: relative;
+    display: block;
+    margin-bottom: 16px;
+    padding-right: 56px;
+  }
+
+  .fomio-hubs__heading {
+    display: grid;
+    gap: 8px;
+  }
+
+  .fomio-hubs__title {
+    font-size: clamp(1.75rem, 7vw, 2rem);
+  }
+
+  .fomio-hubs__description {
+    font-size: var(--fomio-text-sm);
+    max-width: 100%;
+  }
+
+  .fomio-hubs__stat {
+    margin-top: 4px;
+  }
+
+  .fomio-hubs__view-toggle {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    padding: 2px;
+    gap: 2px;
+    border-radius: 10px;
+  }
+
+  .fomio-hubs__view-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .fomio-hubs__overview {
+    padding: 14px;
+  }
+
+  .fomio-hubs__overview-band {
+    grid-template-columns: 1fr;
+  }
+
+  .fomio-hubs__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fomio-hub-card,
+  .fomio-hub-row {
+    min-width: 0;
+  }
+
+  .fomio-hub-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "swatch body chevron"
+      "swatch meta chevron";
+    padding: 14px;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .fomio-hub-row > .fomio-hub-swatch {
+    grid-area: swatch;
+  }
+
+  .fomio-hub-row__body {
+    grid-area: body;
+  }
+
+  .fomio-hub-row__meta {
+    grid-area: meta;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fomio-hub-row__chevron {
+    grid-area: chevron;
+    align-self: center;
+  }
+
+  .fomio-hub-row__top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .fomio-hub-row__name,
+  .fomio-hub-row__terets,
+  .fomio-hub-row__desc {
+    white-space: normal;
+  }
+
+  .fomio-hub-row__terets {
+    display: block;
+  }
+
+  .fomio-hub-row__desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .fomio-hub-chrome {
+    padding: 0 var(--fomio-page-pad-inline-end, 14px) 0 var(--fomio-page-pad-inline-start, 14px);
+  }
+
+  .fomio-hub-chrome__breadcrumb {
+    flex-wrap: wrap;
+    padding-top: 14px;
+    gap: 4px;
+  }
+
+  .fomio-hub-chrome__hero {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 0 18px;
+  }
+
+  .fomio-hub-chrome__swatch {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .fomio-hub-chrome__name {
+    font-size: clamp(1.5rem, 6vw, 1.85rem);
+  }
+
+  .fomio-hub-chrome__desc {
+    font-size: 14px;
+  }
+
+  .fomio-hub-chrome__meta,
+  .fomio-hub-chrome__stats,
+  .fomio-hub-chrome__filters {
+    flex-wrap: wrap;
+  }
+
+  .fomio-hub-chrome__teret-tabs {
+    padding: 12px 0;
+    gap: 8px;
+  }
+
+  .fomio-hub-chrome__tab,
+  .fomio-hub-chrome__filter {
+    min-height: 32px;
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+// ============================================================
+// HUB PAGE CHROME  (/c/:slug/:id and /c/:slug/:teret/:id)
+// Injected via discovery-list-controls-above outlet.
+// Hides native .list-controls using :has() when chrome is present.
+// ============================================================
+
+// Suppress native Discourse nav bar when Fomio hub chrome is rendered.
+body.fomio-sidebar-active:has(.fomio-hub-chrome) {
+  .list-controls { display: none; }
+}
+
+// ── Outer container ───────────────────────────────────────────
+.fomio-hub-chrome {
+  max-width: var(--fomio-column-w);
+  margin: 0 auto;
+  padding: 0 36px;
+  font-family: var(--fomio-font-ui);
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────
+.fomio-hub-chrome__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 20px 0 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fomio-muted);
+}
+
+.fomio-hub-chrome__crumb-link {
+  color: var(--fomio-muted);
+  text-decoration: none;
+
+  &:hover { color: var(--fomio-text); }
+}
+
+.fomio-hub-chrome__crumb-sep {
+  color: var(--fomio-muted);
+  display: flex;
+  align-items: center;
+  .d-icon { width: 10px; height: 10px; }
+}
+
+.fomio-hub-chrome__crumb-current {
+  color: var(--fomio-text);
+}
+
+// ── Hero ──────────────────────────────────────────────────────
+.fomio-hub-chrome__hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 0 24px;
+  border-bottom: 1px solid var(--fomio-border);
+}
+
+.fomio-hub-chrome__swatch {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 22px;
+  font-style: italic;
+}
+
+.fomio-hub-chrome__hero-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fomio-hub-chrome__eyebrow {
+  margin: 0 0 6px;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fomio-hub-chrome__name {
+  margin: 0 0 4px;
+  font-family: var(--fomio-font-serif);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--fomio-text);
+}
+
+.fomio-hub-chrome__desc {
+  margin: 0 0 12px;
+  font-family: var(--fomio-font-serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fomio-muted);
+}
+
+.fomio-hub-chrome__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+}
+
+.fomio-hub-chrome__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--fomio-border-soft);
+  border-radius: 9999px;
+  background: var(--fomio-surface);
+}
+
+.fomio-hub-chrome__meta-label {
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fomio-hub-chrome__meta-value {
+  color: var(--fomio-text);
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.fomio-hub-chrome__stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+}
+
+.fomio-hub-chrome__stat {
+  strong {
+    font-weight: 700;
+    color: var(--fomio-text);
+    margin-right: 3px;
+  }
+  span { color: var(--fomio-muted); font-weight: 500; }
+}
+
+.fomio-hub-chrome__stat-sep {
+  color: var(--fomio-border);
+}
+
+// ── Teret tabs ────────────────────────────────────────────────
+.fomio-hub-chrome__teret-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--fomio-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.fomio-hub-chrome__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 120ms;
+
+  &:hover {
+    color: var(--fomio-text);
+    border-color: var(--fomio-border);
+    background: var(--fomio-surface);
+  }
+
+  &.is-active {
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+}
+
+.fomio-hub-chrome__tab-count {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fomio-muted);
+  opacity: 0.8;
+}
+
+// ── Filter bar ────────────────────────────────────────────────
+.fomio-hub-chrome__filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 0 0;
+  margin-bottom: 4px;
+}
+
+.fomio-hub-chrome__filter {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  transition: all 100ms;
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+  }
+
+  &.is-active {
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+}
+
+.fomio-hub-chrome__bytes-intro {
+  margin-top: 14px;
+  color: var(--fomio-muted);
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// ============================================================
+// HUB/TERET BYTE LIST REFINEMENT
+// Route-scoped polish for /c/:hub/:id and /c/:hub/:teret/:id.
+// Keeps Discourse list behavior and links intact.
+// ============================================================
+body.fomio-sidebar-active.navigation-category:has(.fomio-hub-chrome) {
+  // Keep category list in the reading column and remove competing chrome.
+  #list-area {
+    max-width: var(--fomio-column-w);
+    margin-top: 1.25rem;
+  }
+
+  .topic-list.--fomio-discovery-list {
+    border-spacing: 0 0.7rem;
+  }
+
+  .topic-list.--fomio-discovery-list .topic-list-header {
+    display: none;
+  }
+
+  // Compact category bytes slightly versus home feed.
+  .topic-list-item.--fomio-discovery-item td.main-link {
+    padding: 18px;
+    grid-template-columns: 1fr 144px;
+    column-gap: 16px;
+  }
+
+  .topic-list-item.--fomio-discovery-item .main-link a.title,
+  .topic-list-item.--fomio-discovery-item .main-link .raw-topic-link {
+    font-size: clamp(1.18rem, 1.05rem + 0.45vw, 1.45rem);
+    line-height: 1.22;
+    opacity: 0.98;
+  }
+
+  .topic-list-item.--fomio-discovery-item .fomio-topic-context__excerpt {
+    -webkit-line-clamp: 2;
+    font-size: var(--fomio-text-sm);
+  }
+
+  .topic-list-item.--fomio-discovery-item .fomio-topic-context__footer {
+    color: var(--fomio-muted);
+    font-size: 11px;
+  }
+
+  .topic-list-item.--fomio-discovery-item .posts-map,
+  .topic-list-item.--fomio-discovery-item td.num.activity,
+  .topic-list-item.--fomio-discovery-item td.num.views {
+    display: none !important;
+  }
+}

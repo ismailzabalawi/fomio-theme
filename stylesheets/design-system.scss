@@ -1,0 +1,1083 @@
+// ============================================================
+// CANONICAL DESIGN SYSTEM — Buttons & Inputs
+// Source: Fomio Buttons & Inputs.html (design handoff 2026-05)
+// These use the flat-modifier naming convention (.fomio-btn-primary)
+// that matches the design file exactly. The BEM variants above
+// (.fomio-btn--secondary) remain for legacy Discourse outlets.
+//
+// This block is the layer-1 source of truth for new and migrated theme UI.
+// Shared components in javascripts/discourse/components/shared should target
+// these primitives first; any feature-specific compatibility selectors belong
+// below this block, not in separate primitive files.
+// ============================================================
+
+
+// ── Button ────────────────────────────────────────────────────
+
+.fomio-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  font-family: var(--fomio-sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  height: var(--fomio-btn-md);
+  padding: 0 20px;
+  border-radius: var(--fomio-radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+  transition:
+    background var(--fomio-dur-med) var(--fomio-ease),
+    border-color var(--fomio-dur-med) var(--fomio-ease),
+    color var(--fomio-dur-med) var(--fomio-ease),
+    box-shadow var(--fomio-dur-med) var(--fomio-ease),
+    transform var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fomio-primary) 28%, transparent);
+  }
+
+  &:active:not(:disabled) { transform: scale(0.97); }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.fomio-btn-primary {
+  background: var(--fomio-primary);
+  color: #fff;
+  height: var(--fomio-btn-lg);
+  padding: 0 24px;
+  font-size: 15px;
+
+  &:hover:not(:disabled) { background: var(--fomio-primary-dark); }
+}
+
+.fomio-btn-secondary {
+  background: transparent;
+  color: var(--fomio-fg);
+  border: 1px solid var(--fomio-border);
+
+  &:hover:not(:disabled) {
+    border-color: var(--fomio-fg-muted);
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-btn-ghost {
+  background: transparent;
+  color: var(--fomio-primary);
+
+  &:hover:not(:disabled) { background: var(--fomio-primary-soft); }
+}
+
+.fomio-btn-danger {
+  background: var(--fomio-danger);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--fomio-danger) 82%, black);
+  }
+}
+
+// Size modifiers
+.fomio-btn--sm { height: var(--fomio-btn-sm); padding: 0 14px; font-size: 13px; }
+.fomio-btn--lg { height: var(--fomio-btn-lg); padding: 0 28px; font-size: 15px; }
+.fomio-btn--block { width: 100%; }
+
+// Icon-only
+.fomio-btn--icon {
+  width: var(--fomio-btn-md);
+  padding: 0;
+  border-radius: var(--fomio-radius-md);
+
+  &.fomio-btn--sm { width: var(--fomio-btn-sm); border-radius: var(--fomio-radius-sm); }
+
+  &.fomio-btn-primary,
+  &.fomio-btn--lg { width: var(--fomio-btn-lg); }
+
+  svg { width: 18px; height: 18px; }
+
+  &.fomio-btn--sm svg { width: 15px; height: 15px; }
+}
+
+// Loading spinner
+.fomio-btn.is-loading {
+  color: transparent !important;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: rgba(255, 255, 255, 0.9);
+    animation: fomio-btn-spin 550ms linear infinite;
+  }
+}
+
+.fomio-btn-secondary.is-loading::after,
+.fomio-btn-ghost.is-loading::after {
+  border-color: var(--fomio-border);
+  border-top-color: var(--fomio-primary);
+}
+
+@keyframes fomio-btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+
+// ── Input / Field ─────────────────────────────────────────────
+
+.fomio-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fomio-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fomio-fg-muted);
+
+  .req { color: var(--fomio-danger); margin-left: 3px; }
+
+  &--required::after {
+    content: " *";
+    color: var(--fomio-danger);
+  }
+}
+
+.fomio-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fomio-input:not(.fomio-input__field):not(.fomio-input__wrap *) {
+  width: 100%;
+  height: var(--fomio-input-h);
+  border-radius: var(--fomio-radius-md);
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-bg);
+  padding: 0 14px;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fomio-fg);
+  transition:
+    border-color 160ms var(--fomio-ease),
+    box-shadow 160ms var(--fomio-ease),
+    background 160ms var(--fomio-ease);
+  -webkit-appearance: none;
+  appearance: none;
+
+  &::placeholder { color: var(--fomio-fg-muted); opacity: 0.6; }
+
+  &:hover:not(:disabled):not(:focus) {
+    border-color: color-mix(in oklab, var(--fomio-fg) 22%, var(--fomio-border));
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+      inset 0 0 0 1px var(--fomio-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--fomio-surface);
+  }
+
+  &.is-error {
+    border-color: var(--fomio-danger);
+
+    &:focus {
+      box-shadow:
+        0 0 0 3px color-mix(in oklab, var(--fomio-danger) 18%, transparent),
+        inset 0 0 0 1px var(--fomio-danger);
+    }
+  }
+
+  &.is-success { border-color: var(--fomio-success); }
+
+  &.has-prefix { padding-left: 40px; }
+  &.has-suffix { padding-right: 40px; }
+}
+
+// The :not() guard above prevents double-styling BEM-flavoured children.
+// Provide a second flat selector for GJS templates that use .fomio-input directly
+// on input/select/textarea elements inside .fomio-input-wrap.
+.fomio-input-wrap .fomio-input,
+.fomio-field .fomio-input {
+  width: 100%;
+  height: var(--fomio-input-h);
+  border-radius: var(--fomio-radius-md);
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-bg);
+  padding: 0 14px;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fomio-fg);
+  transition:
+    border-color 160ms var(--fomio-ease),
+    box-shadow 160ms var(--fomio-ease),
+    background 160ms var(--fomio-ease);
+  -webkit-appearance: none;
+  appearance: none;
+
+  &::placeholder { color: var(--fomio-fg-muted); opacity: 0.6; }
+
+  &:hover:not(:disabled):not(:focus) {
+    border-color: color-mix(in oklab, var(--fomio-fg) 22%, var(--fomio-border));
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--fomio-primary) 18%, transparent),
+      inset 0 0 0 1px var(--fomio-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--fomio-surface);
+  }
+
+  &.is-error {
+    border-color: var(--fomio-danger);
+
+    &:focus {
+      box-shadow:
+        0 0 0 3px color-mix(in oklab, var(--fomio-danger) 18%, transparent),
+        inset 0 0 0 1px var(--fomio-danger);
+    }
+  }
+
+  &.is-success { border-color: var(--fomio-success); }
+
+  &.has-prefix { padding-left: 40px; }
+  &.has-suffix { padding-right: 40px; }
+}
+
+textarea.fomio-input {
+  height: auto;
+  min-height: 104px;
+  padding: 10px 14px;
+  resize: vertical;
+  line-height: 1.6;
+  font-family: var(--fomio-serif);
+  font-size: 15px;
+}
+
+select.fomio-input {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%236B6B72' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+// Input icon overlays (prefix / suffix affordances)
+.fomio-input-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--fomio-radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--fomio-fg-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease);
+
+  &.prefix { left: 5px; }
+  &.suffix { right: 5px; }
+
+  svg { width: 15px; height: 15px; }
+
+  &:hover { color: var(--fomio-primary); background: var(--fomio-surface); }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-primary) 30%, transparent);
+  }
+
+  &.static {
+    cursor: default;
+    pointer-events: none;
+
+    &:hover { color: var(--fomio-fg-muted); background: transparent; }
+  }
+
+  &.is-loading .d-icon,
+  &.is-loading svg {
+    animation: fomio-spin 600ms linear infinite;
+  }
+}
+
+// Search pill variant
+.fomio-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: var(--fomio-input-height, 44px);
+  width: 100%;
+
+  .fomio-input {
+    flex: 1;
+    height: 100%;
+    border-radius: var(--fomio-radius-pill);
+    padding: 0 var(--fomio-space-md) 0 40px;
+    background: var(--fomio-surface);
+    border-color: transparent;
+    line-height: var(--fomio-input-height, 44px);
+    font-size: var(--fomio-text-base);
+    vertical-align: middle;
+
+    &:focus { background: var(--fomio-card); border-color: var(--fomio-primary); }
+  }
+}
+
+.fomio-search-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fomio-fg-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.fomio-composer-category-picker__search.fomio-search-wrap {
+  display: block;
+
+  .fomio-input {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0 2.75rem 0 1rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 50%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--fomio-surface) 84%, var(--fomio-card));
+    box-shadow: none;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1rem;
+
+    &::placeholder {
+      color: var(--fomio-muted);
+    }
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      border-color: color-mix(in srgb, var(--fomio-primary) 24%, var(--fomio-border));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+    }
+  }
+
+  .fomio-input-icon.suffix {
+    right: 1rem;
+    color: var(--fomio-muted);
+    pointer-events: none;
+  }
+}
+
+// Field hint / validation message
+.fomio-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fomio-fg-muted);
+  letter-spacing: 0.01em;
+
+  &.is-error   { color: var(--fomio-danger); }
+  &.is-success { color: var(--fomio-success); }
+}
+
+
+// ── Badge (design-file flat variants) ────────────────────────
+// The BEM badges (.fomio-badge--primary etc.) remain above; these
+// flat variants (.fomio-badge.teret) match the design file exactly.
+
+.fomio-badge {
+  &.teret   { background: var(--fomio-primary-soft); color: var(--fomio-primary-dark); border: none; }
+  &.default { background: var(--fomio-surface); color: var(--fomio-fg-secondary); border: 1px solid var(--fomio-border); }
+  &.success { background: color-mix(in oklab, var(--fomio-success) 14%, transparent); color: color-mix(in oklab, var(--fomio-success) 65%, black); border: none; }
+  &.warning { background: color-mix(in oklab, var(--fomio-warning) 15%, transparent); color: color-mix(in oklab, var(--fomio-warning) 55%, black); border: none; }
+  &.danger  { background: color-mix(in oklab, var(--fomio-danger)  12%, transparent); color: var(--fomio-danger); border: none; }
+
+  &.primary {
+    background: var(--fomio-primary);
+    color: #fff;
+    border: none;
+  }
+
+  &.accent {
+    background: var(--fomio-accent-soft);
+    color: var(--fomio-accent);
+    border-color: color-mix(in oklab, var(--fomio-accent) 20%, transparent);
+  }
+
+  &.fomio-badge--with-dot::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.72;
+    flex-shrink: 0;
+  }
+}
+
+
+// ── Meta row (generic Layer 2 primitive) ────────────────────
+
+.fomio-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  color: var(--fomio-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+
+  &--emphasized {
+    color: var(--fomio-text);
+  }
+}
+
+.fomio-meta-row__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-muted);
+  opacity: 0.55;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.fomio-meta-row__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+
+// ── Empty state (generic Layer 2 primitive) ─────────────────
+
+.fomio-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 22px 24px;
+  border: 1px dashed color-mix(in oklab, var(--fomio-border) 78%, transparent);
+  border-radius: var(--fomio-radius-card);
+  background: color-mix(in oklab, var(--fomio-surface) 58%, transparent);
+
+  &--centered {
+    align-items: center;
+    text-align: center;
+  }
+
+  &--inline {
+    padding: 14px 16px;
+    border-style: solid;
+    border-color: var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-md);
+  }
+}
+
+.fomio-empty-state__mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+
+  .d-icon,
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.fomio-empty-state__title {
+  margin: 0;
+  font-family: var(--fomio-font-serif);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.24;
+  letter-spacing: -0.015em;
+  color: var(--fomio-text);
+}
+
+.fomio-empty-state__body {
+  margin: 0;
+  max-width: 44ch;
+  font-family: var(--fomio-font-serif);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fomio-muted);
+}
+
+.fomio-empty-state__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-sm);
+  flex-wrap: wrap;
+}
+
+
+// ── Filter chip (design-file .active class) ──────────────────
+
+.fomio-chip {
+  &.active {
+    background: var(--fomio-primary);
+    border-color: var(--fomio-primary);
+    color: #fff;
+  }
+}
+
+
+// ── Segmented control ─────────────────────────────────────────
+
+.fomio-seg {
+  display: inline-flex;
+  background: var(--fomio-surface);
+  border-radius: var(--fomio-radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.fomio-seg-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-family: var(--fomio-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 7px 18px;
+  border-radius: var(--fomio-radius-pill);
+  color: var(--fomio-fg-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease),
+    box-shadow var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover { color: var(--fomio-fg-secondary); }
+
+  &.active {
+    background: var(--fomio-card);
+    color: var(--fomio-primary-dark);
+    box-shadow: var(--fomio-shadow-sm);
+  }
+}
+
+
+// ── Reduced-motion extension for new components ───────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .fomio-btn.is-loading::after,
+  .fomio-seg-btn,
+  .fomio-chip.active {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+
+// ── Layer-1 compatibility bridge ─────────────────────────────
+// Transitional selectors for existing production surfaces that now consume
+// shared layer-1 components while preserving their established shell styles.
+
+.fomio-hubs__view-toggle.fomio-seg {
+  gap: 3px;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.fomio-hubs__view-btn.fomio-seg-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: var(--fomio-muted);
+  line-height: 0;
+
+  .d-icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  &.active,
+  &.is-active {
+    background: var(--fomio-card);
+    border-color: var(--fomio-border);
+    color: var(--fomio-text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.fomio-hubs__search.fomio-search-wrap {
+  height: 38px;
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: 11px;
+  padding: 0 14px;
+  margin-bottom: 20px;
+  gap: 10px;
+
+  &:focus-within {
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+  }
+
+  .fomio-search-icon {
+    position: static;
+    left: auto;
+    width: auto;
+    height: auto;
+    color: var(--fomio-muted);
+    flex-shrink: 0;
+
+    .d-icon {
+      width: 15px;
+      height: 15px;
+    }
+  }
+}
+
+.fomio-hubs__search-input.fomio-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  color: var(--fomio-text);
+
+  &::placeholder {
+    color: var(--fomio-muted);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.fomio-action.fomio-btn {
+  background: transparent;
+  border: 0;
+  padding: 6px;
+  margin: 0;
+  gap: 6px;
+  color: var(--fomio-secondary);
+  opacity: 0.62;
+  min-width: 28px;
+  min-height: 28px;
+  width: auto;
+  height: auto;
+  border-radius: var(--fomio-radius-sm);
+  font: inherit;
+  letter-spacing: 0.01em;
+  line-height: 1;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    opacity: 1;
+    color: var(--fomio-primary);
+    background: transparent;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fomio-primary) 28%, transparent);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    opacity: 1;
+  }
+
+  &.share.is-active {
+    color: var(--fomio-success);
+  }
+
+  &.more.is-open {
+    color: var(--fomio-text);
+  }
+
+  &.has-count {
+    padding-right: 8px;
+    opacity: 0.78;
+  }
+
+  &.sm {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 4px 6px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.sm svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+
+// ============================================================
+// FOMIO AVATAR + IDENTITY COMPONENTS
+// Interaction Layer 03 — canonical design system components.
+// Five sizes, five colour palettes, badge overlay, identity rows,
+// avatar groups. Ported from Fomio Interaction Layer.html.
+// ============================================================
+
+.fomio-avatar {
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+  background: var(--fomio-primary);
+  color: #fff;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+// ── Sizes ────────────────────────────────────────────────────
+.fomio-avatar--xs  { width: 20px; height: 20px; font-size: 9px; }
+.fomio-avatar--sm  { width: 28px; height: 28px; font-size: 11px; }
+.fomio-avatar--md  { width: 40px; height: 40px; font-size: 15px; }
+.fomio-avatar--lg  { width: 56px; height: 56px; font-size: 20px; }
+.fomio-avatar--xl  { width: 72px; height: 72px; font-size: 26px; }
+
+// ── Colour palettes ─────────────────────────────────────────
+.fomio-avatar--terra  { background: var(--fomio-primary); color: #fff; }
+.fomio-avatar--violet { background: #7C6A9A; color: #fff; }
+.fomio-avatar--sage   { background: #4A8C6A; color: #fff; }
+.fomio-avatar--slate  { background: #3A7A9A; color: #fff; }
+.fomio-avatar--warm   { background: #D6C9A8; color: #5C4A1E; }
+
+// ── Badge wrapper ────────────────────────────────────────────
+.fomio-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+
+  .av-badge {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: var(--fomio-primary);
+    color: #fff;
+    font-family: var(--fomio-font-ui);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--fomio-card);
+    padding: 0 3px;
+
+    &.online {
+      width: 10px;
+      height: 10px;
+      min-width: 0;
+      padding: 0;
+      background: var(--fomio-success);
+    }
+  }
+}
+
+// ── Avatar group ─────────────────────────────────────────────
+.fomio-avatar-group {
+  display: flex;
+  align-items: center;
+
+  .fomio-avatar {
+    border: 2px solid var(--fomio-card);
+    margin-left: -8px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+
+  .av-overflow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--fomio-surface);
+    border: 2px solid var(--fomio-card);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--fomio-muted);
+    margin-left: -8px;
+  }
+}
+
+// ── Identity row ─────────────────────────────────────────────
+.fomio-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &--lg {
+    gap: 14px;
+  }
+}
+
+.fomio-identity__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fomio-identity__name {
+  font-family: var(--fomio-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--fomio-text);
+  line-height: 1.2;
+
+  .fomio-identity--lg & {
+    font-size: 17px;
+  }
+}
+
+.fomio-identity__handle {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+.fomio-identity__role {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--fomio-radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+  align-self: flex-start;
+  margin-top: 1px;
+}
+
+
+// ============================================================
+// FOMIO COMMENT THREAD
+// Interaction Layer 03 — canonical CSS classes for the
+// discussion section. Each comment is a `.fomio-comment` block;
+// replies nest inside `.fomio-comment__thread`.
+// ============================================================
+
+.fomio-comments {
+  max-width: 42rem;
+}
+
+.fomio-comments__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.fomio-comments__title {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-comments__count {
+  font-family: var(--fomio-font-mono);
+  font-size: 12px;
+  color: var(--fomio-muted);
+  letter-spacing: 0.02em;
+}
+
+.fomio-comments__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-comment {
+  position: relative;
+  padding: 22px 0 18px;
+
+  & + .fomio-comment {
+    border-top: 1px solid var(--fomio-border-soft);
+  }
+
+  &.is-reply {
+    padding: 16px 0 12px;
+
+    & + .fomio-comment.is-reply {
+      border-top: 1px solid var(--fomio-border-soft);
+    }
+  }
+}
+
+.fomio-comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  color: var(--fomio-muted);
+}
+
+.fomio-comment-meta__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--fomio-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.fomio-comment-meta__author {
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--fomio-text);
+  text-transform: uppercase;
+}
+
+.fomio-comment-meta__badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fomio-primary);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--fomio-primary) 12%, transparent);
+}
+
+.fomio-comment-meta__sep {
+  opacity: 0.5;
+}
+
+.fomio-comment-meta__time {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  font-style: italic;
+  color: var(--fomio-muted);
+}
+
+.fomio-comment-body {
+  font-family: var(--fomio-font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--fomio-text);
+  margin-bottom: 10px;
+  padding-left: 30px;
+
+  p {
+    margin: 0;
+
+    & + p {
+      margin-top: 0.6em;
+    }
+  }
+}
+
+.fomio-comment__thread {
+  margin-top: 8px;
+  padding-left: 30px;
+  border-left: 1px solid var(--fomio-border-soft);
+  margin-left: 11px;
+}

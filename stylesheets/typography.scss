@@ -1,0 +1,153 @@
+// ------------------------------------------------------------
+// 8. COOKED (rendered post body)
+// ------------------------------------------------------------
+
+.cooked {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-md);
+  line-height: var(--fomio-leading-loose);
+  color: var(--fomio-ink);
+
+  p {
+    margin: 0 0 1.5em;
+  }
+
+  a {
+    color: var(--fomio-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--fomio-rule);
+
+    &:hover {
+      color: var(--fomio-red);
+      text-decoration-color: var(--fomio-red);
+    }
+  }
+
+  blockquote {
+    border-left: 2px solid var(--fomio-red);
+    padding-left: 1.25em;
+    margin: 2em 0;
+    font-style: italic;
+    color: var(--fomio-ink-muted);
+  }
+
+  strong {
+    font-weight: 700;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  code {
+    font-family: var(--fomio-font-mono);
+    font-size: 0.875em;
+    font-variant-ligatures: none;
+    background: var(--fomio-ink-ghost);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+
+  pre {
+    font-family: var(--fomio-font-mono);
+    font-size: var(--fomio-text-sm);
+    font-variant-ligatures: none;
+    background: var(--fomio-code-bg);
+    border-radius: var(--fomio-radius-md);
+    padding: 1.25em 1.5em;
+    overflow-x: auto;
+
+    code {
+      background: none;
+      padding: 0;
+      font-size: inherit;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 2em 0;
+    border-radius: var(--fomio-radius-sm);
+  }
+
+  // Heading hierarchy — sizes descend from page title context
+  h1, h2, h3, h4 {
+    font-family: var(--fomio-font-serif);
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+  }
+
+  h1 {
+    font-size: var(--fomio-text-2xl);
+    line-height: var(--fomio-leading-tight);
+    letter-spacing: var(--fomio-tracking-tight);
+  }
+
+  h2 {
+    font-size: var(--fomio-text-xl);
+    line-height: var(--fomio-leading-snug);
+  }
+
+  h3 {
+    font-size: 1.375rem;
+    line-height: var(--fomio-leading-snug);
+  }
+
+  h4 {
+    font-size: var(--fomio-text-md);
+    line-height: var(--fomio-leading-normal);
+    font-family: var(--fomio-font-ui);
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+  }
+}
+
+
+// ------------------------------------------------------------
+// 9. UI / FUNCTIONAL TYPOGRAPHY
+// Timestamps, metadata, nav — always SF Pro, never Lora
+// ------------------------------------------------------------
+
+.topic-list .age,
+.topic-list .num,
+.nav-pills li a,
+.post-info,
+.names .username,
+.names .full-name,
+.relative-date,
+.post-date,
+.topic-meta-data,
+.category-breadcrumb,
+.d-breadcrumbs {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  letter-spacing: var(--fomio-tracking-wide);
+}
+
+// Category labels — small-caps treatment
+.category-name,
+.badge-category__name {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+}
+
+
+// ------------------------------------------------------------
+// 10. TOPIC TITLES (list view)
+// Serif, editorial weight — content is the hero
+// ------------------------------------------------------------
+
+.topic-list-item .title,
+.topic-list .main-link a,
+.latest-topic-list-item .topic-title {
+  font-family: var(--fomio-font-serif);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+  letter-spacing: var(--fomio-tracking-tight);
+}

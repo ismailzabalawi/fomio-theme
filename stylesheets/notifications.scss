@@ -1,0 +1,1095 @@
+// ============================================================
+// FOMIO NOTIFICATION PANEL
+// Editorial restyle of Discourse's native UserMenu popover.
+// Design: "Notification Panel v1" (Fomio Design System Handoff).
+// We reshape the native DOM — no fetch, no rebuilt notification
+// logic — into a calm, reading-first panel: serif title, pill
+// tabs, terracotta unread treatment, tinted footer.
+// ============================================================
+
+.fomio-notifications-menu-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgb(15 23 42 / 0.28);
+}
+
+// The dialog itself is the card surface — header + native menu
+// both sit inside one rounded, shadowed shell.
+.fomio-notifications-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--fomio-card) 86%, var(--fomio-bg));
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  box-shadow: var(--fomio-shadow-menu);
+}
+
+// ── Serif title header ──────────────────────────────────────
+.fomio-np-header {
+  flex-shrink: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--fomio-border);
+}
+
+.fomio-np-title {
+  flex: 1;
+  font-family: var(--fomio-font-serif);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--fomio-text);
+}
+
+// ── Native UserMenu shell → transparent, fills the card ─────
+.fomio-notifications-menu .user-menu {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.fomio-notifications-menu .user-menu.revamped .panel-body,
+.fomio-notifications-menu .user-menu.revamped .panel-body-contents {
+  height: 100%;
+  min-height: 0;
+}
+
+// Stack tabs above the list (native default is row-reverse). The
+// `.user-menu.revamped` prefix is required to outrank core layout rules.
+.fomio-notifications-menu .user-menu.revamped .panel-body-contents {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Pill tab bar ────────────────────────────────────────────
+.fomio-notifications-menu .user-menu.revamped .menu-tabs-container {
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--fomio-border);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.fomio-notifications-menu .user-menu.revamped .tabs-list {
+  flex-direction: row;
+  gap: 6px;
+}
+
+// Bottom tabs (profile, review) sit inline with the top tabs —
+// no divider rule when laid out horizontally.
+.fomio-notifications-menu .user-menu.revamped .bottom-tabs {
+  border-top: none;
+}
+
+.fomio-notifications-menu .user-menu.revamped .menu-tabs-container .btn.user-menu-tab {
+  flex: 0 0 auto;
+  height: 26px;
+  width: auto;
+  padding: 0 10px;
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-pill);
+  background: transparent;
+  color: var(--fomio-muted);
+  transition:
+    color var(--fomio-dur-fast) var(--fomio-ease),
+    background var(--fomio-dur-fast) var(--fomio-ease),
+    border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+  .d-icon {
+    padding: 0;
+    width: 14px;
+    height: 14px;
+    color: inherit;
+    background: none;
+  }
+
+  .badge-notification {
+    position: static;
+    margin-left: 5px;
+    padding: 0 5px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    font-family: var(--fomio-font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  &:not(.active):hover,
+  &:not(.active):focus-visible {
+    background: transparent;
+    color: var(--fomio-text);
+
+    .d-icon {
+      background: none;
+    }
+  }
+
+  &.active {
+    background: var(--fomio-primary);
+    border-color: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+
+    .d-icon {
+      color: var(--fomio-on-primary);
+      background: none;
+    }
+
+    .badge-notification {
+      background: var(--fomio-on-primary);
+      color: var(--fomio-primary);
+    }
+  }
+}
+
+// ── Scrollable list body ────────────────────────────────────
+// Full-width column: list scrolls, footer pins to the bottom.
+.fomio-notifications-menu .user-menu.revamped .quick-access-panel {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: none;
+
+  > ul {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--fomio-border) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--fomio-border);
+      border-radius: 2px;
+    }
+  }
+}
+
+// ── Notification row ────────────────────────────────────────
+.fomio-notifications-menu .quick-access-panel li.notification,
+.fomio-notifications-menu .quick-access-panel li.message {
+  position: relative;
+  margin: 0;
+
+  > a {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px 10px 18px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 100ms var(--fomio-ease);
+  }
+
+  &:hover > a {
+    background: rgb(0 0 0 / 3%);
+  }
+
+  // Avatar / icon column
+  .icon-avatar {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .icon-avatar .avatar,
+  .icon-avatar img {
+    width: 34px;
+    height: 34px;
+    border-radius: 17px;
+  }
+
+  // Type glyph overlaid on the avatar corner
+  .icon-avatar__icon-wrapper {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fomio-card);
+    box-shadow: 0 0 0 1px var(--fomio-border);
+
+    .d-icon {
+      width: 9px;
+      height: 9px;
+      color: var(--fomio-muted);
+    }
+  }
+
+  // Plain-icon rows (no avatar) — keep a calm muted glyph
+  > a > .d-icon:first-child {
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 20px;
+    height: 20px;
+    color: var(--fomio-muted);
+  }
+
+  // Text column
+  > a > div {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-label {
+    order: 1;
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--fomio-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 2px;
+  }
+
+  .item-description {
+    order: 2;
+    font-family: var(--fomio-font-serif);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--fomio-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// Unread treatment — terracotta inset stripe, soft tint, bolder label
+.fomio-notifications-menu .quick-access-panel li.notification.unread,
+.fomio-notifications-menu .quick-access-panel li.message.unread {
+  background: rgb(196 69 54 / 5%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--fomio-primary);
+  }
+
+  &:hover > a {
+    background: rgb(196 69 54 / 9%);
+  }
+
+  .item-label {
+    font-weight: 700;
+  }
+
+  .icon-avatar__icon-wrapper .d-icon {
+    color: var(--fomio-primary);
+  }
+}
+
+// ── Footer — tinted "view all / dismiss" bar ────────────────
+.fomio-notifications-menu .user-menu.revamped .panel-body-bottom {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--fomio-border);
+  background: rgb(196 69 54 / 7%);
+
+  .btn {
+    height: 32px;
+    border-radius: var(--fomio-radius-pill);
+    font-family: var(--fomio-font-ui);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .show-all .btn {
+    width: 100%;
+    color: var(--fomio-primary);
+    background: transparent;
+    border: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary-dark);
+      background: rgb(196 69 54 / 8%);
+    }
+
+    .d-icon {
+      color: inherit;
+    }
+  }
+
+  .notifications-dismiss {
+    margin-left: 0;
+    color: var(--fomio-muted);
+    background: transparent;
+    border: 1px solid var(--fomio-border);
+
+    .d-icon {
+      color: inherit;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-primary);
+      border-color: var(--fomio-primary);
+      background: transparent;
+    }
+  }
+}
+
+// ── Empty state ─────────────────────────────────────────────
+.fomio-notifications-menu .empty-state {
+  padding: 40px 28px;
+  text-align: center;
+
+  .empty-state-title,
+  .empty-state__title {
+    font-family: var(--fomio-font-serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--fomio-muted);
+  }
+
+  .empty-state-body,
+  .empty-state__body {
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--fomio-muted);
+  }
+}
+
+// ── Positioning (desktop popover / mobile sheet) ────────────
+.fomio-notifications-menu--desktop {
+  top: max(1rem, env(safe-area-inset-top, 0px) + 1rem);
+  left: max(1rem, env(safe-area-inset-left, 0px) + 1rem);
+  width: min(23rem, calc(100vw - 2rem));
+  max-height: min(78vh, 44rem);
+}
+
+.fomio-notifications-menu--mobile {
+  inset-inline: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: min(78vh, 44rem);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+// Pull-handle affordance above the title on the mobile sheet.
+.fomio-notifications-menu--mobile .fomio-np-header {
+  position: relative;
+  height: 60px;
+  align-items: flex-end;
+  padding-bottom: 12px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--fomio-border);
+  }
+}
+
+body.fomio-surface-touch .fomio-notifications-menu--mobile {
+  max-height: min(72vh, 40rem);
+}
+
+// ── Floating preferences menu ───────────────────────────────
+.fomio-preferences-menu-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgb(15 23 42 / 0.2);
+}
+
+.fomio-preferences-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-bg));
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  box-shadow: var(--fomio-shadow-menu);
+}
+
+.fomio-prefs-menu__header {
+  flex-shrink: 0;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid var(--fomio-border);
+}
+
+.fomio-prefs-menu__title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--fomio-text);
+}
+
+.fomio-prefs-menu__close {
+  flex: 0 0 auto;
+}
+
+.fomio-prefs-menu__list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fomio-border) transparent;
+}
+
+.fomio-prefs-menu__list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.fomio-prefs-menu__list::-webkit-scrollbar-thumb {
+  background: var(--fomio-border);
+  border-radius: 2px;
+}
+
+.fomio-preferences-menu .fomio-list__item.fomio-prefs-menu__item {
+  min-height: 54px;
+  padding: 9px 10px;
+  border-radius: var(--fomio-radius-sm);
+  color: var(--fomio-muted);
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+}
+
+.fomio-preferences-menu .fomio-list__item.fomio-prefs-menu__item:hover,
+.fomio-preferences-menu .fomio-list__item.fomio-prefs-menu__item:focus-visible {
+  color: var(--fomio-text);
+  background: color-mix(in oklab, var(--fomio-text) 6%, transparent);
+}
+
+.fomio-preferences-menu .fomio-list__item.fomio-prefs-menu__item[aria-current="true"] {
+  color: var(--fomio-primary);
+  background: var(--fomio-primary-soft);
+}
+
+.fomio-preferences-menu .fomio-prefs-menu__item .fomio-list__icon {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+}
+
+.fomio-preferences-menu .fomio-prefs-menu__item .fomio-list__title {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 700;
+  color: var(--fomio-text);
+}
+
+.fomio-preferences-menu .fomio-prefs-menu__item[aria-current="true"] .fomio-list__title {
+  color: var(--fomio-primary);
+}
+
+.fomio-preferences-menu .fomio-prefs-menu__item .fomio-list__subtitle {
+  margin-top: 2px;
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  line-height: 1.35;
+  color: var(--fomio-muted);
+}
+
+.fomio-preferences-menu--desktop {
+  top: max(1rem, env(safe-area-inset-top, 0px) + 1rem);
+  left: max(1rem, env(safe-area-inset-left, 0px) + 1rem);
+  width: min(20rem, calc(100vw - 2rem));
+  max-height: none;
+}
+
+.fomio-preferences-menu--mobile {
+  inset-inline: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: min(76vh, 38.75rem);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media screen and (min-width: 768px) {
+  body.fomio-preferences-menu-open.user-preferences-page:not(.fomio-surface-touch) {
+    overflow: hidden;
+
+    .fomio-preferences-menu--desktop {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+      border-inline-end: 0;
+    }
+
+    #main-outlet .user-main #user-content.user-preferences {
+      position: fixed !important;
+      z-index: 1201;
+      top: 16px;
+      bottom: 16px;
+      inset-inline-start: calc(
+        var(--fomio-surface-sidebar-offset, var(--fomio-sidebar-width, 228px)) + 332px
+      );
+      width: min(
+        760px,
+        calc(
+          100vw -
+            var(--fomio-surface-sidebar-offset, var(--fomio-sidebar-width, 228px)) -
+            348px
+        )
+      );
+      max-width: calc(100vw - 2rem);
+      margin: 0 !important;
+      padding: 18px 20px 22px;
+      overflow: auto;
+      overscroll-behavior: contain;
+      background: color-mix(in oklab, var(--fomio-card) 91%, var(--fomio-bg));
+      border: 1px solid var(--fomio-border);
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      border-start-end-radius: var(--fomio-radius-card);
+      border-end-end-radius: var(--fomio-radius-card);
+      box-shadow: var(--fomio-shadow-menu);
+    }
+  }
+
+  body.fomio-preferences-menu-open.user-preferences-page.fomio-surface-rail:not(.fomio-surface-touch) {
+    #main-outlet .user-main #user-content.user-preferences {
+      inset-inline-start: calc(var(--fomio-sidebar-rail-width, 72px) + 332px);
+      width: min(760px, calc(100vw - var(--fomio-sidebar-rail-width, 72px) - 348px));
+    }
+  }
+}
+
+// Custom panel DOM overrides. These come after the older native UserMenu
+// restyle rules so the owned Fomio layout wins without selector arm-wrestling.
+.fomio-notifications-menu {
+  display: flex;
+  flex-direction: column;
+  min-height: 22rem;
+}
+
+.fomio-np-mark-all {
+  height: auto;
+  min-height: 0;
+  color: var(--fomio-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0;
+  transition: color var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-primary);
+  }
+}
+
+.fomio-np-close {
+  flex: 0 0 auto;
+}
+
+.fomio-np-tabs {
+  flex: 1;
+  flex-basis: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .fomio-tabs__list {
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--fomio-border);
+  }
+
+  .fomio-tabs__trigger {
+    height: 2.5rem;
+    padding: 0 1.15rem;
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-pill);
+    border-bottom-width: 1px;
+    margin-bottom: 0;
+    background: transparent;
+    color: var(--fomio-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease),
+      border-color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-text);
+      border-color: color-mix(in oklab, var(--fomio-border) 82%, var(--fomio-text));
+    }
+
+    &[aria-selected="true"] {
+      background: var(--fomio-primary);
+      border-color: var(--fomio-primary);
+      color: var(--fomio-on-primary);
+    }
+  }
+
+  .fomio-tabs__trigger-badge {
+    background: color-mix(in oklab, var(--fomio-border) 72%, transparent);
+    color: inherit;
+  }
+
+  .fomio-tabs__panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: none;
+    overflow: hidden;
+
+    &[aria-hidden="false"],
+    &.fomio-tabs__panel--active {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.fomio-np-loading-state,
+.fomio-np-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.fomio-np-loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.fomio-np-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fomio-np-section-title {
+  margin: 0;
+  padding: 1rem 16px 0.55rem;
+  font-family: var(--fomio-font-ui);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+}
+
+.fomio-np-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fomio-np-empty-state {
+  flex: 1;
+  min-height: 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.fomio-np-empty-card {
+  width: min(100%, 18rem);
+}
+
+.fomio-np-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--fomio-border);
+  background: color-mix(in oklab, var(--fomio-card) 94%, var(--fomio-primary) 6%);
+}
+
+.fomio-np-footer-list {
+  padding: 0;
+}
+
+.fomio-np-view-all-row {
+  min-height: 4rem;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--fomio-primary);
+  font-family: var(--fomio-font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  font-weight: 600;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--fomio-primary-dark);
+    background: color-mix(in oklab, var(--fomio-primary) 6%, transparent);
+  }
+
+  .fomio-list__content {
+    flex: 0 1 auto;
+  }
+
+  .fomio-list__title {
+    font: inherit;
+    color: inherit;
+  }
+
+  .fomio-list__icon:last-child {
+    width: 0.95rem;
+    height: 0.95rem;
+    color: inherit;
+  }
+}
+
+.fomio-notifications-menu li.notification,
+.fomio-notifications-menu li.message {
+  position: relative;
+  margin: 0;
+
+  > a {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px 14px 22px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 100ms var(--fomio-ease);
+  }
+
+  &:hover > a {
+    background: color-mix(in oklab, var(--fomio-text) 4%, transparent);
+  }
+
+  .icon-avatar {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .icon-avatar .avatar,
+  .icon-avatar img {
+    width: 42px;
+    height: 42px;
+    border-radius: 21px;
+  }
+
+  .icon-avatar__icon-wrapper {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fomio-card);
+    box-shadow: 0 0 0 2px var(--fomio-card);
+
+    .d-icon {
+      width: 9px;
+      height: 9px;
+      color: var(--fomio-primary);
+    }
+  }
+
+  > a > .d-icon:first-child {
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 20px;
+    height: 20px;
+    color: var(--fomio-muted);
+  }
+
+  > a > div {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-label {
+    order: 1;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--fomio-text);
+  }
+
+  .item-description {
+    order: 2;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-family: var(--fomio-font-serif);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--fomio-secondary);
+  }
+}
+
+.fomio-notifications-menu li.notification.unread,
+.fomio-notifications-menu li.message.unread {
+  background: color-mix(in oklab, var(--fomio-primary) 6%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 4px;
+    border-radius: 0 3px 3px 0;
+    background: var(--fomio-primary);
+  }
+}
+
+.fomio-notifications-menu li.notification.unread .item-label,
+.fomio-notifications-menu li.message.unread .item-label {
+  font-weight: 800;
+}
+
+.fomio-notifications-menu li.notification.unread:hover > a,
+.fomio-notifications-menu li.message.unread:hover > a {
+  background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
+}
+
+.fomio-notifications-menu li.notification.read .icon-avatar__icon-wrapper .d-icon,
+.fomio-notifications-menu li.message.read .icon-avatar__icon-wrapper .d-icon {
+  color: var(--fomio-muted);
+}
+
+.fomio-notifications-menu--desktop {
+  width: min(26.25rem, calc(100vw - 2rem));
+  height: min(82vh, 44rem);
+  max-height: min(82vh, 44rem);
+}
+
+.fomio-notifications-menu--mobile {
+  height: min(88vh, 48rem);
+  max-height: min(88vh, 48rem);
+}
+
+body.fomio-surface-touch .fomio-notifications-menu--mobile {
+  height: min(86vh, 46rem);
+  max-height: min(86vh, 46rem);
+}
+
+html.fomio-color-dark .fomio-notifications-menu .icon-avatar__icon-wrapper {
+  background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+}
+
+// Create — visually emphasized center item
+.fomio-bottom-bar__item--create {
+  .fomio-bottom-bar__icon {
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+    border-radius: 12px;
+    width: 1.9rem;
+    height: 1.9rem;
+
+    svg {
+      width: 0.95rem;
+      height: 0.95rem;
+    }
+  }
+
+  &:hover .fomio-bottom-bar__icon,
+  &:active .fomio-bottom-bar__icon {
+    background: var(--fomio-primary-dark);
+  }
+}
+
+// Dark mode
+html.fomio-color-dark .fomio-bottom-bar {
+  background: color-mix(in oklab, var(--fomio-surface) 22%, var(--fomio-bg));
+  border-top-color: color-mix(in oklab, var(--fomio-border) 86%, transparent);
+  box-shadow: 0 -12px 28px rgb(0 0 0 / 22%);
+}
+
+html.fomio-color-dark {
+  .fomio-bottom-bar__item {
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+
+    &:hover,
+    &:active {
+      color: var(--fomio-text);
+    }
+  }
+
+  .fomio-bottom-bar__badge {
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-surface) 22%, var(--fomio-bg));
+  }
+
+  .fomio-seg {
+    background: color-mix(in oklab, var(--fomio-surface) 74%, var(--fomio-bg));
+    border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+  }
+
+  .fomio-seg-btn {
+    color: color-mix(in oklab, var(--fomio-muted) 90%, var(--fomio-text));
+
+    &:hover {
+      color: var(--fomio-text);
+      background: color-mix(in oklab, var(--fomio-card) 52%, transparent);
+    }
+
+    &.active {
+      background: var(--fomio-card);
+      color: var(--fomio-text);
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 6%),
+        0 10px 24px rgb(0 0 0 / 24%);
+    }
+  }
+
+  .fomio-search-sheet.fomio-ephemeral-sheet,
+  .fomio-mobile-search-palette {
+    border-color: color-mix(in oklab, var(--fomio-border) 82%, transparent);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--fomio-card) 94%, var(--fomio-surface)) 0%,
+        color-mix(in oklab, var(--fomio-surface) 88%, var(--fomio-bg)) 100%
+      );
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 5%),
+      0 28px 72px rgb(0 0 0 / 42%);
+  }
+
+  .fomio-search-sheet,
+  .fomio-mobile-search-palette {
+    .search-random-quick-tip,
+    .search-link .blurb,
+    .search-link .search-item-category,
+    .search-link .discourse-tags,
+    .search-link .discourse-tags a {
+      color: color-mix(in oklab, var(--fomio-muted) 94%, var(--fomio-text));
+    }
+
+    .search-input {
+      border-color: color-mix(in oklab, var(--fomio-border) 88%, transparent);
+      background: color-mix(in oklab, var(--fomio-card) 98%, var(--fomio-surface));
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 4%),
+        0 1px 0 rgb(0 0 0 / 18%);
+    }
+
+    .search-input .d-icon,
+    .search-input-wrapper .d-icon {
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+    }
+
+    .results {
+      border-color: color-mix(in oklab, var(--fomio-border) 88%, transparent);
+      background: color-mix(in oklab, var(--fomio-card) 98%, var(--fomio-surface));
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 5%),
+        0 18px 36px rgb(0 0 0 / 24%);
+    }
+
+    .search-menu-recent {
+      border-color: color-mix(in oklab, var(--fomio-border) 76%, transparent);
+      background: color-mix(in oklab, var(--fomio-surface) 74%, var(--fomio-card));
+    }
+
+    .tip-label.tip-clickable {
+      background: color-mix(in oklab, var(--fomio-primary) 18%, var(--fomio-surface));
+      color: color-mix(in oklab, var(--fomio-primary) 88%, var(--fomio-text));
+    }
+
+    .clear-recent-searches {
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+      background: color-mix(in oklab, var(--fomio-card) 54%, transparent);
+    }
+
+    .clear-recent-searches:hover,
+    .clear-recent-searches:focus-visible {
+      color: var(--fomio-text);
+      background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-surface));
+    }
+
+    .search-link:hover,
+    .search-link:focus {
+      background: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+    }
+
+    .search-menu-assistant-item .search-icon-wrapper {
+      background: color-mix(in oklab, var(--fomio-primary) 14%, var(--fomio-surface));
+      color: color-mix(in oklab, var(--fomio-primary) 82%, var(--fomio-text));
+    }
+  }
+}

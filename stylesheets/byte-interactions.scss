@@ -1,0 +1,2826 @@
+// ============================================================
+// FOMIO BYTE INTERACTION SYSTEM
+// Three layers: Primary Toolbar · Secondary Menu · Discussion
+// Quiet, editorial, reading-first.
+// Discourse semantics preserved underneath.
+// ============================================================
+
+
+// ── Suppress default Discourse post controls ────────────────
+//
+// These are hidden for the Byte (first post) where the Fomio
+// toolbar takes over. Comment posts also get the action bar
+// suppressed because FomioCommentActions replaces it.
+//
+// .post-menu-area / .post-actions are inside .topic-post.
+// We target them broadly and restore via the Fomio components.
+
+.topic-post .post-menu-area,
+.topic-post .post-actions,
+.topic-post .post__actions {
+  display: none !important;
+}
+
+// The post-links outlet now carries our toolbar; hide the
+// native PostLinks link-list (forum-era chrome — each link in a
+// post listed as a bulleted external URL). Not useful in a
+// reading theme and would appear above the Fomio toolbar.
+.post-links-container {
+  display: none;
+}
+
+// Hide Discourse's topic-footer main buttons — the Fomio
+// toolbar handles those interactions.
+#topic-footer-buttons .topic-footer-main-buttons,
+#topic-footer-buttons .bookmark-button,
+#topic-footer-buttons .notifications-button-footer,
+#topic-footer-buttons .topic-notifications-button,
+#topic-footer-buttons .select-kit.notifications-button {
+  display: none;
+}
+
+
+// ── 1. Primary Toolbar ─────────────────────────────────────
+
+.fomio-byte-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 24px 0 0;
+  padding: 0;
+  max-width: var(--fomio-prose-w, 680px);
+  position: relative;
+}
+
+// Hairline rule above the toolbar (matches byline fade pattern)
+.fomio-byte-actions::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -24px;
+  width: 96px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--fomio-border) 0%,
+    transparent 100%
+  );
+}
+
+.fomio-byte-primary-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fomio-byte-secondary-actions {
+  position: relative;
+  margin-left: auto;
+}
+
+
+// ── Action button (shared: toolbar + comment actions) ───────
+
+.fomio-action {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 6px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fomio-secondary);
+  opacity: 0.62;
+  cursor: pointer;
+  border-radius: var(--fomio-radius-sm);
+  font: inherit;
+  letter-spacing: 0.01em;
+  transition:
+    opacity 140ms var(--fomio-ease),
+    color 140ms var(--fomio-ease),
+    transform 180ms var(--fomio-ease);
+  position: relative;
+  min-width: 28px;
+  min-height: 28px;
+  justify-content: center;
+  line-height: 1;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    color: var(--fomio-primary);
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--fomio-primary) 28%, transparent);
+  }
+
+  &.is-active {
+    color: var(--fomio-primary);
+    opacity: 1;
+  }
+
+  &.like.is-active svg {
+    animation: fomio-thump 220ms var(--fomio-ease);
+  }
+
+  &.share.is-active {
+    color: var(--fomio-success);
+    opacity: 1;
+  }
+
+  &.more.is-open {
+    opacity: 1;
+    color: var(--fomio-text);
+  }
+
+  // Comment count badge / label
+  &.has-count {
+    opacity: 0.78;
+    padding-right: 8px;
+
+    &:hover { opacity: 1; }
+  }
+
+  // Small variant (comment actions)
+  &.sm {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 4px 6px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@keyframes fomio-thump {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+.fomio-action__count {
+  font-family: var(--fomio-font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fomio-secondary);
+
+  .fomio-action:hover &,
+  .fomio-action.is-active & {
+    color: var(--fomio-primary);
+  }
+}
+
+.fomio-action__label {
+  font-family: var(--fomio-font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+// Tooltip (desktop only — hidden on mobile via mobile.scss)
+.fomio-action[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translate(-50%, 2px);
+  font-family: var(--fomio-font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--fomio-text);
+  background: var(--fomio-card);
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fomio-border) 70%, transparent),
+    0 6px 18px -10px var(--fomio-shadow);
+  transition:
+    opacity 140ms var(--fomio-ease),
+    transform 140ms var(--fomio-ease);
+  z-index: 4;
+}
+
+.fomio-action:hover[data-tip]::after,
+.fomio-action:focus-visible[data-tip]::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+
+// ── 2. Secondary Actions Menu (⋯) ──────────────────────────
+
+.fomio-byte-more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-md);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fomio-border) 70%, transparent),
+    0 12px 32px -16px color-mix(in srgb, var(--fomio-shadow) 80%, transparent),
+    0 4px 12px -8px color-mix(in srgb, var(--fomio-shadow) 50%, transparent);
+  z-index: 100;
+  font-family: var(--fomio-font-ui);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: fomio-dropdown-in 140ms var(--fomio-ease);
+
+  &.is-end {
+    right: 0;
+    left: auto;
+  }
+
+  button {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--fomio-text);
+    cursor: pointer;
+    transition:
+      background 120ms var(--fomio-ease),
+      color 120ms var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-surface);
+      outline: none;
+    }
+
+    &.is-destructive {
+      color: var(--fomio-primary);
+
+      &:hover {
+        background: color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+      }
+    }
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: var(--fomio-border-soft);
+    margin: 4px 6px;
+  }
+}
+
+@keyframes fomio-dropdown-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+// ── 3. Endmark (◆) ─────────────────────────────────────────
+
+.fomio-byte-endmark {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 3.5rem 0 0;
+  max-width: var(--fomio-prose-w, 680px);
+}
+
+.fomio-byte-endmark__glyph {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--fomio-primary);
+  transform: rotate(45deg);
+  display: inline-block;
+  opacity: 0.7;
+}
+
+
+// ── 4. Discussion shell ─────────────────────────────────────
+
+// Lives at the bottom of the Byte post (#1), injected by the
+// post-links connector. The comment posts (#2+) appear below
+// in the Discourse post stream, styled as Fomio comment cards.
+
+.fomio-discussion {
+  padding-top: 2.5rem;
+  max-width: var(--fomio-prose-w, 680px);
+}
+
+.fomio-discussion__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--fomio-border-soft);
+}
+
+.fomio-discussion__title {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--fomio-tracking-wider);
+  text-transform: uppercase;
+  color: var(--fomio-muted);
+  margin: 0;
+}
+
+.fomio-discussion__count {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-xs);
+  color: var(--fomio-muted);
+  letter-spacing: 0.02em;
+}
+
+
+// ── 5. Comment entry point ──────────────────────────────────
+
+.fomio-comment-entry {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: var(--fomio-prose-w, 680px);
+  padding: 14px 18px;
+  background: var(--fomio-surface);
+  border: 1px solid transparent;
+  border-radius: var(--fomio-radius-md);
+  cursor: text;
+  text-decoration: none;
+  text-align: left;
+  font: inherit;
+  color: var(--fomio-secondary);
+  transition:
+    background 140ms var(--fomio-ease),
+    border-color 140ms var(--fomio-ease);
+  margin: 0;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--fomio-card);
+    border-color: color-mix(in srgb, var(--fomio-primary) 30%, var(--fomio-border));
+    outline: none;
+  }
+
+  &.is-guest .fomio-comment-entry__placeholder {
+    font-style: normal;
+    font-family: var(--fomio-font-ui);
+    font-weight: 500;
+    font-size: var(--fomio-text-base);
+    color: var(--fomio-secondary);
+  }
+}
+
+.fomio-comment-entry__avatar {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--fomio-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: lowercase;
+
+  &.is-empty {
+    background: color-mix(in srgb, var(--fomio-muted) 25%, transparent);
+  }
+}
+
+.fomio-comment-entry__placeholder {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-base);
+  font-style: italic;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}
+
+
+// ── 6. Comment post cards (posts #2+) ──────────────────────
+//
+// Discourse renders each post as .topic-post.regular.boxed.
+// We restyle these into the Fomio comment card pattern:
+// suppress forum chrome, promote content + avatar + meta.
+
+// Hide Discourse's post header chrome for comment posts
+.topic-post:not([data-post-number="1"]) {
+  .post-avatar,
+  .post-action-types,
+  .embedded-posts,
+  .post__topic-map,
+  .small-action,
+  .timeline-date-created {
+    display: none;
+  }
+
+  // The cooked body — give it reading-friendly spacing
+  .cooked {
+    font-size: var(--fomio-text-base);
+    line-height: var(--fomio-leading-relaxed);
+    padding: 0;
+    margin: 0;
+  }
+
+  // Comment card container
+  article.boxed {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  // Tonal separator between comment posts
+  &:not(:nth-child(2)) article.boxed {
+    border-top: 1px solid var(--fomio-border-soft);
+    padding-top: 1.5rem;
+    margin-top: 0.25rem;
+  }
+
+  // The inner content wrapper
+  .row {
+    margin: 0;
+    padding: 0;
+  }
+
+  .topic-body {
+    padding: 0;
+    border: none;
+    float: none;
+    width: 100%;
+    margin: 0;
+  }
+
+  article.fomio-comment .row {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 8px;
+  }
+
+  article.fomio-comment .topic-avatar {
+    display: flex;
+    width: 22px;
+    min-width: 22px;
+    margin: 0;
+    padding-top: 2px;
+
+    .avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+    }
+  }
+
+  article.fomio-comment .topic-meta-data {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-family: var(--fomio-font-ui);
+    font-size: 12px;
+    color: var(--fomio-muted);
+  }
+
+  article.fomio-comment .topic-meta-data .names {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  article.fomio-comment .topic-meta-data .names .second,
+  article.fomio-comment .topic-meta-data .user-status-message-wrap,
+  article.fomio-comment .topic-meta-data .trigger-user-card > .poster-icon {
+    display: none;
+  }
+
+  article.fomio-comment .topic-meta-data .names .first,
+  article.fomio-comment .topic-meta-data .names .first a {
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--fomio-text);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  article.fomio-comment .topic-meta-data .user-title,
+  article.fomio-comment .topic-meta-data .user-badge-buttons {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fomio-primary);
+  }
+
+  article.fomio-comment .topic-meta-data .user-title {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--fomio-primary) 12%, transparent);
+  }
+
+  article.fomio-comment .topic-meta-data .post-infos,
+  article.fomio-comment .topic-meta-data .post-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    font-style: italic;
+    color: var(--fomio-muted);
+  }
+
+  article.fomio-comment .topic-meta-data .post-info {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  article.fomio-comment .topic-meta-data .post-info.edits,
+  article.fomio-comment .topic-meta-data .post-info.read-state,
+  article.fomio-comment .topic-meta-data .post-info.reply-to-tab {
+    display: none;
+  }
+
+  article.fomio-comment .cooked {
+    padding-left: 0;
+    margin-bottom: 10px;
+    font-family: var(--fomio-font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--fomio-text);
+  }
+}
+
+// Post stream — remove default spacing/borders between posts
+.post-stream .topic-post:not([data-post-number="1"]) {
+  padding: 0;
+
+  &:nth-child(2) {
+    margin-top: 2rem; // first comment after the Byte
+  }
+}
+
+// The FomioCommentActions sit in .post-links outlet (bottom of post)
+// so they appear after .cooked. Ensure alignment matches prose width.
+.topic-post:not([data-post-number="1"]) .fomio-comment-actions {
+  margin-top: 0.625rem;
+  margin-left: 30px;
+  padding-bottom: 1.25rem;
+}
+
+.fomio-comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: var(--fomio-prose-w, 680px);
+}
+
+.fomio-comment-actions__more {
+  position: relative;
+  margin-left: auto;
+}
+
+
+// ── 7. Composer shell ───────────────────────────────────────
+//
+// Discourse owns composer behavior; the theme owns its editorial surface.
+// Scope tightly to #reply-control so admin/editor screens are unaffected.
+
+body.fomio-sidebar-active #reply-control {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fomio-card) 94%, transparent),
+      color-mix(in srgb, var(--fomio-surface) 92%, transparent)
+    );
+  border: 1px solid var(--fomio-border);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow:
+    0 18px 50px -30px color-mix(in srgb, var(--fomio-shadow) 55%, transparent),
+    0 1px 0 color-mix(in srgb, var(--fomio-card) 65%, transparent) inset;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  .grippie {
+    padding-top: 0.7rem;
+
+    &::before {
+      width: 4.25rem;
+      height: 4px;
+      background: color-mix(in srgb, var(--fomio-muted) 24%, transparent);
+    }
+  }
+
+  &.open {
+    border-color: color-mix(in srgb, var(--fomio-primary) 18%, var(--fomio-border));
+  }
+
+  // ── Full-page editorial surface (Create / Edit only) ─────────
+  // Reply stays the in-context bottom sheet (rules below). Create
+  // and Edit expand to a full-viewport canvas beside the persistent
+  // sidebar. Geometry is pure CSS — no Ember/composer-service change.
+  &.composer-action-create-topic,
+  &.composer-action-edit,
+  &:has(.fomio-composer-topbar) {
+    --fomio-composer-measure: 740px;
+
+    // Core composer can inject positional styles for sheet behavior.
+    // Force full-page editorial geometry for Create/Edit.
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: var(--fomio-surface-sidebar-offset, 0px);
+    width: auto;
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fomio-bg) 96%, var(--fomio-card)),
+      var(--fomio-bg)
+    );
+    z-index: 1000;
+
+    .grippie {
+      display: none;
+    }
+
+    // The native reply-to row becomes the sticky editorial topbar.
+    // Discourse's own toggle controls + action title are hidden; the
+    // before-composer-controls connector (Phase 2) supplies back/mode/close.
+    .reply-to {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: 0;
+      padding: 0;
+      background: color-mix(in srgb, var(--fomio-bg) 82%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid color-mix(in srgb, var(--fomio-border-soft) 65%, transparent);
+
+      .reply-details,
+      .composer-controls {
+        display: none;
+      }
+    }
+
+    // reply-area is the full-bleed scroll container; topbar + status bar
+    // span its full width while the writing column is centred.
+    .reply-area {
+      position: static;
+      gap: 0;
+      padding: 0;
+      overflow-y: auto;
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+    }
+
+    // Centred writing column (title + fields + editor all live inside .d-editor).
+    // The whole column reads as one open canvas: a writing cursor over the
+    // dead space signals "click to write" (the canvas-focus behaviour in
+    // fomio-rich-editor-toolbar then drops the caret at the end).
+    .d-editor {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: var(--fomio-composer-measure);
+      margin-inline: auto;
+      padding: 2.55rem 2.1rem 0;
+      cursor: text;
+    }
+
+    .composer-fields {
+      gap: 1rem;
+      cursor: auto;
+    }
+
+    .composer-fields > .title-and-category:not(.fomio-fullscreen-composer-fields) {
+      display: none;
+    }
+
+    .title-and-category {
+      gap: 0.7rem;
+      padding-top: 0.2rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--fomio-border-soft) 75%, transparent);
+    }
+
+    .category-input .select-kit-header,
+    .tags-input .select-kit-header {
+      min-height: 2.2rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--fomio-border) 30%, transparent);
+      background: color-mix(in srgb, var(--fomio-surface) 55%, transparent);
+      padding-inline: 0.8rem;
+    }
+
+    .fomio-composer-category-picker__trigger {
+      min-height: 2.2rem;
+      padding-block: 0.5rem;
+      padding-inline: 0.8rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--fomio-border) 30%, transparent);
+      background: color-mix(in srgb, var(--fomio-surface) 55%, transparent);
+    }
+
+    .fomio-composer-category-picker__meta {
+      display: none;
+    }
+
+    // Seamless body — no rule between the fields and the writing surface.
+    .ProseMirror-container,
+    .d-editor-textarea-wrapper {
+      border-top: 0;
+      cursor: text;
+    }
+
+    // Generous canvas: the editable fills the viewport so there is always a
+    // large native click target before the JS dead-space handler is needed.
+    .d-editor-input {
+      min-height: calc(100dvh - 18rem);
+    }
+
+    // Borderless editorial title (overrides the boxed input in the base block).
+    #reply-title,
+    .title-input input {
+      min-height: 0;
+      height: auto;
+      padding: 0.25rem 0 0.65rem;
+      border: 0;
+      border-bottom: 1px solid var(--fomio-border);
+      border-radius: 0;
+      background: transparent;
+      font-size: clamp(1.42rem, 1.16rem + 0.86vw, 1.68rem);
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-tight);
+
+      &:focus,
+      &:focus-visible {
+        border-bottom-color: var(--fomio-primary);
+        background: transparent;
+        box-shadow: none;
+      }
+    }
+
+    // Submit row flows after the content, centred to the same measure,
+    // with bottom room so it clears the absolutely-pinned status bar.
+    .submit-panel {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: var(--fomio-composer-measure);
+      margin-inline: auto;
+      margin-top: 1.6rem;
+      padding: 1.1rem 2.1rem 6.8rem;
+      border-top: 0;
+      background: transparent;
+    }
+
+    .d-editor-preview-wrapper {
+      display: none;
+    }
+
+    // Open-canvas parity: remove remaining card/chrome framing around editor
+    // internals so title + metadata + body read as a single continuous surface.
+    .wmd-controls,
+    .d-editor-container,
+    .d-editor-container.--rich-editor-enabled,
+    .d-editor-textarea-wrapper,
+    .ProseMirror-container,
+    .d-editor-input {
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+  }
+
+  .reply-area {
+    gap: 0.85rem;
+    padding: 0.8rem 0.8rem 0.85rem;
+  }
+
+  .reply-to {
+    margin-bottom: 0;
+    padding: 0 0.15rem;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+
+    .reply-details {
+      gap: 0.6rem;
+    }
+
+    .composer-action-title {
+      display: none;
+    }
+
+    .composer-action-title,
+    .composer-action-title .action-title,
+    .composer-action-title .topic-link,
+    .composer-action-title .user-link,
+    .composer-action-title .post-link,
+    .composer-action-title .username {
+      font-style: normal;
+
+      color: var(--fomio-text);
+    }
+
+    .composer-action-title .topic-link,
+    .composer-action-title .user-link,
+    .composer-action-title .post-link {
+      font-family: var(--fomio-font-serif);
+      font-size: var(--fomio-text-base);
+      font-weight: 600;
+      letter-spacing: var(--fomio-tracking-tight);
+      text-transform: none;
+    }
+
+    .composer-controls {
+      gap: 0.4rem;
+      margin-left: 0.75rem;
+
+      .btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        min-width: 2.25rem;
+        padding: 0;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--fomio-surface) 92%, transparent);
+        color: var(--fomio-muted);
+
+        &:hover,
+        &:focus-visible {
+          background: var(--fomio-card);
+          color: var(--fomio-text);
+        }
+      }
+    }
+  }
+
+  .composer-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .user-selector,
+  .title-and-category {
+    gap: 0.75rem;
+  }
+
+  .title-and-category {
+    align-items: stretch;
+    padding-top: 0.5rem;
+  }
+
+  .fomio-fullscreen-composer-fields {
+    padding-bottom: 0.35rem;
+  }
+
+  .title-input,
+  .category-input,
+  .tags-input {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #reply-title,
+  .title-input input,
+  .category-input .select-kit-header,
+  .tags-input .select-kit-header,
+  #edit-reason {
+    min-height: 3rem;
+    height: 3rem;
+    box-sizing: border-box;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 50%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--fomio-surface) 86%, var(--fomio-card));
+    box-shadow: none;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    transition:
+      background-color var(--fomio-dur-med) var(--fomio-ease),
+      border-color var(--fomio-dur-med) var(--fomio-ease),
+      box-shadow var(--fomio-dur-med) var(--fomio-ease);
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      border-color: color-mix(in srgb, var(--fomio-primary) 24%, var(--fomio-border));
+      background: var(--fomio-card);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+    }
+  }
+
+  #reply-title,
+  .title-input input {
+    padding-block: 0;
+    padding-inline: 1rem;
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.05rem, 0.98rem + 0.2vw, 1.2rem);
+    font-weight: 600;
+    letter-spacing: var(--fomio-tracking-tight);
+
+    &::placeholder {
+      color: var(--fomio-muted);
+    }
+  }
+
+  .category-input,
+  .tags-input {
+    margin-bottom: 0;
+  }
+
+  .category-input {
+    margin-left: 0;
+  }
+
+  .category-input .select-kit-header,
+  .tags-input .select-kit-header {
+    display: flex;
+    align-items: center;
+    padding-inline: 0.95rem;
+    color: var(--fomio-secondary);
+  }
+
+  .category-input .selected-name .name,
+  .tags-input .selected-name {
+    color: var(--fomio-text);
+  }
+
+  .fomio-composer-category-picker {
+    position: relative;
+    width: 100%;
+  }
+
+  .fomio-composer-category-picker__trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0.95rem;
+    box-sizing: border-box;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 50%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--fomio-surface) 86%, var(--fomio-card));
+    box-shadow: none;
+    color: var(--fomio-text);
+    text-align: left;
+    transition:
+      background-color var(--fomio-dur-med) var(--fomio-ease),
+      border-color var(--fomio-dur-med) var(--fomio-ease),
+      box-shadow var(--fomio-dur-med) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible,
+    &.is-open {
+      outline: none;
+      border-color: color-mix(in srgb, var(--fomio-primary) 24%, var(--fomio-border));
+      background: var(--fomio-card);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+    }
+
+    &:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  .fomio-composer-category-picker__swatch,
+  .fomio-composer-category-picker__item-swatch {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, white 45%, transparent);
+  }
+
+  .fomio-composer-category-picker__trigger-copy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fomio-composer-category-picker__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .fomio-composer-category-picker__meta {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.76rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .fomio-composer-category-picker__chevron {
+    flex: 0 0 auto;
+    color: var(--fomio-muted);
+  }
+
+  .fomio-composer-category-picker__panel {
+    position: absolute;
+    top: calc(100% + 0.45rem);
+    right: 0;
+    box-sizing: border-box;
+    width: min(100%, clamp(20rem, 34vw, 38rem));
+    max-width: min(
+      100%,
+      calc(100vw - var(--fomio-surface-sidebar-offset, 0px) - 2rem)
+    );
+    z-index: 20;
+    padding: 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border-soft) 72%, transparent);
+    border-radius: 22px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fomio-card) 98%, var(--fomio-bg)),
+        color-mix(in srgb, var(--fomio-surface) 95%, var(--fomio-bg))
+      );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 55%, transparent),
+      0 22px 40px -24px color-mix(in srgb, var(--fomio-shadow) 78%, transparent);
+  }
+
+  .fomio-composer-category-picker__search {
+    position: relative;
+    display: block;
+    margin-bottom: 0.45rem;
+  }
+
+  .fomio-composer-category-picker__search .fomio-input {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0 2.75rem 0 1rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 50%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--fomio-surface) 84%, var(--fomio-card));
+    box-shadow: none;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1rem;
+
+    &::placeholder {
+      color: var(--fomio-muted);
+    }
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      border-color: color-mix(in srgb, var(--fomio-primary) 24%, var(--fomio-border));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+    }
+  }
+
+  .fomio-composer-category-picker__search .fomio-input-icon.suffix {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    color: var(--fomio-muted);
+    pointer-events: none;
+  }
+
+  .fomio-composer-category-picker__list {
+    display: block;
+    max-height: min(22rem, 48vh);
+    overflow: auto;
+  }
+
+  .fomio-composer-category-picker__item {
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    text-align: left;
+    align-items: flex-start;
+    gap: 0.85rem;
+
+    .fomio-list__content {
+      flex: 1 1 auto;
+      align-self: center;
+      gap: 0.2rem;
+    }
+
+    .fomio-list__title {
+      font-size: var(--fomio-text-sm);
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .fomio-list__subtitle {
+      white-space: normal;
+      line-height: 1.3;
+    }
+
+    .fomio-list__meta {
+      flex: 0 0 auto;
+      align-self: center;
+      min-width: max-content;
+      margin-left: auto;
+      padding-top: 0.1rem;
+      font-size: var(--fomio-text-xs);
+      text-align: right;
+    }
+  }
+
+  .fomio-composer-category-picker__item-swatch {
+    align-self: center;
+  }
+
+  .fomio-composer-category-picker__empty {
+    padding: 0.8rem 0.85rem;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.82rem;
+  }
+
+  .wmd-controls {
+    overflow: hidden;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--fomio-card) 90%, var(--fomio-surface));
+    border: 1px solid var(--fomio-border);
+  }
+
+  .d-editor {
+    background: transparent;
+  }
+
+  .d-editor-button-bar {
+    padding: 0.7rem 0.7rem 0;
+    background: transparent;
+    border: 0;
+    gap: 0.25rem;
+
+    .btn {
+      border-radius: 999px;
+      color: var(--fomio-muted);
+
+      &:hover,
+      &:focus-visible {
+        background: color-mix(in srgb, var(--fomio-surface) 94%, transparent);
+        color: var(--fomio-text);
+      }
+    }
+  }
+
+  .d-editor-textarea-wrapper,
+  .d-editor-preview-wrapper {
+    background: transparent;
+  }
+
+  .ProseMirror-container {
+    border-top: 1px solid var(--fomio-border);
+  }
+
+  .d-editor-input,
+  .d-editor-preview {
+    min-height: 16rem;
+    padding: 0.7rem 0.65rem 0.85rem;
+    background: transparent;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.03rem;
+    line-height: 1.63;
+  }
+
+  .d-editor-input {
+    caret-color: var(--fomio-primary);
+
+    &::placeholder {
+      color: var(--fomio-muted);
+      font-style: italic;
+    }
+
+    p[data-placeholder]::before {
+      color: var(--fomio-muted);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  // Editorial content typography inside the rich editor (all modes).
+  // Mirrors the reading surface so writing previews how the Byte will read.
+  .d-editor-input {
+    h1,
+    h2,
+    h3 {
+      font-family: var(--fomio-font-serif);
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-tight);
+      color: var(--fomio-text);
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 1.2em 0 0.4em;
+    }
+
+    h2 {
+      font-size: 1.32rem;
+      margin: 1.16em 0 0.38em;
+    }
+
+    h3 {
+      font-size: 1.12rem;
+      margin: 1em 0 0.32em;
+    }
+
+    h1:first-child,
+    h2:first-child,
+    h3:first-child {
+      margin-top: 0;
+    }
+
+    blockquote {
+      margin: 1.3em 0;
+      padding: 0.2em 0 0.2em 1.1em;
+      border-left: 2px solid var(--fomio-primary);
+      color: var(--fomio-secondary);
+      font-style: italic;
+    }
+
+    code {
+      font-family: var(--fomio-font-mono);
+      font-size: 0.92em;
+      background: var(--fomio-surface);
+      padding: 0.05em 0.4em;
+      border-radius: var(--fomio-radius-sm);
+    }
+
+    a {
+      color: var(--fomio-primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+    }
+  }
+
+  .d-editor-preview-wrapper {
+    border-left: 1px solid color-mix(in srgb, var(--fomio-border) 35%, transparent);
+  }
+
+  .submit-panel {
+    margin-top: 0;
+    padding-top: 0.1rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .save-or-cancel {
+    gap: 0.6rem;
+  }
+
+  .save-or-cancel .btn,
+  .submit-panel .btn {
+    min-height: 2.8rem;
+    border-radius: 999px;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  // Solid terracotta pill — design system permits solid fills only.
+  .save-or-cancel .btn-primary.create {
+    padding-inline: 1.3rem;
+    border: 0;
+    background: var(--fomio-primary);
+    color: var(--fomio-on-primary);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-primary-dark);
+    }
+  }
+
+  .discard-button,
+  .save-or-cancel .btn-transparent {
+    background: color-mix(in srgb, var(--fomio-surface) 88%, transparent);
+    color: var(--fomio-secondary);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-card);
+      color: var(--fomio-text);
+    }
+  }
+
+  #draft-status,
+  #file-uploading {
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    letter-spacing: 0.03em;
+  }
+
+  .display-edit-reason {
+    margin-left: auto;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      min-height: 2rem;
+      padding: 0 0.8rem;
+      border-radius: var(--fomio-radius-pill);
+      background: color-mix(in srgb, var(--fomio-surface) 88%, transparent);
+      color: var(--fomio-secondary);
+      font-family: var(--fomio-font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-wide);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition:
+        background-color var(--fomio-dur-fast) var(--fomio-ease),
+        color var(--fomio-dur-fast) var(--fomio-ease);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--fomio-card);
+        color: var(--fomio-text);
+      }
+    }
+  }
+
+  .title-input .popup-tip,
+  .category-input .popup-tip,
+  .tags-input .popup-tip {
+    position: static;
+    left: auto;
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 0.45rem;
+    width: fit-content;
+    max-width: min(100%, 32rem);
+    margin-top: 0.55rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-danger) 22%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--fomio-danger-soft) 82%, var(--fomio-card));
+    color: var(--fomio-danger);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.77rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.35;
+    text-decoration: none;
+    box-shadow: 0 6px 20px -14px color-mix(in srgb, var(--fomio-shadow) 65%, transparent);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fomio-danger);
+      text-decoration: none;
+      box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--fomio-danger) 14%, transparent),
+        0 6px 20px -14px color-mix(in srgb, var(--fomio-shadow) 65%, transparent);
+      outline: none;
+    }
+
+    .d-icon {
+      flex: 0 0 auto;
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  .title-input .popup-tip {
+    margin-left: 1rem;
+  }
+
+  .category-input .select-kit-body,
+  .tags-input .select-kit-body {
+    min-width: min(20rem, calc(100vw - 2rem));
+    margin-top: 0.4rem;
+    padding: 0.4rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border-soft) 72%, transparent);
+    border-radius: var(--fomio-radius-card);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fomio-card) 97%, var(--fomio-bg)),
+        color-mix(in srgb, var(--fomio-surface) 94%, var(--fomio-bg))
+      );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 55%, transparent),
+      0 18px 36px -22px color-mix(in srgb, var(--fomio-shadow) 78%, transparent);
+    overflow: hidden;
+  }
+
+  .category-input .select-kit-filter,
+  .tags-input .select-kit-filter {
+    padding: 0.35rem 0.35rem 0.2rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--fomio-border-soft) 55%, transparent);
+  }
+
+  .category-input .select-kit-filter-input,
+  .tags-input .select-kit-filter-input {
+    min-height: 2.4rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 55%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--fomio-surface) 82%, var(--fomio-card));
+    box-shadow: none;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.88rem;
+
+    &:focus,
+    &:focus-visible {
+      border-color: color-mix(in srgb, var(--fomio-primary) 26%, var(--fomio-border));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--fomio-primary) 12%, transparent);
+      outline: none;
+    }
+  }
+
+  .category-input .select-kit-collection,
+  .tags-input .select-kit-collection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0.25rem 0 0;
+    list-style: none;
+  }
+
+  .category-input .select-kit-row,
+  .tags-input .select-kit-row {
+    display: flex;
+    align-items: center;
+    min-height: 2.45rem;
+    margin: 0;
+    padding: 0.55rem 0.8rem;
+    border-radius: 12px;
+    color: color-mix(in srgb, var(--fomio-muted) 88%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: transparent;
+    transition:
+      background-color var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      box-shadow var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible,
+    &.is-highlighted {
+      background: color-mix(in srgb, var(--fomio-surface) 92%, var(--fomio-card));
+      color: var(--fomio-text);
+      text-decoration: none;
+      outline: none;
+    }
+
+    &.is-selected,
+    &[aria-selected="true"] {
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--fomio-card) 98%, white),
+          color-mix(in srgb, var(--fomio-primary-soft) 100%, var(--fomio-card))
+        );
+      color: var(--fomio-text);
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--fomio-primary) 18%, var(--fomio-border-soft)),
+        inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
+    }
+
+    .category-desc,
+    .desc,
+    .category-name {
+      min-width: 0;
+    }
+
+    .d-icon {
+      color: var(--fomio-muted);
+    }
+  }
+
+  .tags-input .selected-tags {
+    gap: 0.35rem;
+  }
+
+  .tags-input .selected-tag {
+    border-radius: 999px;
+    background: var(--fomio-primary-soft);
+    color: var(--fomio-primary-dark);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .tags-input .selected-tag__name,
+  .tags-input .selected-tag .name {
+    color: inherit;
+  }
+
+  #file-uploading,
+  #draft-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border-soft) 72%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--fomio-surface) 84%, var(--fomio-card));
+  }
+
+  #draft-status .draft-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  #cancel-file-upload {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fomio-danger-soft) 88%, var(--fomio-card));
+    color: var(--fomio-danger);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--fomio-danger-soft) 100%, var(--fomio-card));
+      color: var(--fomio-danger);
+      outline: none;
+    }
+  }
+
+  .mobile-preview,
+  .hide-preview,
+  .toggle-preview {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fomio-surface) 88%, transparent);
+    color: var(--fomio-secondary);
+    box-shadow: none;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-card);
+      color: var(--fomio-text);
+    }
+  }
+}
+
+.d-modal.upsert-hyperlink-modal {
+  .d-modal__container {
+    border: 1px solid color-mix(in srgb, var(--fomio-border-soft) 74%, transparent);
+    border-radius: 22px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fomio-card) 98%, var(--fomio-bg)),
+        color-mix(in srgb, var(--fomio-surface) 96%, var(--fomio-bg))
+      );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 52%, transparent),
+      0 24px 54px -30px color-mix(in srgb, var(--fomio-shadow) 85%, transparent);
+    overflow: hidden;
+  }
+
+  .d-modal__header,
+  .d-modal__body,
+  .d-modal__footer {
+    padding-inline: 1.4rem;
+  }
+
+  .d-modal__header {
+    padding-top: 1.25rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--fomio-border-soft) 58%, transparent);
+  }
+
+  .d-modal__title-text {
+    font-family: var(--fomio-font-serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    color: var(--fomio-text);
+  }
+
+  .d-modal__body {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .insert-link .form-kit {
+    gap: 0.9rem;
+  }
+
+  .insert-link .fk-d-label {
+    margin-bottom: 0.4rem;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+  }
+
+  .insert-link input {
+    min-height: 3rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border) 55%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--fomio-surface) 84%, var(--fomio-card));
+    box-shadow: none;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.94rem;
+
+    &:focus,
+    &:focus-visible {
+      border-color: color-mix(in srgb, var(--fomio-primary) 26%, var(--fomio-border));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+      outline: none;
+    }
+  }
+
+  .insert-link .spinner {
+    margin: 0.35rem 0 0.15rem;
+    color: var(--fomio-muted);
+  }
+
+  .internal-link-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0.8rem 0 0.1rem;
+    padding: 0.4rem;
+    border: 1px solid color-mix(in srgb, var(--fomio-border-soft) 64%, transparent);
+    border-radius: var(--fomio-radius-card);
+    background: color-mix(in srgb, var(--fomio-surface) 74%, var(--fomio-card));
+    max-height: 15rem;
+    overflow: auto;
+  }
+
+  .internal-link-results .search-link {
+    display: block;
+    padding: 0.7rem 0.8rem;
+    border-radius: 14px;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    transition:
+      background-color var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--fomio-card) 96%, white);
+      color: var(--fomio-text);
+      outline: none;
+    }
+  }
+
+  .internal-link-results .search-category {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    margin-top: 0.35rem;
+    color: var(--fomio-muted);
+    font-size: 0.73rem;
+    font-weight: 600;
+  }
+
+  .d-modal__footer {
+    padding-top: 0.8rem;
+    padding-bottom: 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--fomio-border-soft) 58%, transparent);
+
+    .btn {
+      min-height: 2.85rem;
+      border-radius: 999px;
+      font-family: var(--fomio-font-ui);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-wide);
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      border: 0;
+      background: var(--fomio-primary);
+      color: var(--fomio-on-primary);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--fomio-primary-dark);
+      }
+    }
+
+    .btn-transparent {
+      background: color-mix(in srgb, var(--fomio-surface) 88%, transparent);
+      color: var(--fomio-secondary);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--fomio-card);
+        color: var(--fomio-text);
+      }
+    }
+  }
+}
+
+.d-modal.discard-draft-modal {
+  .d-modal__container {
+    width: min(100vw - 2rem, 30rem);
+    border: 1px solid color-mix(in srgb, var(--fomio-border-soft) 74%, transparent);
+    border-radius: 22px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fomio-card) 98%, var(--fomio-bg)),
+        color-mix(in srgb, var(--fomio-surface) 96%, var(--fomio-bg))
+      );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 52%, transparent),
+      0 24px 54px -30px color-mix(in srgb, var(--fomio-shadow) 85%, transparent);
+    overflow: hidden;
+  }
+
+  .d-modal__body,
+  .d-modal__footer {
+    padding-inline: 1.4rem;
+  }
+
+  .d-modal__body {
+    padding-top: 1.4rem;
+    padding-bottom: 1rem;
+  }
+
+  .instructions {
+    margin: 0;
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1.3rem, 1.16rem + 0.32vw, 1.55rem);
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    line-height: 1.18;
+    text-wrap: balance;
+  }
+
+  .d-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    padding-top: 0.95rem;
+    padding-bottom: 1.3rem;
+    border-top: 1px solid color-mix(in srgb, var(--fomio-border-soft) 58%, transparent);
+
+    .btn {
+      min-height: 2.9rem;
+      border-radius: 999px;
+      font-family: var(--fomio-font-ui);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-wide);
+      text-transform: uppercase;
+    }
+
+    .discard-draft-modal__discard-btn {
+      order: 2;
+      border: 0;
+      background: var(--fomio-primary);
+      color: var(--fomio-on-primary);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--fomio-primary-dark);
+      }
+    }
+
+    .discard-draft-modal__cancel-btn {
+      order: 1;
+      background: color-mix(in srgb, var(--fomio-surface) 88%, transparent);
+      color: var(--fomio-secondary);
+
+      &:hover,
+      &:focus-visible {
+        background: var(--fomio-card);
+        color: var(--fomio-text);
+      }
+    }
+  }
+}
+
+// Hard fallback: if Fomio composer topbar is rendered, force full-page canvas
+// geometry even when core composer sheet classes/inline styles differ.
+body.fomio-sidebar-active #reply-control:has(.fomio-composer-topbar) {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: var(--fomio-surface-sidebar-offset, 0px) !important;
+  width: auto !important;
+  max-width: none !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+}
+
+// Rail mode (tablet/foldable): prioritize writable width over desktop rhythm.
+body.fomio-sidebar-active.fomio-surface-rail #reply-control:has(.fomio-composer-topbar) {
+  left: var(--fomio-sidebar-rail-width, 72px) !important;
+  --fomio-composer-measure: none;
+
+  .d-editor {
+    max-width: none;
+    padding: 1.6rem clamp(0.85rem, 2.2vw, 1.25rem) 0;
+  }
+
+  .title-and-category {
+    gap: 0.65rem;
+  }
+
+  .submit-panel {
+    max-width: none;
+    padding: 1rem clamp(0.85rem, 2.2vw, 1.25rem) 6.75rem;
+  }
+
+  .fomio-composer-topbar {
+    padding-inline: clamp(0.75rem, 2vw, 1rem);
+  }
+
+  .fomio-composer-topbar__mode {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+
+  .fomio-composer-category-picker__panel {
+    width: min(100%, 34rem);
+    max-width: calc(100vw - var(--fomio-sidebar-rail-width, 72px) - 2rem);
+  }
+}
+
+#reply-control .d-editor-container.--rich-editor-enabled .d-editor-button-bar__wrap {
+  display: none;
+}
+
+// Floating selection toolbar: subtle light surface with border and soft shadow.
+.fomio-selection-toolbar {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fomio-card) 94%, var(--fomio-bg));
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--fomio-shadow) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fomio-border) 65%, transparent);
+  user-select: none;
+  z-index: 10000;
+  animation: fomio-toolbar-fade-in 150ms var(--fomio-ease);
+}
+
+@keyframes fomio-toolbar-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fomio-selection-toolbar__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.4rem 0.5rem;
+  border: 0;
+  border-radius: var(--fomio-radius-sm);
+  background: transparent;
+  color: var(--fomio-text);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 120ms var(--fomio-ease);
+  font-family: var(--fomio-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  -webkit-appearance: none;
+  appearance: none;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: color-mix(in srgb, var(--fomio-surface) 90%, transparent);
+    color: var(--fomio-text);
+    opacity: 1;
+    outline: 1px solid var(--fomio-border);
+  }
+
+  &:active {
+    background: color-mix(in srgb, var(--fomio-primary-soft) 100%, transparent);
+    color: var(--fomio-primary);
+    opacity: 1;
+  }
+}
+
+// ── 7b. Composer editorial connectors ────────────────────────
+//
+// Theme-owned surface pieces injected through composer plugin outlets:
+// topbar (before-composer-controls), reply context (composer-open),
+// edit banner (before-composer-fields), right rail + status bar + hints
+// (composer-after-composer-editor / composer-fields-below). Each connector
+// guards its own render mode, so these selectors only exist when relevant.
+
+body.fomio-sidebar-active #reply-control {
+  // Topbar — fills the .reply-to bar on the full-page Create / Edit surface.
+  .fomio-composer-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    width: 100%;
+    height: 50px;
+    padding: 0 1.5rem;
+  }
+
+  .fomio-composer-topbar__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem 0.375rem 0.4rem;
+    border: 0;
+    border-radius: var(--fomio-radius-pill);
+    background: transparent;
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-surface);
+      color: var(--fomio-text);
+    }
+
+    .d-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+
+  .fomio-composer-topbar__mode {
+    margin-inline: auto;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--fomio-muted) 90%, var(--fomio-secondary));
+
+    .fomio-composer-topbar__mode-label {
+      margin-right: 0.35rem;
+    }
+
+    b {
+      color: var(--fomio-primary);
+    }
+  }
+
+  .fomio-composer-topbar__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--fomio-radius-sm);
+    background: transparent;
+    color: var(--fomio-muted);
+    cursor: pointer;
+    transition: background-color var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--fomio-surface);
+      color: var(--fomio-text);
+    }
+  }
+
+  // Reply context card — sits above the reply sheet (composer-open outlet).
+  .fomio-composer-byte-context {
+    margin: 0 0 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-card);
+    background: var(--fomio-card);
+  }
+
+  .fomio-composer-byte-context__teret {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--fomio-radius-pill);
+    background: var(--fomio-primary-soft);
+    color: var(--fomio-primary-dark);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .fomio-composer-byte-context__swatch {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 3px;
+  }
+
+  .fomio-composer-byte-context__title {
+    margin: 0;
+    font-family: var(--fomio-font-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-tight);
+    line-height: 1.3;
+    color: var(--fomio-text);
+  }
+
+  .fomio-composer-byte-context__replying {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.6rem;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+
+    .d-icon {
+      width: 0.8rem;
+      height: 0.8rem;
+    }
+  }
+
+  // Edit banner — above the title on the Edit surface (before-composer-fields).
+  .fomio-composer-edit-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+    padding: 0.875rem 1.125rem;
+    border: 1px solid var(--fomio-border);
+    border-radius: var(--fomio-radius-lg);
+    background: var(--fomio-card);
+  }
+
+  .fomio-composer-edit-banner__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--fomio-radius-sm);
+    background: var(--fomio-primary-soft);
+    color: var(--fomio-primary-dark);
+
+    .d-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .fomio-composer-edit-banner__text {
+    flex: 1;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    color: var(--fomio-text);
+
+    b {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 1px;
+    }
+
+    span {
+      color: var(--fomio-muted);
+      font-size: var(--fomio-text-xs);
+    }
+  }
+
+  // Right rail — fixed beside the centred writing column; tracks the column
+  // edge and hides when the viewport is too narrow to hold it without overlap.
+  .fomio-composer-rail {
+    position: absolute;
+    top: calc(56px + 3rem);
+    left: calc(50% + (var(--fomio-composer-measure, 760px) / 2) + 1.5rem);
+    width: 188px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.375rem;
+    opacity: 0.88;
+
+    @media (max-width: 1479px) {
+      display: none;
+    }
+  }
+
+  .fomio-composer-rail__section h4 {
+    margin: 0 0 0.5rem;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--fomio-muted) 88%, var(--fomio-secondary));
+  }
+
+  .fomio-composer-rail__meter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .fomio-composer-rail__stat {
+    display: flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: color-mix(in srgb, var(--fomio-muted) 88%, var(--fomio-secondary));
+
+    b {
+      font-family: var(--fomio-font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: var(--fomio-tracking-tight);
+      line-height: 1;
+      color: var(--fomio-text);
+    }
+  }
+
+  .fomio-composer-rail__bar {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--fomio-border);
+    overflow: hidden;
+  }
+
+  .fomio-composer-rail__bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--fomio-primary);
+    transition: width var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  .fomio-composer-rail__hint {
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+  }
+
+  .fomio-composer-rail__outline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--fomio-border);
+  }
+
+  .fomio-composer-rail__out {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 0.125rem 0.25rem;
+    margin: 0 -0.25rem;
+    border-radius: 0.375rem;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    line-height: 1.4;
+    color: var(--fomio-secondary);
+    transition:
+      background-color var(--fomio-dur-fast) var(--fomio-ease),
+      color var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      background: color-mix(in srgb, var(--fomio-primary) 10%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 1px;
+    }
+
+    &.is-active {
+      background: color-mix(in srgb, var(--fomio-primary) 14%, transparent);
+      color: var(--fomio-text);
+      font-weight: 600;
+    }
+
+    &.is-h1,
+    &.is-h2 {
+      font-weight: 600;
+      color: var(--fomio-text);
+    }
+
+    &.is-h3 {
+      padding-left: 0.75rem;
+    }
+  }
+
+  .fomio-composer-rail__checks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-xs);
+    color: var(--fomio-muted);
+  }
+
+  .fomio-composer-rail__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    .d-icon {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    &.is-done {
+      color: var(--fomio-success);
+    }
+  }
+
+  // Status bar — pinned to the bottom of the full-page surface.
+  .fomio-composer-statusbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 30px;
+    padding: 0 1rem;
+    border-top: 1px solid color-mix(in srgb, var(--fomio-border-soft) 60%, transparent);
+    background: color-mix(in srgb, var(--fomio-bg) 80%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-family: var(--fomio-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--fomio-muted) 82%, var(--fomio-secondary));
+  }
+
+  .fomio-composer-statusbar__right {
+    margin-left: auto;
+  }
+
+  // Keyboard hints — left side of the submit row.
+  .fomio-composer-hints {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.75rem;
+    color: var(--fomio-muted);
+  }
+
+  .fomio-composer-hints__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    kbd {
+      font-family: var(--fomio-font-mono);
+      font-size: 10px;
+      padding: 1px 5px;
+      border: 1px solid var(--fomio-border);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--fomio-secondary);
+    }
+  }
+}
+
+// Reduced motion — drop the progress-bar easing.
+@media (prefers-reduced-motion: reduce) {
+  body.fomio-sidebar-active #reply-control .fomio-composer-rail__bar-fill {
+    transition: none;
+  }
+}
+
+
+// ── Dark mode overrides ─────────────────────────────────────
+
+html.fomio-color-dark {
+  .fomio-byte-more-menu {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--fomio-border) 80%, transparent),
+      0 12px 32px -16px rgba(0, 0, 0, 0.5);
+  }
+
+  .fomio-comment-entry:hover,
+  .fomio-comment-entry:focus-visible {
+    border-color: color-mix(in srgb, var(--fomio-primary) 40%, var(--fomio-border));
+  }
+
+  .topic-post:not([data-post-number="1"]) article.boxed {
+    background: transparent;
+  }
+
+  body.fomio-sidebar-active #reply-control {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fomio-card) 92%, transparent),
+        color-mix(in srgb, var(--fomio-surface) 94%, transparent)
+      );
+    border-color: var(--fomio-border);
+
+    .wmd-controls,
+    #reply-title,
+    .title-input input,
+    .category-input .select-kit-header,
+    .tags-input .select-kit-header,
+    #edit-reason,
+    .discard-button,
+    .save-or-cancel .btn-transparent,
+    .reply-to .composer-controls .btn {
+      background: color-mix(in srgb, var(--fomio-surface) 92%, transparent);
+    }
+
+    .d-editor-preview-wrapper {
+      border-left-color: color-mix(in srgb, var(--fomio-border) 55%, transparent);
+    }
+
+    .fomio-composer-category-picker__trigger,
+    .fomio-composer-category-picker__search .fomio-input,
+    .fomio-composer-category-picker__panel {
+      background: color-mix(in srgb, var(--fomio-surface) 92%, transparent);
+    }
+
+    .title-input .popup-tip,
+    .category-input .popup-tip,
+    .tags-input .popup-tip {
+      background: color-mix(in srgb, var(--fomio-danger-soft) 76%, var(--fomio-card));
+      border-color: color-mix(in srgb, var(--fomio-danger) 28%, transparent);
+    }
+  }
+
+  body.fomio-sidebar-active #reply-control:has(.fomio-composer-topbar) {
+    border: 0 !important;
+    box-shadow: none !important;
+
+    .wmd-controls,
+    .d-editor-container,
+    .d-editor-container.--rich-editor-enabled,
+    .d-editor-textarea-wrapper,
+    .ProseMirror-container,
+    .d-editor-input,
+    .submit-panel {
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+  }
+
+  // Selection toolbar: warm card pill in dark mode.
+  .fomio-selection-toolbar {
+    background: color-mix(in srgb, var(--fomio-card) 94%, var(--fomio-bg));
+    border-color: color-mix(in srgb, var(--fomio-border) 65%, transparent);
+    box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--fomio-shadow) 55%, transparent);
+  }
+
+  .fomio-selection-toolbar__button {
+    color: var(--fomio-secondary);
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: color-mix(in srgb, var(--fomio-surface) 80%, transparent);
+      color: var(--fomio-text);
+      outline-color: var(--fomio-border);
+    }
+
+    &:active {
+      background: color-mix(in srgb, var(--fomio-primary-soft) 100%, transparent);
+      color: var(--fomio-primary);
+    }
+  }
+
+  .d-modal.upsert-hyperlink-modal {
+    .d-modal__container,
+    .internal-link-results,
+    .insert-link input {
+      background: color-mix(in srgb, var(--fomio-card) 94%, var(--fomio-bg));
+    }
+
+    .internal-link-results .search-link:hover,
+    .internal-link-results .search-link:focus-visible {
+      background: color-mix(in srgb, var(--fomio-surface) 84%, transparent);
+    }
+  }
+
+  body.fomio-sidebar-active #reply-control.closed,
+  body.fomio-sidebar-active #reply-control.draft,
+  body.fomio-sidebar-active #reply-control.composer-action-reply {
+    background: color-mix(in oklab, var(--fomio-card) 96%, var(--fomio-surface));
+    border-color: color-mix(in oklab, var(--fomio-border) 84%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 4%),
+      0 18px 42px -28px rgb(0 0 0 / 42%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    .grippie::before {
+      background: color-mix(in oklab, var(--fomio-muted) 42%, transparent);
+    }
+
+    .reply-area,
+    .reply-to,
+    .composer-action-title,
+    .composer-action-title .action-title,
+    .composer-action-title .topic-link,
+    .composer-action-title .user-link,
+    .composer-action-title .post-link,
+    .composer-action-title .username,
+    .draft-title,
+    .reply-placeholder,
+    .title-placeholder {
+      color: var(--fomio-text);
+    }
+
+    .reply-to {
+      color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+    }
+
+    .composer-controls .btn,
+    .reply-to .composer-controls .btn,
+    .toggle-fullscreen,
+    .close {
+      color: color-mix(in oklab, var(--fomio-muted) 88%, var(--fomio-text));
+
+      &:hover,
+      &:focus-visible {
+        color: var(--fomio-text);
+        background: color-mix(in oklab, var(--fomio-card) 88%, var(--fomio-surface));
+      }
+    }
+  }
+}
+
+
+// Invites parent-child foundation: invite state tabs + native invite controls/table.
+body.fomio-sidebar-active:not(.fomio-auth-mode):not(.fomio-surface-touch).user-invites-page {
+  #main-outlet .user-main .new-user-content-wrapper {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    max-width: min(1180px, calc(100vw - 48px));
+    height: calc(100vh - 48px);
+    min-height: 520px;
+    margin: 0 auto;
+    padding: 0;
+    border: 1px solid color-mix(in oklab, var(--fomio-border-soft) 78%, transparent);
+    border-radius: var(--fomio-radius-card);
+    background: color-mix(in oklab, var(--fomio-card) 90%, var(--fomio-bg));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 58%) inset,
+      0 22px 54px rgb(17 24 39 / 9%);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: block !important;
+    visibility: visible !important;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 !important;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid color-mix(in oklab, var(--fomio-border-soft) 72%, transparent);
+    background: color-mix(in oklab, var(--fomio-surface) 94%, var(--fomio-bg));
+    box-shadow: inset -1px 0 0 rgb(255 255 255 / 34%);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
+    display: block !important;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: visible !important;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 3px;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 16px 12px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    list-style: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 38px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    box-shadow: none;
+    color: color-mix(in oklab, var(--fomio-muted) 92%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    font-weight: 650;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in oklab, var(--fomio-text) 5%, transparent);
+      color: var(--fomio-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--fomio-primary) 34%, transparent);
+      outline-offset: 2px;
+    }
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li.active > a,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a.active,
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li[aria-current="location"] > a {
+    border: 0;
+    background: color-mix(in oklab, var(--fomio-primary) 10%, transparent);
+    box-shadow: none;
+    color: var(--fomio-primary);
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content,
+  #main-outlet .user-main .new-user-content-wrapper > .user-content.--loaded {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    padding: 20px 24px 24px;
+    border: 0;
+    background: color-mix(in oklab, var(--fomio-bg) 68%, var(--fomio-card));
+    box-shadow: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    scrollbar-gutter: stable;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content .user-additional-controls {
+    margin: 0 0 16px;
+    padding: 0;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content .user-invite-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content .user-invite-search {
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content .user-invite-list {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content > section:not(.user-additional-controls) {
+    min-width: 0;
+  }
+}
+
+body.fomio-sidebar-active.fomio-surface-rail:not(.fomio-auth-mode):not(.fomio-surface-touch).user-invites-page {
+  #main-outlet .user-main .new-user-content-wrapper {
+    grid-template-columns: 204px minmax(0, 1fr);
+    max-width: min(1040px, calc(100vw - 32px));
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
+    padding: 12px;
+  }
+
+  #main-outlet .user-main .new-user-content-wrapper > .user-content,
+  #main-outlet .user-main .new-user-content-wrapper > .user-content.--loaded {
+    padding: 18px 18px 22px;
+  }
+}
+
+// Breakpoint safety net: below the rail cutoff, account pages must behave as
+// touch/mobile even while the runtime surface class is settling during resize.
+@media (max-width: 767px) {
+  body.fomio-sidebar-active:not(.fomio-auth-mode):is(
+    .user-activity-page,
+    .user-notifications-page,
+    .user-invites-page
+  ) {
+    overflow: auto;
+
+    #main-outlet,
+    #main-outlet > .container,
+    #main-outlet .user-main {
+      max-height: none;
+      overflow: visible;
+    }
+
+    #main-outlet .user-main .new-user-content-wrapper {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    #main-outlet .user-main #user-content,
+    #main-outlet .user-main .user-content#user-content,
+    #main-outlet .user-main .new-user-content-wrapper > .user-content,
+    #main-outlet .user-main .new-user-content-wrapper > .user-content.--loaded {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: visible;
+    }
+
+    #main-outlet .user-main .notification-history.user-stream,
+    #main-outlet .user-main .notification-history.user-stream > .user-notifications-list {
+      display: block;
+      height: auto;
+      padding: 0;
+      background: transparent;
+      overflow: visible;
+    }
+  }
+}

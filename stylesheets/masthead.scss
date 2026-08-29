@@ -1,0 +1,256 @@
+// ============================================================
+// FOMIO MASTHEAD  (Nav shell — Interaction Layer 03)
+// Used for top-level page headers on surfaces where the sidebar
+// is not present (mobile detail pages, standalone views).
+// ============================================================
+
+.fomio-masthead {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 60px;
+  padding: 0 28px;
+  background: var(--fomio-bg);
+  border-bottom: 1px solid var(--fomio-border);
+  position: relative;
+}
+
+.fomio-masthead__brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  img {
+    height: 20px;
+    width: auto;
+    display: block;
+  }
+}
+
+// ── Search ───────────────────────────────────────────────────
+.fomio-masthead__search {
+  flex: 1;
+  max-width: 280px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fomio-masthead__search-icon {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+  color: var(--fomio-muted);
+  display: flex;
+  width: 14px;
+  height: 14px;
+}
+
+.fomio-masthead__search input {
+  width: 100%;
+  height: 34px;
+  border-radius: var(--fomio-radius-pill);
+  border: 1px solid var(--fomio-border);
+  background: var(--fomio-surface);
+  padding: 0 14px 0 34px;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fomio-text);
+  letter-spacing: 0.01em;
+  -webkit-appearance: none;
+  appearance: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color 160ms var(--fomio-ease),
+      background 160ms var(--fomio-ease),
+      box-shadow 160ms var(--fomio-ease);
+  }
+
+  &::placeholder {
+    color: var(--fomio-muted);
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--fomio-card);
+    border-color: var(--fomio-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fomio-primary) 16%, transparent);
+  }
+}
+
+// ── Nav links ────────────────────────────────────────────────
+.fomio-masthead__nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.fomio-masthead__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--fomio-radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fomio-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  position: relative;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  &.active {
+    color: var(--fomio-text);
+  }
+
+  .unread-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--fomio-primary);
+    flex-shrink: 0;
+  }
+}
+
+// ── Right actions ────────────────────────────────────────────
+.fomio-masthead__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.fomio-masthead__icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--fomio-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--fomio-muted);
+  position: relative;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      color var(--fomio-dur-fast) var(--fomio-ease),
+      background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    color: var(--fomio-text);
+    background: var(--fomio-surface);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .badge-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--fomio-primary);
+    border: 1.5px solid var(--fomio-bg);
+  }
+}
+
+// ── User button ──────────────────────────────────────────────
+.fomio-masthead__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--fomio-radius-pill);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    background: var(--fomio-surface);
+  }
+}
+
+.fomio-masthead__user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fomio-text);
+  letter-spacing: 0.01em;
+}
+
+// ── Compose CTA ──────────────────────────────────────────────
+.fomio-masthead__compose {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary);
+  color: #fff;
+  font-family: var(--fomio-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  &:hover {
+    background: var(--fomio-primary-dark);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ── Mobile variant ───────────────────────────────────────────
+.fomio-masthead--mobile {
+  height: 52px;
+  padding: 0 16px;
+  gap: 12px;
+  justify-content: space-between;
+
+  .fomio-masthead__nav {
+    display: none;
+  }
+
+  .fomio-masthead__search {
+    max-width: none;
+    flex: 1;
+  }
+}

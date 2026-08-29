@@ -1,0 +1,190 @@
+// ============================================================
+// FOMIO PREFERENCES
+// Native Discourse preferences forms styled in place. Section navigation is
+// handled by the Fomio sidebar gear and floating preferences menu.
+// ============================================================
+
+// Native Discourse preferences page with the Fomio sidebar gear menu.
+// Keep Discourse's structural wrapper because it contains the real form, but
+// remove the native secondary rail now that navigation lives in the floating
+// preferences menu.
+body.fomio-sidebar-active.user-preferences-page {
+  #main-outlet .user-main .new-user-content-wrapper {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #main-outlet .user-main .user-navigation.user-navigation-secondary {
+    display: none !important;
+  }
+
+  #main-outlet .user-main #user-content.user-preferences,
+  #main-outlet .user-main .user-right {
+    min-width: 0;
+    width: 100%;
+    max-width: 760px;
+    margin: 0;
+  }
+}
+
+// Native preferences detail pane: borderless filled form controls.
+body.fomio-sidebar-active.user-preferences-page {
+  #main-outlet .user-main #user-content.user-preferences {
+    .control-group {
+      margin: 0 0 18px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .controls {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select,
+    .select-kit .select-kit-header {
+      box-sizing: border-box;
+      min-height: 44px;
+      border: none;
+      border-radius: 8px;
+      background-color: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-card));
+      box-shadow: none;
+      color: var(--fomio-text);
+      padding: 12px 16px;
+      font-family: var(--fomio-font-ui, inherit);
+      font-size: 14px;
+      line-height: 1.4;
+      transition:
+        background-color 0.14s ease,
+        box-shadow 0.14s ease,
+        transform 0.1s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    textarea:focus,
+    select:focus,
+    .select-kit .select-kit-header:focus,
+    .select-kit.is-expanded .select-kit-header {
+      outline: none;
+      border: none;
+      background-color: color-mix(in oklab, var(--fomio-card) 92%, var(--fomio-surface));
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--fomio-primary) 22%, transparent);
+    }
+
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder,
+    textarea::placeholder {
+      color: var(--fomio-muted);
+      opacity: 1;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn-primary {
+      appearance: none;
+      -webkit-appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      border: none;
+      border-radius: 8px;
+      background: var(--fomio-primary);
+      box-shadow: none;
+      color: var(--fomio-on-primary);
+      padding: 12px 18px;
+      font-family: var(--fomio-font-ui, inherit);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-decoration: none;
+      transition:
+        opacity 0.14s ease,
+        transform 0.1s ease,
+        background-color 0.14s ease;
+
+      .d-icon,
+      .d-button-label {
+        color: inherit;
+      }
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      border: none;
+      background: var(--fomio-primary);
+      color: var(--fomio-on-primary);
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      opacity: 0.86;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Native select-kit dropdown menus: borderless filled list treatment.
+body .select-kit.dropdown-select-box .select-kit-body {
+  border: none !important;
+  border-radius: 8px !important;
+  background-color: var(--fomio-card) !important;
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--fomio-shadow) 50%, transparent) !important;
+  padding: 6px !important;
+  overflow: hidden;
+}
+
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row {
+  margin: 0 !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row:hover,
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-highlighted {
+  background-color: color-mix(in oklab, var(--fomio-surface) 90%, var(--fomio-card)) !important;
+}
+
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected {
+  background-color: var(--fomio-active-wash) !important;
+  color: var(--fomio-primary-dark) !important;
+}
+
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected .name,
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected .texts,
+body .select-kit.dropdown-select-box .select-kit-body .select-kit-collection .select-kit-row.is-selected .d-icon {
+  color: var(--fomio-primary-dark) !important;
+}
+
+// Final guard: the Fomio messages shell owns message creation actions.
+// Discourse can still render the native secondary "New Message" action after
+// the custom shell; keep it suppressed in all profile surface modes.
+body.user-messages-page.fomio-messages-mode #main-outlet .user-main #new-private-message-btn,
+body.user-messages-page.fomio-messages-mode #main-outlet .user-main .btn.new-private-message {
+  display: none !important;
+  visibility: hidden !important;
+}

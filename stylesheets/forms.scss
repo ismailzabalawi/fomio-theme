@@ -1,0 +1,211 @@
+// ============================================================
+// FOMIO FORM & FEEDBACK PRIMITIVES
+// Layer 1 (Controls) + Layer 2 (Content) + Layer 3 (Feedback) —
+// switch toggle, icon pill, loading spinner. Ported from the
+// account preferences screen audit; tones bind to semantic tokens
+// so dark/amoled flow from Section 1B overrides.
+// ============================================================
+
+// ── Switch (Layer 1) ──────────────────────────────────────
+.fomio-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  opacity: 1;
+  transition: opacity var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--fomio-primary-soft);
+    border-radius: var(--fomio-radius-sm);
+  }
+}
+
+.fomio-switch__track {
+  position: absolute;
+  inset: 0;
+  background: var(--fomio-border-soft);
+  border-radius: var(--fomio-radius-pill);
+  transition: background var(--fomio-dur-med) var(--fomio-ease);
+}
+
+.fomio-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--fomio-card);
+  border-radius: var(--fomio-radius-pill);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+  transition: transform var(--fomio-dur-med) var(--fomio-ease);
+}
+
+.fomio-switch--on .fomio-switch__track {
+  background: var(--fomio-primary);
+}
+
+.fomio-switch--on .fomio-switch__thumb {
+  transform: translateX(20px);
+}
+
+// ── Icon Pill (Layer 2) ───────────────────────────────────
+.fomio-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--fomio-radius-md);
+  background: var(--fomio-surface);
+  color: var(--fomio-muted);
+  flex-shrink: 0;
+
+  .d-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.fomio-icon-pill--sm {
+  width: 24px;
+  height: 24px;
+
+  .d-icon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.fomio-icon-pill--lg {
+  width: 40px;
+  height: 40px;
+
+  .d-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.fomio-icon-pill--accent {
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary);
+}
+
+.fomio-icon-pill--danger {
+  background: color-mix(in oklab, var(--fomio-danger) 12%, var(--fomio-card));
+  color: var(--fomio-danger);
+}
+
+.fomio-icon-pill--info {
+  background: color-mix(in oklab, var(--fomio-info) 12%, var(--fomio-card));
+  color: var(--fomio-info);
+}
+
+.fomio-icon-pill--success {
+  background: color-mix(in oklab, var(--fomio-success) 12%, var(--fomio-card));
+  color: var(--fomio-success);
+}
+
+.fomio-icon-pill--warning {
+  background: color-mix(in oklab, var(--fomio-warning) 12%, var(--fomio-card));
+  color: var(--fomio-warning);
+}
+
+// ── Loading Spinner (Layer 3) ─────────────────────────────
+.fomio-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+}
+
+.fomio-spinner__svg {
+  width: 100%;
+  height: 100%;
+  animation: fomio-spinner-rotate var(--fomio-dur-slow) linear infinite;
+}
+
+.fomio-spinner__circle {
+  stroke: currentColor;
+  animation: fomio-spinner-dash var(--fomio-dur-slow) ease-in-out infinite;
+}
+
+.fomio-spinner--sm {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.fomio-spinner--md {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.fomio-spinner--lg {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+}
+
+.fomio-spinner--accent {
+  color: var(--fomio-primary);
+}
+
+.fomio-spinner--danger {
+  color: var(--fomio-danger);
+}
+
+.fomio-spinner--info {
+  color: var(--fomio-info);
+}
+
+.fomio-spinner--success {
+  color: var(--fomio-success);
+}
+
+.fomio-spinner--warning {
+  color: var(--fomio-warning);
+}
+
+@keyframes fomio-spinner-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fomio-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}

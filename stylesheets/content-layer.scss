@@ -1,0 +1,883 @@
+// ============================================================
+// CONTENT LAYER  (Fomio Design System — Content Layer handoff, 2026-05)
+// §A  Byte card  ·  §B  Hero block  ·  §C  Hub / Teret list
+// ============================================================
+
+
+// ── §A. BYTE CARD ─────────────────────────────────────────────────────────
+// The canonical post card. Three display modes from one component:
+//   .byte                — standard: body + right thumbnail
+//   .byte--feature       — editorial hero: full-bleed image, body below
+//   .byte--no-thumb      — text-only: body fills full width
+//   .byte--compact       — compact row: teret | title+meta | timestamp
+//
+// Wrap each card (or list of cards) in .byte-slot to enable container queries.
+
+.byte-slot { container-type: inline-size; }
+
+.byte {
+  --byte-pad: 24px;
+  --byte-gap: 20px;
+  --byte-thumb-w: 180px;
+  --byte-thumb-h: 140px;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr var(--byte-thumb-w);
+  gap: var(--byte-gap);
+  align-items: start;
+
+  background: var(--fomio-card);
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-card);
+  padding: var(--byte-pad);
+
+  font-family: var(--fomio-sans);
+  color: var(--fomio-fg);
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    transform var(--fomio-dur-med) var(--fomio-ease),
+    box-shadow var(--fomio-dur-med) var(--fomio-ease);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--fomio-shadow-lift);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--fomio-primary);
+  }
+
+  &.is-active {
+    background: var(--fomio-active-wash);
+  }
+}
+
+.byte--no-thumb { grid-template-columns: 1fr; }
+
+.byte--compact {
+  --byte-pad: 14px 18px;
+  --byte-gap: 14px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+
+  .byte__body > .byte__excerpt,
+  .byte__hero { display: none; }
+}
+
+.byte--feature {
+  --byte-pad: 0;
+  grid-template-columns: 1fr;
+  gap: 0;
+  overflow: hidden;
+
+  .byte__hero {
+    width: 100%;
+    height: 220px;
+    border-radius: 0;
+  }
+
+  .byte__body { padding: 24px 28px 22px; }
+
+  .byte__title {
+    font-size: 28px;
+    -webkit-line-clamp: 3;
+  }
+
+  .byte__excerpt {
+    font-size: 16px;
+    -webkit-line-clamp: 3;
+  }
+}
+
+// ── Sub-elements ───────────────────────────────────────────────
+
+.byte__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.byte__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 11px;
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.byte__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-fg-muted);
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.byte__teret {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--fomio-radius-pill);
+  background: var(--fomio-primary-soft);
+  color: var(--fomio-primary-dark);
+  font-family: var(--fomio-sans);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.byte__pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fomio-fg-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.byte__title {
+  font-family: var(--fomio-serif);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.016em;
+  color: var(--fomio-fg);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-wrap: balance;
+}
+
+.byte__excerpt {
+  font-family: var(--fomio-serif);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fomio-fg-secondary);
+  margin: 7px 0 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-wrap: pretty;
+}
+
+.byte__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--fomio-space-md);
+  margin-top: auto;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.byte__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--fomio-fg-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.byte__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fomio-sans);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #D6C9A8;
+  color: #5C4A1E;
+
+  &--b { background: #B8C7B0; color: #35472B; }
+  &--c { background: #C9BBD4; color: #4B3566; }
+  &--d { background: #E8C7B8; color: #7A3A27; }
+}
+
+.byte__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--fomio-fg-muted);
+  font-variant-numeric: tabular-nums;
+
+  svg {
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+}
+
+.byte__sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fomio-fg-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.byte__time { color: var(--fomio-fg-muted); }
+
+.byte__unread {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fomio-primary);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.byte.is-unread {
+  .byte__title {
+    font-weight: 700;
+  }
+
+  .byte__teret::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--fomio-primary);
+    margin-right: 1px;
+  }
+}
+
+.byte__hero {
+  width: var(--byte-thumb-w);
+  height: var(--byte-thumb-h);
+  border-radius: var(--fomio-radius-md);
+  background: var(--fomio-surface);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+
+  img,
+  .byte__placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .byte__placeholder {
+    background:
+      repeating-linear-gradient(135deg, var(--fomio-hatch) 0 8px, transparent 8px 16px),
+      var(--fomio-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--fomio-mono);
+    font-size: 10px;
+    color: var(--fomio-fg-muted);
+    letter-spacing: 0.04em;
+  }
+}
+
+// ── Compact variant adjustments ────────────────────────────────
+
+.byte--compact {
+  .byte__title {
+    font-size: 16px;
+    -webkit-line-clamp: 1;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .byte__body {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .byte__meta { margin: 0; flex-wrap: nowrap; }
+
+  .byte__footer {
+    margin: 0;
+    gap: 12px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .byte__author { font-size: 12px; }
+  .byte__avatar { width: 20px; height: 20px; font-size: 9px; }
+}
+
+// ── Container query breakpoints ────────────────────────────────
+
+@container (max-width: 620px) {
+  .byte:not(.byte--feature):not(.byte--compact) {
+    --byte-thumb-w: 120px;
+    --byte-thumb-h: 110px;
+    --byte-pad: 20px;
+    --byte-gap: 16px;
+
+    .byte__title { font-size: 19px; }
+    .byte__excerpt { -webkit-line-clamp: 2; font-size: 14.5px; }
+  }
+}
+
+@container (max-width: 460px) {
+  .byte:not(.byte--feature):not(.byte--compact) {
+    grid-template-columns: 1fr;
+    --byte-pad: 18px;
+    --byte-gap: 14px;
+
+    .byte__hero {
+      order: -1;
+      width: 100%;
+      height: 180px;
+      border-radius: var(--fomio-radius-md);
+    }
+
+    .byte__title { font-size: 20px; }
+    .byte__excerpt { display: none; }
+    .byte__footer { gap: 10px; font-size: 12px; }
+  }
+
+  .byte--feature {
+    .byte__hero { height: 160px; }
+    .byte__body { padding: 18px 18px 16px; }
+    .byte__title { font-size: 22px; }
+    .byte__excerpt { font-size: 14.5px; -webkit-line-clamp: 2; }
+  }
+
+  .byte--compact { --byte-pad: 12px 14px; }
+}
+
+
+
+// ============================================================
+// LAYER 3 CONSUMPTION BRIDGE
+// Canonical byte-card ownership for discovery + suggested lists.
+// Keep /categories on its existing hub-card grid.
+// ============================================================
+
+.topic-list-item.--fomio-discovery-item td.main-link,
+.topic-list-item.--fomio-fresh-byte-item td.main-link,
+.topic-list-item.--fomio-activity-topics-card td.main-link {
+  display: block !important;
+  grid-template-areas: none !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item td.main-link:focus-within,
+.topic-list-item.--fomio-fresh-byte-item td.main-link:focus-within,
+.topic-list-item.--fomio-activity-topics-card td.main-link:focus-within,
+.topic-list-item.--fomio-discovery-item:hover td.main-link,
+.topic-list-item.--fomio-fresh-byte-item:hover td.main-link,
+.topic-list-item.--fomio-activity-topics-card:hover td.main-link {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item .link-top-line,
+.topic-list-item.--fomio-activity-topics-card .link-top-line,
+.topic-list-item.--fomio-fresh-byte-item .link-top-line,
+.topic-list-item.--fomio-discovery-item .link-bottom-line,
+.topic-list-item.--fomio-activity-topics-card .link-bottom-line,
+.topic-list-item.--fomio-fresh-byte-item .link-bottom-line,
+.topic-list-item.--fomio-discovery-item .main-link > .topic-excerpt,
+.topic-list-item.--fomio-activity-topics-card .main-link > .topic-excerpt,
+.topic-list-item.--fomio-fresh-byte-item .main-link > .topic-excerpt {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link,
+.topic-list-item.--fomio-activity-topics-card .main-link,
+.topic-list-item.--fomio-fresh-byte-item .main-link {
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte-slot,
+.topic-list-item.--fomio-activity-topics-card .byte-slot,
+.topic-list-item.--fomio-fresh-byte-item .byte-slot {
+  display: block;
+  width: 100%;
+}
+
+.topic-list-item.--fomio-discovery-item .byte.fomio-topic-context,
+.topic-list-item.--fomio-activity-topics-card .byte.fomio-topic-context,
+.topic-list-item.--fomio-fresh-byte-item .byte.fomio-topic-context {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__meta.fomio-topic-context__meta,
+.topic-list-item.--fomio-activity-topics-card .byte__meta.fomio-topic-context__meta,
+.topic-list-item.--fomio-fresh-byte-item .byte__meta.fomio-topic-context__meta,
+.topic-list-item.--fomio-discovery-item .byte__excerpt.fomio-topic-context__text,
+.topic-list-item.--fomio-activity-topics-card .byte__excerpt.fomio-topic-context__text,
+.topic-list-item.--fomio-fresh-byte-item .byte__excerpt.fomio-topic-context__text,
+.topic-list-item.--fomio-discovery-item .byte__footer.fomio-topic-context__footer,
+.topic-list-item.--fomio-activity-topics-card .byte__footer.fomio-topic-context__footer,
+.topic-list-item.--fomio-fresh-byte-item .byte__footer.fomio-topic-context__footer,
+.topic-list-item.--fomio-discovery-item .byte__hero.fomio-topic-context__thumb,
+.topic-list-item.--fomio-activity-topics-card .byte__hero.fomio-topic-context__thumb,
+.topic-list-item.--fomio-fresh-byte-item .byte__hero.fomio-topic-context__thumb {
+  grid-area: auto !important;
+  padding: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__title,
+.topic-list-item.--fomio-activity-topics-card .byte__title,
+.topic-list-item.--fomio-fresh-byte-item .byte__title {
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author,
+.topic-list-item.--fomio-activity-topics-card .byte__author,
+.topic-list-item.--fomio-fresh-byte-item .byte__author {
+  text-decoration: none;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author .fomio-identity__meta,
+.topic-list-item.--fomio-activity-topics-card .byte__author .fomio-identity__meta,
+.topic-list-item.--fomio-fresh-byte-item .byte__author .fomio-identity__meta {
+  gap: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author .fomio-identity__name,
+.topic-list-item.--fomio-activity-topics-card .byte__author .fomio-identity__name,
+.topic-list-item.--fomio-fresh-byte-item .byte__author .fomio-identity__name {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.topic-list-item.--fomio-discovery-item .byte__author .fomio-avatar,
+.topic-list-item.--fomio-activity-topics-card .byte__author .fomio-avatar,
+.topic-list-item.--fomio-fresh-byte-item .byte__author .fomio-avatar {
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte {
+  --byte-pad: 0;
+  grid-template-columns: 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__hero {
+  width: 100%;
+  height: 220px;
+  border-radius: 0;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__body {
+  padding: 24px 28px 22px;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__title {
+  font-size: 28px;
+  -webkit-line-clamp: 3;
+}
+
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.byte__hero)
+  .byte__excerpt {
+  font-size: 16px;
+  -webkit-line-clamp: 3;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte {
+  --byte-pad: 14px 18px;
+  --byte-gap: 14px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__body {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__title {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: -0.005em;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__meta {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__excerpt,
+.topic-list-item.--fomio-fresh-byte-item .byte__hero,
+.topic-list-item.--fomio-fresh-byte-item .byte__author,
+.topic-list-item.--fomio-fresh-byte-item .byte__sep,
+.topic-list-item.--fomio-fresh-byte-item .byte__pin,
+.topic-list-item.--fomio-fresh-byte-item .byte__read-time,
+.topic-list-item.--fomio-fresh-byte-item .byte__dot,
+.topic-list-item.--fomio-fresh-byte-item .byte__unread {
+  display: none !important;
+}
+
+.topic-list-item.--fomio-fresh-byte-item .byte__footer {
+  margin: 0;
+  gap: 12px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.topic-list-item.--fomio-activity-topics-card .byte {
+  --byte-pad: 18px 20px;
+  --byte-gap: 18px;
+  --byte-thumb-w: clamp(132px, 22vw, 176px);
+  --byte-thumb-h: clamp(108px, 17vw, 140px);
+}
+
+.topic-list-item.--fomio-activity-topics-card .byte__body {
+  gap: 10px;
+  align-self: start;
+}
+
+.topic-list-item.--fomio-activity-topics-card .byte__meta {
+  margin-bottom: 2px;
+}
+
+.topic-list-item.--fomio-activity-topics-card .byte__title {
+  font-size: clamp(1.5rem, 1.22rem + 0.55vw, 1.95rem);
+  line-height: 1.18;
+  -webkit-line-clamp: 3;
+  text-wrap: pretty;
+}
+
+.topic-list-item.--fomio-activity-topics-card .byte__excerpt {
+  margin-top: 0;
+  -webkit-line-clamp: 3;
+}
+
+.topic-list-item.--fomio-activity-topics-card .byte__footer {
+  margin-top: 0;
+}
+
+@container (max-width: 520px) {
+  .topic-list-item.--fomio-activity-topics-card .byte {
+    --byte-pad: 16px 18px;
+    --byte-gap: 14px;
+    --byte-thumb-w: 112px;
+    --byte-thumb-h: 104px;
+  }
+
+  .topic-list-item.--fomio-activity-topics-card .byte__title {
+    font-size: 1.24rem;
+  }
+
+  .topic-list-item.--fomio-activity-topics-card .byte__excerpt {
+    -webkit-line-clamp: 2;
+  }
+}
+
+
+// ── §B. HERO BLOCK ────────────────────────────────────────────────────────
+// Full-bleed editorial image header with overlay gradient and text.
+// Use .fomio-hero-block--hub for hub splash (240px instead of 400px).
+
+.fomio-hero-block {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: var(--fomio-radius-card);
+  overflow: hidden;
+  background: var(--fomio-surface);
+  display: flex;
+  align-items: flex-end;
+}
+
+.fomio-hero-block__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fomio-hero-block__placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(135deg, rgba(26,26,26,0.045) 0 10px, transparent 10px 20px),
+    linear-gradient(175deg, var(--fomio-surface) 0%, color-mix(in oklab, var(--fomio-surface) 50%, var(--fomio-fg)) 100%);
+}
+
+.fomio-hero-block__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12,9,6,0.86) 0%, rgba(12,9,6,0.28) 52%, transparent 100%);
+}
+
+.fomio-hero-block__content {
+  position: relative;
+  z-index: 1;
+  padding: 28px 32px 32px;
+  width: 100%;
+  max-width: 680px;
+}
+
+.fomio-hero-block__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  margin-bottom: 12px;
+  background: rgba(196, 69, 54, 0.92);
+  color: #fff;
+  border-radius: var(--fomio-radius-pill);
+  font-family: var(--fomio-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fomio-hero-block__title {
+  font-family: var(--fomio-serif);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 12px;
+  text-wrap: balance;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.28);
+}
+
+.fomio-hero-block__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fomio-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.68);
+  letter-spacing: 0.01em;
+
+  .sep { opacity: 0.45; }
+}
+
+.fomio-hero-block__author {
+  color: rgba(255,255,255,0.92);
+  font-weight: 600;
+}
+
+// Hub splash variant
+.fomio-hero-block--hub {
+  height: 240px;
+
+  .fomio-hero-block__title { font-size: 1.75rem; }
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 860px) {
+  .fomio-hero-block { height: 320px; }
+}
+
+@media (max-width: 640px) {
+  .fomio-hero-block { height: 240px; }
+  .fomio-hero-block--hub { height: 160px; }
+  .fomio-hero-block__content { padding: 18px 18px 22px; }
+  .fomio-hero-block__title { font-size: 1.35rem !important; }
+  .fomio-hero-block__eyebrow { margin-bottom: 8px; }
+  .fomio-hero-block__meta { font-size: 12px; gap: 7px; }
+}
+
+
+// ── §C. HUB / TERET LIST ──────────────────────────────────────────────────
+// Hub-with-teret-rows pattern: a hub header + inline teret listing in one card.
+// Distinct from the grid card variant (.fomio-hub-card) used on the /categories page.
+//
+// Structure:
+//   .fomio-hub-card
+//     .fomio-hub-header
+//       .fomio-hub-header__left
+//         .fomio-hub-dot
+//         div > .fomio-hub-name + .fomio-hub-desc
+//     .fomio-hub-total
+//     .fomio-teret-list
+//       a.fomio-teret-row[data-unread]
+//         .fomio-teret-dot
+//         .fomio-teret-name
+//         .fomio-teret-count
+//         .fomio-teret-time
+
+.fomio-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 16px;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  gap: 12px;
+}
+
+.fomio-hub-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.fomio-hub-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.fomio-hub-name {
+  font-family: var(--fomio-serif);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--fomio-fg);
+}
+
+.fomio-hub-desc {
+  font-family: var(--fomio-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fomio-fg-muted);
+  letter-spacing: 0.01em;
+}
+
+.fomio-hub-total {
+  font-family: var(--fomio-mono);
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.fomio-teret-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fomio-teret-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 22px;
+  font-family: var(--fomio-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fomio-fg);
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  transition: background var(--fomio-dur-fast) var(--fomio-ease);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--fomio-surface); }
+}
+
+.fomio-teret-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fomio-teret-name {
+  font-weight: 600;
+  color: var(--fomio-fg);
+}
+
+.fomio-teret-count {
+  font-family: var(--fomio-mono);
+  font-size: 12.5px;
+  color: var(--fomio-fg-muted);
+  text-align: right;
+}
+
+.fomio-teret-time {
+  font-family: var(--fomio-sans);
+  font-size: 12px;
+  color: var(--fomio-fg-muted);
+  font-style: italic;
+  white-space: nowrap;
+}
+
+// Unread indicator — terracotta dot before teret name
+.fomio-teret-row[data-unread="true"] .fomio-teret-name::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fomio-primary);
+  margin-right: 7px;
+  vertical-align: 1px;
+}
+
+// ── Bookmarks Page Search ───────────────────────────────────────
+
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .fomio-hub-header {
+    padding: 14px 16px 12px;
+
+    .fomio-hub-desc { display: none; }
+  }
+
+  .fomio-teret-row {
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    padding: 11px 16px;
+  }
+
+  .fomio-teret-time { display: none; }
+}

@@ -1,0 +1,132 @@
+// ============================================================
+// PHASE 3B — EDITORIAL FEED
+// /latest as a readable stream of Bytes, not a forum table.
+// ============================================================
+
+// ── Table header — forum chrome, not editorial ────────────────
+.topic-list.--fomio-discovery-list .topic-list-header {
+  display: none;
+}
+
+// ── Link-bottom-line — Discourse's native tag/category chips ──
+// The fomio-topic-context connector (topic-list-main-link-bottom) replaces
+// these with author + date + excerpt. Hide the Discourse originals.
+.topic-list-item.--fomio-discovery-item .link-bottom-line {
+  display: none;
+}
+
+// Pinned topics can render Discourse's native expanded excerpt directly inside
+// .main-link. The Fomio card owns excerpt placement, so hide the native copy
+// and keep a single themed excerpt inside fomio-topic-context.
+.topic-list-item.--fomio-discovery-item .main-link > .topic-excerpt {
+  display: none;
+}
+
+// ── Stretched-link — whole entry surface is clickable ─────────
+// Same pattern as the onebox card. The main-link td establishes
+// the stacking context; the title anchor covers it; the author
+// link inside fomio-topic-context stays above via z-index: 1.
+.topic-list-item.--fomio-discovery-item td.main-link {
+  position: relative;
+}
+
+.topic-list-item.--fomio-discovery-item .main-link a.title::after,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.topic-list-item.--fomio-discovery-item .fomio-topic-context {
+  position: relative;
+  z-index: 1; // stays above the stretched-link overlay
+}
+
+// ── Focus-visible for keyboard navigation ─────────────────────
+.topic-list-item.--fomio-discovery-item .main-link a.title:focus-visible::after,
+.topic-list-item.--fomio-discovery-item .main-link .raw-topic-link:focus-visible::after {
+  outline: 2px solid var(--fomio-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+// ── Touch active state ────────────────────────────────────────
+@media (hover: none) and (pointer: coarse) {
+  .topic-list-item.--fomio-discovery-item:active td {
+    background: color-mix(in srgb, var(--fomio-surface) 60%, transparent 40%);
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+
+
+// ============================================================
+// PHASE 3B.1 — FEED REFINEMENT
+// Separator removal, width alignment, preview hierarchy.
+// ============================================================
+
+// ── Last-visit separator — pure Discourse chrome ──────────────
+.topic-list .topic-list-item-separator {
+  display: none;
+}
+
+// ── Feed max-width + top spacing ─────────────────────────────
+// max-width aligns feed with the reading column.
+// margin-top clears space above the discovery stream.
+.navigation-topics #list-area,
+.navigation-categories #list-area,
+.navigation-category #list-area {
+  max-width: var(--fomio-column-w);
+  margin-top: 2rem;
+}
+
+// ── Title → meta gap — breathe before the byline ─────────────
+.topic-list-item.--fomio-discovery-item .link-top-line {
+  margin-bottom: 0.65rem;
+}
+
+// ── Non-lead titles — recede gently into the stream ──────────
+// The lead item is the anchor. The rest flow. 0.92 is imperceptible
+// consciously but registers as hierarchy subliminally.
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:not(:first-of-type) {
+
+  .main-link a.title,
+  .main-link .raw-topic-link {
+    opacity: 0.92;
+  }
+}
+
+// ── Lead item — first entry gets slightly more presence ──────
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image) {
+
+  .main-link a.title,
+  .main-link .raw-topic-link {
+    font-size: clamp(1.4rem, 1.25rem + 0.65vw, 1.85rem);
+  }
+
+  .fomio-topic-context__excerpt {
+    -webkit-line-clamp: 3; // lead item shows one extra line of preview
+  }
+
+  .fomio-topic-context__thumb {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+
+// ── Lead item — extra bottom clearance ───────────────────────
+// The item is larger; give it proportionally more space below.
+.topic-list.--fomio-discovery-list
+  .topic-list-item.--fomio-discovery-item:first-of-type:has(.fomio-topic-context--has-image) td {
+  padding-bottom: 2rem;
+}
+
+// ── Thumbnail aspect-ratio guard ──────────────────────────────
+// width + height + object-fit already enforce the square. aspect-ratio
+// adds an explicit contract so the shape survives any cascade override.
+.fomio-topic-context__thumb {
+  aspect-ratio: 1 / 1;
+}

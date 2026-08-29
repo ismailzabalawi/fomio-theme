@@ -1,0 +1,704 @@
+// =========================================================================
+// Restored: User profile · Summary detail surface (editorial design)
+// Recovered from committed main; pairs with fomio-top-terets.gjs.
+// See CLAUDE.md "Profile / Me — Editorial Panels".
+// =========================================================================
+// ── User profile · Summary detail surface ──────────────────────────────
+// Editorial glass redesign: translucent section cards over a warm canvas,
+// Lora serif headings, sans tabular numerals for stat values. Per-stat
+// hooks use core's stable `stats-*` li classes and the `.user-stat`
+// value/label markup (verified against discourse templates/user/summary.gjs
+// and ui-kit/d-user-stat.gjs). The editorial hero has been removed; the
+// native Discourse profile header carries identity on the Summary tab.
+
+// Hide the native "Top Categories" count table on every surface — the custom
+// "Top terets" bar chart (connectors/below-user-summary-stats/fomio-top-terets.gjs)
+// replaces it. Surface-independent (not gated on .fomio-sidebar-active) and
+// targets the inner .summary-category-list so it can never leak through.
+body.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-categories-section,
+  #main-outlet .user-main #user-content .summary-category-list {
+    display: none;
+  }
+}
+
+body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
+  // Flat, border-first surfaces wired straight to the Discourse colour scheme
+  // (--fomio-* tokens are generated into color_definitions.scss from the active
+  // scheme and are admin-editable). No translucent glass, no gradient — solid
+  // card + hairline borders, matching the prototype.
+  --fomio-summary-glass: var(--fomio-card);
+  --fomio-summary-tile: var(--fomio-card);
+  --fomio-summary-tile-hover: var(--fomio-surface);
+  --fomio-summary-hairline: var(--fomio-border);
+  --fomio-summary-hairline-soft: var(--fomio-border-soft);
+  --fomio-summary-card-shadow: none;
+  --fomio-summary-tile-shadow-hover: none;
+
+  // Stat numerals lead with the platform UI face (San Francisco on Apple
+  // hardware) and fall back to the brand sans stack.
+  --fomio-summary-numeral-font: -apple-system, "SF Pro Display", "Inter",
+    var(--fomio-font-ui);
+
+  #main-outlet .user-main {
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background: var(--fomio-bg);
+  }
+
+  #main-outlet .user-main #user-content.user-content {
+    margin-top: 16px;
+    padding: 0;
+    background: transparent;
+  }
+
+  // The hero already surfaces bytes / replies / received / given, so hide those
+  // duplicates from the native stats grid. We also trim recent-read and
+  // bookmarks so the grid reads as exactly the prototype's four "reading &
+  // engagement" tiles: days visited, posts read, topics entered, time read.
+  // (Remove the recent-read / bookmark-count lines below to restore them.)
+  #main-outlet .user-main #user-content .stats-section li.stats-topic-count,
+  #main-outlet .user-main #user-content .stats-section li.stats-post-count,
+  #main-outlet .user-main #user-content .stats-section li.stats-likes-given,
+  #main-outlet .user-main #user-content .stats-section li.stats-likes-received,
+  #main-outlet .user-main #user-content .stats-section li.stats-recent-read,
+  #main-outlet .user-main #user-content .stats-section li.stats-bookmark-count {
+    display: none;
+  }
+
+  // The custom "Top terets" bar chart (connectors/below-user-summary-stats/
+  // fomio-top-terets.gjs) replaces the native category count table.
+  #main-outlet .user-main #user-content .top-categories-section {
+    display: none;
+  }
+
+  // Flat, boxless section — sits directly on the page like the editorial list.
+  .fomio-top-terets {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .fomio-top-terets__title {
+    margin: 0 0 14px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+  }
+
+  .fomio-top-terets__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fomio-top-terets__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fomio-top-terets__tag {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--fomio-radius-pill);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .fomio-top-terets__track {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--fomio-surface);
+    overflow: hidden;
+  }
+
+  .fomio-top-terets__bar {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 3px;
+    opacity: 0.65;
+  }
+
+  .fomio-top-terets__count {
+    flex: none;
+    min-width: 2rem;
+    text-align: right;
+    font-family: var(--fomio-font-mono);
+    font-size: 0.78rem;
+    color: var(--fomio-muted);
+  }
+
+  // Sections stack full-width in a single editorial column, separated by
+  // generous vertical rhythm rather than sitting in a two-up card grid.
+  #main-outlet .user-main #user-content .top-section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  // Boxless sections: no border, radius, fill, or padding — content sits
+  // directly on the page and is delimited by per-row hairlines instead.
+  #main-outlet .user-main #user-content .stats-section,
+  #main-outlet .user-main #user-content .top-sub-section,
+  #main-outlet .user-main #user-content .top-categories-section,
+  #main-outlet .user-main #user-content .badges-section {
+    min-width: 0;
+    width: auto;
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main #user-content .stats-title,
+  #main-outlet .user-main #user-content .top-sub-section > h2,
+  #main-outlet .user-main #user-content .top-sub-section > h3,
+  #main-outlet .user-main #user-content .top-categories-section > h2,
+  #main-outlet .user-main #user-content .top-categories-section > h3,
+  #main-outlet .user-main #user-content .badges-section > h2,
+  #main-outlet .user-main #user-content .badges-section > h3 {
+    margin: 0 0 14px;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    color: var(--fomio-muted);
+  }
+
+  #main-outlet .user-main #user-content .stats-section ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  // Each stat is a flat row: tracked label on the left, numeral on the right,
+  // delimited by a hairline (DOM order is value → label; row-reverse puts the
+  // label first visually).
+  #main-outlet .user-main #user-content .stats-section .user-stat {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
+    box-sizing: border-box;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li:last-child .user-stat {
+    border-bottom: 0;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .value {
+    font-family: var(--fomio-summary-numeral-font);
+    font-size: clamp(1.2rem, 1.1rem + 0.3vw, 1.45rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--fomio-text);
+  }
+
+  #main-outlet .user-main #user-content .stats-section .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-family: var(--fomio-font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: var(--fomio-muted);
+  }
+
+  #main-outlet .user-main #user-content .stats-section .label .d-icon {
+    font-size: 0.8rem;
+    color: color-mix(in oklab, var(--fomio-primary) 80%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat {
+    padding: 0;
+    overflow: visible;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a {
+    display: block;
+    height: 100%;
+    padding: 0;
+    border-radius: var(--fomio-radius-lg);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a:focus-visible {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 2px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat {
+    transition:
+      transform var(--fomio-dur-med) var(--fomio-ease),
+      border-color var(--fomio-dur-med) var(--fomio-ease),
+      background-color var(--fomio-dur-med) var(--fomio-ease),
+      box-shadow var(--fomio-dur-med) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
+    background: var(--fomio-summary-tile-hover);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul,
+  #main-outlet .user-main #user-content .top-categories-section table,
+  #main-outlet .user-main #user-content .badge-group-list {
+    max-width: 100%;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul,
+  #main-outlet .user-main #user-content .links-section ul,
+  #main-outlet .user-main #user-content .summary-user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // Flat list rows: hairline divider instead of a bordered tile card.
+  #main-outlet .user-main #user-content .top-sub-section li {
+    margin: 0;
+    padding: 14px 0;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
+    background: none;
+    transition: background-color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section li:last-child {
+    border-bottom: 0;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section li:hover {
+    background: var(--fomio-summary-tile-hover);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .topic-title,
+  #main-outlet .user-main #user-content .top-sub-section li > a:first-child {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: clamp(1rem, 0.96rem + 0.18vw, 1.12rem);
+    font-weight: 500;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .topic-info,
+  #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .username,
+  #main-outlet .user-main #user-content .top-sub-section .user-info .user-detail .user-title {
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty {
+    margin: 0;
+    padding: 16px 18px;
+    border-radius: var(--fomio-radius-lg);
+    border: 1px dashed var(--fomio-summary-hairline);
+    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
+    box-sizing: border-box;
+    list-style: none;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty::before,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty::before {
+    content: attr(data-fomio-empty-message);
+    display: block;
+    color: color-mix(in oklab, var(--fomio-ink-muted) 86%, var(--fomio-text));
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.5;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty > *,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty > * {
+    display: none !important;
+  }
+
+  #main-outlet .user-main #user-content .links-section li {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #main-outlet .user-main #user-content .links-section br {
+    display: none;
+  }
+
+  #main-outlet .user-main #user-content .links-section .domain {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 8px;
+    max-width: 100%;
+    min-height: 26px;
+    padding: 0 10px;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 7%, transparent);
+    border: 1px solid color-mix(in oklab, var(--fomio-primary) 16%, transparent);
+    color: var(--fomio-secondary);
+    font-family: var(--fomio-font-ui);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wide);
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #main-outlet .user-main #user-content .links-section .domain::after {
+    content: attr(data-clicks);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6rem;
+    padding: 0 0.35rem;
+    height: 1.35rem;
+    border-radius: var(--fomio-radius-pill);
+    background: color-mix(in oklab, var(--fomio-primary) 12%, transparent);
+    color: var(--fomio-primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .links-section li > a:last-of-type {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.06rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section a,
+  #main-outlet .user-main #user-content .top-categories-section a,
+  #main-outlet .user-main #user-content .badges-section > .more {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .more,
+  #main-outlet .user-main #user-content .badges-section > .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    margin-top: 12px;
+    color: var(--fomio-primary);
+    font-size: var(--fomio-text-sm);
+    font-weight: 700;
+    transition: color var(--fomio-dur-fast) var(--fomio-ease);
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section .more:hover,
+  #main-outlet .user-main #user-content .badges-section > .more:hover {
+    color: var(--fomio-primary-dark);
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section th,
+  #main-outlet .user-main #user-content .top-categories-section td {
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--fomio-summary-hairline-soft);
+    font-family: var(--fomio-font-ui);
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section th {
+    padding-top: 0;
+    color: var(--fomio-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: var(--fomio-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  #main-outlet .user-main #user-content .top-categories-section td.topic-count,
+  #main-outlet .user-main #user-content .top-categories-section td.reply-count {
+    color: var(--fomio-text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list li {
+    height: auto;
+    min-height: 58px;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info .user-detail {
+    min-width: 0;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info .name-line {
+    gap: 6px;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .user-info .name-line > a {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-serif);
+    font-size: 1.02rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  #main-outlet .user-main #user-content .summary-user-list .replies,
+  #main-outlet .user-main #user-content .summary-user-list .likes {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--fomio-primary);
+    font-family: var(--fomio-font-ui);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #main-outlet .user-main #user-content .badge-group-list {
+    gap: 10px;
+  }
+
+  #main-outlet .user-main #user-content .badge-card {
+    border: 1px solid var(--fomio-summary-hairline-soft);
+    border-radius: var(--fomio-radius-card);
+    background: var(--fomio-summary-tile);
+    box-shadow: none;
+  }
+
+  #main-outlet .user-main #user-content .badge-card .badge-link {
+    color: var(--fomio-text);
+    font-weight: 600;
+  }
+
+  #main-outlet .user-main #user-content .badge-card .badge-summary,
+  #main-outlet .user-main #user-content .badge-card .badge-granted {
+    color: color-mix(in oklab, var(--fomio-ink-muted) 88%, var(--fomio-text));
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section > p,
+  #main-outlet .user-main #user-content .badges-section > p,
+  #main-outlet .user-main #user-content .empty-state,
+  #main-outlet .user-main #user-content .alert.alert-info {
+    margin: 0;
+    padding: 16px 18px;
+    border-radius: var(--fomio-radius-lg);
+    border: 1px dashed var(--fomio-summary-hairline);
+    background: color-mix(in oklab, var(--fomio-card) 30%, transparent);
+    box-sizing: border-box;
+    color: var(--fomio-muted);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-sm);
+    line-height: 1.5;
+  }
+
+  #main-outlet .user-main #user-content .empty-state .empty-state__title {
+    color: var(--fomio-text);
+    font-family: var(--fomio-font-ui);
+    font-size: var(--fomio-text-base);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  #main-outlet .user-main #user-content .empty-state .empty-state__container {
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+
+  @media (width <= 900px) {
+    #main-outlet .user-main #user-content .top-section {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #main-outlet .user-main #user-content .stats-section li.linked-stat .user-stat,
+    #main-outlet .user-main #user-content .top-sub-section li,
+    #main-outlet .user-main #user-content .top-sub-section .more,
+    #main-outlet .user-main #user-content .badges-section > .more {
+      transition: none;
+    }
+
+    #main-outlet .user-main #user-content .stats-section li.linked-stat a:hover .user-stat {
+      transform: none;
+    }
+  }
+}
+
+// Desktop summary rhythm: a single editorial column with generous spacing
+// between the stacked list sections.
+body.fomio-sidebar-active.fomio-surface-expanded.user-summary-page:not(.fomio-auth-mode),
+body.fomio-sidebar-active.fomio-surface-compact-desktop.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-section {
+    gap: 36px;
+    margin-bottom: 36px;
+  }
+
+  #main-outlet .user-main #user-content .top-sub-section ul.fomio-summary-empty,
+  #main-outlet .user-main #user-content .badges-section .badge-group-list.fomio-summary-empty,
+  #main-outlet .user-main #user-content .top-sub-section > p,
+  #main-outlet .user-main #user-content .badges-section > p {
+    padding: 12px 14px;
+    border-radius: var(--fomio-radius-md);
+    font-size: 0.83rem;
+  }
+}
+
+// Tablet rail should keep the desktop summary/detail surface instead of
+// collapsing into the narrow mobile-like summary stack.
+body.fomio-sidebar-active.fomio-surface-rail.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content .top-section {
+    gap: 28px;
+    margin-bottom: 28px;
+  }
+}
+
+// Touch: same editorial system, tightened for one-hand reading.
+body.fomio-sidebar-active.fomio-surface-touch.user-summary-page:not(.fomio-auth-mode) {
+  #main-outlet .user-main #user-content.user-content {
+    margin-top: 12px;
+  }
+
+  #main-outlet .user-main #user-content .top-section {
+    gap: 26px;
+    margin-bottom: 26px;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .user-stat {
+    gap: 12px;
+    padding: 13px 0;
+  }
+
+  #main-outlet .user-main #user-content .stats-section .value {
+    font-size: clamp(1.15rem, 4vw, 1.4rem);
+  }
+}
+
+// Dark mode (AMOLED): same flat, border-first surfaces. Colours flow from the
+// dark token values in Section 1B / color_definitions.scss (admin-editable),
+// so the cards track the active Discourse colour scheme automatically.
+html.fomio-color-dark body.fomio-sidebar-active.user-summary-page:not(.fomio-auth-mode) {
+  --fomio-summary-glass: var(--fomio-card);
+  --fomio-summary-tile: var(--fomio-card);
+  --fomio-summary-tile-hover: var(--fomio-surface);
+  --fomio-summary-hairline: var(--fomio-border);
+  --fomio-summary-hairline-soft: var(--fomio-border-soft);
+
+  #main-outlet .user-main {
+    background: var(--fomio-bg);
+  }
+}
+
+
+// ============================================================
+// ACTIVITY PROFILE STRIP  (fomio-activity-profile-strip.gjs)
+// Compact identity header rendered above the user profile header
+// when on any userActivity.* route. Provides author context on
+// deep-link entry without replacing the Discourse profile header.
+// ============================================================
+
+.fomio-activity-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--fomio-border-soft);
+  pointer-events: none; // aria-hidden: decorative context strip only
+}
+
+.fomio-activity-strip__avatar-wrap {
+  display: flex;
+  flex-shrink: 0;
+  // Floating effect: ring of background + shadow lifts the avatar off the page
+  .fomio-avatar {
+    box-shadow: var(--fomio-shadow-avatar);
+    transition: box-shadow var(--fomio-dur-med) var(--fomio-ease);
+  }
+}
+
+.fomio-activity-strip__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fomio-activity-strip__name {
+  font-family: var(--fomio-font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fomio-text);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fomio-activity-strip__handle {
+  font-family: var(--fomio-font-ui);
+  font-size: 0.8125rem;
+  color: var(--fomio-muted);
+  letter-spacing: 0.01em;
+}

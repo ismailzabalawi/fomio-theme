@@ -1,0 +1,84 @@
+// ------------------------------------------------------------
+// 6. BASE — Discourse variable overrides
+// ------------------------------------------------------------
+
+// --d-content-background is bridged HERE, not in color_definitions.scss with
+// the rest of the core bridge.
+//
+// Core declares it in common/foundation/base.scss (`--d-content-background:
+// initial`), which ships in the `common` bundle. The browser loads that AFTER
+// color_definitions, so a declaration there is silently overwritten — the
+// computed value comes back empty and every core surface that reads it
+// (search results, user pages, directory, groups, badges, messages) falls back
+// to transparent instead of the Fomio card colour.
+//
+// This file compiles into the theme's own `common` bundle, which loads after
+// core's, so the declaration survives. It must use `:root` to match core's
+// specificity — `html` is lower and would lose despite loading later.
+:root {
+  --d-content-background: var(--fomio-card);
+}
+
+html {
+  --base-font-size: 16px;
+  --base-line-height: 1.65;
+  --base-font-family: var(--fomio-font-serif);
+}
+
+body {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--base-font-size);
+  line-height: var(--fomio-leading-relaxed);
+  color: var(--fomio-ink);
+  background-color: var(--fomio-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+// ------------------------------------------------------------
+// 7. HEADING SCALE
+// ------------------------------------------------------------
+
+h1 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-3xl);
+  font-weight: 700;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+  color: var(--fomio-ink);
+}
+
+h2 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-2xl);
+  font-weight: 600;
+  line-height: var(--fomio-leading-tight);
+  letter-spacing: var(--fomio-tracking-tight);
+}
+
+h3 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-xl);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+}
+
+h4 {
+  font-family: var(--fomio-font-serif);
+  font-size: var(--fomio-text-lg);
+  font-weight: 600;
+  line-height: var(--fomio-leading-snug);
+}
+
+// h5/h6 — functional, uppercase label style
+h5,
+h6 {
+  font-family: var(--fomio-font-ui);
+  font-size: var(--fomio-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--fomio-tracking-wide);
+  text-transform: uppercase;
+  line-height: var(--fomio-leading-normal);
+  color: var(--fomio-ink-muted);
+}

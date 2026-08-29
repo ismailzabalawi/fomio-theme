@@ -1,0 +1,234 @@
+// ============================================================
+// PHASE 3A — LINK CARD SYSTEM
+// Discourse oneboxes restyled as Fomio reference blocks.
+// OG metadata is fetched server-side by Discourse — we own presentation.
+// ============================================================
+
+.cooked aside.onebox {
+  // ── Reset Discourse's shadow-border system ────────────────────
+  box-shadow: none !important;
+  margin-inline: 0 !important;
+
+  // ── Fomio card shape ──────────────────────────────────────────
+  position: relative; // establishes stacking context for stretched-link
+  border: 1px solid var(--fomio-border);
+  border-radius: var(--fomio-radius-md);
+  padding: 0;
+  background: var(--fomio-card);
+  max-width: var(--fomio-prose-w);
+  margin-block: 1.75em;
+  overflow: hidden;
+  transition: transform 0.12s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px var(--fomio-shadow) !important;
+  }
+
+  // ── Source bar (favicon + domain) ────────────────────────────
+  header.source {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background: var(--fomio-surface);
+    border-bottom: 1px solid var(--fomio-border-soft);
+    margin-bottom: 0; // override Discourse's 1em bottom margin
+
+    img.site-icon {
+      flex: 0 0 auto;
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+    }
+
+    a[href] {
+      font-family: var(--fomio-font-ui);
+      font-size: var(--fomio-text-xs);
+      font-weight: 500; // trust signal — slightly stronger than ambient muted
+      letter-spacing: var(--fomio-tracking-wide);
+      color: var(--fomio-ink-muted);
+      text-decoration: none;
+      position: relative; // stays above the stretched-link overlay
+      z-index: 1;
+    }
+  }
+
+  // ── Card body: grid — text left, thumbnail right ──────────────
+  .onebox-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0 0.85rem;
+    padding: 0.9rem 1rem 1rem;
+    clear: none; // cancel Discourse's clear:both
+
+    h3, h4 {
+      grid-column: 1;
+      grid-row: 1;
+      margin: 0 0 0.3em;
+      font-family: var(--fomio-font-serif);
+      font-size: var(--fomio-text-base);
+      font-weight: 700;
+      line-height: var(--fomio-leading-snug);
+      // Guard against very long titles overflowing the card
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      a[href],
+      a[href]:visited {
+        color: var(--fomio-ink);
+        text-decoration: none;
+
+        // Stretched-link: the entire card surface becomes clickable
+        // via the title anchor. Source bar stays above via z-index:1.
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+        }
+
+        &:hover { color: var(--fomio-primary); }
+      }
+    }
+
+    p {
+      grid-column: 1;
+      grid-row: 2;
+      margin: 0;
+      font-size: var(--fomio-text-sm);
+      line-height: var(--fomio-leading-relaxed);
+      color: var(--fomio-ink-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    // Thumbnail — cancel Discourse float, anchor to grid column 2.
+    // Targets both bare img and .aspect-image wrapper divs.
+    > img:not(.avatar, .emoji),
+    > .aspect-image {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      float: none;
+      width: 4.5rem;
+      height: 4.5rem;
+      max-width: 4.5rem;
+      max-height: 4.5rem;
+      object-fit: cover;
+      border-radius: var(--fomio-radius-sm);
+      margin: 0;
+      overflow: hidden;
+      align-self: start;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        max-width: none;
+        max-height: none;
+        float: none;
+        border-radius: var(--fomio-radius-sm);
+      }
+    }
+
+    // Full-bleed media (Twitter/Instagram images) — span full width
+    .aspect-image-full-size {
+      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 100%;
+      max-height: 220px;
+      overflow: hidden;
+      border-radius: 0;
+      margin: 0.5rem 0 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        max-height: 220px;
+        max-width: none;
+        float: none;
+      }
+    }
+  }
+
+  // Hide Discourse metadata row and attribution — visual noise
+  .onebox-metadata,
+  > article > p.attribution {
+    display: none;
+  }
+
+  // ── Keyboard / focus-visible ──────────────────────────────────
+  // The stretched-link covers the card; give keyboard users a clear ring.
+  .onebox-body h3 a:focus-visible::after,
+  .onebox-body h4 a:focus-visible::after {
+    outline: 2px solid var(--fomio-primary);
+    outline-offset: 3px;
+    border-radius: var(--fomio-radius-md);
+  }
+
+  // ── Long domain guard ─────────────────────────────────────────
+  header.source a[href] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40ch;
+  }
+}
+
+// ── Touch active state (hover: none devices) ──────────────────
+// translateY doesn't fire on tap — give mobile a tactile signal instead.
+@media (hover: none) and (pointer: coarse) {
+  .cooked aside.onebox:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px var(--fomio-shadow) !important;
+  }
+}
+
+// ── Primary reference variant ─────────────────────────────────
+// When a Byte leads with a URL, the link card is the main object.
+// Slightly more prominent: warmer border, larger thumbnail.
+
+[data-post-number="1"] .cooked > aside.onebox:first-child {
+  border-color: color-mix(in srgb, var(--fomio-primary) 18%, var(--fomio-border) 82%);
+  margin-bottom: 2em;
+
+  .onebox-body {
+    padding: 1.1rem 1.15rem 1.2rem;
+
+    h3, h4 {
+      font-size: var(--fomio-text-lg);
+    }
+
+    > img:not(.avatar, .emoji),
+    > .aspect-image {
+      width: 6rem;
+      height: 6rem;
+      max-width: 6rem;
+      max-height: 6rem;
+    }
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+
+html.fomio-color-dark {
+  .cooked aside.onebox {
+    background: var(--fomio-surface);
+    border-color: var(--fomio-border);
+
+    header.source {
+      background: color-mix(in srgb, var(--fomio-surface) 60%, black 40%);
+      border-bottom-color: var(--fomio-border);
+    }
+  }
+
+  [data-post-number="1"] .cooked > aside.onebox:first-child {
+    border-color: color-mix(in srgb, var(--fomio-primary) 30%, var(--fomio-border) 70%);
+  }
+}

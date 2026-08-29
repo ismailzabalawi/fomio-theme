@@ -292,13 +292,31 @@ The surface resolver in `fomio-layout.gjs` handles this dynamically. CSS should 
 
 ## 9. File Assignment Summary
 
+`common/common.scss` is an **import manifest only** — it contains no rules. The
+all-viewport styles live in `stylesheets/*.scss`, which Discourse adds to the
+Sass load path (`Theme#with_scss_load_paths`). Order in the manifest is the
+cascade order; add a partial where its rules should apply and never re-sort the
+list alphabetically.
+
 | What you're styling | File |
 |--------------------|------|
-| Tokens, shared component base styles | `common/common.scss` |
-| Touch shell behavior (bottom bar, safe areas, overlays) | `common/common.scss` under `body.fomio-surface-touch` |
-| Dark mode component overrides | `common/common.scss` under `html.fomio-color-dark` |
-| Sidebar expanded/compact states | `common/common.scss` under surface body classes |
-| Sidebar rail state | `common/common.scss` under `body.fomio-surface-rail` |
+| Design tokens (non-colour) | `stylesheets/tokens.scss` |
+| Colour, elevation, core-variable bridge | `common/color_definitions.scss` — **generated**, edit `scripts/generate-web-colors.js` |
+| Shared component base styles | `stylesheets/ui-library.scss`, `stylesheets/design-system.scss` |
+| A specific screen or feature | the matching `stylesheets/<feature>.scss` |
+| Touch shell behavior (bottom bar, safe areas, overlays) | the owning partial, under `body.fomio-surface-touch` |
+| Anything whose value differs light vs dark | a `dark-light-choose()` token in `color_definitions.scss` — **not** an `html.fomio-color-dark` block |
+| Sidebar expanded/compact states | `stylesheets/sidebar.scss` under surface body classes |
+| Sidebar rail state | `stylesheets/sidebar.scss` under `body.fomio-surface-rail` |
 | Narrow viewport refinements (typography, spacing density) | `mobile/mobile.scss` |
 | Wide viewport layout (reading column, sidebar widths) | `desktop/desktop.scss` |
 | Mid-range tablet overrides (768–1099px) | `desktop/desktop.scss` with `@media` query |
+
+### Dark mode
+
+`color_definitions.scss` is the only theme stylesheet Discourse recompiles per
+colour scheme, so a `dark-light-choose()` token there flips automatically with
+no JavaScript. Do **not** add new `html.fomio-color-dark { … }` blocks: that
+pattern needs `fomio-color-mode.gjs` to mirror the scheme into a class, which is
+a second source of truth for something the stylesheet already knows. The
+remaining blocks are legacy and are being folded into tokens.

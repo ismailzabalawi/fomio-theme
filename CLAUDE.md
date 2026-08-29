@@ -12,6 +12,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Responsive Design Reference** — `apps/web/docs/responsive-design.md` must be read before writing any CSS that targets a screen size, surface mode, or device type. It covers how Discourse delivers stylesheets, the surface model breakpoints, which file owns which styles, SCSS patterns, and anti-patterns.
 
+**Discourse Theming Migration** — `apps/web/docs/discourse-theming-migration.md` records how the theme's colour layer was moved back onto Discourse's colour-scheme system, what Discourse already provides, and the rules for new SCSS. Read it before touching `common/color_definitions.scss`, adding a dark-mode rule, or overriding a core Discourse component.
+
 **Design Philosophy** — `apps/web/docs/design-philosophy.md` must be read before designing or reviewing any screen, component, flow, or AI-assisted draft. It defines the "Read first. Act clearly. Reveal complexity gradually." principles, the 10 design rules, the 6 AI anti-patterns to reject, the state matrix requirement, and the AI-genericness self-check metrics.
 
 Terminology is non-negotiable:
@@ -27,8 +29,8 @@ Terminology is non-negotiable:
 All commands run from the **repo root** (`/fomio/`):
 
 ```bash
-npm run tokens:check   # Verify common.scss tokens are in sync with packages/design-tokens
-npm run tokens:fix     # Auto-sync tokens from packages/design-tokens into common.scss
+npm run tokens:check   # Verify theme tokens are in sync with packages/design-tokens
+npm run tokens:fix     # Regenerate color_definitions.scss + about.json from packages/design-tokens
 
 # Terminology check (run from repo root)
 node apps/mobile/scripts/check-terminology.js
@@ -224,10 +226,14 @@ State lives in **aria attributes** — SCSS keys off them without extra JS class
 
 ### Style Host
 
-All shared component styles are defined in `common.scss`:
-- **Section 1A** — `--fomio-*` tokens (color, typography, spacing)
-- **Section 1B** — Dark mode color overrides
-- **Sections 2–6** — Layer 1, 2, 3 component styles (`.fomio-button`, `.fomio-input`, `.fomio-dropdown`, etc.)
+`common/common.scss` is an **import manifest only** — it holds no rules. Shared
+component styles live in `stylesheets/`:
+- **`stylesheets/tokens.scss`** — non-colour `--fomio-*` tokens (typography, spacing, radii)
+- **`common/color_definitions.scss`** — every colour and elevation token, generated per scheme
+- **`stylesheets/ui-library.scss` / `design-system.scss`** — Layer 1/2/3 components (`.fomio-btn`, `.fomio-input`, `.fomio-dropdown`, …)
+- **`stylesheets/<feature>.scss`** — one partial per screen or feature area
+
+Manifest order is cascade order. Add a partial where its rules should apply; never re-sort alphabetically.
 
 Touch-shell behavior (overlays, safe areas, thumb targets) goes in `common/common.scss` scoped to `body.fomio-surface-touch` — never only in `mobile/mobile.scss`, which is width-gated and misses landscape phones and foldables. Narrow-width density refinements go in `mobile/mobile.scss`. Wide-layout and sidebar refinements go in `desktop/desktop.scss`. See `docs/responsive-design.md` for the full decision tree.
 
@@ -258,14 +264,20 @@ apps/web/
 ├── settings.yml                      # fomio_* settings (fomio_app_url)
 ├── locales/en.yml                    # themePrefix() strings
 ├── common/
-│   ├── common.scss                   # non-colour tokens + all shared styles
-│   ├── color_definitions.scss        # AUTO-GENERATED — per-scheme --fomio-* colours (npm run tokens:fix)
+│   ├── common.scss                   # import manifest only — no rules live here
+│   ├── color_definitions.scss        # AUTO-GENERATED — per-scheme colour + elevation tokens
+│   │                                 #   and the Discourse core-variable bridge (npm run tokens:fix)
 │   ├── embedded.scss                 # Styles for Discourse embed widget (currently empty)
 │   ├── head_tag.html                 # Google Fonts preconnect + stylesheet link
 │   ├── body_tag.html                 # Trust line injection into /user-api-key/new
 │   ├── header.html                   # Shared header injection (all surfaces)
 │   ├── after_header.html             # Shared after-header injection (all surfaces)
 │   └── footer.html                   # Shared footer injection (all surfaces)
+├── stylesheets/                      # All-viewport SCSS partials, imported by common/common.scss
+│   ├── tokens.scss                   # Section 1 — non-colour design tokens
+│   ├── ui-library.scss               # Layer 1/2/3 shared components
+│   ├── design-system.scss            # Canonical buttons & inputs, avatar, comment thread
+│   └── <feature>.scss                # One partial per screen/feature (auth, sidebar, search, …)
 ├── desktop/
 │   ├── desktop.scss                  # Desktop-only styles (768px+)
 │   ├── head_tag.html                 # Desktop-only <head> injections
@@ -427,11 +439,18 @@ The `/user-api-key/new` authorization page is rendered by Rails with `no_ember: 
 
 ## `fomio-color-mode.gjs` — Dark Mode
 
-Discourse ships two color-scheme `<link>` tags (`link.light-scheme`, `link.dark-scheme`) and toggles their `media` attribute to switch modes. This initializer observes those attributes and toggles `html.fomio-color-dark`, letting `common.scss` target dark-mode overrides via `.fomio-color-dark .fomio-*` selectors.
+Discourse ships two color-scheme `<link>` tags (`link.light-scheme`, `link.dark-scheme`) and toggles their `media` attribute to switch modes. This initializer observes those attributes and toggles `html.fomio-color-dark`.
+
+**Do not write new `html.fomio-color-dark` rules.** Anything whose value differs
+between light and dark belongs in `common/color_definitions.scss` as a
+`dark-light-choose()` token — Discourse recompiles that file per scheme, so it
+flips with no JavaScript. This initializer exists only to support the remaining
+legacy blocks (dark-only *compositions* in the sidebar, composer, search and
+bottom-bar chrome) and is deleted once the last one is folded into a token.
 
 ## `about.json` — Discourse Color Schemes
 
-Defines the `Fomio` (light) and `Fomio Dark` color schemes. Discourse maps these to `--d-*` CSS variables site-wide. When changing brand colors, update both `about.json` (for `--d-*` variables used in Discourse core UI) and `common.scss` Section 1 (for `--fomio-*` tokens used in theme SCSS). Run `npm run tokens:check` to verify the theme tokens are in sync with `packages/design-tokens`.
+Defines the `Fomio` (light) and `Fomio Dark` color schemes. Discourse maps these to `--d-*` CSS variables site-wide. When changing brand colors, update both `about.json` (for `--d-*` variables used in Discourse core UI) and `stylesheets/tokens.scss` Section 1 (for non-colour `--fomio-*` tokens). Run `npm run tokens:check` to verify the theme tokens are in sync with `packages/design-tokens`.
 
 ## Auth & Handoff Flow
 
@@ -521,7 +540,8 @@ All deep links are constructed from the `fomio_app_url` theme setting. Never har
 - **No fetch calls** in theme JS — themes are UI-only
 - **`lib/` files are not entry points** — Discourse's theme build only compiles `api-initializers/`, `connectors/`, and `components/` as entry points. Files in `lib/` are never compiled standalone, but CAN be imported via relative path from those compiled files (e.g. `import ext from "../lib/fomio-selection-toolbar-extension"`). Do not import `lib/` files from other `lib/` files.
 - **No hardcoded deep links** — always use `fomio_app_url` setting
-- **No hardcoded hex values** in SCSS — use `--fomio-*` tokens from `common.scss` Section 1
+- **No hardcoded hex values** in SCSS — use `--fomio-*` tokens (`stylesheets/tokens.scss` for non-colour, `common/color_definitions.scss` for colour/elevation)
+- **No new `html.fomio-color-dark` blocks** — light/dark differences belong in a `dark-light-choose()` token in `color_definitions.scss`
 - **No forbidden terminology** in `locales/en.yml` or any component copy
 
 ### Shared Component Rules
@@ -551,7 +571,9 @@ Discourse colour-scheme system:
 
 - **`common/color_definitions.scss`** (auto-generated — do not hand-edit) defines every `--fomio-*` colour. Slot-backed tokens (`--fomio-primary` → `$tertiary`, `--fomio-bg` → `$secondary`, etc.) come from the Discourse colour scheme and are **editable in Admin → Customize → Colors**. The rest use `dark-light-choose(light, dark)` and are synced from the package. Discourse compiles this file once per colour scheme, so light↔dark flips automatically.
 - **`about.json`** `color_schemes` (`Fomio` / `Fomio Dark`) are also generated from the token package — the admin-editable palette + Discourse core chrome.
-- **`common.scss` Section 1** now holds only **non-colour** tokens (fonts, spacing, radii, sizing, motion) plus the derived `--fomio-active-wash`.
+- **`stylesheets/tokens.scss` Section 1** holds only **non-colour** tokens (fonts, spacing, radii, sizing, motion) plus the derived `--fomio-active-wash`.
+- **Neutrals are derived, not hardcoded.** `--fomio-border`, `--fomio-muted`, `--fomio-surface`, `--fomio-card` and friends are computed from the scheme slots with `blend-two-colors()` / `dark-light-diff()`, so an admin editing Admin → Customize → Colors moves the whole theme. The generator verifies each derivation against the canonical token value at build time (`node scripts/generate-web-colors.js --explain`).
+- **Core components are bridged**, not overridden: `color_definitions.scss` re-points `--primary-low`, `--primary-medium`, `--primary-high`, `--primary-very-low` and the shadow tokens at `--fomio-*`, so ~951 core stylesheet references follow the Fomio scale without `!important`. `--d-content-background` is bridged from `stylesheets/base.scss` instead — core declares it in the `common` bundle, which loads *after* `color_definitions`, so a bridge there is silently dead. When adding a bridge, check where core declares the variable and confirm the computed value in a theme preview.
 
 Workflow: edit `packages/design-tokens/tokens.js` → `npm run tokens:fix` regenerates `color_definitions.scss` + `about.json` → `npm run tokens:check` verifies no drift. The generator lives in `scripts/generate-web-colors.js`; web-only dark deltas live in `packages/design-tokens/web.js` (`WEB_DARK_DELTAS`, `WEB_DARK_SELECTION`).
 
@@ -560,18 +582,18 @@ Workflow: edit `packages/design-tokens/tokens.js` → `npm run tokens:fix` regen
 | Primary | `#C44536` terracotta | `--fomio-primary` | `$tertiary` slot |
 | Background | `#F8F7F3` cream | `--fomio-bg` | `$secondary` slot |
 | Text | `#1A1A1A` | `--fomio-text` | `$primary` slot |
-| UI font | Raleway | `--fomio-font-ui` | `common.scss` |
-| Body font | Lora (serif) | `--fomio-font-serif` | `common.scss` |
+| UI font | Raleway | `--fomio-font-ui` | `stylesheets/tokens.scss` |
+| Body font | Lora (serif) | `--fomio-font-serif` | `stylesheets/tokens.scss` |
 
-`common.scss` also has legacy alias variables (`--fomio-ink`, `--fomio-paper`, etc.) that map to the canonical names for backwards compatibility. Use canonical names (`--fomio-text`, `--fomio-bg`) in new code.
+`stylesheets/tokens.scss` also has legacy alias variables (`--fomio-ink`, `--fomio-paper`, etc.) that map to the canonical names for backwards compatibility. Use canonical names (`--fomio-text`, `--fomio-bg`) in new code.
 
-> **Unverified against live Discourse:** the per-scheme compilation of a theme's `color_definitions.scss` (what makes `dark-light-choose` and the light/dark flip work) must be confirmed in a Discourse preview. If `--fomio-*` colours render empty, the file isn't being compiled per scheme — fall back to the `html.fomio-color-dark` class mechanism.
+> **Per-scheme compilation is confirmed in Discourse source** — `Stylesheet::Manager::COLOR_SCHEME_STYLESHEET` (`lib/stylesheet/manager.rb:21`) and `Importer#import_color_definitions` (`lib/stylesheet/importer.rb:128`) compile the theme's `color_definitions.scss` once per colour scheme and append it into core's `:root`. The theme also compiles cleanly against both schemes locally (see the harness in `docs/discourse-theming-migration.md`). It has **not** yet been eyeballed in a live Discourse preview — do that before trusting the visual result.
 
 ### Dark Mode — AMOLED
 
 Web dark is **AMOLED** (`#000000` background, terracotta `#D4604F`), the same baseline as the mobile app — **no longer warm brown**. It is defined by the `Fomio Dark` colour scheme in `about.json` + `color_definitions.scss`, not a hardcoded token block. A few **web-only deltas** diverge from the literal mobile AMOLED for desktop ergonomics: `--fomio-card #141414`, `--fomio-border #2A2A2C`, `--fomio-shadow rgba(0,0,0,0.6)`, and the row `selected #1F1F1F` / `hover #161616` scheme slots.
 
-`fomio-color-mode.gjs` still toggles `html.fomio-color-dark` for **component-level** dark refinements. Those blocks read `--fomio-*` tokens, so they follow the AMOLED palette automatically — scope new component dark overrides under `html.fomio-color-dark`.
+`fomio-color-mode.gjs` still toggles `html.fomio-color-dark`, but **only to support legacy blocks**. Do not scope new dark overrides under it. Anything whose value differs light↔dark is a `dark-light-choose()` token in `color_definitions.scss` — including shadows and elevation, which now live in its "Elevation" group. See `docs/discourse-theming-migration.md`.
 
 ### Responsive Breakpoints
 

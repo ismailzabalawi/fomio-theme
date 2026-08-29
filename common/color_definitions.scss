@@ -7,12 +7,16 @@
 // swaps the stylesheet via the prefers-color-scheme <link> media toggle.
 // That is why --fomio-* colour tokens live here, not in common.scss: this
 // is the only theme stylesheet recompiled per scheme, so dark flows
-// automatically. Slot-backed tokens ($primary, $tertiary, …) are editable
-// in Admin → Customize → Colors; dark-light-choose() tokens are synced.
+// automatically.
+//
+// Every token below is either a Discourse colour-scheme slot or is DERIVED
+// from those slots with Discourse's own SCSS colour functions, so editing
+// Admin → Customize → Colors moves the whole theme — not just the eight
+// brand slots. The only literals left are hues no slot can express.
 // ============================================================
 
 :root {
-  // ── Brand palette — admin-editable (Discourse colour-scheme slots) ──
+  // ── Brand palette — Discourse colour-scheme slots (admin-editable) ──
   --fomio-bg:           #{$secondary};
   --fomio-text:         #{$primary};
   --fomio-primary:      #{$tertiary};
@@ -22,23 +26,41 @@
   --fomio-success:      #{$success};
   --fomio-liked:        #{$love};
 
-  // ── Surfaces & neutrals — synced from @fomio/design-tokens ──
-  --fomio-surface:      #{dark-light-choose(#F2F1EC, #0A0A0A)};
-  --fomio-card:         #{dark-light-choose(#FFFFFF, #141414)};
-  --fomio-foreground:   #{dark-light-choose(#1A1A1A, #F5F5F7)};
-  --fomio-muted:        #{dark-light-choose(#6B6B72, #A1A1AA)};
-  --fomio-secondary:    #{dark-light-choose(#5C5D67, #A1A1AA)};
-  --fomio-border:       #{dark-light-choose(#E3E3E6, #2A2A2C)};
-  --fomio-border-soft:  #{dark-light-choose(rgba(15, 23, 42, 0.08), rgba(255,255,255,0.08))};
+  // ── Surfaces & neutrals — derived from the slots above ──
+  --fomio-surface:      #{dark-light-choose(blend-two-colors($primary, $secondary, 5.1%), blend-two-colors($primary, $secondary, 0.1%))};
+  --fomio-card:         #{dark-light-choose(dark-light-diff($secondary, $primary, 0%, 100%), blend-two-colors($primary, $secondary, 0.6%))};
+  --fomio-foreground:   #{$primary};
+  --fomio-muted:        #{dark-light-choose(blend-two-colors($primary, $secondary, 81.2%), blend-two-colors($primary, $secondary, 41.4%))};
+  --fomio-secondary:    #{dark-light-choose(blend-two-colors($primary, $secondary, 85.8%), blend-two-colors($primary, $secondary, 41.4%))};
+  --fomio-border:       #{dark-light-choose(blend-two-colors($primary, $secondary, 14.3%), blend-two-colors($primary, $secondary, 2.8%))};
+  --fomio-border-soft:  #{rgba($primary, 0.08)};
 
-  // ── Accent / status — synced from @fomio/design-tokens ──
+  // ── Accent / status — derived where a slot exists, else synced ──
   --fomio-accent:       #{dark-light-choose(#1565C0, #42A5F5)};
   --fomio-accent-soft:  #{dark-light-choose(rgba(79,156,249,0.14), rgba(124,196,255,0.18))};
   --fomio-on-accent:    #{dark-light-choose(#FFFFFF, #000000)};
-  --fomio-danger-soft:  #{dark-light-choose(rgba(220,38,38,0.12), rgba(239,68,68,0.16))};
+  --fomio-danger-soft:  #{dark-light-choose(rgba($danger, 0.12), rgba($danger, 0.16))};
   --fomio-warning:      #{dark-light-choose(#F59E0B, #FBBF24)};
   --fomio-info:         #{dark-light-choose(#1565C0, #42A5F5)};
   --fomio-shadow:       #{dark-light-choose(rgba(0,0,0,0.14), rgba(0,0,0,0.6))};
+
+  // ── Elevation — per-scheme shadow recipes (replaces html.fomio-color-dark) ──
+  --fomio-shadow-sm:    #{dark-light-choose(0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.4))};
+  --fomio-shadow-card:  #{dark-light-choose(0 4px 14px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.25))};
+  --fomio-shadow-menu:  #{dark-light-choose((0 16px 56px -10px rgb(0 0 0 / 16%), 0 0 0 1px rgb(0 0 0 / 3%)), (0 16px 56px -10px rgb(0 0 0 / 55%), 0 0 0 1px rgb(255 255 255 / 4%)))};
+  --fomio-shadow-lift:  #{dark-light-choose(0 14px 44px -22px rgba(27, 28, 26, 0.22), 0 14px 44px -22px rgba(0, 0, 0, 0.42))};
+  --fomio-shadow-avatar: #{dark-light-choose((0 0 0 3px var(--fomio-bg), 0 4px 16px var(--fomio-shadow), 0 1px 4px rgba(0, 0, 0, 0.08)), (0 0 0 3px var(--fomio-bg), 0 4px 20px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.32)))};
+  --fomio-border-hover: #{dark-light-choose(color-mix(in oklab, var(--fomio-text) 18%, var(--fomio-border)), color-mix(in oklab, var(--fomio-text) 25%, var(--fomio-border)))};
+  --fomio-hatch:        #{rgba($primary, 0.045)};
+
+  // ── Discourse core bridge — core components inherit the Fomio scale ──
+  --primary-very-low:   var(--fomio-surface);
+  --primary-low:        var(--fomio-border);
+  --primary-400:        var(--fomio-border);
+  --primary-medium:     var(--fomio-muted);
+  --primary-high:       var(--fomio-secondary);
+  --shadow-card:        var(--fomio-shadow-card);
+  --shadow-menu-panel:  var(--fomio-shadow-menu);
 
   // ── Static (mode-independent) ──
   --fomio-hero-overlay: rgba(0,0,0,0.7);
