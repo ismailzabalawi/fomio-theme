@@ -2793,24 +2793,24 @@ body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary {
-    width: auto !important;
+    width: auto;
     margin:
       0
       var(--fomio-activity-mobile-nav-inset)
-      28px !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-bottom: 1px solid var(--fomio-activity-hairline, var(--fomio-border-soft)) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
+      28px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--fomio-activity-hairline, var(--fomio-border-soft));
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   #main-outlet .user-main .new-user-content-wrapper {
     padding:
       14px
       var(--fomio-activity-mobile-nav-inset)
-      max(22px, var(--fomio-safe-bottom, 0px)) !important;
+      max(22px, var(--fomio-safe-bottom, 0px));
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary {
@@ -2835,11 +2835,11 @@ body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav,
   #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
-    display: flex !important;
-    flex: 0 0 auto !important;
-    min-width: 100% !important;
-    max-width: none !important;
-    overflow: visible !important;
+    display: flex;
+    flex: 0 0 auto;
+    min-width: 100%;
+    max-width: none;
+    overflow: visible;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-left,
@@ -2852,21 +2852,21 @@ body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
   #main-outlet .user-main ul.nav-pills.user-nav,
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
-    display: flex !important;
-    flex: 0 0 auto !important;
-    flex-wrap: nowrap !important;
-    align-items: stretch !important;
-    gap: 0 !important;
-    width: max-content !important;
-    min-width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    overflow: visible !important;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
     list-style: none;
     scrollbar-width: none;
   }
@@ -2880,41 +2880,41 @@ body.fomio-surface-touch.fomio-sidebar-active.user-activity-page.fomio-activity-
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li,
   #main-outlet .user-main ul.nav-pills.user-nav > li,
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li {
-    flex: 0 0 auto !important;
-    margin: 0 !important;
+    flex: 0 0 auto;
+    margin: 0;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a,
   #main-outlet .user-main ul.nav-pills.user-nav > li > a,
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0 !important;
-    width: auto !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    padding: 0 16px !important;
-    margin-bottom: -1px !important;
-    border: 0 !important;
-    border-bottom: 2px solid transparent !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    color: var(--fomio-fg-muted) !important;
-    font-family: var(--fomio-sans) !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    letter-spacing: 0 !important;
-    line-height: 1 !important;
-    text-decoration: none !important;
-    white-space: nowrap !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: auto;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 16px;
+    margin-bottom: -1px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--fomio-fg-muted);
+    font-family: var(--fomio-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a::after,
   #main-outlet .user-main ul.nav-pills.user-nav > li > a::after,
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a::after {
-    display: none !important;
+    display: none;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a .d-icon,

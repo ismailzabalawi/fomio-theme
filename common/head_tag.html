@@ -1,4 +1,22 @@
 <!-- If the console shows Permissions-Policy / "browsing-topics": that directive is set on the HTTP response (Discourse core or your reverse proxy), not by this theme. HTML cannot remove response headers; adjust the server/proxy Permissions-Policy if you need to silence unsupported directives in older browsers. -->
+
+<!--
+  FONTS — why this third-party request still exists.
+
+  Discourse self-hosts Lora and Raleway, but only at weights 400 and 700,
+  roman, with no italics. This theme uses 500 in 89 declarations, 600 in 195,
+  and italics in 26. Dropping this link would degrade ~310 declarations to
+  synthesised weights and faux-oblique on a reading-first serif surface, so
+  the CDN request is NOT redundant — do not "optimise" it away without first
+  self-hosting the missing weights as theme assets (about.json `assets`).
+
+  Mono is deliberately absent: --fomio-font-mono uses JetBrains Mono, which
+  Discourse already self-hosts (6 faces, same origin). Nothing to fetch.
+
+  Newsreader was removed 2026-08-29 — it was requested with 5 weight/style
+  combinations on every page load and referenced nowhere in the theme. It came
+  from apps/landing, which does use it.
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">

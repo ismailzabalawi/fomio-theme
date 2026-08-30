@@ -904,7 +904,7 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main .new-user-content-wrapper {
-    display: block !important;
+    display: block;
     width: 100%;
     max-width: min(880px, calc(100vw - 48px));
     height: auto;
@@ -920,12 +920,12 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    display: flex !important;
+    display: flex;
     gap: 0;
     width: 100%;
     max-width: 100%;
     min-height: 0;
-    margin: 0 auto 28px !important;
+    margin: 0 auto 28px;
     padding: 0;
     border: 0;
     border-bottom: 1px solid var(--fomio-activity-hairline);
@@ -941,7 +941,7 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary .horizontal-overflow-nav {
-    display: flex !important;
+    display: flex;
     flex: 0 0 auto;
     min-width: 100%;
     max-width: none;
@@ -951,11 +951,11 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
-    display: flex !important;
+    display: flex;
     flex: 0 0 auto;
-    flex-direction: row !important;
+    flex-direction: row;
     flex-wrap: nowrap;
-    align-items: stretch !important;
+    align-items: stretch;
     gap: 0;
     width: max-content;
     min-width: 100%;
@@ -1034,11 +1034,11 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a .d-icon {
-    display: none !important;
+    display: none;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a span {
-    display: inline !important;
+    display: inline;
     color: inherit;
   }
 
@@ -1327,7 +1327,7 @@ body.user-activity-page.fomio-activity-screen:not(.fomio-auth-mode) {
     tbody
     tr.topic-list-item:has(.fomio-activity-bytes-leading)
     td.main-link {
-    display: grid !important;
+    display: grid;
     grid-template-columns: var(--fomio-activity-icon-size) minmax(0, 1fr);
     column-gap: var(--fomio-activity-row-gap);
     align-items: start;
@@ -1461,7 +1461,7 @@ body.user-activity-page.fomio-activity-screen.fomio-surface-touch:not(.fomio-aut
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary {
-    margin-bottom: 16px !important;
+    margin-bottom: 16px;
     max-width: 100%;
   }
 

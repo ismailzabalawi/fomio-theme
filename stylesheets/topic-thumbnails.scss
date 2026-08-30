@@ -1,0 +1,189 @@
+// ============================================================
+// OFFICIAL TOPIC LIST THUMBNAILS — FOMIO GRID ADOPTION
+// Activates only when the installed component owns the topic list.
+// ============================================================
+
+.topic-list.topic-thumbnails-grid.--fomio-discovery-list {
+  width: 100%;
+  margin: 0;
+  border-spacing: 0;
+
+  .topic-list-body {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+    border: 0;
+  }
+
+  .topic-list-item.--fomio-discovery-item {
+    display: grid;
+    grid-template-areas:
+      "thumbnail"
+      "content";
+    grid-template-rows: minmax(12rem, 1fr) auto;
+    min-width: 0;
+    height: auto;
+    overflow: hidden;
+    background: var(--fomio-card);
+    border: 1px solid var(--fomio-border-soft);
+    border-radius: var(--fomio-radius-card);
+    box-shadow: var(--fomio-shadow-card);
+    transition:
+      border-color var(--fomio-dur-fast) var(--fomio-ease),
+      transform var(--fomio-dur-fast) var(--fomio-ease);
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--fomio-red) 34%, var(--fomio-border-soft));
+      transform: translateY(-2px);
+    }
+
+    &:focus-within {
+      outline: 2px solid var(--fomio-primary);
+      outline-offset: 3px;
+    }
+
+    > td {
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    > .topic-list-thumbnail {
+      grid-area: thumbnail;
+      width: 100%;
+      height: 100%;
+      min-height: 12rem;
+      margin: 0;
+      background: var(--fomio-surface);
+
+      &::after,
+      .background-thumbnail {
+        display: none;
+      }
+
+      > a {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .main-thumbnail {
+        position: static;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--fomio-dur-slow) var(--fomio-ease);
+      }
+
+      .thumbnail-placeholder {
+        color: var(--fomio-ink-muted);
+        background: var(--fomio-surface);
+      }
+    }
+
+    &:hover > .topic-list-thumbnail .main-thumbnail {
+      transform: scale(1.025);
+    }
+
+    > .main-link {
+      grid-area: content;
+      display: block;
+      min-width: 0;
+      padding: 0;
+      background: var(--fomio-card);
+    }
+
+    .link-top-line,
+    .link-bottom-line,
+    .main-link > .topic-excerpt,
+    > .posts-map,
+    > .activity {
+      display: none;
+    }
+
+    .byte-slot {
+      height: 100%;
+    }
+
+    .byte.fomio-topic-context {
+      min-height: 100%;
+      padding: clamp(1rem, 1.4vw, 1.25rem);
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: var(--fomio-card);
+    }
+
+    .byte__body {
+      min-width: 0;
+    }
+
+    .byte__title {
+      font-size: clamp(1.12rem, 1rem + 0.35vw, 1.35rem);
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
+    .byte__excerpt {
+      margin-top: 0.7rem;
+    }
+
+    .fomio-topic-context__excerpt {
+      -webkit-line-clamp: 2;
+    }
+
+    .byte__footer {
+      margin-top: 1rem;
+    }
+
+    .byte__hero.fomio-topic-context__thumb {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 64rem) {
+  .topic-list.topic-thumbnails-grid.--fomio-discovery-list .topic-list-body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 42rem) {
+  .topic-list.topic-thumbnails-grid.--fomio-discovery-list {
+    .topic-list-body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .topic-list-item.--fomio-discovery-item {
+      grid-template-rows: minmax(11rem, 55vw) auto;
+
+      > .topic-list-thumbnail {
+        min-height: 11rem;
+      }
+
+      .byte.fomio-topic-context {
+        padding: 1rem;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topic-list.topic-thumbnails-grid.--fomio-discovery-list {
+    .topic-list-item.--fomio-discovery-item,
+    .topic-list-item.--fomio-discovery-item .main-thumbnail {
+      transition: none;
+    }
+
+    .topic-list-item.--fomio-discovery-item:hover,
+    .topic-list-item.--fomio-discovery-item:hover .main-thumbnail {
+      transform: none;
+    }
+  }
+}

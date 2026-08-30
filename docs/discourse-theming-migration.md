@@ -2,7 +2,8 @@
 
 Date: 2026-08-29
 Status: In progress — steps 1, 3, 4 complete; step 2 partial
-Visual QA: passed on `?preview_theme_id=33`, one defect found and fixed (see below)
+Visual QA: passed on `?preview_theme_id=33`. One defect found, fixed, and
+**confirmed in the deployed theme** — see step 3.
 
 ## Rule
 
@@ -249,6 +250,13 @@ results, user pages, directory, groups, badges, messages) did not inherit the
 Fomio card colour. Cause and fix are in "Where a bridge declaration must live"
 above. The other seven bridge declarations resolved correctly.
 
+**Closed.** Re-verified in the deployed theme: `--d-content-background` computes
+to `white` in light and `#141414` in dark, both matching `--fomio-card`; the
+deployed `common_theme_33` bundle loads after core and carries the winning
+`:root` declaration; the user activity surface renders correctly in both modes,
+including the lifted dark card against the AMOLED ground. No new contrast,
+border, or panel mismatches.
+
 This is the class of bug the offline harness cannot catch: it compiles and
 diffs *one stylesheet at a time*, so it cannot see a later bundle overwriting an
 earlier one. **Any change to the core bridge needs a preview check**, not just a
@@ -256,15 +264,41 @@ green compile.
 
 ## What is left
 
-All remaining work needs a running Discourse instance for visual QA. Static
-analysis cannot prove these safe.
+These were previously blocked on not having a Discourse instance to check
+against. That blocker is **lifted** — the preview at `?preview_theme_id=33` plus
+the visual-QA pass that caught the `--d-content-background` defect proves the
+loop works end to end: change → deploy → inspect computed values → confirm.
 
-| Work | Size | Blocked on |
+Static analysis still cannot prove any of these safe on its own. Each needs the
+same loop.
+
+| Work | Size | What it needs |
 |---|---|---|
-| Fold the last 23 `html.fomio-color-dark` blocks | sidebar, composer, search, bottom-bar chrome | each encodes a dark-only *composition*, not just a value — needs a design call on its light equivalent |
-| Delete the override layer | 523 `!important` | proving an override redundant requires seeing what core renders for that element |
-| Replace `display: none` suppression | 138 of the 523 | wants outlets / theme modifiers, the Horizon approach, not CSS suppression |
-| Delete `fomio-color-mode.gjs` | 1 file | only once the last dark block is gone |
+| Fold the last 23 `html.fomio-color-dark` blocks | sidebar, composer, search, bottom-bar chrome | a design call on each block's light equivalent, then a preview check |
+| Delete the override layer | 523 source lines = **1,344 compiled declarations** | delete in reviewable batches, checking the affected surface in preview after each |
+| Replace `display: none` suppression | 138 of the 523 | outlets and theme modifiers, the Horizon approach, not CSS suppression |
+| Delete `fomio-color-mode.gjs` | 1 file | falls out once the last dark block is folded |
+
+### Sizing the override layer
+
+Two numbers, both true, measuring different things:
+
+- **523** `!important` *source lines* — the figure used in the Horizon comparison
+  above, which counts the same way for both themes.
+- **1,344** `!important` *declarations in compiled CSS* — the real debt. A single
+  `padding: 0 !important` source line expands to four declarations.
+
+Measured on the live preview, **750 of those 1,344 (56%) are in the profile/Me
+cluster** (`#main-outlet .user-main`, `.user-navigation`, `#user-content`,
+`.user-notifications-filter`, `.user-stream`). `display` alone accounts for 83.
+That cluster is the densest concentration of override debt in the theme and the
+natural first target.
+
+Note the selectors there already carry two IDs (`#main-outlet`, `#user-content`)
+plus several classes — far above anything in core. That means most of these are
+**not** winning specificity battles against Discourse; the `!important` is likely
+defensive rather than load-bearing. Worth testing a sample before assuming each
+one is needed.
 
 ### Correction to an earlier estimate
 
@@ -297,13 +331,45 @@ the theme, and new work inherits the palette — not retroactive deletion.
   manifest. See [responsive-design.md](./responsive-design.md) §9 for which file
   owns what.
 
+## Fonts
+
+An earlier draft of this doc recommended dropping the Google Fonts CDN link and
+moving to Discourse's self-hosted fonts. **That recommendation was wrong and has
+been withdrawn.** Measured on the live preview, Discourse self-hosts Lora and
+Raleway at **400 and 700 roman only — no 500, no 600, no italics**. The theme
+uses 500 in 89 declarations, 600 in 195, and italics in 26. Removing the CDN
+link would degrade ~310 declarations to synthesised weights and faux-oblique on
+a reading-first serif surface.
+
+The CDN request stays. `head_tag.html` now carries a comment saying why, so it
+does not get "optimised" away later. The real route to removing it is to
+self-host the missing weights as theme assets (`about.json` `assets`), not to
+drop the request.
+
+Two genuine defects were found and fixed:
+
+| Defect | Fix |
+|---|---|
+| **Newsreader downloaded, never rendered** — requested with 5 weight/style combinations on every page load, referenced nowhere in the theme (it came from `apps/landing`) | removed from the request |
+| **Space Mono rendered, never downloaded** — `--fomio-font-mono` referenced it in 5+ partials, but nothing fetched it and Discourse does not self-host it, so every user saw Courier New | switched to **JetBrains Mono**, which Discourse self-hosts (6 faces, same origin, no third-party request) |
+
+The mono change was made in `packages/design-tokens/tokens.js` (`fontFamily.web.mono`)
+— the source of truth — not in the SCSS, which `tokens:check` verifies. React
+Native keeps `SpaceMono`, which the mobile app bundles itself; `fontFamily.rn`
+is untouched.
+
+**Method note.** The Space Mono bug nearly passed inspection: `document.fonts.check()`
+returned `true` for it because the font happened to be installed on the machine
+running the check. Font availability must be verified from what the *page*
+loads — the `@font-face` rules and their origin — not from whether the local
+machine can render the family.
+
 ## Not yet started
 
 Opportunities identified during the audit but out of scope so far:
 
-- **Fonts** — `common/head_tag.html` hard-codes a Google Fonts CDN link.
-  Discourse self-hosts fonts and exposes `--font-family` / `--heading-font-family`
-  from the `base_font` / `heading_font` site settings.
+- **Fonts** — done 2026-08-29, but *not* the way this doc originally proposed.
+  See "Fonts" below.
 - **`settings.yml` has one setting.** Brand knobs, radii and max-widths are baked
   into SCSS, so every tweak needs a git push. Theme settings support
   `color`/`bool`/`enum`/`list`/`upload`, are admin-editable live, and reach SCSS

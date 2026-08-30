@@ -5562,7 +5562,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   .user-notifications-page
 ) {
   #main-outlet .user-main .user-navigation.user-navigation-primary {
-    display: block !important;
+    display: block;
     width: min(880px, calc(100vw - 48px));
     max-width: 100%;
     margin: 0 auto 22px;
@@ -5575,7 +5575,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav {
-    display: flex !important;
+    display: flex;
     align-items: stretch;
     width: 100%;
     min-width: 0;
@@ -5585,12 +5585,12 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-left,
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-right {
-    display: none !important;
+    display: none;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
   #main-outlet .user-main ul.nav-pills.user-nav {
-    display: flex !important;
+    display: flex;
     flex: 1 1 auto;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -5814,7 +5814,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   .user-notifications-page
 ) {
   #main-outlet .user-main .user-navigation.user-navigation-primary {
-    display: block !important;
+    display: block;
     width: min(880px, calc(100vw - 48px));
     margin: 0 auto 24px;
     padding: 0;
@@ -5826,7 +5826,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav {
-    display: flex !important;
+    display: flex;
     width: 100%;
     min-width: 0;
     max-width: 100%;
@@ -5843,12 +5843,12 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-left,
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav__scroll-right {
-    display: none !important;
+    display: none;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
   #main-outlet .user-main ul.nav-pills.user-nav {
-    display: flex !important;
+    display: flex;
     flex: 0 0 auto;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -5921,12 +5921,12 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a .d-icon,
   #main-outlet .user-main ul.nav-pills.user-nav > li > a .d-icon {
-    display: none !important;
+    display: none;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav > li > a span,
   #main-outlet .user-main ul.nav-pills.user-nav > li > a span {
-    display: inline !important;
+    display: inline;
     min-width: 0;
     color: inherit;
   }
@@ -6009,7 +6009,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
 
   // Overflow lives on <ul> directly (no .horizontal-overflow-nav wrapper here).
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills {
-    display: flex !important;
+    display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: stretch;
@@ -6075,11 +6075,11 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a .d-icon {
-    display: none !important;
+    display: none;
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-secondary ul.nav-pills > li > a span {
-    display: inline !important;
+    display: inline;
     color: inherit;
   }
 
@@ -6171,7 +6171,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   .user-notifications-page
 ) {
   #main-outlet .user-main .user-navigation.user-navigation-primary {
-    display: flex !important;
+    display: flex;
     gap: 0;
     width: min(880px, calc(100vw - 48px));
     max-width: 100%;
@@ -6191,7 +6191,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
   }
 
   #main-outlet .user-main .user-navigation.user-navigation-primary .horizontal-overflow-nav {
-    display: flex !important;
+    display: flex;
     flex: 0 0 auto;
     min-width: 100%;
     max-width: none;
@@ -6201,7 +6201,7 @@ body:not(.fomio-auth-mode):is(.fomio-sidebar-active, .fomio-discourse-native-mod
 
   #main-outlet .user-main .user-navigation.user-navigation-primary ul.nav-pills.user-nav,
   #main-outlet .user-main ul.nav-pills.user-nav {
-    display: flex !important;
+    display: flex;
     flex: 0 0 auto;
     flex-wrap: nowrap;
     align-items: stretch;
