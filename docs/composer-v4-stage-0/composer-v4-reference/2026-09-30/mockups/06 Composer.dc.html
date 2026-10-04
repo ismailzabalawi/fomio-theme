@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="../styles.css">
+<style>body{margin:0;background:#E9E8EE}a{color:#4A2FBF}a:hover{text-decoration:underline}</style>
+</helmet>
+<div style="padding:56px 64px 120px;display:flex;flex-direction:column;gap:72px;font-family:var(--font-family);color:#1B1A1F">
+  <header style="display:flex;flex-direction:column;gap:12px;max-width:980px">
+    <div style="display:flex;gap:12px;font:700 14px/1 var(--font-family);color:#5E5C66"><a href="00 Index.dc.html" style="color:#5E5C66">Screen pack</a><span>/</span><span>06</span></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h1 style="margin:0;font:700 40px/1.1 var(--heading-font-family)">Composer · v4</h1><span style="font:700 13px/1 var(--font-family);padding:7px 10px;border-radius:999px;background:#FFF1D6;color:#6B4A00;border:1px solid #E3C27A">Design awaiting your approval · not for implementation</span></div>
+    <p style="margin:0;font:18px/1.55 var(--font-family);color:#45434C;text-wrap:pretty">v4 keeps the v3 direction: one native Discourse composer, touch first, with the Photo / Format / More entry points. It adds named frames and prototype routes for the cases the audit found thin: tablets, links, quotes, drafts, permissions, advanced inserts, completion, the conditional guided form, uploads, and accessibility. Every frame is a live instance of the prototype component. Nothing here changes Discourse; implementation starts only after you approve and lock the design.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:4px">
+      <a href="06.1 Composer Prototype.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;background:#1B1A1F;color:#fff;font:700 15px/1 var(--font-family);text-decoration:none">Open the interactive prototype →</a>
+      <a href="06 Composer handoff.md" style="display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid #BDBAC6;background:#fff;color:#1B1A1F;font:700 15px/1 var(--font-family);text-decoration:none">Handoff and open decisions</a>
+      <a href="06 Composer v3.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 12px;color:#5E5C66;font:15px/1 var(--font-family)">v3</a>
+      <a href="06 Composer v2.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 12px;color:#5E5C66;font:15px/1 var(--font-family)">v2</a>
+      <a href="06 Composer v1.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 12px;color:#5E5C66;font:15px/1 var(--font-family)">v1</a>
+    </div>
+    <p style="margin:0;font:15px/1.5 var(--font-family);color:#5E5C66">Keys used below. <strong>Native</strong>: behaviour or wording observed on the live site on 2026-09-28, or present in core source at commit 7b4f0970. <strong>Proposed</strong>: new interaction or copy that needs an i18n key, site-text override or feasibility proof (handoff §5, §6, §9). Drawn keyboards are labelled simulations; nothing here is device or screen-reader validation.</p>
+  </header>
+
+  <nav aria-label="Sections" style="display:flex;flex-direction:column;gap:10px;max-width:1200px">
+    <h2 style="margin:0;font:700 15px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">Sections</h2>
+    <p style="margin:0;font:14px/1.45 var(--font-family);color:#5E5C66">Frames load one section at a time so the page stays responsive. Choosing a section here, a frame ID, or a coverage link opens that section.</p>
+    <ol style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 20px">
+      <sc-for list="{{ index }}" as="x" hint-placeholder-count="14"><li><a href="{{ x.href }}" style="display:flex;gap:10px;align-items:baseline;min-height:32px;font:600 16px/1.3 var(--font-family);color:#1B1A1F"><span style="font:700 12px/1 var(--d-font-family--monospace);color:#5E5C66;min-width:22px">{{ x.n }}</span>{{ x.t }}</a></li></sc-for>
+    </ol>
+  </nav>
+
+  <section id="ia" aria-labelledby="ia-h" style="display:flex;flex-direction:column;gap:18px;max-width:1400px">
+    <h2 id="ia-h" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">IA and state transitions</h2>
+    <p style="margin:0;font:16px/1.55 var(--font-family);color:#45434C;max-width:110ch">The composer is one surface whose state is described on independent axes. Changing one axis never resets another: rotating a tablet does not cancel an upload, a failed draft save does not block publishing, and a rejected submission leaves the draft, uploads and text untouched. The prototype shows the current value of every axis beside the frame.</p>
+    <div style="display:grid;grid-template-columns:170px minmax(0,1.3fr) minmax(0,1.5fr) minmax(0,1fr);border-top:1px solid #DDDBE3;font:15px/1.45 var(--font-family)">
+      <sc-for list="{{ axesHead }}" as="h" hint-placeholder-count="4"><span style="padding:8px 12px 8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">{{ h }}</span></sc-for>
+      <sc-for list="{{ axes }}" as="a" hint-placeholder-count="7"><strong style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ a.k }}</strong><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ a.v }}</span><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ a.t }}</span><span style="padding:9px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ a.e }}</span></sc-for>
+    </div>
+    <h3 style="margin:14px 0 0;font:700 20px/1.3 var(--heading-font-family)">Layout rules by device</h3>
+    <div style="display:grid;grid-template-columns:150px repeat(4,minmax(0,1fr));border-top:1px solid #DDDBE3;font:14px/1.45 var(--font-family)">
+      <sc-for list="{{ devHead }}" as="h" hint-placeholder-count="5"><span style="padding:8px 12px 8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">{{ h }}</span></sc-for>
+      <sc-for list="{{ dev }}" as="d" hint-placeholder-count="9"><strong style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ d.k }}</strong><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ d.a }}</span><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ d.b }}</span><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ d.c }}</span><span style="padding:9px 0;border-bottom:1px solid #DDDBE3">{{ d.d }}</span></sc-for>
+    </div>
+    <p style="margin:0;font:14px/1.5 var(--font-family);color:#5E5C66;max-width:110ch">Tablet rules are proposed and unvalidated on iPadOS or Android tablets. Whether Discourse serves its mobile or desktop view to a given tablet must be confirmed before implementation; v4 designs the tablet layout independently of that switch, rather than scaling the desktop layout.</p>
+  </section>
+
+  <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+    <section id="{{ row.id }}" aria-labelledby="{{ row.hid }}" style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:6px;max-width:1040px"><h2 id="{{ row.hid }}" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">{{ row.title }}</h2><p style="margin:0;font:16px/1.55 var(--font-family);color:#45434C;text-wrap:pretty">{{ row.note }}</p></div>
+      <sc-if value="{{ row.pending }}"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px"><button onClick="{{ row.show }}" style="height:40px;padding:0 16px;border-radius:8px;border:1px solid #1B1A1F;background:#fff;color:#1B1A1F;font:700 15px/1 var(--font-family);cursor:pointer">{{ row.showLabel }}</button><sc-for list="{{ row.frameList }}" as="f" hint-placeholder-count="4"><a href="{{ f.href }}" style="font:700 12px/1.4 var(--d-font-family--monospace)">{{ f.label }}</a></sc-for></div></sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:48px 36px;align-items:flex-start">
+        <sc-for list="{{ row.boards }}" as="b" hint-placeholder-count="3">
+          <div id="{{ b.id }}" style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:6px;max-width:{{ b.w }}">
+              <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font:15px/1.3 var(--font-family);color:#5E5C66"><a href="{{ b.hash }}" style="font:700 12px/1 var(--font-family);background:#1B1A1F;color:#fff;padding:5px 7px;border-radius:6px;text-decoration:none">{{ b.label }}</a><strong style="color:#1B1A1F">{{ b.title }}</strong><span>{{ b.meta }}</span><a href="{{ b.proto }}" style="font:14px/1 var(--font-family)">open in prototype</a></div>
+              <sc-if value="{{ b.hasNote }}"><p style="margin:0;font:14px/1.45 var(--font-family);color:#45434C;text-wrap:pretty">{{ b.note }}</p></sc-if>
+            </div>
+            <dc-import name="FmComposer4" viewport="{{ b.vp }}" scheme="{{ b.scheme }}" preset="{{ b.preset }}" rtl="{{ b.rtl }}" hwkb="{{ b.hw }}" zoom="{{ b.zoom }}" reduced-motion="{{ b.rm }}" hint-size="{{ b.size }}"></dc-import>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-for>
+
+  <section id="a11y-spec" aria-labelledby="a11y-h" style="display:flex;flex-direction:column;gap:14px;max-width:1300px">
+    <h2 id="a11y-h" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">Accessibility behaviour (designed; validation pending)</h2>
+    <div style="display:grid;grid-template-columns:200px minmax(0,1fr);border-top:1px solid #DDDBE3;font:15px/1.5 var(--font-family)">
+      <sc-for list="{{ a11y }}" as="a" hint-placeholder-count="8"><strong style="padding:10px 16px 10px 0;border-bottom:1px solid #DDDBE3">{{ a.k }}</strong><span style="padding:10px 0;border-bottom:1px solid #DDDBE3;color:#2A2930">{{ a.v }}</span></sc-for>
+    </div>
+    <p style="margin:0;font:14px/1.5 var(--font-family);color:#5E5C66">Screen reader output (VoiceOver, TalkBack, NVDA), platform text scaling and switch access have not been tested. The browser zoom frames reflow at the equivalent CSS width; they are not iOS Dynamic Type.</p>
+  </section>
+
+  <section id="coverage" aria-labelledby="cov-h" style="display:flex;flex-direction:column;gap:14px;max-width:1600px">
+    <h2 id="cov-h" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">Coverage: C01–C19 and v4 subcases</h2>
+    <p style="margin:0;font:15px/1.5 var(--font-family);color:#45434C;max-width:120ch">Design coverage says whether the state is drawn and interactive. Test coverage says how it was checked in this browser mockup. Neither is evidence of Discourse integration. <strong>Scripted</strong>: driven by script in the prototype on 2026-09-30 with DOM assertions. <strong>Visual</strong>: rendered and screenshot-inspected only.</p>
+    <div role="table" aria-label="Coverage" style="display:grid;grid-template-columns:68px minmax(0,1.1fr) 92px minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.3fr) 92px;border-top:1px solid #DDDBE3;font:14px/1.4 var(--font-family)">
+      <sc-for list="{{ covHead }}" as="h" hint-placeholder-count="7"><span role="columnheader" style="padding:8px 10px 8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">{{ h }}</span></sc-for>
+      <sc-for list="{{ cov }}" as="c" hint-placeholder-count="30">
+        <span role="cell" style="padding:8px 10px 8px 0;border-bottom:1px solid #DDDBE3;font:700 12px/1.4 var(--d-font-family--monospace)">{{ c.id }}</span>
+        <span role="cell" style="padding:8px 10px 8px 0;border-bottom:1px solid #DDDBE3">{{ c.name }}</span>
+        <span role="cell" style="padding:8px 10px 8px 0;border-bottom:1px solid #DDDBE3"><span style="display:inline-block;padding:3px 7px;border-radius:999px;font:700 12px/1.2 var(--font-family);background:{{ c.bg }};color:{{ c.ink }}">{{ c.status }}</span></span>
+        <span role="cell" style="padding:8px 10px 8px 0;border-bottom:1px solid #DDDBE3;display:flex;flex-wrap:wrap;gap:4px 8px;align-content:flex-start"><sc-for list="{{ c.links }}" as="l" hint-placeholder-count="2"><a href="{{ l.h }}" style="font:700 12px/1.4 var(--d-font-family--monospace)">{{ l.t }}</a></sc-for></span>
+        <span role="cell" style="padding:8px 10px 8px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ c.rec }}</span>
+        <span role="cell" style="padding:8px 10px 8px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ c.ev }}</span>
+        <span role="cell" style="padding:8px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ c.test }}</span>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PR = "06.1 Composer Prototype.dc.html#";
+const GEO = { phone: [390, 844, "390 × 844"], narrow: [360, 740, "360 × 740"], splitNarrow: [375, 834, "split 375 × 834"], split600: [600, 834, "split 600 × 834"], tabletP: [834, 1194, "834 × 1194"], tabletL: [1194, 834, "1194 × 834"], desktop: [1280, 800, "1280 × 800"] };
+const B = (label, preset, title, o) => { o = o || {}; const vp = o.vp || "phone", g = GEO[vp]; return { id: "f-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label, preset, title, vp, scheme: o.dark ? "dark" : "light", rtl: !!o.rtl, hw: !!o.hw, zoom: o.zoom || "1", rm: !!o.rm, size: g[0] + "px," + g[1] + "px", w: g[0] + "px", meta: g[2] + (o.dark ? " · AMOLED" : " · Light") + (o.hw ? " · hardware keyboard" : "") + (o.zoom ? " · " + (+o.zoom * 100) + "%" : "") + (o.rtl ? " · RTL" : ""), note: o.note || "", hasNote: !!o.note, proto: PR + (o.route || preset), hash: "#f-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-") }; };
+const ROWS = [
+  { id: "primary", title: "Primary review sequence", note: "The six moments from v3, retained as the backbone: open, write, format, add a photo, leave and return, resolve a problem.", boards: [B("M1", "M1", "Open a new post"), B("M2", "M2", "Writing, keyboard open"), B("M3", "M3", "Selecting and formatting", { note: "Format stays above the keyboard and keeps the selection." }), B("M4b", "M4b", "Photo failed, retry in place"), B("M5", "M5", "Minimized above the bar"), B("M6", "M6", "Fix the fields", { note: "Limits come from site settings (title 5, body 2 observed). Messages are core fixtures." }), B("M6b", "M6b", "Offline at submit", { dark: true }), B("C09", "C09", "Similar topics, expanded"), B("C05", "C05", "Markdown source"), B("C05b", "C05b", "More: editor preference", { dark: true })] },
+  { id: "tablets", title: "1 · Tablets", note: "Tablets get their own layout: a docked sheet over the page in portrait, full height in landscape when the software keyboard is up, and phone rules in narrow split view. The primary action stays in the top row on every tablet variant, so rotation never moves it. More opens as an anchored popover and Format as a tray above the strip; the keyboard stays up for both.", boards: [
+    B("TAB-1", "M2", "Portrait, keyboard open", { vp: "tabletP", route: "TAB-1", note: "Docked at 330px: the topic stays readable above for reference and quoting." }),
+    B("TAB-2", "C04", "Portrait, keyboard closed", { vp: "tabletP", route: "TAB-2" }),
+    B("TAB-3", "M2", "Landscape, keyboard open", { vp: "tabletL", route: "TAB-3", note: "Docked would leave about 110px to write, so the sheet fills the height while the software keyboard is up." }),
+    B("TAB-4", "M3", "Landscape, hardware keyboard + trackpad", { vp: "tabletL", hw: true, route: "TAB-4", note: "No drawn keyboard and no Hide keyboard. Shortcuts as on desktop; Esc minimizes." }),
+    B("TAB-7", "C05p", "Landscape, Markdown with preview", { vp: "tabletL", hw: true, route: "TAB-7", note: "Side-by-side preview only at 1000px or wider and only on request. Portrait and split use the inline toggle." }),
+    B("TAB-5", "M2", "Split view 600", { vp: "split600", route: "TAB-5", note: "Below 700px wide the composer is always full height." }),
+    B("TAB-6", "M2", "Narrow split 375", { vp: "splitNarrow", route: "TAB-6", note: "Phone layout, iPad keyboard height, no bottom bar." }),
+    B("TAB-8", "C08-1", "Portrait, More popover", { vp: "tabletP", route: "TAB-8" }),
+    B("TAB-9", "C03", "Portrait, destination sheet", { vp: "tabletP", dark: true, route: "C03", note: "Modal sheets are centred form sheets on tablet." }),
+    B("TAB-10", "R1", "Landscape RTL, hardware keyboard", { vp: "tabletL", hw: true, rtl: true, dark: true, route: "TAB-10" }),
+  ] },
+  { id: "links", title: "2 · Links (C07)", note: "A URL pasted on its own line becomes a native link preview (Onebox, observed: GET /onebox). An unsupported URL simply stays a link. A failed fetch keeps the link exactly as pasted, with a quiet note and Try again; the note is never posted. Hyperlinks keep their text, URL and insertion point through insert, edit, remove and cancel.", boards: [B("C07-1", "C07-1", "Pasted URL, loading"), B("C07-2", "C07-2", "Preview loaded"), B("C07-3", "C07-3", "Unsupported, plain link"), B("C07-4", "C07-4", "Fetch failed, link kept"), B("C07-5", "C07-5", "Caret in a link"), B("C07-6", "C07-6", "Insert on a selection"), B("C07-7", "C07-7", "Edit link", { dark: true })] },
+  { id: "quote", title: "3 · Quote and reply (C10)", note: "Three kinds of reply stay distinct: to the topic (topic title only), to a person (their name and post, expandable), and a quoted reply (quote block with author and post attribution). A second quote can be added from the page while the reply is minimized on phone or docked on tablet and desktop.", boards: [B("C10-1", "C10-1", "Reply to the topic"), B("C10-2", "C10-2", "Reply to a person", { dark: true }), B("C10-3", "C10-3", "Select text, Quote", { note: "Native quote button. Device selection callouts may overlap it; device validation pending." }), B("C10-4", "C10-4", "Quoted reply"), B("C10-5", "C10-5", "Second quote added"), B("C10-6", "C10-6", "Published with quotes"), B("C10-5-T", "C10-5", "Second quote, tablet docked", { vp: "tabletP", route: "C10-5" })] },
+  { id: "drafts", title: "4 · Drafts (C12) and conflicts (C15)", note: "Draft status is always true: Saving draft…, Draft saved, Draft not saved, or Offline. Draft not saved. Closing waits for an in-progress save and never closes over an unsaved draft. A draft changed in another window or device is a separate problem from an edit conflict on a published post; neither is resolved silently.", boards: [B("C12-1", "C12-1", "Saving"), B("C12-2", "C12-2", "Saved"), B("C12-3", "C12-3", "Closing while saving", { note: "× shows progress; the composer closes only after the save succeeds." }), B("C12-4", "C12-4", "Save failed"), B("C12-5", "C12-5", "Offline, close blocked", { dark: true }), B("C12-8", "C12-8", "Drafts, resume"), B("C12-9", "C12-9", "Discard confirm"), B("C15-1", "C15-1", "Draft changed elsewhere", { note: "Proposed actions. Save mine over it maps to the draft force_save parameter (source, not exercised)." }), B("C15-2", "C15-2", "Replace confirm"), B("C15-3", "C15-3", "Post edit conflict", { dark: true, note: "Native 409 on stale edit (source). Overwrite Edits is core wording." })] },
+  { id: "permissions", title: "5 · Permissions (C13 / C19)", note: "Each failure names what changed, keeps the writing, and offers only recovery that is valid in Discourse. Restricted categories name the permitted groups instead of implying every member can read.", boards: [B("C13-4", "C13-4", "Category permission revoked"), B("C13-5", "C13-5", "Choose another category"), B("C19-3", "C19-3", "Topic closed while writing", { note: "Reply as linked topic is a native composer action." }), B("C19-4", "C19-4", "Session expired at submit"), B("C19-5", "C19-5", "Log in again", { dark: true }), B("C19-1", "C19-1", "Signed out"), B("C19-2", "C19-2", "Closed before opening"), B("L1", "L1", "One group, long title", { vp: "narrow" }), B("L2", "L2", "Two groups", { vp: "tabletP" })] },
+  { id: "advanced", title: "6 · Advanced inserts and mentions (C08)", note: "Each tool has insert, validation, cancel and edit. Tools from disabled plugins are absent, not greyed. Inserted blocks are shown here as summary cards; production uses the native rich editor's rendering.", boards: [B("C08-1", "C08-1", "More, all tools"), B("C08-2", "C08-2", "More, poll and dates disabled"), B("C08-3", "C08-3", "Insert table"), B("C08-4", "C08-4", "Hide details"), B("C08-5", "C08-5", "Insert date", { dark: true }), B("C08-6", "C08-6", "Blur spoiler"), B("C08-7", "C08-7", "Preformatted text"), B("C08-8", "C08-8", "Poll, validation error"), B("C08-9", "C08-9", "Block selected: Edit, Remove"), B("C08-10", "C08-10", "Mention results", { note: "Users and groups (observed: GET /u/search/users with include_groups)." }), B("C08-11", "C08-11", "Mention loading"), B("C08-12", "C08-12", "Mention, no results", { dark: true })] },
+  { id: "complete", title: "7 · Completion (C16 / C17)", note: "Submitting locks the action and the text until the server answers; a second tap does nothing. Every result returns to the right place: the new topic, your reply in the topic, or your edited post, highlighted.", boards: [B("C16-1", "C16-1", "Submitting"), B("C16-2", "C16-2", "Topic published"), B("C16-3", "C16-3", "Reply published", { dark: true }), B("C16-4", "C16-4", "Edit saved", { note: "Returns to the edited post with its edit marker; “Edit saved” is announced (proposed)." }), B("C16-5", "C16-5", "Server error, retry"), B("C13-2", "C13-2", "Rate limited"), B("C13-3", "C13-3", "Rejected by server"), B("C17", "C17", "Awaiting approval")] },
+  { id: "form", title: "8 · Guided form (C18, conditional)", note: "Shown only when a category is configured with native form templates (enable_form_templates is on for the site; no category is known to use one). Feedback requests and its fields are fixtures. The native title stays; the form replaces the free body.", boards: [B("C18-1", "C18-1", "Form, template choice"), B("C18-2", "C18-2", "Required fields"), B("C18-3", "C18-3", "Preview"), B("C18-4", "C18-4", "Switching category", { note: "Proposed: answers move into the post as text instead of being dropped." }), B("C18-5", "C18-5", "Published", { dark: true })] },
+  { id: "upload", title: "9 · Upload (C06)", note: "Images only, per this site's authorized extensions. Photo opens the system picker with multiple selection; paste and drop work too. Each image uploads in place with its own progress, Cancel, Retry and Remove, so one failure does not affect the others.", boards: [B("C06-1", "C06-1", "Picker (depicted)"), B("C06-2", "C06-2", "Multiple selected"), B("C06-3", "C06-3", "Three uploading"), B("C06-4", "C06-4", "Partial failure"), B("C06-9", "C06-9", "Submit while uploading"), B("C06-5", "C06-5", "Photo selected", { dark: true }), B("C06-6", "C06-6", "Alt text"), B("C06-8", "C06-8", "File not authorized"), B("C06-7", "C06-7", "Drop on desktop", { vp: "desktop" })] },
+  { id: "a11y", title: "10 · Accessibility and content stress", note: "Large text and zoom reflow instead of clipping; below 330 CSS px the tool strip drops visible labels but keeps accessible names. Mixed-direction paragraphs set their own direction. Reduced motion removes spinners and height transitions without hiding status text.", boards: [B("A-1", "C04", "Large text, 150%", { zoom: "1.5", route: "A-1" }), B("A-2", "C04", "Browser zoom 200%", { vp: "desktop", zoom: "2", route: "A-2", note: "Effective 640px wide: the desktop composer spans the width." }), B("A-3", "MX", "Mixed-direction writing"), B("A-4", "R1", "RTL interface", { rtl: true }), B("A-4-D", "R1", "RTL interface, AMOLED", { rtl: true, dark: true, vp: "narrow", route: "A-4" }), B("A-5", "L1", "Long title, long category", { vp: "narrow" }), B("A-6", "C12-1", "Reduced motion", { rm: true, route: "A-6" })] },
+  { id: "desktop", title: "Desktop 1280", note: "Same order and tools, docked to the reading column. Hover, focus and keyboard shortcuts as native.", boards: [B("D-1", "C01", "New topic, docked", { vp: "desktop", route: "C01" }), B("D-2", "C10-5", "Quoted reply, docked", { vp: "desktop", dark: true, route: "C10-5" }), B("C11", "C11", "Edit first post", { vp: "desktop" }), B("D-3", "C18-2", "Guided form errors", { vp: "desktop", route: "C18-2" })] },
+];
+const S = { d: ["Designed", "#DDF3E4", "#14532D"], p: ["Partial", "#FFF1D6", "#6B4A00"], o: ["Out of scope", "#ECEAF0", "#45434C"] };
+const L = (t) => t.split(" ").map((x) => ({ t: x, h: x.startsWith("#") ? x : "#f-" + x.toLowerCase().replace(/[^a-z0-9]+/g, "-") }));
+const COV = [
+  ["C01", "New topic, empty", "d", "M1 C01 D-1", "M1", "—", "Native composer; hierarchy proposed", "Scripted"],
+  ["C02", "New from category", "d", "C02", "C02", "Inherited destination", "Native openNewTopic({category}); guidance line proposed", "Visual"],
+  ["C03", "Destination chooser", "d", "TAB-9 C13-5", "C03", "Only permitted categories", "Native chooser; audience line proposed", "Scripted"],
+  ["C04", "Rich text writing", "d", "M2 C04", "M2", "—", "Native rich editor (mode switch observed)", "Scripted"],
+  ["C05", "Markdown writing and preview", "d", "TAB-7 C05b", "C05", "Round-trip keeps content", "Native modes; placement under More proposed", "Scripted"],
+  ["C06", "Image upload", "d", "C06-1 C06-2 C06-3 C06-4 C06-9", "C06-3", "Cancel, retry, remove per image", "Native Uppy/POST /uploads (source, not exercised); inline UI proposed", "Scripted"],
+  ["C06·a", "Alt text", "p", "C06-5 C06-6", "C06-6", "Cancel keeps old alt", "Alt in image markdown (native); rich-editor affordance unconfirmed", "Scripted"],
+  ["C06·b", "Paste, drop, unauthorized file", "d", "C06-7 C06-8", "C06-7", "Other images unaffected", "Native paste/drop; error text is core fixture", "Scripted"],
+  ["C07", "Standalone URL preview", "d", "C07-1 C07-2 C07-3 C07-4", "C07-1", "Link kept as pasted; Try again", "GET /onebox observed; failure note proposed", "Scripted"],
+  ["C07·a", "Hyperlink insert, edit, remove, cancel", "d", "C07-5 C07-6 C07-7", "C07-6", "Cancel restores selection", "Native Insert Hyperlink; contextual strip proposed", "Scripted"],
+  ["C08", "Table, details, date, spoiler, code, poll", "d", "C08-3 C08-4 C08-5 C08-6 C08-7 C08-8 C08-9", "C08-3", "Cancel leaves content unchanged; Edit reopens", "Poll enabled (observed); table/date builders native; details/spoiler/code dialogs proposed", "Scripted (poll, table, date, details)"],
+  ["C08·a", "Conditional tool availability", "d", "C08-1 C08-2", "C08-2", "Absent, not disabled", "poll_enabled observed; local-dates availability unconfirmed", "Scripted"],
+  ["C08·b", "Mentions", "d", "C08-10 C08-11 C08-12", "C08-10", "Esc dismisses; typing continues", "GET /u/search/users observed", "Scripted (click and keys)"],
+  ["C09", "Similar topics", "d", "M1", "C09", "Collapse, dismiss", "GET /similar_topics observed; threshold 10", "Visual"],
+  ["C10", "Topic reply, reply to person, quoted reply", "d", "C10-1 C10-2 C10-3 C10-4 C10-5 C10-6", "C10-3", "Quote removable; Save and close keeps draft", "Native quote button and [quote] BBCode (not exercised in research)", "Scripted"],
+  ["C11", "Edit post and first post", "d", "C11 C16-4", "C11b", "Reason optional", "GET /posts/:id observed; PUT not submitted", "Scripted"],
+  ["C12", "Draft saving, close during save, failure, resume", "d", "C12-1 C12-2 C12-3 C12-4 C12-5 C12-8 C12-9", "C12-3", "Close waits; Retry save; Copy text", "POST /drafts.json and resume observed; failure handling proposed", "Scripted"],
+  ["C13", "Validation, rate limit, rejection, category revoked", "d", "M6 C13-2 C13-3 C13-4 C13-5", "C13-4", "Choose another category; Try Again", "Guardian checks (source); failures not exercised", "Scripted"],
+  ["C14", "Offline", "d", "C12-5 M6b", "M6b", "Composer stays open; saves on reconnect", "Offline recovery not exercised; no local draft persistence assumed", "Scripted"],
+  ["C15", "Draft conflict vs post edit conflict", "p", "C15-1 C15-2 C15-3", "C15-1", "Copy, save mine, use other version", "Draft sequence checks (source); multi-device UX and all three actions proposed", "Scripted"],
+  ["C16", "Busy, published, edit saved, error", "d", "C16-1 C16-2 C16-3 C16-4 C16-5", "C16-1", "Double tap ignored; Try Again", "POST /posts, PUT /posts/:id (source, not submitted)", "Scripted"],
+  ["C17", "Awaiting approval", "d", "C17", "C17", "Pending notice", "NewPostResultSerializer enqueued (source)", "Visual"],
+  ["C18", "Guided form (conditional)", "p", "C18-1 C18-2 C18-3 C18-4 C18-5 D-3", "C18-1", "Switch keeps answers", "enable_form_templates on; no configured category; field model and composition to confirm", "Scripted"],
+  ["C19", "Signed out, closed, session expiry", "d", "C19-1 C19-2 C19-3 C19-4 C19-5", "C19-4", "Log In returns to text; Reply as linked topic", "Native login and composer action; failures not exercised", "Scripted"],
+  ["TAB", "Tablet layouts and transitions", "p", "TAB-1 TAB-3 TAB-4 TAB-5 TAB-6 TAB-7", "TAB-9", "Text, selection, uploads survive rotation/split", "All proposed; device behaviour unvalidated", "Scripted in browser only"],
+  ["A11Y", "Focus, zoom, direction, motion", "p", "A-1 A-2 A-3 A-4 A-5 A-6", "A-1", "Focus returns to trigger", "Designed; assistive technology validation pending", "Partial scripted (focus); no AT"],
+  ["PM", "Private messages, staff, whispers, shared drafts", "o", "#coverage", "C01", "—", "Hidden for the member role shown", "—"],
+  ["TAG / AI", "Tags and AI helper", "o", "#coverage", "C01", "—", "Disabled on the site (observed)", "—"],
+  ["FILE", "Non-image attachments", "o", "#coverage", "C06-8", "Rejected with core message", "Only image extensions authorized (observed)", "Scripted (rejection)"],
+];
+class Component extends DCLogic {
+  state = { sec: "primary" };
+  componentDidMount() { this._h = () => this.fromHash(); window.addEventListener("hashchange", this._h); this.fromHash(); }
+  componentWillUnmount() { window.removeEventListener("hashchange", this._h); }
+  fromHash() {
+    const h = decodeURIComponent(location.hash.slice(1)); if (!h) return;
+    const v = this.base(); const row = v.rowsAll.find((r) => r.id === h || r.boards.some((b) => b.id === h)); if (!row) return;
+    this.setState({ sec: row.id }, () => setTimeout(() => { const e = document.getElementById(h); if (e) window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY - 16); }, 120));
+  }
+  renderVals() {
+    const v = this.base(); const sec = this.state.sec;
+    return { ...v, rows: v.rowsAll.map((r) => { const on = r.id === sec; return { ...r, boards: on ? r.boards : [], pending: !on, showLabel: "Show " + r.boards.length + " frames", show: () => { history.replaceState(null, "", "#" + r.id); this.setState({ sec: r.id }); }, frameList: r.boards.map((b) => ({ label: b.label, href: b.hash })) }; }) };
+  }
+  base() {
+    if (this._v) return this._v;
+    const rows = ROWS.map((r) => ({ ...r, hid: r.id + "-h" }));
+    const index = [{ t: "IA and state transitions", href: "#ia" }, ...ROWS.map((r) => ({ t: r.title, href: "#" + r.id })), { t: "Accessibility behaviour", href: "#a11y-spec" }, { t: "Coverage table", href: "#coverage" }].map((x, i) => ({ ...x, n: String(i + 1).padStart(2, "0") }));
+    const axes = [
+      ["Layout", "phone 360/390 · split 375 · split 600 · tablet portrait · tablet landscape · desktop", "Rotation and split changes keep text, caret, selection, uploads and open panels. Panels re-anchor.", "Proposed"],
+      ["Intent", "new · reply to topic · reply to person · edit · edit first post", "Reply as linked topic moves a reply to new with a link back.", "Native actions"],
+      ["Editor mode", "rich text · Markdown", "Blocked while uploads or link previews are pending.", "Native; placement proposed"],
+      ["Keyboard and panels", "software open / hidden · hardware · Format · More · link · alt · mentions · sheets", "Format, link, alt and mentions keep the software keyboard; More does on tablet; modal sheets hide it.", "Proposed; device validation pending"],
+      ["Draft", "none · saving · saved · failed · offline · changed elsewhere", "Never shown as saved unless saved. Close waits for saving; blocked when failed or offline.", "POST /drafts observed; failures proposed"],
+      ["Upload (per image)", "uploading n% · done · failed", "Independent per image. Submit and mode switch wait for all.", "Native pipeline; inline UI proposed"],
+      ["Submission", "idle · submitting · published · edit saved · pending · failed (offline, rate, rejected, error, conflict, permission, closed, session)", "Submitting ignores repeat taps. Every failure returns to the editor with content intact.", "Source; not submitted in research"],
+    ].map(([k, v, t, e]) => ({ k, v, t, e }));
+    const dev = [
+      ["Composer size", "Full height", "Docked sheet (portrait top 330px; landscape centred 880px). Full height in landscape with software keyboard, and always below 700px wide.", "Docked over the page; fullscreen on request", "Full height"],
+      ["Primary action", "Top right", "Top right in every variant", "Bottom right, beside draft status", "Top right"],
+      ["Format panel", "Tray above the strip", "Tray above the strip, 560px content", "Tray above the strip", "Tray"],
+      ["More", "Takes the keyboard's slot", "Popover above the strip; keyboard stays", "Popover", "Slot"],
+      ["Sheets and dialogs", "Bottom sheets", "Centred form sheets (540px)", "Centred", "Bottom sheets"],
+      ["Preview (Markdown)", "Inline toggle", "Side by side at ≥1000px landscape; otherwise inline", "Side by side", "Inline"],
+      ["Caret", "Kept 16px above the strip", "Kept above the strip; the scroll area ends at it", "Native", "Kept above the strip"],
+      ["Safe areas", "Status 47, home 34", "Status 24, home 20", "—", "Status 24, home 20"],
+      ["Hardware keyboard", "—", "No drawn keyboard, no Hide keyboard; Esc minimizes; shortcuts", "Native shortcuts", "Same as tablet"],
+    ].map(([k, a, b, c, d]) => ({ k, a, b, c, d }));
+    const a11y = [
+      ["Focus order", "Save and close → Minimize → Fullscreen (tablet) → primary action → destination → title → similar topics → body → notices → open panel → tool strip → Hide keyboard. On desktop the primary action is last."],
+      ["Visible focus", "2px accent outline, 2px offset, on every control. The writing area shows its caret instead of a ring."],
+      ["Escape and Back", "Closes the top layer in order: mention list, quote button, sheet or dialog, panel, selected block. Then, on desktop or with a hardware keyboard, minimizes. Android Back follows the same order (proposed)."],
+      ["Focus restoration", "Closing a sheet returns focus to the control that opened it, or to the saved caret in the text. Errors on submit move focus to the first invalid field."],
+      ["Announcements", "One polite live region: draft state changes (not every save), uploads added or failed, link preview result, suggestions count, submit result. Banners use role=alert. Dialogs use alertdialog with a labelled heading."],
+      ["Targets", "44px minimum for every touch control, including upload actions and banner buttons."],
+      ["Zoom and large text", "Reflows at 150% and 200%; long titles and category paths wrap. Below 330 CSS px the strip shows icons with accessible names."],
+      ["Direction", "Interface mirrors in RTL through logical properties. Each paragraph, title and form answer takes its own direction from its text."],
+      ["Reduced motion", "Height and position transitions and spinners stop; status text still changes."],
+    ].map(([k, v]) => ({ k, v }));
+    const cov = COV.map(([id, name, st, links, route, rec, ev, test]) => ({ id, name, status: S[st][0], bg: S[st][1], ink: S[st][2], links: [...L(links), { t: "▶ " + route, h: PR + route }], rec, ev, test }));
+    return (this._v = { index, rowsAll: rows, axesHead: ["Axis", "Values", "Transition rule", "Evidence"], axes, devHead: ["Rule", "Phone", "Tablet", "Desktop", "Narrow split"], dev, a11y, covHead: ["ID", "Requirement", "Design", "Frames · route", "Recovery", "Native evidence vs assumption", "Test"], cov });
+  }
+}
+</script>
+</body>
+</html>

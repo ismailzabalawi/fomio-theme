@@ -1,0 +1,3 @@
+/* Stock Discourse icon set: Font Awesome 6 Free (solid + regular). Previews load it from CDN;
+   in Discourse the core SVG sprite supplies the same glyphs (add extras via the svg_icons modifier). */
+@import url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css");

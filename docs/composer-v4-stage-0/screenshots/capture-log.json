@@ -1,0 +1,971 @@
+{
+ "browser": "HeadlessChrome/153.0.8010.12",
+ "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+ "results": [
+  {
+   "sid": "S01",
+   "outName": "S01__M1__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 12,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":2,\"timestamp\":1790757812300.21,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/supp"
+   ]
+  },
+  {
+   "sid": "S02",
+   "outName": "S02__M2__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 16,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":3,\"timestamp\":1790757813606.133,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S03",
+   "outName": "S03__M3__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 20,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":4,\"timestamp\":1790757814961.71,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/supp"
+   ]
+  },
+  {
+   "sid": "S04",
+   "outName": "S04__C05__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "JetBrains Mono",
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 14,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":5,\"timestamp\":1790757816320.751,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S05",
+   "outName": "S05__C09__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 13,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":6,\"timestamp\":1790757817664.343,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S06",
+   "outName": "S06__TAB-9__834x1194__dark.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 834,
+    "h": 1194,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 21,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":7,\"timestamp\":1790757819020.817,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S07",
+   "outName": "S07__TAB-9__834x1194__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 834,
+    "h": 1194,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 21,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":8,\"timestamp\":1790757820389.643,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S08",
+   "outName": "S08__C07-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":9,\"timestamp\":1790757821765.915,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S09",
+   "outName": "S09__C07-6__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 16,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":10,\"timestamp\":1790757823125.218,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S10",
+   "outName": "S10__C10-2__390x844__dark.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 11,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":11,\"timestamp\":1790757824480.593,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S11",
+   "outName": "S11__C10-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 13,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":12,\"timestamp\":1790757825831.856,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S12",
+   "outName": "S12__C06-3__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 17,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":13,\"timestamp\":1790757827184.038,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S13",
+   "outName": "S13__C06-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 17,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":14,\"timestamp\":1790757828540.106,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S14",
+   "outName": "S14__C06-6__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":15,\"timestamp\":1790757829897.388,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S15",
+   "outName": "S15__C06-7__1280x800__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 1280,
+    "h": 800,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 17,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":16,\"timestamp\":1790757831253.049,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S16",
+   "outName": "S16__C08-1__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 22,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":17,\"timestamp\":1790757832613.232,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S17",
+   "outName": "S17__C08-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 14,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":18,\"timestamp\":1790757833971.657,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S18",
+   "outName": "S18__C08-8__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":19,\"timestamp\":1790757835327.382,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S19",
+   "outName": "S19__C08-10__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 16,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":20,\"timestamp\":1790757836684.44,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S20",
+   "outName": "S20__C12-1__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 14,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":21,\"timestamp\":1790757838040.689,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S21",
+   "outName": "S21__C12-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":22,\"timestamp\":1790757839393.57,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S22",
+   "outName": "S22__C12-5__390x844__dark.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 14,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":23,\"timestamp\":1790757840749.125,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S23",
+   "outName": "S23__C15-1__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":24,\"timestamp\":1790757842079.584,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S24",
+   "outName": "S24__C15-3__390x844__dark.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 12,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":25,\"timestamp\":1790757843446.297,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S25",
+   "outName": "S25__C13-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":26,\"timestamp\":1790757844798.133,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S26",
+   "outName": "S26__C19-3__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 12,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":27,\"timestamp\":1790757846154.724,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S27",
+   "outName": "S27__C19-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":28,\"timestamp\":1790757847509.25,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/sup"
+   ]
+  },
+  {
+   "sid": "S28",
+   "outName": "S28__C16-1__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":29,\"timestamp\":1790757848864.633,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S29",
+   "outName": "S29__C16-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 13,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":30,\"timestamp\":1790757850252.241,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S30",
+   "outName": "S30__C17__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 8,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":31,\"timestamp\":1790757851605.839,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S31",
+   "outName": "S31__C18-4__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 9,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":32,\"timestamp\":1790757852958.833,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S32",
+   "outName": "S32__TAB-1__834x1194__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 834,
+    "h": 1194,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 20,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":33,\"timestamp\":1790757854314.159,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S33",
+   "outName": "S33__TAB-3__1194x834__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 1194,
+    "h": 834,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 19,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":34,\"timestamp\":1790757855683.456,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S34",
+   "outName": "S34__TAB-4__1194x834__light__hwkb.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 1194,
+    "h": 834,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 24,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":35,\"timestamp\":1790757857056.826,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S35",
+   "outName": "S35__TAB-5__600x834__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 600,
+    "h": 834,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 19,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":36,\"timestamp\":1790757858428.187,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S36",
+   "outName": "S36__TAB-6__375x834__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 375,
+    "h": 834,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 16,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":37,\"timestamp\":1790757859796.238,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S37",
+   "outName": "S37__TAB-8__834x1194__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 834,
+    "h": 1194,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 26,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":38,\"timestamp\":1790757861155.737,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S38",
+   "outName": "S38__D-1__1280x800__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 1280,
+    "h": 800,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 12,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":39,\"timestamp\":1790757862515.233,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S39",
+   "outName": "S39__C11__1280x800__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 1280,
+    "h": 800,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":40,\"timestamp\":1790757863883.677,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S40",
+   "outName": "S40__A-1__390x844__light__zoom1.5.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844.5,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":41,\"timestamp\":1790757865250.404,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S41",
+   "outName": "S41__C12-4__390x844__light__zoom1.5.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844.5,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 15,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":42,\"timestamp\":1790757866611.949,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S42",
+   "outName": "S42__A-4-D__360x740__dark__rtl.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 360,
+    "h": 740,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 16,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":43,\"timestamp\":1790757867969.228,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S43",
+   "outName": "S43__A-5__360x740__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 360,
+    "h": 740,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 14,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":44,\"timestamp\":1790757869318.267,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  },
+  {
+   "sid": "S44",
+   "outName": "S44__M5__390x844__light.png",
+   "ok": true,
+   "info": {
+    "frame": true,
+    "ready": true,
+    "w": 390,
+    "h": 844,
+    "faces": [
+     "Roboto Slab",
+     "Source Sans 3",
+     "Font Awesome 6 Free"
+    ],
+    "icons": 9,
+    "faOk": true
+   },
+   "errors": [
+    "{\"type\":\"error\",\"args\":[{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"TypeError\",\"description\":\"TypeError: Cannot read properties of undefined (reading 'GEO')\\n    at Component.geo (eval at evalDcLogic (http://127.0.0.1:8765/mockups/support.js:844:16), <anonymous>:22:19)\\n    at Component.renderVa",
+    "{\"type\":\"warning\",\"args\":[{\"type\":\"string\",\"value\":\"[dc-runtime] FmComposer4: {{ announce }} never resolved — rendered as empty\"}],\"executionContextId\":45,\"timestamp\":1790757870673.493,\"stackTrace\":{\"callFrames\":[{\"functionName\":\"warnUnresolved\",\"scriptId\":\"3\",\"url\":\"http://127.0.0.1:8765/mockups/su"
+   ]
+  }
+ ]
+}

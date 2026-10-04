@@ -1,0 +1,22 @@
+{
+  "status": "local-review-candidate; not deployed",
+  "tested_core_commit": "7b4f0970506fb0ce7d4b6a851d252ace418330c8",
+  "native_layout_setting": "enable_composer_redesign",
+  "archive": "fomio-composer-review.zip",
+  "archive_sha256": "f0bc4a0ebac3ca6cdb50cb524bfbdd17ccb8d4b7c9c25f49b7a25fa0d52f9989",
+  "files": {
+    "about.json": "761c40e774fdd39f9c72a1147f05d959fcfdd7bf6763b18b309bb9d05ffed632",
+    "common/common.scss": "766ce562e659eee5e9ee20661e26f899d1d1b402abc244135efe7f798710afb6",
+    "javascripts/discourse/api-initializers/fomio-bottom-bar.gjs": "c093d333a73ce82b76b8c57ba872494d5f5d4e7f9c31ccde380f59f5eaaa431c",
+    "javascripts/discourse/api-initializers/fomio-category-context.gjs": "ebd083bfa241ae0f85c5949c05c3b749165efe4f78ccc037a78294b7e279977e",
+    "javascripts/discourse/api-initializers/fomio-composer-audience.gjs": "1b3acc3105b69e1478522896c65e2e688614dc53418759d868833b47ea100ee3",
+    "javascripts/discourse/api-initializers/fomio-composer-category-search.js": "64641dae9ec3a1430a35677af656c190b55cc86da2ee1c903396c198af68a868",
+    "javascripts/discourse/api-initializers/fomio-composer-feedback.gjs": "c7159f8ca74a1bf4ad0b6240573ca7d5fbb451e4ac0e1fbed976b8e331eb2fb3",
+    "javascripts/discourse/api-initializers/fomio-composer.js": "b3e4e6a56654680e461e2ab12c4d5128e5505faacd4f7ec48390d5e724834ae5",
+    "javascripts/discourse/api-initializers/fomio-mobile-tabs.js": "ec1ba859c1f064b12dc6462bbaae2b8a30e1421602216753272cc9e03e99a309",
+    "javascripts/discourse/api-initializers/fomio-tracked-filter.js": "72975060ba56f5f4d976c34eaae8453f6804541f2497863a5ce8acbd6a934e16",
+    "javascripts/discourse/api-initializers/fomio-visitor-empty-list.gjs": "58a5c72eb7ffa4b975c513ca7248df464257811425db43b97d7a7936700e3a05",
+    "javascripts/discourse/lib/fomio-composer-format.js": "f2cab7ca43d9048718e90e20ed685b5287b07f4d28e642ef4a41aa133d5986be",
+    "locales/en.yml": "b75ab73c08c63e0b7dfc09c86ee8f98fa9bee587e0c93e364d5737521f818345"
+  }
+}

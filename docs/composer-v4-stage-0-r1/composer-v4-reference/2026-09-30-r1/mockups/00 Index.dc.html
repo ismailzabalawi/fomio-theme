@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+<style>body{margin:0;background:#F4F3F7}a{color:var(--d-link-color)}a:hover{text-decoration:underline}</style>
+</helmet>
+<main style="max-width:840px;margin:0 auto;padding:64px 24px 96px;display:flex;flex-direction:column;gap:32px;font-family:var(--font-family);color:#1B1A1F">
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <span style="font:700 26px/1 var(--heading-font-family);letter-spacing:-0.02em">fomio</span>
+    <h1 style="margin:0;font:700 40px/1.1 var(--heading-font-family)">Web screen pack</h1>
+    <p style="margin:0;font:18px/1.5 var(--font-family);color:#45434C;max-width:60ch;text-wrap:pretty">Desktop, tablet and mobile mockups for a Discourse theme. Every screen keeps the stock routes and data: global header, context header, nav pills, content. On mobile the bottom bar replaces the hamburger and avatar. Content is sample data. Each screen has a light/AMOLED switch in Tweaks.</p>
+  </header>
+  <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid #DDDBE3">
+    <sc-for list="{{ screens }}" as="s" hint-placeholder-count="7">
+      <li style="border-bottom:1px solid #DDDBE3">
+        <a href="{{ s.href }}" style="display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:18px 8px;color:#1B1A1F;text-decoration:none;border-radius:8px" style-hover="background:#EAE8F0">
+          <span style="font:700 15px/1 var(--d-font-family--monospace);color:#5E5C66">{{ s.n }}</span>
+          <span style="display:flex;flex-direction:column;gap:4px"><strong style="font:700 21px/1.2 var(--heading-font-family)">{{ s.name }}</strong><span style="font:16px/1.45 var(--font-family);color:#45434C">{{ s.desc }}</span></span>
+          <span style="font:14px/1 var(--font-family);color:#5E5C66">{{ s.boards }}</span>
+        </a>
+      </li>
+    </sc-for>
+  </ol>
+  <p style="margin:0;font:15px/1.5 var(--font-family);color:#5E5C66">Design rules and open questions: <a href="README.md">mockups/README.md</a>. Composer handoff: <a href="06 Composer handoff.md">06 Composer handoff.md</a>. Shared parts: FmHeader, FmBottomNav, FmTopicCard, FmPost, FmCategoryHeader, FmComposer.</p>
+  <p style="margin:0;font:15px/1.5 var(--font-family);color:#5E5C66">Labels are preview fixtures of the live site's rendered wording. "New Byte" is the confirmed override; the rest show core defaults. Retired: <a href="../ui_kits/web/index.html">ui_kits/web</a> (old sidebar click-through).</p>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const k = this.props.scheme || "light";
+    if (this._v && this._k === k) return this._v;
+    this._k = k;
+    return (this._v = this._rv());
+  }
+  _rv() {
+    const screens = [
+      ["01", "Home", "Latest card feed, Hot, Tracked filter, signed-in and signed-out, feed states.", "1a–1g"],
+      ["02", "Categories", "Native categories and latest topics.", "2a–2b"],
+      ["03", "Category and subcategory", "Shared context header, notification level.", "3a–3d"],
+      ["04", "Topic", "First post, topic map, flat replies, timeline, login prompt.", "4a–4c"],
+      ["05", "Search", "Full-page search results.", "5a–5b"],
+      ["06", "Composer", "v4, awaiting approval: tablets, links, quotes, drafts, permissions, advanced inserts, completion, guided form, uploads and accessibility, with a traceable C01–C19 coverage table. v3, v2, v1 kept for comparison.", "M1–M6, C01–C19, TAB, A"],
+      ["06.1", "Composer prototype", "One interactive v4 prototype with viewport, keyboard, network, draft, upload, preview, mention, plugin and server-result simulation.", "all routes"],
+      ["07", "Member profile", "Profile header and activity.", "7a–7b"],
+    ].map(([n, name, desc, boards]) => ({ n, name, desc, boards, href: n + " " + name.split(" ")[0].replace("New", "Composer").replace("Member", "Profile") + ".dc.html" }));
+    screens[5].href = "06 Composer.dc.html";
+    screens[6].href = "06.1 Composer Prototype.dc.html";
+    screens[7].href = "07 Profile.dc.html";
+    return { screens };
+  }
+}
+</script>
+</body>
+</html>

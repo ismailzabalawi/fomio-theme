@@ -1,0 +1,386 @@
+[
+[
+"S01",
+"_shot_S01.dc.html",
+"390",
+"844",
+"S01__M1__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"M1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S02",
+"_shot_S02.dc.html",
+"390",
+"844",
+"S02__M2__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"M2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S03",
+"_shot_S03.dc.html",
+"390",
+"844",
+"S03__M3__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"M3\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S04",
+"_shot_S04.dc.html",
+"390",
+"844",
+"S04__C05__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C05\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S05",
+"_shot_S05.dc.html",
+"390",
+"844",
+"S05__C09__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C09\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S06",
+"_shot_S06.dc.html",
+"834",
+"1194",
+"S06__TAB-9__834x1194__dark.png",
+"{\"vp\": \"tabletP\", \"scheme\": \"dark\", \"preset\": \"C03\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S07",
+"_shot_S07.dc.html",
+"834",
+"1194",
+"S07__TAB-11__834x1194__light.png",
+"{\"vp\": \"tabletP\", \"scheme\": \"light\", \"preset\": \"C06-3\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S08",
+"_shot_S08.dc.html",
+"390",
+"844",
+"S08__C07-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C07-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S09",
+"_shot_S09.dc.html",
+"390",
+"844",
+"S09__C07-6__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C07-6\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S10",
+"_shot_S10.dc.html",
+"390",
+"844",
+"S10__C10-2__390x844__dark.png",
+"{\"vp\": \"phone\", \"scheme\": \"dark\", \"preset\": \"C10-2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S11",
+"_shot_S11.dc.html",
+"390",
+"844",
+"S11__C10-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C10-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S12",
+"_shot_S12.dc.html",
+"390",
+"844",
+"S12__C06-3__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C06-3\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S13",
+"_shot_S13.dc.html",
+"390",
+"844",
+"S13__C06-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C06-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S14",
+"_shot_S14.dc.html",
+"390",
+"844",
+"S14__C06-6__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C06-6\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S15",
+"_shot_S15.dc.html",
+"1280",
+"800",
+"S15__C06-7__1280x800__light.png",
+"{\"vp\": \"desktop\", \"scheme\": \"light\", \"preset\": \"C06-7\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S16",
+"_shot_S16.dc.html",
+"390",
+"844",
+"S16__C08-1__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C08-1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S17",
+"_shot_S17.dc.html",
+"390",
+"844",
+"S17__C08-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C08-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S18",
+"_shot_S18.dc.html",
+"390",
+"844",
+"S18__C08-8__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C08-8\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S19",
+"_shot_S19.dc.html",
+"390",
+"844",
+"S19__C08-10__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C08-10\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S20",
+"_shot_S20.dc.html",
+"390",
+"844",
+"S20__C12-1__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C12-1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S21",
+"_shot_S21.dc.html",
+"390",
+"844",
+"S21__C12-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C12-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S22",
+"_shot_S22.dc.html",
+"390",
+"844",
+"S22__C12-5__390x844__dark.png",
+"{\"vp\": \"phone\", \"scheme\": \"dark\", \"preset\": \"C12-5\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S23",
+"_shot_S23.dc.html",
+"390",
+"844",
+"S23__C15-1__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C15-1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S24",
+"_shot_S24.dc.html",
+"390",
+"844",
+"S24__C15-3__390x844__dark.png",
+"{\"vp\": \"phone\", \"scheme\": \"dark\", \"preset\": \"C15-3\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S25",
+"_shot_S25.dc.html",
+"390",
+"844",
+"S25__C13-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C13-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S26",
+"_shot_S26.dc.html",
+"390",
+"844",
+"S26__C19-3__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C19-3\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S27",
+"_shot_S27.dc.html",
+"390",
+"844",
+"S27__C19-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C19-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S28",
+"_shot_S28.dc.html",
+"390",
+"844",
+"S28__C16-1__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C16-1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S29",
+"_shot_S29.dc.html",
+"390",
+"844",
+"S29__C16-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C16-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S30",
+"_shot_S30.dc.html",
+"390",
+"844",
+"S30__C17__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C17\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S31",
+"_shot_S31.dc.html",
+"390",
+"844",
+"S31__C18-4__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C18-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S32",
+"_shot_S32.dc.html",
+"834",
+"1194",
+"S32__TAB-1__834x1194__light.png",
+"{\"vp\": \"tabletP\", \"scheme\": \"light\", \"preset\": \"M2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S33",
+"_shot_S33.dc.html",
+"1194",
+"834",
+"S33__TAB-3__1194x834__light.png",
+"{\"vp\": \"tabletL\", \"scheme\": \"light\", \"preset\": \"M2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S34",
+"_shot_S34.dc.html",
+"1194",
+"834",
+"S34__TAB-4__1194x834__light__hwkb.png",
+"{\"vp\": \"tabletL\", \"scheme\": \"light\", \"preset\": \"M3\", \"rtl\": false, \"hw\": true, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S35",
+"_shot_S35.dc.html",
+"600",
+"834",
+"S35__TAB-5__600x834__light.png",
+"{\"vp\": \"split600\", \"scheme\": \"light\", \"preset\": \"M2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S36",
+"_shot_S36.dc.html",
+"375",
+"834",
+"S36__TAB-6__375x834__light.png",
+"{\"vp\": \"splitNarrow\", \"scheme\": \"light\", \"preset\": \"M2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S37",
+"_shot_S37.dc.html",
+"834",
+"1194",
+"S37__TAB-8__834x1194__light.png",
+"{\"vp\": \"tabletP\", \"scheme\": \"light\", \"preset\": \"C08-1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S38",
+"_shot_S38.dc.html",
+"1280",
+"800",
+"S38__D-1__1280x800__light.png",
+"{\"vp\": \"desktop\", \"scheme\": \"light\", \"preset\": \"C01\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S39",
+"_shot_S39.dc.html",
+"1280",
+"800",
+"S39__C11__1280x800__light.png",
+"{\"vp\": \"desktop\", \"scheme\": \"light\", \"preset\": \"C11\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S40",
+"_shot_S40.dc.html",
+"390",
+"844",
+"S40__A-1__390x844__light__zoom1.5.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C04\", \"rtl\": false, \"hw\": false, \"zoom\": \"1.5\", \"rm\": false}"
+],
+[
+"S41",
+"_shot_S41.dc.html",
+"390",
+"844",
+"S41__C12-4__390x844__light__zoom1.5.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C12-4\", \"rtl\": false, \"hw\": false, \"zoom\": \"1.5\", \"rm\": false}"
+],
+[
+"S42",
+"_shot_S42.dc.html",
+"360",
+"740",
+"S42__A-4-D__360x740__dark__rtl.png",
+"{\"vp\": \"narrow\", \"scheme\": \"dark\", \"preset\": \"R1\", \"rtl\": true, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S43",
+"_shot_S43.dc.html",
+"360",
+"740",
+"S43__A-5__360x740__light.png",
+"{\"vp\": \"narrow\", \"scheme\": \"light\", \"preset\": \"L1\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S44",
+"_shot_S44.dc.html",
+"390",
+"844",
+"S44__M5__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"M5\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S45",
+"_shot_S45.dc.html",
+"390",
+"844",
+"S45__C13-6__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C13-6\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S46",
+"_shot_S46.dc.html",
+"390",
+"844",
+"S46__C12-9__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C12-9\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S47",
+"_shot_S47.dc.html",
+"390",
+"844",
+"S47__C18-2__390x844__light.png",
+"{\"vp\": \"phone\", \"scheme\": \"light\", \"preset\": \"C18-2\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+],
+[
+"S48",
+"_shot_S48.dc.html",
+"390",
+"844",
+"S48__C08-5__390x844__dark.png",
+"{\"vp\": \"phone\", \"scheme\": \"dark\", \"preset\": \"C08-5\", \"rtl\": false, \"hw\": false, \"zoom\": \"1\", \"rm\": false}"
+]
+]

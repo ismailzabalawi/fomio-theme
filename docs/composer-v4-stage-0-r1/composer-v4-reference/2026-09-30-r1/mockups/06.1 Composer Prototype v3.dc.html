@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+<style>body{margin:0;background:#E9E8EE}a{color:#4A2FBF}a:hover{text-decoration:underline}[data-rail] *:focus-visible{outline:2px solid #5B3FD6;outline-offset:2px}</style>
+</helmet>
+<div style="display:flex;align-items:flex-start;min-height:100vh;font-family:var(--font-family);color:#1B1A1F">
+  <aside data-rail="" aria-label="Prototype controls" style="position:sticky;top:0;flex:none;width:300px;height:100vh;box-sizing:border-box;overflow:auto;padding:22px 18px 40px;background:#F7F6FA;border-right:1px solid #DDDBE3;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <a href="06 Composer v3.dc.html" style="font:700 14px/1 var(--font-family);color:#5E5C66">← 06 Composer overview</a>
+      <h1 style="margin:0;font:700 22px/1.2 var(--heading-font-family)">Composer prototype · v3 (superseded)</h1>
+      <p style="margin:0;font:14px/1.45 var(--font-family);color:#45434C">Local simulation. Nothing is sent to Fomio. The drawn keyboard is a depiction; typing on your real keyboard works too. These controls sit outside the product.</p>
+    </div>
+    <div role="group" aria-label="Frame" style="display:flex;flex-direction:column;gap:6px">
+      <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">Frame</span>
+      <sc-for list="{{ seg }}" as="g" hint-placeholder-count="3">
+        <div role="radiogroup" aria-label="{{ g.name }}" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px">
+          <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><button role="radio" aria-checked="{{ o.on }}" onClick="{{ o.set }}" style="height:34px;border-radius:8px;font:700 13px/1 var(--font-family);cursor:pointer;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.ink }}">{{ o.label }}</button></sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div role="group" aria-label="Simulate" style="display:flex;flex-direction:column;gap:6px">
+      <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">Simulate</span>
+      <sc-for list="{{ simSeg }}" as="g" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:4px"><span style="font:13px/1 var(--font-family);color:#45434C">{{ g.name }}</span>
+          <div role="radiogroup" aria-label="{{ g.name }}" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px">
+            <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><button role="radio" aria-checked="{{ o.on }}" onClick="{{ o.set }}" style="min-height:32px;padding:4px;border-radius:8px;font:700 12px/1.1 var(--font-family);cursor:pointer;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.ink }}">{{ o.label }}</button></sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div role="status" aria-live="polite" style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:8px;background:#fff;border:1px solid #DDDBE3">
+      <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">Current state</span>
+      <span style="font:13px/1.4 var(--font-family)">{{ status }}</span>
+      <button onClick="{{ reset }}" style="align-self:flex-start;margin-top:4px;height:30px;padding:0 10px;border:1px solid #BDBAC6;border-radius:8px;background:#fff;font:700 13px/1 var(--font-family);cursor:pointer">Reset this state</button>
+    </div>
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+      <div role="group" aria-label="{{ g.name }}" style="display:flex;flex-direction:column;gap:2px">
+        <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66;padding-bottom:4px">{{ g.name }}</span>
+        <sc-for list="{{ g.items }}" as="f" hint-placeholder-count="6">
+          <button onClick="{{ f.go }}" aria-current="{{ f.cur }}" style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:baseline;min-height:32px;padding:6px 8px;border:0;border-radius:8px;text-align:left;cursor:pointer;background:{{ f.bg }};color:{{ f.ink }}" style-hover="background:#E7E0FF"><span style="font:700 12px/1 var(--d-font-family--monospace)">{{ f.id }}</span><span style="font:14px/1.3 var(--font-family)">{{ f.name }}</span></button>
+        </sc-for>
+      </div>
+    </sc-for>
+  </aside>
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 24px 60px;overflow:auto">
+    <p style="margin:0;max-width:760px;font:15px/1.45 var(--font-family);color:#45434C;text-align:center">{{ hint }}</p>
+    <dc-import name="FmComposer3" viewport="{{ vp }}" scheme="{{ scheme }}" rtl="{{ rtl }}" preset="{{ preset }}" live="{{ true }}" sim="{{ sim }}" reset-key="{{ rk }}" on-state="{{ onState }}" hint-size="390px,844px"></dc-import>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MOMENTS = [["M1", "Opening a new post"], ["M2", "Writing, keyboard open"], ["M3", "Selecting and formatting"], ["M4", "Photo uploading"], ["M4b", "Photo failed, retry"], ["M5", "Left: minimized"], ["M5b", "Left: saved and closed"], ["M6", "Submit: fix fields"], ["M6b", "Submit: offline"]];
+const MATRIX = [["C01", "New topic, empty"], ["C02", "From a category"], ["C03", "Destination chooser"], ["C04", "Rich text, mixed content"], ["C05", "Markdown source"], ["C05b", "More: editor preferences"], ["C05p", "Markdown + preview (desktop)"], ["C06", "Image uploading"], ["C06s", "Image selected"], ["C06c", "Image failed"], ["C07", "Caret in a link"], ["C07b", "Link panel"], ["C08", "Build Poll"], ["C09", "Similar topics"], ["C10", "Reply"], ["C10b", "Reply, context open"], ["C11", "Edit first post"], ["C11b", "Edit a reply"], ["C12", "Minimized"], ["C12b", "Discard confirm"], ["C12c", "Drafts, resume"], ["C13", "Validation"], ["C13b", "Rate limited"], ["C14", "Offline, unsaved"], ["C15", "Edit conflict"], ["C16", "Topic published"], ["C16b", "Reply published"], ["C17", "Awaiting approval"], ["C19", "Signed out"], ["C19b", "Closed topic"], ["R1", "RTL writing"], ["L1", "Long title, restricted"]];
+const HINTS = {
+  M1: "Destination is inherited and readable. The title has focus. Type, then press return to move to the body.",
+  M2: "Keep typing: the caret stays above the tool strip. Try Photo, Format or More.",
+  M3: "The selection is real. Open or close Format, or use Bold / Italic / Link in the strip; the selection survives.",
+  M4: "Upload progresses in place. Set Upload to “Fail once” and add another photo to see Retry beside it.",
+  M5: "Tap the draft strip to resume. Text and caret position return.",
+  M6: "Fix the title or body; each error clears as you correct it. Submit again.",
+  M6b: "Switch Network back to Online, then Try Again. Your text never leaves the screen.",
+};
+class Component extends DCLogic {
+  state = { vp: "phone", scheme: "light", rtl: false, preset: "M2", rk: 0, status: "", net: "online", upload: "ok", result: "published" };
+  componentDidMount() { this._h = () => { const id = location.hash.slice(1); if (id && id !== this.state.preset) this.setState({ preset: id, rtl: id === "R1" ? true : this.state.rtl, vp: id === "C05p" || id === "C11" ? "desktop" : this.state.vp }); }; this._h(); window.addEventListener("hashchange", this._h); }
+  componentWillUnmount() { window.removeEventListener("hashchange", this._h); }
+  renderVals() {
+    const s = this.state;
+    const opt = (label, on, set) => ({ label, on: String(on), set, bd: on ? "#1B1A1F" : "#BDBAC6", bg: on ? "#1B1A1F" : "#fff", ink: on ? "#fff" : "#1B1A1F" });
+    const seg = [
+      { name: "Viewport", opts: [["phone", "Phone 390"], ["narrow", "Narrow 360"], ["desktop", "Desktop"]].map(([k, l]) => opt(l, s.vp === k, () => this.setState({ vp: k }))) },
+      { name: "Scheme", opts: [["light", "Light"], ["dark", "AMOLED"]].map(([k, l]) => opt(l, s.scheme === k, () => this.setState({ scheme: k }))) },
+      { name: "Direction", opts: [[false, "LTR"], [true, "RTL"]].map(([k, l]) => opt(l, s.rtl === k, () => this.setState({ rtl: k }))) },
+    ];
+    const simSeg = [
+      { name: "Network", opts: [["online", "Online"], ["offline", "Offline"]].map(([k, l]) => opt(l, s.net === k, () => this.setState({ net: k }))) },
+      { name: "Upload", opts: [["ok", "Succeeds"], ["failonce", "Fail once"], ["fail", "Always fail"]].map(([k, l]) => opt(l, s.upload === k, () => this.setState({ upload: k }))) },
+      { name: "Server result", opts: [["published", "Publish"], ["pending", "Approval"], ["rate", "Rate limit"], ["conflict", "Conflict"]].map(([k, l]) => opt(l, s.result === k, () => this.setState({ result: k }))) },
+    ];
+    const go = (id) => () => { history.replaceState(null, "", "#" + id); this.setState((p) => ({ preset: id, rk: p.rk + 1, rtl: id === "R1" ? true : p.rtl, vp: id === "C05p" || id === "C11" ? "desktop" : p.vp, net: id === "M6b" || id === "C14" ? "offline" : p.net })); };
+    const it = ([id, name]) => ({ id, name, go: go(id), cur: s.preset === id ? "true" : undefined, bg: s.preset === id ? "#1B1A1F" : "transparent", ink: s.preset === id ? "#fff" : "#1B1A1F" });
+    if (!this._sim || this._simK !== s.net + s.upload + s.result) { this._simK = s.net + s.upload + s.result; this._sim = { net: s.net, upload: s.upload, result: s.result }; }
+    if (!this._onState) this._onState = (t) => this.setState({ status: t });
+    return {
+      seg, simSeg, groups: [{ name: "Primary review sequence", items: MOMENTS.map(it) }, { name: "State matrix", items: MATRIX.map(it) }],
+      vp: s.vp, scheme: s.scheme, rtl: s.rtl, preset: s.preset, rk: s.rk, sim: this._sim, onState: this._onState, status: s.status || "—",
+      reset: () => this.setState({ rk: s.rk + 1 }), hint: HINTS[s.preset] || "Every control works locally. Esc closes the top panel; on desktop it then minimizes. Ctrl/⌘+Enter submits.",
+    };
+  }
+}
+</script>
+</body>
+</html>

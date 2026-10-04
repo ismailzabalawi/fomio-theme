@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+</helmet>
+<nav aria-label="Primary" style="display:flex;flex-direction:column;background:var(--header-background);border-top:1px solid var(--content-border-color)">
+  <div style="display:flex;height:56px">
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="5">
+      <a href="#" aria-current="{{ it.current }}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:{{ it.color }};font:700 11px/1 var(--font-family);text-decoration:none;white-space:nowrap" style-hover="background:var(--d-hover)">
+        <span style="position:relative;height:22px;display:flex;align-items:center">
+          <sc-if value="{{ it.avatar }}"><span style="width:22px;height:22px;border-radius:50%;background:#56708A;color:#fff;font:700 11px/22px var(--font-family);text-align:center;box-shadow:{{ it.ring }}">J</span></sc-if>
+          <sc-if value="{{ it.icon }}"><i class="{{ it.icon }}" style="font-size:19px;width:24px;text-align:center"></i></sc-if>
+          <sc-if value="{{ it.badge }}"><span style="position:absolute;top:-5px;left:13px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:var(--tertiary);color:var(--on-tertiary);font:700 10px/17px var(--font-family);text-align:center;box-shadow:0 0 0 2px var(--header-background)">{{ it.badge }}</span></sc-if>
+        </span>
+        <span data-fixture="{{ it.key }}">{{ it.label }}</span>
+      </a>
+    </sc-for>
+  </div>
+  <div style="height:34px;box-sizing:border-box;padding-bottom:8px;display:flex;align-items:flex-end;justify-content:center">
+    <span style="width:134px;height:5px;border-radius:3px;background:var(--primary)"></span>
+  </div>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:92},&quot;signedIn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;categories&quot;,&quot;new&quot;,&quot;notifications&quot;,&quot;profile&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;unread&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props, active = p.active || "home", si = p.signedIn !== false;
+    const all = [
+      { key: "home", label: "Home", icon: "fa-solid fa-house" },
+      { key: "categories", label: "Categories", icon: "fa-solid fa-table-cells-large" },
+      { key: "new", label: "New Byte", icon: "fa-solid fa-plus" },
+      { key: "notifications", label: "Notifications", icon: "fa-regular fa-bell", on: "fa-solid fa-bell", badge: p.unread || 0 },
+      { key: "profile", label: "Profile", avatar: true },
+    ];
+    const items = (si ? all : all.slice(0, 2)).map((it) => {
+      const cur = it.key === active;
+      return { ...it, icon: it.avatar ? "" : (cur && it.on ? it.on : it.icon), badge: it.badge || "", current: cur ? "page" : undefined,
+        color: cur ? "var(--tertiary)" : "var(--primary-medium)",
+        ring: cur ? "0 0 0 2px var(--header-background), 0 0 0 4px var(--tertiary)" : "none" };
+    });
+    return { items };
+  }
+}
+</script>
+</body>
+</html>

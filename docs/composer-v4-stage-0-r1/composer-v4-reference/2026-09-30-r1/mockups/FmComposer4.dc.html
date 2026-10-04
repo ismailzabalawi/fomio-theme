@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+<script src="fmc4-lib.js"></script>
+<style>
+[data-fmc4] *:focus-visible{outline:2px solid var(--tertiary);outline-offset:2px}
+[data-fmc4] [data-plain]:focus-visible{outline:none}
+[data-fmc4-body] p{margin:0 0 14px;unicode-bidi:plaintext}
+[data-fmc4-body] h2{margin:18px 0 8px;font:700 22px/1.3 var(--heading-font-family);unicode-bidi:plaintext}
+[data-fmc4-body] h3{margin:16px 0 6px;font:700 19px/1.3 var(--heading-font-family);unicode-bidi:plaintext}
+[data-fmc4-body] blockquote{margin:0 0 14px;padding:8px 14px;border-radius:8px;background:var(--primary-very-low);color:var(--primary-high)}
+[data-fmc4-body] blockquote p{margin:0}
+[data-fmc4-body] ul,[data-fmc4-body] ol{margin:0 0 14px;padding-inline-start:24px}
+[data-fmc4-body] li{unicode-bidi:plaintext}
+[data-fmc4-body] a{color:var(--tertiary);text-decoration:underline}
+[data-fmc4-body]>:first-child{margin-top:0}
+[data-fmc4] ::placeholder{color:var(--primary-medium);opacity:1}
+@keyframes fmc4spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){[data-fmc4] *{animation:none !important;transition:none !important}}
+[data-fmc4][data-rm="1"] *{animation:none !important;transition:none !important}
+</style>
+</helmet>
+<div data-fmc4="" data-scheme="{{ scheme }}" data-rm="{{ rm }}" dir="{{ dir }}" ref="{{ rootRef }}" onKeyDown="{{ onKey }}" style="position:relative;flex:none;overflow:hidden;background:var(--secondary);color:var(--primary);font-family:var(--font-family);box-shadow:0 0 0 1px var(--content-border-color);width:{{ L.w }};height:{{ L.h }};zoom:{{ L.zoom }};border-radius:{{ L.r }}">
+  <span role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">{{ announce }}</span>
+
+  <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ true }}">
+    <div dir="ltr" style="position:absolute;z-index:6;top:0;left:0;right:0;display:flex;align-items:flex-end;justify-content:space-between;box-sizing:border-box;background:var(--secondary);height:{{ L.st }};padding:{{ L.stPad }};font:600 {{ L.stFont }} var(--font-family)"><span>{{ L.clock }}</span><span style="display:flex;gap:6px;font-size:12px"><i class="fa-solid fa-signal"></i><sc-if value="{{ online }}"><i class="fa-solid fa-wifi"></i></sc-if><i class="fa-solid fa-battery-full"></i></span></div>
+  </sc-if>
+
+  <sc-if value="{{ showPage }}" hint-placeholder-val="{{ false }}">
+    <div onMouseUp="{{ onPageUp }}" onTouchEnd="{{ onPageUp }}" style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;top:{{ L.pageTop }}">
+      <dc-import name="FmHeader" mobile="{{ phoneL }}" signed-in="{{ signedIn }}" unread="{{ 3 }}" hint-size="100%,60px"></dc-import>
+      <div ref="{{ pageRef }}" style="flex:1;min-height:0;overflow:auto">
+        <div style="max-width:840px;margin:0 auto;display:flex;flex-direction:column;gap:16px;padding:{{ L.pagePad }}">
+          <sc-if value="{{ pendingNotice }}"><p role="status" style="margin:0;padding:12px 14px;border-radius:8px;background:var(--highlight-low);font:16px/1.45 var(--font-family)">You have <strong>1</strong> post pending.</p></sc-if>
+          <sc-if value="{{ hasDrafts }}">
+            <section aria-label="Drafts" style="display:flex;flex-direction:column;border:1px solid var(--content-border-color);border-radius:12px;overflow:hidden">
+              <h2 style="margin:0;padding:12px 16px;font:700 15px/1 var(--font-family);color:var(--primary-high);border-bottom:1px solid var(--content-border-color)">Drafts</h2>
+              <sc-for list="{{ drafts }}" as="dr" hint-placeholder-count="1">
+                <button onClick="{{ resume }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 16px;border:0;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-regular fa-file-lines" style="color:var(--primary-medium)"></i><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><strong style="font:700 16px/1.3 var(--font-family);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ dr.title }}</strong><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">{{ dr.meta }}</span></span><span style="font:700 15px/1 var(--font-family);color:var(--tertiary)">Resume</span></button>
+              </sc-for>
+            </section>
+          </sc-if>
+          <sc-if value="{{ isFeed }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:12px;padding-top:6px"><h1 style="margin:0;flex:1;font:700 26px/1.15 var(--heading-font-family)">Latest</h1><sc-if value="{{ wideNew }}"><button onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer" style-hover="background:var(--quaternary)"><i class="fa-solid fa-plus"></i><span>New Byte</span></button></sc-if></div>
+            <ul style="list-style:none;margin:0;padding:0;border-top:1px solid var(--content-border-color)">
+              <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3"><li style="display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--content-border-color)"><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">{{ f.meta }}</span><strong style="font:700 18px/1.3 var(--heading-font-family)">{{ f.title }}</strong></li></sc-for>
+            </ul>
+          </sc-if>
+          <sc-if value="{{ isTopic }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:6px"><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">General › Open Discussions</span><h1 style="margin:0;font:700 26px/1.2 var(--heading-font-family);text-wrap:pretty;overflow-wrap:anywhere">{{ topicH1 }}</h1></div>
+            <sc-for list="{{ posts }}" as="po" hint-placeholder-count="3">
+              <article data-post="{{ po.idx }}" style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:14px 12px;margin:0 -12px;border-top:1px solid var(--content-border-color);border-radius:8px;background:{{ po.bg }}">
+                <span style="width:36px;height:36px;border-radius:50%;color:#fff;font:700 15px/36px var(--font-family);text-align:center;background:{{ po.color }}">{{ po.initial }}</span>
+                <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px;min-height:24px;font:15px/1.2 var(--font-family);color:var(--primary-medium)"><strong style="color:var(--primary)">{{ po.name }}</strong><span style="margin-inline-start:auto;display:flex;align-items:center;gap:8px"><sc-if value="{{ po.edited }}"><i class="fa-solid fa-pencil" title="Edited" aria-label="Edited" style="font-size:12px"></i></sc-if>{{ po.when }}</span><sc-if value="{{ po.mine }}"><button onClick="{{ openEdit }}" aria-label="Edit" title="edit this post" style="width:44px;height:44px;margin:-10px -10px -10px 0;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-pencil"></i></button></sc-if><sc-if value="{{ po.canReply }}"><button onClick="{{ po.reply }}" aria-label="Reply" title="begin composing a reply to this post" style="width:44px;height:44px;margin:-10px -10px -10px 0;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-reply"></i></button></sc-if></div>
+                  <div data-fmc4-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ po.html }}"></div>
+                </div>
+              </article>
+            </sc-for>
+            <sc-if value="{{ closed }}"><p style="margin:0;display:flex;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--content-border-color);font:16px/1.45 var(--font-family);color:var(--primary-high)"><i class="fa-solid fa-lock" style="color:var(--primary-medium)"></i><span>This topic is closed. It no longer accepts new replies.</span></p></sc-if>
+            <sc-if value="{{ canReply }}"><div style="display:flex;justify-content:flex-end;border-top:1px solid var(--content-border-color);padding-top:14px"><button onClick="{{ openReply }}" style="display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer"><i class="fa-solid fa-reply"></i><span>Reply</span></button></div></sc-if>
+          </sc-if>
+          <sc-if value="{{ isNewTopic }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:6px"><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium);overflow-wrap:anywhere">{{ newPost.crumb }}</span><h1 style="margin:0;font:700 26px/1.2 var(--heading-font-family);text-wrap:pretty;overflow-wrap:anywhere">{{ newPost.title }}</h1></div>
+            <article style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding-top:14px;border-top:1px solid var(--content-border-color)">
+              <span style="width:36px;height:36px;border-radius:50%;background:#56708A;color:#fff;font:700 15px/36px var(--font-family);text-align:center">J</span>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><div style="display:flex;gap:8px;font:15px/1.2 var(--font-family);color:var(--primary-medium)"><strong style="color:var(--primary)">Jun</strong><span style="margin-inline-start:auto">now</span></div><div data-fmc4-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ newPost.html }}"></div></div>
+            </article>
+          </sc-if>
+        </div>
+      </div>
+      <sc-if value="{{ minimized }}">
+        <div style="flex:none;display:flex;justify-content:center;padding:0 {{ L.minPad }}">
+          <button onClick="{{ resume }}" aria-label="Open the composer" style="flex:1;max-width:840px;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 8px 8px 16px;border:1px solid var(--content-border-color);border-bottom:0;border-radius:12px 12px 0 0;background:var(--secondary);color:var(--primary);text-align:start;cursor:pointer;box-shadow:var(--shadow-composer)"><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 14px/1.2 var(--font-family);color:var(--primary-medium)">{{ minLabel }}</span><strong style="font:700 16px/1.25 var(--font-family);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ minTitle }}</strong></span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--primary-medium)"><i class="fa-solid fa-chevron-up"></i></span></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ phoneL }}">
+        <div style="position:relative;flex:none">
+          <dc-import name="FmBottomNav" signed-in="{{ signedIn }}" active="home" hint-size="100%,90px"></dc-import>
+          <sc-if value="{{ signedIn }}"><button onClick="{{ openNew }}" aria-label="New Byte" style="position:absolute;top:0;left:40%;width:20%;height:56px;border:0;background:transparent;cursor:pointer"></button></sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showComposer }}" hint-placeholder-val="{{ true }}">
+    <section aria-label="{{ composerLabel }}" aria-busy="{{ submitting }}" onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="position:absolute;z-index:4;bottom:0;display:flex;flex-direction:column;background:var(--secondary);transition:top 240ms cubic-bezier(0.22,0.61,0.36,1),left 240ms cubic-bezier(0.22,0.61,0.36,1),right 240ms cubic-bezier(0.22,0.61,0.36,1);top:{{ C.top }};left:{{ C.left }};right:{{ C.right }};border-radius:{{ C.r }};box-shadow:{{ C.shadow }};border:{{ C.border }}">
+
+      <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;display:flex;align-items:center;gap:2px;height:56px;padding:0 12px 0 4px;border-bottom:1px solid var(--content-border-color)">
+          <button onClick="{{ saveClose }}" aria-label="Save and close" aria-busy="{{ closing }}" disabled="{{ submitting }}" style="width:44px;height:44px;flex:none;border:0;border-radius:8px;background:none;color:var(--primary);font-size:19px;cursor:pointer"><i class="{{ closeIcon }}" style="animation:{{ closeAnim }}"></i></button>
+          <button onClick="{{ minimize }}" aria-label="Minimize the composer panel" disabled="{{ submitting }}" style="width:44px;height:44px;flex:none;border:0;border-radius:8px;background:none;color:var(--primary-medium);font-size:16px;cursor:pointer"><i class="fa-solid fa-chevron-down"></i></button>
+          <sc-if value="{{ showFullBtn }}"><button onClick="{{ toggleFull }}" aria-label="{{ fullLabel }}" title="{{ fullLabel }}" style="width:44px;height:44px;flex:none;border:0;border-radius:8px;background:none;color:var(--primary-medium);font-size:15px;cursor:pointer"><i class="{{ fullIcon }}"></i></button></sc-if>
+          <div style="flex:1;min-width:0;display:flex;justify-content:center;padding:0 4px">
+            <sc-if value="{{ ds.show }}"><span role="img" aria-label="{{ ds.text }}" title="{{ ds.text }}" style="display:flex;align-items:center;gap:6px;font:600 13px/1.2 var(--font-family);text-align:center;color:{{ ds.color }}"><i class="{{ ds.icon }}" style="flex:none"></i><sc-if value="{{ ds.wide }}"><span aria-hidden="true">{{ ds.text }}</span></sc-if></span></sc-if>
+          </div>
+          <button onClick="{{ submit }}" aria-busy="{{ submitting }}" aria-disabled="{{ submitting }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer;white-space:nowrap" style-hover="background:var(--quaternary)"><sc-if value="{{ submitting }}"><i class="fa-solid fa-circle-notch" style="animation:fmc4spin 800ms linear infinite"></i></sc-if><span>{{ primaryLabel }}</span></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:none;display:flex;align-items:center;gap:4px;height:48px;padding:0 8px 0 24px;border-bottom:1px solid var(--content-border-color)">
+          <span style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;font:700 15px/1 var(--font-family);color:var(--primary-high)"><i class="{{ actionIcon }}" style="color:var(--primary-medium)"></i>{{ actionTitle }}</span>
+          <button onClick="{{ minimize }}" disabled="{{ submitting }}" aria-label="Minimize the composer panel" title="Minimize the composer panel" style="width:40px;height:40px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-chevron-down"></i></button>
+          <button onClick="{{ toggleFull }}" aria-label="{{ fullLabel }}" title="{{ fullLabel }}" style="width:40px;height:40px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="{{ fullIcon }}"></i></button>
+          <button onClick="{{ saveClose }}" disabled="{{ submitting }}" aria-label="Save and close" aria-busy="{{ closing }}" title="Save and close" style="width:40px;height:40px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="{{ closeIcon }}" style="animation:{{ closeAnim }}"></i></button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ banner }}">
+        <div role="alert" style="flex:none;display:flex;gap:12px;align-items:flex-start;padding:12px 16px;background:var(--danger-low);border-bottom:1px solid var(--content-border-color)">
+          <i class="{{ bn.icon }}" style="margin-top:3px;color:{{ bn.iconColor }}"></i>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font:15px/1.4 var(--font-family)">
+            <strong style="font:700 15px/1.3 var(--font-family);overflow-wrap:anywhere">{{ bn.title }}</strong><span style="overflow-wrap:anywhere">{{ bn.body }}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:6px">
+              <sc-for list="{{ bn.actions }}" as="a" hint-placeholder-count="1"><button onClick="{{ a.on }}" style="min-height:44px;padding:0 14px;border-radius:8px;font:700 15px/1.1 var(--font-family);cursor:pointer;border:{{ a.bd }};background:{{ a.bg }};color:{{ a.ink }}">{{ a.label }}</button></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <div ref="{{ scrollRef }}" style="flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin">
+        <div style="display:grid;min-height:100%;grid-template-columns:{{ C.cols }}">
+          <div style="width:100%;box-sizing:border-box;margin:0 auto;display:flex;flex-direction:column;gap:10px;max-width:{{ C.measure }};padding:{{ C.pad }}">
+
+            <sc-if value="{{ showDest }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <button onClick="{{ openDest }}" disabled="{{ submitting }}" aria-haspopup="dialog" aria-label="{{ destAria }}" style="max-width:calc(100% + 20px);display:flex;align-items:center;gap:10px;min-height:48px;padding:4px 10px;margin:0 -10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)">
+                  <span style="flex:none;width:12px;height:12px;border-radius:3px;background:{{ cat.color }}"></span>
+                  <span style="min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 16px/1.25 var(--font-family);overflow-wrap:anywhere">{{ cat.path }}</span><span style="display:flex;align-items:center;gap:6px;font:14px/1.2 var(--font-family);color:var(--primary-medium)"><i class="{{ cat.visIcon }}" style="font-size:12px"></i>{{ cat.visText }}</span></span>
+                  <i class="fa-solid fa-chevron-down" style="flex:none;font-size:12px;color:var(--primary-medium)"></i>
+                </button>
+                <sc-if value="{{ cat.guide }}"><p style="margin:0;font:15px/1.45 var(--font-family);color:var(--primary-high)">{{ cat.desc }}</p></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isReply }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-if value="{{ rc.person }}">
+                  <button onClick="{{ toggleReply }}" aria-expanded="{{ replyOpenStr }}" aria-label="{{ rc.aria }}" style="display:flex;align-items:center;gap:10px;min-height:48px;padding:4px 10px;margin:0 -10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)">
+                    <i class="fa-solid fa-reply" style="color:var(--primary-medium);font-size:14px"></i>
+                    <span style="flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font:700 13px/28px var(--font-family);text-align:center;background:{{ rc.color }}">{{ rc.initial }}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><strong style="font:700 16px/1.2 var(--font-family)">{{ rc.name }}</strong><span style="font:14px/1.25 var(--font-family);color:var(--primary-medium);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ topicH1 }}</span></span>
+                    <i class="{{ replyChevron }}" style="font-size:12px;color:var(--primary-medium)"></i>
+                  </button>
+                  <sc-if value="{{ replyOpen }}"><p style="margin:0;padding:10px 14px;border-radius:8px;background:var(--primary-very-low);font:16px/1.5 var(--font-family);color:var(--primary-high)">{{ rc.excerpt }}</p></sc-if>
+                </sc-if>
+                <sc-if value="{{ rc.topic }}">
+                  <div style="display:flex;align-items:center;gap:10px;min-height:44px"><i class="fa-solid fa-reply" style="color:var(--primary-medium);font-size:14px"></i><span style="flex:1;min-width:0;font:700 16px/1.3 var(--font-family);overflow-wrap:anywhere">{{ topicH1 }}</span></div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:10px;min-height:40px">
+                  <i class="fa-solid fa-pencil" style="color:var(--primary-medium);font-size:14px"></i>
+                  <span style="flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font:700 13px/28px var(--font-family);text-align:center;background:{{ ec.color }}">{{ ec.initial }}</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><strong style="font:700 16px/1.2 var(--font-family)">{{ ec.name }}</strong><span style="font:14px/1.25 var(--font-family);color:var(--primary-medium);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ topicH1 }}</span></span>
+                </div>
+                <sc-if value="{{ reasonClosed }}"><button onClick="{{ openReason }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;margin:0 -10px;border:0;border-radius:8px;background:none;color:var(--tertiary);font:600 15px/1 var(--font-family);cursor:pointer"><i class="fa-solid fa-plus" style="font-size:12px"></i>Add edit reason</button></sc-if>
+                <sc-if value="{{ reasonOpen }}"><input value="{{ reason }}" onChange="{{ onReason }}" aria-label="Why are you editing?" placeholder="Why are you editing?" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showTitle }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:6px;padding-top:4px">
+                <div style="position:relative">
+                  <textarea data-plain="" dir="auto" ref="{{ titleRef }}" rows="1" value="{{ title }}" readOnly="{{ submitting }}" onChange="{{ onTitle }}" onFocus="{{ onTitleFocus }}" onKeyDown="{{ onTitleKey }}" aria-label="Title" aria-invalid="{{ titleInvalid }}" aria-describedby="{{ titleErrId }}" placeholder="Type title, or paste a link here" style="display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;field-sizing:content;border:0;padding:2px 0;margin:0;background:none;color:var(--primary);font:700 23px/1.3 var(--heading-font-family)"></textarea>
+                  <sc-if value="{{ fakeTitleCaret }}"><span aria-hidden="true" style="position:absolute;top:5px;inset-inline-start:0;width:2px;height:26px;background:var(--tertiary)"></span></sc-if>
+                </div>
+                <sc-if value="{{ hasErrTitle }}"><p id="fmc4-title-err" style="margin:0;display:flex;gap:8px;align-items:flex-start;color:var(--danger);font:600 15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i><span>{{ errTitle }}</span></p></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showSimilar }}">
+              <div style="display:flex;flex-direction:column;border-radius:8px;background:var(--primary-very-low);border:1px solid var(--content-border-color)">
+                <div style="display:flex;align-items:center">
+                  <button onClick="{{ toggleSimilar }}" aria-expanded="{{ similarOpenStr }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;background:none;color:var(--primary);text-align:start;font:600 15px/1.2 var(--font-family);cursor:pointer"><i class="fa-regular fa-comments" style="color:var(--primary-medium)"></i><span style="flex:1">Your topic is similar to…</span><span style="font:700 13px/1 var(--font-family);padding:3px 7px;border-radius:999px;background:var(--primary-low)">3</span><i class="{{ similarChevron }}" style="font-size:12px;color:var(--primary-medium)"></i></button>
+                  <button onClick="{{ dismissSimilar }}" aria-label="Dismiss" style="width:44px;height:44px;flex:none;border:0;background:none;color:var(--primary-medium);cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <sc-if value="{{ similarOpen }}">
+                  <ul style="list-style:none;margin:0;padding:0 12px 6px">
+                    <sc-for list="{{ similar }}" as="sm" hint-placeholder-count="3"><li style="display:flex;flex-direction:column;gap:3px;padding:8px 0;border-top:1px solid var(--content-border-color)"><a href="#" style="font:600 15px/1.3 var(--font-family);color:var(--primary)">{{ sm.t }}</a><span style="font:13px/1.2 var(--font-family);color:var(--primary-medium)">{{ sm.m }}</span></li></sc-for>
+                  </ul>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showRule }}"><div style="height:1px;background:var(--content-border-color);margin:2px 0 4px"></div></sc-if>
+
+            <sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:18px;padding:2px 0 24px">
+                <sc-if value="{{ fm.fields }}">
+                  <div role="radiogroup" aria-label="Form" style="display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{ fm.tpls }}" as="t" hint-placeholder-count="2"><button role="radio" aria-checked="{{ t.on }}" onClick="{{ t.set }}" style="min-height:40px;padding:0 14px;border-radius:999px;font:600 15px/1 var(--font-family);cursor:pointer;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.ink }}">{{ t.label }}</button></sc-for>
+                  </div>
+                  <label style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font:700 15px/1.3 var(--font-family)">{{ fm.stageLabel }} <span aria-hidden="true" style="color:var(--danger)">*</span></span>
+                    <select value="{{ fm.stage }}" onChange="{{ fm.onStage }}" aria-required="true" aria-invalid="{{ fm.stageInv }}" style="height:44px;box-sizing:border-box;padding:0 10px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)">
+                      <option value="">Choose a stage</option>
+                      <sc-for list="{{ fm.stages }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+                    </select>
+                    <sc-if value="{{ fm.hasStageErr }}"><span style="display:flex;gap:6px;color:var(--danger);font:600 14px/1.3 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i>{{ fm.stageErr }}</span></sc-if>
+                  </label>
+                  <label style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font:700 15px/1.3 var(--font-family)">{{ fm.pieceLabel }} <span aria-hidden="true" style="color:var(--danger)">*</span></span>
+                    <textarea dir="auto" value="{{ fm.piece }}" onChange="{{ fm.onPiece }}" placeholder="{{ fm.piecePh }}" aria-required="true" aria-invalid="{{ fm.pieceInv }}" rows="5" style="box-sizing:border-box;min-height:140px;padding:10px 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:17px/1.55 var(--font-family);resize:vertical;field-sizing:content"></textarea>
+                    <sc-if value="{{ fm.hasPieceErr }}"><span style="display:flex;gap:6px;color:var(--danger);font:600 14px/1.3 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i>{{ fm.pieceErr }}</span></sc-if>
+                  </label>
+                  <fieldset style="margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:2px">
+                    <legend style="padding:0 0 6px;font:700 15px/1.3 var(--font-family)">{{ fm.fbLabel }}</legend>
+                    <sc-for list="{{ fm.fbs }}" as="o" hint-placeholder-count="3"><label style="display:flex;align-items:center;gap:10px;min-height:44px;font:16px/1.2 var(--font-family);cursor:pointer"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}" style="width:20px;height:20px;accent-color:var(--tertiary)">{{ o.label }}</label></sc-for>
+                  </fieldset>
+                  <label style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font:700 15px/1.3 var(--font-family)">{{ fm.noteLabel }}</span>
+                    <input dir="auto" value="{{ fm.note }}" onChange="{{ fm.onNote }}" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)">
+                  </label>
+                </sc-if>
+                <sc-if value="{{ fm.preview }}"><div aria-label="Preview" data-fmc4-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ fm.previewHtml }}"></div></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isRichEd }}" hint-placeholder-val="{{ true }}">
+              <div style="position:relative">
+                <sc-if value="{{ bodyEmpty }}"><span aria-hidden="true" style="position:absolute;top:0;inset-inline-start:0;inset-inline-end:0;pointer-events:none;font:18px/1.6 var(--font-family);color:var(--primary-medium)">{{ bodyPh }}</span></sc-if>
+                <div data-plain="" data-fmc4-body="" ref="{{ bodyRef }}" contentEditable="{{ editable }}" role="textbox" aria-multiline="true" aria-label="Post" aria-invalid="{{ bodyInvalid }}" aria-describedby="{{ bodyErrId }}" onInput="{{ onBodyInput }}" onFocus="{{ onBodyFocus }}" onClick="{{ onBodyClick }}" onPaste="{{ onPaste }}" style="outline:none;font:18px/1.6 var(--font-family);overflow-wrap:anywhere;padding-bottom:20px;min-height:{{ C.bodyMin }}"></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isMdEdit }}" hint-placeholder-val="{{ false }}">
+              <textarea data-plain="" dir="auto" ref="{{ mdRef }}" value="{{ md }}" readOnly="{{ submitting }}" onChange="{{ onMd }}" onSelect="{{ onMdSelect }}" onFocus="{{ onBodyFocus }}" aria-label="Post" aria-invalid="{{ bodyInvalid }}" aria-describedby="{{ bodyErrId }}" placeholder="Type here. Use Markdown, BBCode, or HTML to format. Drag or paste images." style="display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;field-sizing:content;border:0;padding:0 0 20px;margin:0;background:none;color:var(--primary);font:16px/1.65 var(--d-font-family--monospace);min-height:{{ C.bodyMin }}"></textarea>
+            </sc-if>
+            <sc-if value="{{ showPreviewInline }}"><div aria-label="Preview" data-fmc4-body="" style="font:18px/1.6 var(--font-family);overflow-wrap:anywhere;padding-bottom:20px" dangerouslySetInnerHTML="{{ previewHtml }}"></div></sc-if>
+            <sc-if value="{{ hasErrBody }}"><p id="fmc4-body-err" style="margin:-8px 0 12px;display:flex;gap:8px;align-items:flex-start;color:var(--danger);font:600 15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i><span>{{ errBody }}</span></p></sc-if>
+          </div>
+          <sc-if value="{{ previewCol }}"><div aria-label="Preview" style="border-inline-start:1px solid var(--content-border-color);padding:18px 28px;background:var(--primary-very-low)"><div data-fmc4-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ previewHtml }}"></div></div></sc-if>
+        </div>
+      </div>
+
+      <sc-if value="{{ drag }}"><div aria-hidden="true" style="position:absolute;inset:8px;z-index:7;display:flex;align-items:center;justify-content:center;gap:10px;border:2px dashed var(--tertiary);border-radius:12px;background:var(--highlight-low);pointer-events:none;font:700 18px/1.3 var(--font-family);color:var(--primary)"><i class="fa-regular fa-image"></i>Drop images to upload</div></sc-if>
+
+      <sc-if value="{{ hasNotice }}"><div role="alert" style="flex:none;display:flex;align-items:center;gap:10px;padding:6px 4px 6px 16px;border-top:1px solid var(--content-border-color);background:var(--danger-low);font:15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="color:var(--danger)"></i><span style="flex:1;min-width:0;overflow-wrap:anywhere">{{ nt.text }}</span><sc-if value="{{ nt.hasAct }}"><button onClick="{{ nt.act }}" style="flex:none;height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">{{ nt.actLabel }}</button></sc-if><button onClick="{{ nt.dismiss }}" aria-label="Dismiss" style="flex:none;width:44px;height:44px;border:0;background:none;color:var(--primary-medium);cursor:pointer"><i class="fa-solid fa-xmark"></i></button></div></sc-if>
+
+      <sc-if value="{{ mentionOpen }}">
+        <div style="flex:none;overflow:auto;border-top:1px solid var(--content-border-color);background:var(--secondary);max-height:{{ mn.maxH }}">
+          <sc-if value="{{ mn.loading }}"><div role="status" style="display:flex;align-items:center;gap:10px;min-height:48px;padding:0 16px;font:15px/1.2 var(--font-family);color:var(--primary-medium)"><i class="fa-solid fa-circle-notch" style="animation:fmc4spin 800ms linear infinite"></i>Searching…</div></sc-if>
+          <sc-if value="{{ mn.none }}"><div role="status" style="display:flex;align-items:center;gap:10px;min-height:48px;padding:0 16px;font:15px/1.2 var(--font-family);color:var(--primary-medium)">No matches found</div></sc-if>
+          <sc-if value="{{ mn.hasItems }}">
+            <div role="listbox" id="fmc4-mentions" aria-label="Suggestions" style="display:flex;flex-direction:column;padding:4px 8px">
+              <sc-for list="{{ mn.items }}" as="u" hint-placeholder-count="3"><button role="option" id="{{ u.id }}" aria-selected="{{ u.sel }}" onMouseDown="{{ keep }}" onClick="{{ u.pick }}" style="display:flex;align-items:center;gap:10px;min-height:48px;padding:0 8px;border:0;border-radius:8px;text-align:start;color:var(--primary);cursor:pointer;background:{{ u.bg }}"><span style="flex:none;width:28px;height:28px;border-radius:{{ u.shape }};color:#fff;font:700 13px/28px var(--font-family);text-align:center;background:{{ u.color }}">{{ u.initial }}</span><strong style="font:700 16px/1.2 var(--font-family)">{{ u.name }}</strong><span style="font:15px/1.2 var(--font-family);color:var(--primary-medium)">{{ u.handle }}</span></button></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ panelFormat }}">
+        <div role="group" aria-label="Format" style="flex:none;padding:10px 12px;border-top:1px solid var(--content-border-color);background:var(--primary-very-low)">
+          <div style="max-width:560px;display:flex;flex-direction:column;gap:8px">
+            <div role="radiogroup" aria-label="Text style" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:3px;border-radius:10px;background:var(--primary-low)">
+              <sc-for list="{{ blockOpts }}" as="o" hint-placeholder-count="3"><button role="radio" aria-checked="{{ o.on }}" onMouseDown="{{ keep }}" onClick="{{ o.set }}" style="min-height:38px;border:0;border-radius:8px;color:var(--primary);cursor:pointer;background:{{ o.bg }};font:{{ o.font }};box-shadow:{{ o.sh }}">{{ o.label }}</button></sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px">
+              <sc-for list="{{ fmtBtns }}" as="b" hint-placeholder-count="6"><button aria-pressed="{{ b.pressed }}" aria-label="{{ b.aria }}" title="{{ b.aria }}" onMouseDown="{{ keep }}" onClick="{{ b.on }}" style="min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;border-radius:8px;cursor:pointer;background:{{ b.bg }};color:{{ b.ink }}"><i class="{{ b.icon }}" style="font-size:16px"></i><span style="font:600 12px/1 var(--font-family)">{{ b.label }}</span></button></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ panelLink }}">
+        <div role="group" aria-label="{{ linkLabel }}" style="flex:none;padding:10px 12px;border-top:1px solid var(--content-border-color);background:var(--primary-very-low)">
+          <div style="max-width:560px;display:flex;flex-direction:column;gap:8px">
+            <input value="{{ link.url }}" onChange="{{ onLinkUrl }}" inputMode="url" aria-label="URL" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)">
+            <div style="display:flex;gap:8px"><input value="{{ link.text }}" onChange="{{ onLinkText }}" aria-label="Link text" placeholder="Link text" style="flex:1;min-width:0;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"><button onClick="{{ cancelPanel }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 15px/1 var(--font-family);cursor:pointer">Cancel</button><button onClick="{{ insertLink }}" style="height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">OK</button></div>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ panelAlt }}">
+        <div role="group" aria-label="Alt text" style="flex:none;padding:10px 12px;border-top:1px solid var(--content-border-color);background:var(--primary-very-low)">
+          <div style="max-width:560px;display:flex;gap:8px"><input value="{{ altVal }}" onChange="{{ onAlt }}" aria-label="Alt text" placeholder="Describe the photo" style="flex:1;min-width:0;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"><button onClick="{{ cancelPanel }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 15px/1 var(--font-family);cursor:pointer">Cancel</button><button onClick="{{ saveAlt }}" style="height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">OK</button></div>
+        </div>
+      </sc-if>
+
+      <div role="toolbar" aria-label="{{ stripLabel }}" style="flex:none;display:flex;align-items:center;gap:4px;min-height:52px;padding:4px 8px;box-sizing:border-box;border-top:1px solid var(--content-border-color);background:var(--secondary)">
+        <sc-for list="{{ strip }}" as="t" hint-placeholder-count="3">
+          <sc-if value="{{ t.isSep }}"><span aria-hidden="true" style="width:1px;height:24px;margin:0 4px;background:var(--content-border-color)"></span></sc-if>
+          <sc-if value="{{ t.isBtn }}"><button aria-label="{{ t.label }}" aria-pressed="{{ t.pressed }}" aria-expanded="{{ t.expanded }}" aria-haspopup="{{ t.popup }}" aria-keyshortcuts="{{ t.keys }}" title="{{ t.title }}" disabled="{{ t.disabled }}" onMouseDown="{{ keep }}" onClick="{{ t.on }}" style="flex:none;min-width:44px;height:44px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:8px;font:600 16px/1 var(--font-family);cursor:pointer;padding:0 {{ t.px }};background:{{ t.bg }};color:{{ t.ink }};opacity:{{ t.op }}" style-hover="background:var(--d-hover)"><i class="{{ t.icon }}" style="font-size:17px"></i><sc-if value="{{ t.showLabel }}"><span>{{ t.label }}</span></sc-if></button></sc-if>
+        </sc-for>
+        <span style="flex:1"></span>
+        <sc-if value="{{ showHideKb }}"><button onClick="{{ hideKb }}" aria-label="Hide keyboard" title="Hide keyboard" style="flex:none;width:44px;height:44px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer"><i class="fa-regular fa-keyboard"></i><i class="fa-solid fa-chevron-down" style="font-size:9px;margin-inline-start:2px"></i></button></sc-if>
+        <sc-if value="{{ isDesktop }}">
+          <div style="display:flex;align-items:center;gap:16px">
+            <sc-if value="{{ ds.show }}"><span style="display:flex;align-items:center;gap:6px;font:600 14px/1.2 var(--font-family);color:{{ ds.color }}"><i class="{{ ds.icon }}"></i><span>{{ ds.text }}</span></span></sc-if>
+            <button onClick="{{ submit }}" aria-busy="{{ submitting }}" aria-disabled="{{ submitting }}" aria-keyshortcuts="Control+Enter Meta+Enter" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer;white-space:nowrap" style-hover="background:var(--quaternary)"><sc-if value="{{ submitting }}"><i class="fa-solid fa-circle-notch" style="animation:fmc4spin 800ms linear infinite"></i></sc-if><span>{{ primaryLabel }}</span></button>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;position:relative;overflow:hidden;transition:height 240ms cubic-bezier(0.22,0.61,0.36,1);height:{{ bottomH }};background:{{ bottomBg }}">
+          <sc-if value="{{ kbOpen }}">
+            <div aria-hidden="true" dir="ltr" style="display:flex;flex-direction:column;gap:11px;padding:0 3px 8px">
+              <div style="display:flex;height:36px;align-items:center;border-bottom:1px solid {{ K.line }}">
+                <sc-for list="{{ K.pred }}" as="w" hint-placeholder-count="3"><button tabIndex="-1" onMouseDown="{{ w.press }}" style="flex:1;height:36px;border:0;background:none;color:{{ K.ink }};font:16px/1 system-ui,sans-serif;cursor:pointer">{{ w.label }}</button></sc-for>
+                <span style="flex:none;padding:0 8px;font:600 11px/1 system-ui,sans-serif;letter-spacing:0.02em;color:{{ K.sub }}">Simulated keyboard</span>
+              </div>
+              <sc-for list="{{ K.rows }}" as="row" hint-placeholder-count="4">
+                <div style="display:flex;gap:6px;justify-content:center;padding:0 {{ row.pad }}">
+                  <sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="10"><button tabIndex="-1" onMouseDown="{{ k.press }}" style="border:0;border-radius:6px;color:{{ K.ink }};cursor:pointer;padding:0;box-shadow:0 1px 0 rgb(0 0 0 / 30%);flex:{{ k.flex }};height:{{ K.keyH }};background:{{ k.bg }};font:{{ k.font }}">{{ k.label }}</button></sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <span aria-hidden="true" style="position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--primary)"></span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sheetMore }}">
+        <div data-sheet="" role="dialog" aria-label="More" style="position:absolute;z-index:5;overflow-y:auto;overflow-x:hidden;background:var(--secondary);padding:4px 0 8px;box-sizing:border-box;inset-inline-start:{{ M.s }};inset-inline-end:{{ M.e }};bottom:{{ M.b }};width:{{ M.w }};max-height:{{ M.h }};height:{{ M.hh }};border:{{ M.border }};border-top:1px solid var(--content-border-color);border-radius:{{ M.rad }};box-shadow:{{ M.shadow }}">
+          <div style="display:flex;align-items:center;padding:0 8px 0 16px"><h2 style="flex:1;margin:0;font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:var(--primary-medium)">Insert</h2><button onClick="{{ closeSheet }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--tertiary);font:700 16px/1 var(--font-family);cursor:pointer">Done</button></div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 8px">
+            <sc-for list="{{ moreInsert }}" as="mi" hint-placeholder-count="6"><button onMouseDown="{{ keep }}" onClick="{{ mi.on }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--d-hover)"><i class="{{ mi.icon }}" style="width:20px;text-align:center;color:var(--primary-medium)"></i>{{ mi.label }}</button></sc-for>
+          </div>
+          <h2 style="margin:10px 16px 2px;font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:var(--primary-medium)">Editor</h2>
+          <div style="display:flex;flex-direction:column;padding:0 8px">
+            <button role="switch" aria-checked="{{ modeSwitch.checked }}" aria-disabled="{{ modeSwitch.locked }}" onClick="{{ switchMode }}" style="display:flex;align-items:center;gap:12px;min-height:56px;padding:4px 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-code" style="width:20px;text-align:center;color:var(--primary-medium)"></i><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:16px/1.2 var(--font-family)">Markdown</span><span style="font:14px/1.3 var(--font-family);color:var(--primary-medium)">{{ modeSwitch.sub }}</span></span><span style="flex:none;position:relative;width:44px;height:26px;border-radius:13px;background:{{ modeSwitch.track }}"><span style="position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:var(--secondary);inset-inline-start:{{ modeSwitch.x }}"></span></span></button>
+            <sc-if value="{{ showPreviewRow }}"><button role="switch" aria-checked="{{ previewStr }}" onClick="{{ togglePreview }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-regular fa-eye" style="width:20px;text-align:center;color:var(--primary-medium)"></i><span style="flex:1">Preview</span><span style="font:600 14px/1 var(--font-family);color:var(--primary-medium)">{{ previewState }}</span></button></sc-if>
+          </div>
+          <div style="height:1px;margin:6px 16px;background:var(--content-border-color)"></div>
+          <div style="padding:0 8px"><button onClick="{{ askDiscard }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--danger);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--danger-low)"><i class="fa-regular fa-trash-can" style="width:20px;text-align:center"></i>{{ discardLabel }}</button></div>
+        </div>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ qbShow }}"><button onMouseDown="{{ keep }}" onClick="{{ doQuote }}" style="position:absolute;z-index:8;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--primary);color:var(--secondary);font:700 15px/1 var(--font-family);cursor:pointer;box-shadow:0 6px 18px -6px rgb(0 0 0 / 35%);top:{{ qb.top }};left:{{ qb.left }}"><i class="fa-solid fa-quote-left"></i>Quote</button></sc-if>
+
+  <sc-if value="{{ sheetDest }}">
+    <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:{{ O.justify }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="dialog" aria-label="Category" style="position:relative;display:flex;flex-direction:column;background:var(--secondary);border:1px solid var(--content-border-color);width:{{ O.w }};height:{{ O.h }};border-radius:{{ O.r }}">
+        <div style="flex:none;display:flex;align-items:center;gap:8px;padding:12px 8px 8px 16px"><h2 style="flex:1;margin:0;font:700 20px/1.2 var(--heading-font-family)">Category</h2><button onClick="{{ closeSheet }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--tertiary);font:700 16px/1 var(--font-family);cursor:pointer">Cancel</button></div>
+        <sc-if value="{{ destRevoked }}"><p style="margin:0 16px 8px;padding:10px 12px;border-radius:8px;background:var(--highlight-low);font:15px/1.4 var(--font-family)">{{ destRevokedText }}</p></sc-if>
+        <div style="flex:none;padding:0 16px 8px"><input value="{{ destQ }}" onChange="{{ onDestQ }}" aria-label="Search categories" placeholder="Search…" style="width:100%;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"></div>
+        <div role="listbox" aria-label="Categories" style="flex:1;min-height:0;overflow:auto;padding:0 8px 16px">
+          <sc-for list="{{ destList }}" as="c" hint-placeholder-count="4">
+            <button role="option" aria-selected="{{ c.sel }}" onClick="{{ c.pick }}" style="display:grid;grid-template-columns:14px minmax(0,1fr) 20px;gap:4px 12px;align-items:center;width:100%;min-height:60px;padding:10px;border:0;border-radius:8px;text-align:start;color:var(--primary);cursor:pointer;background:{{ c.bg }}" style-hover="background:var(--d-hover)"><span style="width:12px;height:12px;border-radius:3px;background:{{ c.color }}"></span><span style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 16px/1.25 var(--font-family);overflow-wrap:anywhere">{{ c.path }}</span><span style="font:14px/1.35 var(--font-family);color:var(--primary-medium)">{{ c.desc }}</span><span style="display:flex;align-items:center;gap:6px;font:13px/1.2 var(--font-family);color:var(--primary-medium)"><i class="{{ c.visIcon }}" style="font-size:11px"></i>{{ c.visText }}</span></span><sc-if value="{{ c.isSel }}"><i class="fa-solid fa-check" style="color:var(--tertiary)"></i></sc-if></button>
+          </sc-for>
+          <sc-if value="{{ destEmpty }}"><p style="margin:0;padding:16px 10px;font:16px/1.4 var(--font-family);color:var(--primary-medium)">No matches found</p></sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetPhoto }}">
+    <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:{{ O.justify }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="dialog" aria-label="Photos" style="position:relative;display:flex;flex-direction:column;gap:8px;padding:8px 12px 28px;box-sizing:border-box;background:var(--primary-very-low);border:1px solid var(--content-border-color);width:{{ O.w }};border-radius:{{ O.r }}">
+        <div style="display:flex;align-items:center"><button onClick="{{ closeSheet }}" style="height:44px;padding:0 8px;border:0;background:none;color:var(--tertiary);font:600 16px/1 system-ui,sans-serif;cursor:pointer">Cancel</button><strong style="flex:1;text-align:center;font:600 16px/1 system-ui,sans-serif">Photos</strong><button onClick="{{ addPhotos }}" disabled="{{ ph.none }}" style="height:44px;padding:0 8px;border:0;background:none;color:var(--tertiary);font:700 16px/1 system-ui,sans-serif;cursor:pointer;opacity:{{ ph.op }}">{{ ph.add }}</button></div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px">
+          <sc-for list="{{ photos }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.toggle }}" aria-pressed="{{ p.on }}" aria-label="{{ p.name }}" style="position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:0;border-radius:4px;cursor:pointer;color:var(--primary-medium);background:{{ p.bg }};box-shadow:{{ p.ring }}"><i class="fa-regular fa-image" style="font-size:20px"></i><span style="font:12px/1 system-ui,sans-serif">{{ p.name }}</span><sc-if value="{{ p.isOn }}"><span style="position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--tertiary);color:var(--on-tertiary);font:700 13px/24px system-ui,sans-serif;text-align:center">{{ p.num }}</span></sc-if></button></sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetAtom }}">
+    <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:{{ O.justify }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="dialog" aria-labelledby="fmc4-atom-h" style="position:relative;display:flex;flex-direction:column;gap:14px;padding:16px 16px 32px;box-sizing:border-box;overflow:auto;background:var(--secondary);border:1px solid var(--content-border-color);width:{{ O.w }};max-height:{{ O.mh }};border-radius:{{ O.r }}">
+        <h2 id="fmc4-atom-h" style="margin:0;font:700 20px/1.2 var(--heading-font-family)">{{ ae.title }}</h2>
+        <sc-if value="{{ ae.isTable }}">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ ae.rows }}" as="r" hint-placeholder-count="3">
+              <div style="display:grid;gap:6px;grid-template-columns:{{ ae.cols }}">
+                <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="2"><input value="{{ c.val }}" onChange="{{ c.on }}" aria-label="{{ c.aria }}" placeholder="{{ c.ph }}" style="min-width:0;height:44px;box-sizing:border-box;padding:0 10px;border:1px solid var(--input-border-color);border-radius:8px;color:var(--primary);background:{{ c.bg }};font:{{ c.font }}"></sc-for>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px"><button onClick="{{ ae.addRow }}" style="min-height:44px;padding:0 14px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:600 15px/1 var(--font-family);cursor:pointer">Add row</button><button onClick="{{ ae.addCol }}" style="min-height:44px;padding:0 14px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:600 15px/1 var(--font-family);cursor:pointer">Add column</button></div>
+        </sc-if>
+        <sc-if value="{{ ae.isDetails }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Summary<input value="{{ ae.summary }}" onChange="{{ ae.onSummary }}" aria-invalid="{{ ae.inv }}" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1 var(--font-family)"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Hidden text<textarea value="{{ ae.content }}" onChange="{{ ae.onContent }}" rows="3" style="box-sizing:border-box;padding:10px 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1.5 var(--font-family);resize:vertical"></textarea></label>
+        </sc-if>
+        <sc-if value="{{ ae.isDate }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+            <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Date<input type="date" value="{{ ae.date }}" onChange="{{ ae.onDate }}" aria-invalid="{{ ae.inv }}" style="height:44px;box-sizing:border-box;padding:0 10px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1 var(--font-family)"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Time<input type="time" value="{{ ae.time }}" onChange="{{ ae.onTime }}" style="height:44px;box-sizing:border-box;padding:0 10px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1 var(--font-family)"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Timezone<select value="{{ ae.tz }}" onChange="{{ ae.onTz }}" style="height:44px;box-sizing:border-box;padding:0 10px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1 var(--font-family)"><sc-for list="{{ ae.tzs }}" as="z" hint-placeholder-count="3"><option value="{{ z }}">{{ z }}</option></sc-for></select></label>
+        </sc-if>
+        <sc-if value="{{ ae.isSpoiler }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Text to blur<textarea value="{{ ae.text }}" onChange="{{ ae.onText }}" aria-invalid="{{ ae.inv }}" rows="3" style="box-sizing:border-box;padding:10px 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1.5 var(--font-family);resize:vertical"></textarea></label>
+        </sc-if>
+        <sc-if value="{{ ae.isCode }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Language<select value="{{ ae.lang }}" onChange="{{ ae.onLang }}" style="height:44px;box-sizing:border-box;padding:0 10px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1 var(--font-family)"><sc-for list="{{ ae.langs }}" as="l" hint-placeholder-count="5"><option value="{{ l.v }}">{{ l.n }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Code<textarea dir="ltr" value="{{ ae.code }}" onChange="{{ ae.onCode }}" aria-invalid="{{ ae.inv }}" rows="4" spellCheck="false" style="box-sizing:border-box;padding:10px 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--primary-very-low);color:var(--primary);font:400 15px/1.5 var(--d-font-family--monospace);resize:vertical"></textarea></label>
+        </sc-if>
+        <sc-if value="{{ ae.isPoll }}">
+          <div role="radiogroup" aria-label="Poll type" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:3px;border-radius:10px;background:var(--primary-low)">
+            <sc-for list="{{ ae.ptypes }}" as="o" hint-placeholder-count="2"><button role="radio" aria-checked="{{ o.on }}" onClick="{{ o.set }}" style="min-height:40px;border:0;border-radius:8px;color:var(--primary);font:600 15px/1.1 var(--font-family);cursor:pointer;background:{{ o.bg }};box-shadow:{{ o.sh }}">{{ o.label }}</button></sc-for>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font:700 15px/1.2 var(--font-family)">Options (one per line)<textarea value="{{ ae.opts }}" onChange="{{ ae.onOpts }}" aria-invalid="{{ ae.inv }}" rows="4" style="box-sizing:border-box;padding:10px 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:400 16px/1.5 var(--font-family);resize:vertical"></textarea></label>
+        </sc-if>
+        <sc-if value="{{ ae.hasErr }}"><p role="alert" style="margin:0;display:flex;gap:8px;color:var(--danger);font:600 15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i>{{ ae.err }}</p></sc-if>
+        <div style="display:flex;justify-content:flex-end;gap:8px"><button onClick="{{ closeSheet }}" style="height:44px;padding:0 14px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 16px/1 var(--font-family);cursor:pointer">Cancel</button><button onClick="{{ ae.save }}" style="height:44px;padding:0 18px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer">{{ ae.primary }}</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetDialog }}">
+    <div style="position:absolute;inset:0;z-index:11;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
+      <div style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="{{ dlg.role }}" aria-labelledby="fmc4-dlg-h" style="position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px;padding:20px;box-sizing:border-box;border-radius:12px;background:var(--secondary);border:1px solid var(--content-border-color)">
+        <h2 id="fmc4-dlg-h" style="margin:0;font:700 19px/1.3 var(--heading-font-family);overflow-wrap:anywhere">{{ dlg.title }}</h2>
+        <sc-if value="{{ dlg.hasBody }}"><p style="margin:0;font:16px/1.5 var(--font-family);color:var(--primary-high)">{{ dlg.body }}</p></sc-if>
+        <sc-if value="{{ dlg.login }}">
+          <div style="display:flex;flex-direction:column;gap:8px"><input aria-label="Email / Username" placeholder="Email / Username" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"><input type="password" aria-label="Password" placeholder="Password" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"></div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px">
+          <sc-for list="{{ dlg.actions }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.on }}" style="min-height:44px;padding:0 16px;border-radius:8px;font:700 16px/1.1 var(--font-family);cursor:pointer;border:{{ a.bd }};background:{{ a.bg }};color:{{ a.ink }}">{{ a.label }}</button></sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;viewport&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;phone&quot;,&quot;narrow&quot;,&quot;splitNarrow&quot;,&quot;split600&quot;,&quot;tabletP&quot;,&quot;tabletL&quot;,&quot;desktop&quot;],&quot;default&quot;:&quot;phone&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;scheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;preset&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;M2&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;hwkb&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;zoom&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;],&quot;default&quot;:&quot;1&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;rtl&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;reducedMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;live&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;sim&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;cmd&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{n:number,type:string}&quot;},&quot;resetKey&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;number&quot;},&quot;onState&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(s:string)=&gt;void&quot;}}">
+const F = () => window.FMC4;
+const node = (html) => { const d = document.createElement("div"); d.innerHTML = html; return d.firstChild; };
+class Component extends DCLogic {
+  state = F() ? this.init() : { ready: false };
+  _ups = {}; _uid = 10; _seen = {}; _upN = 0;
+  init() { const p = F().preset(this.props.preset); this._meta = p.meta; this._seen = {}; const k = { forbidden: "forbidden", noReply: "forbidden", closedNow: "closed", session: "session", rate: "rate", error: "error", rejected: "rejected" }[p.st.banner]; if (k) this._seen[k] = true; return { ...p.st, ready: true }; }
+  rootRef = (el) => { this._root = el; if (el) el.__fmc4 = this; };
+  scrollRef = (el) => { this._sc = el; };
+  pageRef = (el) => { this._pg = el; };
+  titleRef = (el) => { this._title = el; };
+  mdRef = (el) => { this._ta = el; };
+  bodyRef = (el) => {
+    if (!el) { this._el = null; return; }
+    if (el !== this._el) { this._el = el; el.innerHTML = this.state.html; if (this._meta && this._meta.blk) this._blk = el.querySelector(this._meta.blk); }
+  };
+  keep = (e) => e.preventDefault();
+  sim() { return { net: "online", upload: "ok", onebox: "ok", draft: "ok", mention: "ok", poll: true, dates: true, result: "published", ...((this._meta && this._meta.sim) || {}), ...(this.props.sim || {}) }; }
+  geo() {
+    const G0 = F().GEO; const V = G0[this.props.viewport] ? this.props.viewport : "phone"; const G = G0[V]; const z = Math.max(1, +this.props.zoom || 1);
+    const tab = G.kind === "tablet", desk = G.kind === "desktop", phoneL = G.kind === "phone"; const hw = !!this.props.hwkb && G.dev === "tablet";
+    return { V, G, z, W: Math.round(G.w / z), H: Math.round(G.h / z), tab, desk, phoneL, touch: !desk, hw, softKb: !desk && !hw };
+  }
+  componentDidMount() {
+    this._onSel = () => this.onSel(); document.addEventListener("selectionchange", this._onSel);
+    if (!F()) { this._wait = setInterval(() => { if (F()) { clearInterval(this._wait); this.setState(this.init(), () => this.live()); } }, 30); } else this.live();
+  }
+  componentWillUnmount() { document.removeEventListener("selectionchange", this._onSel); clearInterval(this._wait); this.clearTimers(); }
+  clearTimers() { Object.values(this._ups).forEach(clearInterval); this._ups = {}; clearTimeout(this._dt); clearTimeout(this._st); clearTimeout(this._mt); clearTimeout(this._mdu); (this._obt || []).forEach(clearTimeout); this._obt = []; }
+  componentDidUpdate(pp, ps) {
+    if (!this.state.ready) return;
+    if (pp.preset !== this.props.preset || pp.resetKey !== this.props.resetKey) return this.reset();
+    const n = this.sim().net, o = { net: "online", ...(pp.sim || {}) }.net;
+    if (o === "offline" && n !== "offline" && this.state.draft === "offline") this.touch();
+    const c = this.props.cmd, pc = pp.cmd; if (c && (!pc || c.n !== pc.n)) this.runCmd(c.type);
+    if ((pp.viewport !== this.props.viewport || pp.hwkb !== this.props.hwkb) && this.props.live && this.state.view === "composer" && this.state.field === "body") requestAnimationFrame(() => { this.focusBody(); this.caretIntoView(); });
+    if (this._taSel && this._ta) { const [a, b] = this._taSel; this._taSel = null; this._ta.focus({ preventScroll: true }); this._ta.setSelectionRange(a, b); this._taRange = [a, b]; }
+    const s = this.state;
+    const pSheet = this._pSheet, pPanel = this._pPanel; this._pSheet = s.sheet; this._pPanel = s.panel;
+    if (this.props.live && s.sheet && pSheet !== s.sheet) requestAnimationFrame(() => { const r = this._root; const f = r && (r.querySelector("[data-sheet] input, [data-sheet] textarea, [data-sheet] select") || r.querySelector("[data-sheet] button")); if (f) f.focus({ preventScroll: true }); });
+    if (this.props.live && s.panel && s.panel !== pPanel && (s.panel === "link" || s.panel === "alt")) requestAnimationFrame(() => { const f = this._root && this._root.querySelector('[role=group] input'); if (f) f.focus({ preventScroll: true }); });
+    if (s.qsel && s.qsel.fake && s.qsel.x == null) this.measureFakeQuote();
+    this.report();
+  }
+  report() {
+    const s = this.state, g = this.geo(), h = s.html || "";
+    const up = (h.match(/data-kind="up"/g) || []).length, fail = (h.match(/data-kind="fail"/g) || []).length;
+    const sum = [
+      "Layout " + g.V + (g.hw ? " + hardware keyboard" : "") + (+this.props.zoom > 1 ? " @" + this.props.zoom + "×" : ""),
+      s.view === "page" ? "Page (" + s.page + (s.minimized ? ", minimized" : "") + ")" : "Composer · " + s.intent + (s.replyTo ? " to " + s.replyTo : "") + " · " + (s.mode === "md" ? "Markdown" : "Rich text"),
+      "Keyboard " + (s.kb && g.softKb ? "open" : g.hw ? "hardware" : "hidden"), "Panel " + (s.sheet || s.panel || (s.mention ? "mentions" : "none")), "Context " + s.ctx,
+      "Draft " + (s.closing ? "saving before close" : s.draft || "none"), "Upload " + (up ? up + " uploading" : "") + (fail ? " " + fail + " failed" : "") + (!up && !fail ? "idle" : ""),
+      "Submission " + (s.submitting ? "submitting" : s.banner ? "blocked: " + s.banner : s.published ? "done" : "idle"),
+    ].join(" · ");
+    if (sum !== this._sum) { this._sum = sum; if (this.props.onState) this.props.onState(sum); }
+  }
+  reset() {
+    this.clearTimers(); this._range = null; this._blk = null; this._over = false; this._failedOnce = false; this._pf = null; this._upN = 0; this._busy = false; this._closing = false; this._forced = false; this._trigger = null;
+    const st = this.init();
+    this.setState(st, () => { if (this._el) { this._el.innerHTML = st.html; if (this._meta.blk) this._blk = this._el.querySelector(this._meta.blk); } if (this._sc) this._sc.scrollTop = 0; this.live(); });
+  }
+  live() {
+    const m = this._meta || {};
+    clearTimeout(this._lt); this._lt = setTimeout(() => { try { this.liveNow(this._meta || {}); } catch (e) { console.error("fmc4 live: " + e.message); } }, 80);
+  }
+  liveNow(m) {
+    {
+      if (m.caret && this._sc && (this.props.live || this.props.scrollEnd)) this._sc.scrollTop = this._sc.scrollHeight;
+      if (this.state.qsel && this.state.qsel.fake) this.measureFakeQuote();
+      if (m.select && this._sc && this._el) { const f = this._el.querySelector('[data-fake="sel"]'); if (f) { const sc = this._sc, sr = sc.getBoundingClientRect(), rc = f.getBoundingClientRect(), k = sc.offsetHeight ? sr.height / sc.offsetHeight : 1; if (rc.bottom > sr.bottom - 16) sc.scrollTop += (rc.bottom - sr.bottom + 32) / k; } }
+      if (!this.props.live) return;
+      if (m.focus === "title" && this._title) { this.setState({ fakeTitleCaret: false }); this._title.focus(); }
+      if ((m.caret || m.select) && this._el) this.unfake(true);
+      if (this.state.panel === "link" || this.state.panel === "alt") { const f = this._root && this._root.querySelector("[role=group] input"); if (f) f.focus({ preventScroll: true }); }
+      if (m.up && this._el) this._el.querySelectorAll('[data-kind="up"]').forEach((f) => this.runUpload(f.dataset.up, f.dataset.name, +f.dataset.pct || 0, this.decideFail(f.dataset.up)));
+      if (m.ob && this._el) this._el.querySelectorAll('[data-kind="obload"]').forEach((f) => this.resolveOb(f.dataset.ob, f.dataset.md));
+      if (m.busy) { this._busy = true; this._st = setTimeout(() => this.complete(), 2500); }
+      if (m.hold) this.touch();
+      if (this.state.mention && this.state.mention.status === "loading") this.searchMention(this.state.mention.q);
+    }
+  }
+  measureFakeQuote() {
+    const sp = this._root && this._root.querySelector("[data-fakeq]"); if (!sp) return;
+    const p = this.rel(sp.getBoundingClientRect()); this.setState({ qsel: { ...this.state.qsel, x: p.x, y: p.y, h: p.h } });
+  }
+  rel(rc) { const rr = this._root.getBoundingClientRect(), k = rr.width / this._root.offsetWidth || 1; return { x: (rc.left - rr.left) / k, y: (rc.top - rr.top) / k, h: rc.height / k }; }
+
+  unfake(keep) {
+    const el = this._el; if (!el) return; let r = null;
+    const s = el.querySelector('[data-fake="sel"]');
+    if (s) { const t = document.createTextNode(s.textContent); s.replaceWith(t); if (keep) { r = document.createRange(); r.selectNodeContents(t); } }
+    const c = el.querySelector('[data-fake="caret"]');
+    if (c) { if (keep && !r) { r = document.createRange(); r.setStartBefore(c); r.collapse(true); } c.remove(); }
+    if (keep && r) { el.focus({ preventScroll: true }); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); this._range = r.cloneRange(); this.readSel(); }
+    if (s || c) this.sync(false);
+  }
+  sync(t) { if (!this._el) return; this.setState({ html: this._el.innerHTML }); if (t) this.touch(); }
+  touch() {
+    const d = this.state.draft; if (d === "conflict" || d === "draftConflict") return;
+    this.setState({ draft: "saving" }); clearTimeout(this._dt);
+    this._dt = setTimeout(() => this.saveDone(), this.sim().draft === "slow" || (this._meta && this._meta.hold) ? 3500 : 900);
+  }
+  saveDone() {
+    const sim = this.sim(), s = this.state; if (this._meta && this._meta.hold) this._meta = { ...this._meta, hold: 0 }; if (s.draft === "draftConflict" || s.draft === "conflict") return;
+    const r = sim.net === "offline" ? "offline" : s.session || sim.draft === "fail" ? "failed" : sim.draft === "conflict" && !this._forced ? "draftConflict" : "saved";
+    const st = { draft: r };
+    if (r === "draftConflict") { st.banner = "draftConflict"; st.announce = "This draft changed somewhere else."; }
+    if (r === "failed" && !s.banner && !this._closing) { st.banner = "saveFailed"; st.announce = "Draft not saved"; }
+    if (r === "offline" && s.draft !== "offline") st.announce = "Offline. Draft not saved";
+    if (r === "saved" && ["saveFailed", "closeOffline", "closeFailed"].includes(s.banner)) { st.banner = null; st.announce = s.banner === "closeOffline" ? "Draft saved. You can close now." : "Draft saved"; }
+    this.setState(st, () => {
+      if (!this._closing) return; this._closing = false; this.setState({ closing: false });
+      if (r === "saved") this.doClose(); else this.setState({ banner: r === "offline" ? "closeOffline" : r === "draftConflict" ? "draftConflict" : "closeFailed", announce: "Draft not saved. The composer stays open." });
+    });
+  }
+  onSel() {
+    this.readSel();
+    const s = this.state; if (s.qsel && !s.qsel.fake && getSelection().isCollapsed) this.setState({ qsel: null });
+  }
+  readSel() {
+    const el = this._el, sel = getSelection(); if (!el || !sel.rangeCount) return;
+    const r = sel.getRangeAt(0); if (!el.contains(r.commonAncestorContainer)) return;
+    this._range = r.cloneRange();
+    if (this._blk && Date.now() - (this._blkAt || 0) < 400) return;
+    const nd = r.startContainer.nodeType === 3 ? r.startContainer.parentElement : r.startContainer;
+    const a = nd && nd.closest ? nd.closest("a") : null;
+    const ctx = a && el.contains(a) ? "link" : r.collapsed ? "caret" : "text";
+    const q = (c) => { try { return document.queryCommandState(c); } catch (e) { return false; } };
+    let block = "p"; try { block = (document.queryCommandValue("formatBlock") || "p").toLowerCase(); } catch (e) {}
+    const fmt = { bold: q("bold"), italic: q("italic"), ul: q("insertUnorderedList"), ol: q("insertOrderedList"), block };
+    this.clearBlk(); this._linkA = ctx === "link" ? a : null;
+    const key = ctx + JSON.stringify(fmt);
+    if (key !== this._selKey || this.state.ctx !== ctx) { this._selKey = key; this.setState({ ctx, fmt }); }
+    this.caretIntoView();
+  }
+  caretIntoView() {
+    requestAnimationFrame(() => {
+      const sc = this._sc; if (!sc) return; const sel = getSelection(); if (!sel.rangeCount) return;
+      const r = sel.getRangeAt(0); if (!sc.contains(r.startContainer)) return;
+      const rc = r.getClientRects()[0] || (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement).getBoundingClientRect();
+      const sr = sc.getBoundingClientRect(), k = sc.offsetHeight ? sr.height / sc.offsetHeight : 1;
+      if (rc.bottom > sr.bottom - 16) sc.scrollTop += (rc.bottom - sr.bottom + 32) / k;
+      else if (rc.top < sr.top + 8) sc.scrollTop -= (sr.top - rc.top + 24) / k;
+    });
+  }
+  focusBody() {
+    if (this.state.mode === "md") { const t = this._ta; if (t) { t.focus({ preventScroll: true }); if (this._taRange) t.setSelectionRange(...this._taRange); } return; }
+    const el = this._el; if (!el) return; el.focus({ preventScroll: true });
+    const sel = getSelection();
+    if (this._range && el.contains(this._range.commonAncestorContainer)) { sel.removeAllRanges(); sel.addRange(this._range); }
+    else { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); sel.removeAllRanges(); sel.addRange(r); this._range = r.cloneRange(); }
+  }
+  blurField() { const a = document.activeElement; if (a && this._root && this._root.contains(a)) a.blur(); }
+  openSheet(name, extra) {
+    const g = this.geo(); this._trigger = document.activeElement;
+    const modal = g.phoneL || name !== "more";
+    if (modal) this.blurField();
+    this.setState({ sheet: name, panel: null, mention: null, ...(modal ? { kb: false } : {}), ...(extra || {}) });
+  }
+  closeSheet = () => {
+    this.setState({ sheet: null, atomEd: null });
+    requestAnimationFrame(() => {
+      const t = this._trigger; this._trigger = null;
+      if (t && t !== this._el && t.isConnected && t !== document.body && this._root && this._root.contains(t)) t.focus({ preventScroll: true });
+      else if (this.state.view === "composer" && this.state.field !== "title") this.focusBody();
+    });
+  };
+  exec(cmd, val) { this.focusBody(); try { document.execCommand(cmd, false, val); } catch (e) {} this.sync(true); this.readSel(); }
+  taRange() { const t = this._ta; if (t && document.activeElement === t) return [t.selectionStart, t.selectionEnd]; return this._taRange || [this.state.md.length, this.state.md.length]; }
+  mdEdit(fn) { const v = this.state.md, [a, b] = this.taRange(); const [nv, na, nb] = fn(v, a, b); this._taSel = [na, nb]; this.setState({ md: nv }); this.touch(); }
+  mdFmt(k) {
+    if (k === "link") return this.openLink();
+    const wrap = (m) => this.mdEdit((v, a, b) => [v.slice(0, a) + m + v.slice(a, b) + m + v.slice(b), a + m.length, b + m.length]);
+    if (k === "bold") return wrap("**"); if (k === "italic") return wrap("*");
+    const pre = { ul: "- ", ol: "1. ", quote: "> ", h2: "## ", h3: "### ", p: "" }[k];
+    this.mdEdit((v, a, b) => { const ls = v.lastIndexOf("\n", a - 1) + 1; const blk = v.slice(ls, b).split("\n").map((x, j) => (k === "ol" ? (j + 1) + ". " : pre) + x.replace(/^(\d+\. |- |> |#{2,3} )/, "")).join("\n"); return [v.slice(0, ls) + blk + v.slice(b), ls, ls + blk.length]; });
+  }
+  fmtAction(k) {
+    const s = this.state; if (s.mode === "md") return this.mdFmt(k);
+    if (k === "bold") this.exec("bold"); else if (k === "italic") this.exec("italic");
+    else if (k === "ul") this.exec("insertUnorderedList"); else if (k === "ol") this.exec("insertOrderedList");
+    else if (k === "quote") this.exec("formatBlock", s.fmt.block === "blockquote" ? "p" : "blockquote");
+    else if (k === "link") this.openLink(); else this.exec("formatBlock", k);
+  }
+  openLink() {
+    let text = "", url = "https://", edit = false;
+    if (this.state.mode === "rich") { if (this._linkA) { text = this._linkA.textContent; url = this._linkA.getAttribute("href"); edit = true; } else if (this._range) text = this._range.toString(); }
+    else { const [a, b] = this.taRange(); this._taRange = [a, b]; text = this.state.md.slice(a, b); }
+    this._linkEdit = edit;
+    this.setState({ panel: "link", link: { url, text, edit } });
+  }
+  insertLink = () => {
+    const { url, text } = this.state.link; const u = url.trim();
+    if (!u || u === "https://") return;
+    if (this.state.mode === "md") { this.setState({ panel: null }); return this.mdEdit((v, a, b) => { const ins = `[${text || u}](${u})`; return [v.slice(0, a) + ins + v.slice(b), a + ins.length, a + ins.length]; }); }
+    this.focusBody();
+    if (!this._linkA && this.state.link.edit && this._el) this._linkA = this._el.querySelector("a");
+    if (this.state.link.edit && this._linkA) { this._linkA.setAttribute("href", u); if (text) this._linkA.textContent = text; }
+    else if (this._range && !this._range.collapsed) document.execCommand("createLink", false, u);
+    else document.execCommand("insertHTML", false, `<a href="${F().esc(u)}">${F().esc(text || u)}</a>&nbsp;`);
+    this.sync(true); this.setState({ panel: null, announce: this.state.link.edit ? "Link updated" : "Link inserted" }); this.readSel();
+  };
+  removeLink = () => { const a = this._linkA; if (!a) return; a.replaceWith(...a.childNodes); this._linkA = null; this.sync(true); this.setState({ ctx: "caret", announce: "Link removed" }); this.focusBody(); };
+  cancelPanel = () => { this.setState({ panel: null }); this.focusBody(); };
+  insertBlock(html) {
+    const el = this._el; if (!el) { this.setState((st) => ({ html: st.html + html + F().P_ })); return null; }
+    const n = node(html); const r = this._range; let anchor = null;
+    if (r && el.contains(r.startContainer)) { anchor = r.startContainer; while (anchor && anchor.parentNode !== el) anchor = anchor.parentNode; }
+    if (anchor && anchor.nodeName === "P" && !anchor.textContent.trim() && !anchor.querySelector("figure")) anchor.replaceWith(n);
+    else if (anchor) anchor.after(n); else el.appendChild(n);
+    let next = n.nextSibling;
+    if (!next || next.nodeName !== "P") { const p = document.createElement("p"); p.innerHTML = "<br>"; n.after(p); next = p; }
+    const nr = document.createRange(); nr.setStart(next, 0); nr.collapse(true); this._range = nr;
+    this.sync(true); return n;
+  }
+  mdInsertBlock(txt) { this.mdEdit((v, a) => { const pre = a > 0 && v[a - 1] !== "\n" ? "\n\n" : "", ins = pre + txt + "\n\n"; return [v.slice(0, a) + ins + v.slice(a), a + ins.length, a + ins.length]; }); }
+  decideFail(id) {
+    const s = this.sim(); if (s.net === "offline" || s.upload === "fail") return true;
+    if (s.upload === "failonce" && !this._failedOnce) { this._failedOnce = true; return true; }
+    if (s.upload === "partial") { this._pf = this._pf || new Set(); const n = this._upN++; if (n % 2 === 1 && !this._pf.has(id)) { this._pf.add(id); return true; } }
+    return false;
+  }
+  runUpload(id, name, start, fail) {
+    let pct = start || 0; clearInterval(this._ups[id]);
+    this._ups[id] = setInterval(() => {
+      const f = this._el && this._el.querySelector(`[data-up="${id}"][data-kind="up"]`);
+      if (!f) { if (!this._el) return; clearInterval(this._ups[id]); return; }
+      pct = Math.min(100, pct + 6);
+      if (fail && pct >= 48) { clearInterval(this._ups[id]); f.replaceWith(node(F().failFig(id, name))); this.sync(false); this.setState({ announce: "Upload failed: " + name }); return; }
+      if (pct >= 100) { clearInterval(this._ups[id]); f.replaceWith(node(F().imgFig(name, `![${name.replace(/\.\w+$/, "")}|690x460](upload://${id}x7Qe.jpeg)`))); this.sync(true); this.setState({ announce: "Photo added: " + name }); return; }
+      const bar = f.querySelector("[data-bar]"); if (bar) bar.style.width = pct + "%";
+      const pb = f.querySelector("[role=progressbar]"); if (pb) pb.setAttribute("aria-valuenow", pct);
+      const t = f.querySelector("[data-pct-t]"); if (t) t.textContent = "Uploading… " + pct + "%";
+    }, 150);
+  }
+  mdUpload(name) {
+    const id = "u" + (++this._uid), ph = `![Uploading: ${name}…]()`;
+    this.mdInsertBlock(ph);
+    const fail = this.decideFail(id);
+    this._mdu = setTimeout(() => {
+      if (fail) { this._lastUp = name; this.setState((st) => ({ md: st.md.replace(ph + "\n\n", "").replace(ph, ""), notice: "mdUp", announce: "Upload failed: " + name })); return; }
+      this.setState((st) => ({ md: st.md.replace(ph, `![${name.replace(/\.\w+$/, "")}|690x460](upload://${id}x7Qe.jpeg)`), announce: "Photo added: " + name })); this.touch();
+    }, 1600);
+  }
+  addImages(names) {
+    if (!names.length) return;
+    this.setState({ sheet: null, photoSel: [], announce: names.length > 1 ? "Uploading " + names.length + " photos" : "Uploading " + names[0] });
+    if (this.state.mode === "md") return names.forEach((n) => this.mdUpload(n));
+    let first = null;
+    names.forEach((name) => { const id = "u" + (++this._uid); const f = this.insertBlock(F().upFig(id, name, 0)); first = first || f; this.runUpload(id, name, 0, this.decideFail(id)); });
+    requestAnimationFrame(() => { if (first && this._sc) { const fr = first.getBoundingClientRect(), sr = this._sc.getBoundingClientRect(); if (fr.bottom > sr.bottom || fr.top < sr.top) this._sc.scrollTop += (fr.top - sr.top - 40) / (sr.height / this._sc.offsetHeight || 1); } });
+  }
+  handleFiles(list) {
+    const ok = /\.(jpe?g|png|gif|heic|heif|webp|avif|svg|jxl)$/i;
+    const imgs = list.filter((f) => /^image\//.test(f.type) || ok.test(f.name)), other = list.filter((f) => !imgs.includes(f));
+    if (other.length) this.setState({ notice: "type", announce: "File not authorized" });
+    if (imgs.length) this.addImages(imgs.map((f) => f.name || "Pasted image.png"));
+  }
+  onPaste = (e) => {
+    const dt = e.clipboardData; if (!dt) return;
+    const files = [...(dt.files || [])];
+    if (files.length) { e.preventDefault(); return this.handleFiles(files.map((f) => ({ name: f.name || "Pasted image.png", type: f.type }))); }
+    const t = (dt.getData("text/plain") || "").trim();
+    if (/^https?:\/\/\S+$/.test(t)) {
+      e.preventDefault(); const sel = getSelection(); let blk = sel.rangeCount ? sel.getRangeAt(0).startContainer : null;
+      while (blk && blk.parentNode !== this._el) blk = blk.parentNode;
+      this.pasteUrl(t, !blk || !blk.textContent.trim());
+    }
+  };
+  onDragOver = (e) => { e.preventDefault(); if (!this.state.drag) this.setState({ drag: true }); };
+  onDragLeave = (e) => { if (!e.currentTarget.contains(e.relatedTarget)) this.setState({ drag: false }); };
+  onDrop = (e) => { e.preventDefault(); this.setState({ drag: false }); const files = [...((e.dataTransfer && e.dataTransfer.files) || [])]; this.handleFiles(files.map((f) => ({ name: f.name, type: f.type }))); };
+  pasteUrl(url, standalone) {
+    if (!this._el) return;
+    if (!standalone) { this.focusBody(); document.execCommand("insertHTML", false, `<a href="${F().esc(url)}">${F().esc(url)}</a>&nbsp;`); this.sync(true); return; }
+    const id = "ob" + (++this._uid); this.insertBlock(F().obLoad(id, url)); this.setState({ announce: "Loading link preview" }); this.resolveOb(id, url);
+  }
+  resolveOb(id, url) {
+    this._obt = this._obt || [];
+    this._obt.push(setTimeout(() => {
+      const f = this._el && this._el.querySelector(`[data-ob="${id}"]`); if (!f) return; const r = this.sim().net === "offline" ? "fail" : this.sim().onebox;
+      f.replaceWith(node(r === "ok" ? F().obCard(url) : r === "unsupported" ? F().plainLink(url) : F().obFail(url)));
+      this.sync(true); this.setState({ announce: r === "ok" ? "Link preview added" : r === "unsupported" ? "Link added" : "Preview unavailable. The link is kept." });
+    }, 1300));
+  }
+  onBodyClick = (e) => {
+    const t = e.target; const act = t.closest && t.closest("[data-act]");
+    if (act) {
+      e.preventDefault(); const f = act.closest("figure"); const id = f.dataset.up, name = f.dataset.name, a = act.dataset.act;
+      if (a === "retry") { f.replaceWith(node(F().upFig(id, name, 0))); this.sync(false); this.setState({ announce: "Uploading " + name }); this.runUpload(id, name, 0, this.decideFail(id)); }
+      else if (a === "obretry") { const nid = "ob" + (++this._uid); f.replaceWith(node(F().obLoad(nid, f.dataset.md))); this.sync(false); this.resolveOb(nid, f.dataset.md); }
+      else { clearInterval(this._ups[id]); f.remove(); this.sync(true); this.setState({ announce: a === "cancel" ? "Upload cancelled" : "Removed" }); }
+      return;
+    }
+    const fig = t.closest && t.closest("figure[data-kind]");
+    if (fig && ["img", "atom", "quote", "ob"].includes(fig.dataset.kind)) { this.clearBlk(); this._blk = fig; this._blkAt = Date.now(); fig.style.outline = "2px solid var(--tertiary)"; fig.style.outlineOffset = "3px"; this.setState({ ctx: fig.dataset.kind === "img" ? "image" : fig.dataset.kind === "atom" ? "atom" : "block", panel: null }); }
+  };
+  clearBlk() { if (this._blk) { this._blk.style.outline = ""; this._blk = null; } }
+  removeBlock = () => { const f = this._blk; if (!f) return; this.clearBlk(); const p = f.nextSibling; f.remove(); if (p && p.nodeName === "P") { const r = document.createRange(); r.setStart(p, 0); r.collapse(true); this._range = r; } this.sync(true); this.setState({ ctx: "caret", announce: "Removed" }); this.focusBody(); };
+  openAlt = () => { const f = this._blk; const m = f && f.dataset.md.match(/^!\[([^|\]]*)/); this.setState({ panel: "alt", alt: m ? m[1] : "" }); };
+  saveAlt = () => { const f = this._blk || (this._el && this._el.querySelector('figure[data-kind="img"]')); if (f) { const a = this.state.alt.replace(/[\[\]|]/g, ""); f.dataset.md = f.dataset.md.replace(/^!\[[^|\]]*/, "![" + a); f.setAttribute("data-md", f.dataset.md); this.sync(true); } this.setState({ panel: null, announce: "Alt text saved" }); this.focusBody(); };
+  openAtom(type) { this.openSheet("atom", { atomEd: { ...F().newAtom(type), editing: false } }); }
+  editAtom = () => { const f = this._blk; if (!f) return; this.openSheet("atom", { atomEd: { ...F().parseAtom(f.dataset.md), editing: true } }); };
+  saveAtom = () => {
+    const a = this.state.atomEd; const r = F().buildAtom(a);
+    if (r.err) return this.setState({ atomEd: { ...a, err: r.err }, announce: r.err });
+    if (this.state.mode === "md") { this.setState({ sheet: null, atomEd: null }); return this.mdInsertBlock(r.md); }
+    if (a.editing && this._blk && this._blk.isConnected) { const n = node(F().atomFig(r.md)); this._blk.replaceWith(n); this._blk = null; this.sync(true); }
+    else this.insertBlock(F().atomFig(r.md));
+    this.setState({ sheet: null, atomEd: null, ctx: "caret", announce: a.editing ? "Updated" : "Inserted" });
+    requestAnimationFrame(() => this.focusBody());
+  };
+  setAtom(p) { this.setState((st) => ({ atomEd: { ...st.atomEd, ...p, err: "" } })); }
+  textPos(r) { let n = r.startContainer, o = r.startOffset; if (n.nodeType === 1 && o > 0 && n.childNodes[o - 1] && n.childNodes[o - 1].nodeType === 3) { n = n.childNodes[o - 1]; o = n.textContent.length; } return n.nodeType === 3 ? [n, o] : null; }
+  detectMention() {
+    const sel = getSelection(); const clear = () => { if (this.state.mention) this.setState({ mention: null }); };
+    if (!sel.rangeCount) return clear(); const r = sel.getRangeAt(0);
+    const tp = r.collapsed && this.textPos(r); if (!tp) return clear();
+    const m = tp[0].textContent.slice(0, tp[1]).match(/(?:^|[\s\u00a0])@([\w.-]{0,20})$/);
+    if (!m) return clear();
+    if (this._mDismiss && this._mDismiss.node === tp[0] && this._mDismiss.q === m[1].slice(0, this._mDismiss.q.length)) return;
+    this._mDismiss = null;
+    this.setState({ mention: { q: m[1], status: "loading", sel: 0 } }); this.searchMention(m[1]);
+  }
+  searchMention(q) {
+    clearTimeout(this._mt); const s = this.sim();
+    this._mt = setTimeout(() => {
+      if (!this.state.mention) return;
+      const lq = q.toLowerCase(); const items = s.mention === "none" ? [] : F().USERS.filter((u) => !lq || u.u.startsWith(lq) || u.n.toLowerCase().split(" ").some((w) => w.startsWith(lq)));
+      this.setState({ mention: { q, status: items.length ? "results" : "none", sel: 0 }, announce: items.length ? items.length + " suggestions" : "No matches found" });
+    }, s.mention === "slow" ? 2000 : 450);
+  }
+  pickMention(u) {
+    this.focusBody(); const sel = getSelection(); if (!sel.rangeCount) return; const r = sel.getRangeAt(0); const tp = this.textPos(r); if (!tp) return;
+    const len = (this.state.mention ? this.state.mention.q.length : 0) + 1;
+    const rr = document.createRange(); rr.setStart(tp[0], Math.max(0, tp[1] - len)); rr.setEnd(tp[0], tp[1]); sel.removeAllRanges(); sel.addRange(rr);
+    document.execCommand("insertText", false, "@" + u.u + " ");
+    this.setState({ mention: null, announce: "@" + u.u + " added" }); this.sync(true);
+  }
+  dismissMention() { const sel = getSelection(); const r = sel.rangeCount && sel.getRangeAt(0); const tp = r && this.textPos(r); this._mDismiss = tp ? { node: tp[0], q: this.state.mention.q } : null; this.setState({ mention: null }); }
+  switchMode = () => {
+    const s = this.state; if (/data-kind="(up|fail|obload)"/.test(s.html) || s.notice === "mdUp") return this.setState({ announce: "Finish or remove uploads first" });
+    if (s.mode === "rich") { const html = this._el ? this._el.innerHTML : s.html; this._taRange = null; this.setState({ mode: "md", md: F().htmlToMd(html), html, ctx: "caret", announce: "Markdown" }); }
+    else this.setState({ mode: "rich", html: F().mdToHtml(s.md), preview: false, ctx: "caret", announce: "Rich text" });
+    this.touch();
+  };
+  currentMd(html) { const s = this.state; if (this.isForm()) return F().composeForm(s.form); return s.mode === "md" ? s.md : F().htmlToMd(html != null ? html : this._el ? this._el.innerHTML : s.html); }
+  isForm() { const s = this.state; return s.intent === "new" && !!F().catById(s.cat).form; }
+  hasContent(html) { const s = this.state; return !!(s.title.trim() || this.currentMd(html).trim()); }
+  copyText = () => {
+    const s = this.state; const txt = (s.title ? s.title + "\n\n" : "") + this.currentMd();
+    const ok = () => this.setState({ announce: "Text copied" }), bad = () => this.setState({ announce: "Couldn’t copy. Select the text and copy it manually." });
+    try { navigator.clipboard.writeText(txt).then(ok, bad); } catch (e) { bad(); }
+  };
+  saveClose = () => {
+    const s = this.state; const html = this._el ? this._el.innerHTML : s.html;
+    if (!this.hasContent(html)) return this.doClose();
+    if (s.draft === "saving") { this._closing = true; return this.setState({ closing: true, html, announce: "Saving draft before closing" }); }
+    if (s.draft === "offline") return this.setState({ banner: "closeOffline", html });
+    if (s.draft === "failed") return this.setState({ banner: "closeFailed", html });
+    if (s.draft === "draftConflict") return this.setState({ banner: "draftConflict", html });
+    this.doClose();
+  };
+  doClose() {
+    const s = this.state; const html = this._el ? this._el.innerHTML : s.html; const has = this.hasContent(html);
+    this.blurField();
+    this.setState({ html, view: "page", minimized: false, kb: false, sheet: null, panel: null, banner: null, mention: null, drafts: has ? [{ title: s.title || F().TITLE, meta: this.labels().action + " · just now" }] : [] });
+  }
+  minimize = () => { this.blurField(); this.setState({ html: this._el ? this._el.innerHTML : this.state.html, view: "page", minimized: true, kb: false, sheet: null, panel: null, mention: null }); };
+  resume = () => this.setState({ view: "composer", minimized: false, drafts: [], kb: false, ctx: "caret" }, () => { if (this.props.live) this.focusBody(); });
+  discard = () => { this.clearTimers(); this._range = null; this.setState({ ...F().BASE, view: "page", page: this.state.page, intent: this.state.intent, signedOut: this.state.signedOut, closed: this.state.closed, announce: "Discarded" }); };
+  fresh(extra, after) { this._range = null; this._meta = {}; this._seen = {}; this.setState({ ...F().BASE, drafts: this.state.drafts, pendingNotice: this.state.pendingNotice, page: this.state.page, closed: this.state.closed, ...extra }, () => { if (this._el) this._el.innerHTML = this.state.html; if (after) after(); }); }
+  openNew = () => { if (this.state.signedOut) return this.setState({ sheet: "login" }); this.fresh({}, () => { if (this._title) this._title.focus(); }); };
+  openReply = () => { if (this.state.signedOut) return this.setState({ sheet: "login" }); this.fresh({ intent: "reply", page: "topic" }, () => this.focusBody()); };
+  openReplyTo(i) { if (this.state.signedOut) return this.setState({ sheet: "login" }); this.fresh({ intent: "reply", replyTo: F().PB[i].user, page: "topic" }, () => this.focusBody()); }
+  openEdit = () => { const h = "<p>" + F().PB[2].text + "</p>"; this.fresh({ intent: "edit", page: "topic", html: h }); };
+  onPageUp = () => {
+    requestAnimationFrame(() => {
+      const sel = getSelection(); if (!sel.rangeCount || sel.isCollapsed || !this._root) return;
+      const r = sel.getRangeAt(0); const c = r.commonAncestorContainer; const e = c.nodeType === 1 ? c : c.parentElement; const art = e && e.closest("[data-post]");
+      if (!art || !this._root.contains(art)) return; const text = sel.toString().trim(); if (!text) return;
+      const p = this.rel(r.getBoundingClientRect()); this.setState({ qsel: { post: +art.dataset.post, text, x: p.x, y: p.y, h: p.h } });
+    });
+  };
+  doQuote = () => {
+    const s = this.state, q = s.qsel; if (!q) return; const L = F(); const p = L.PB[q.post]; const md = L.quoteMd(p, q.post, q.text); const fig = L.quoteFig(p, q.text, md);
+    getSelection().removeAllRanges();
+    if (s.signedOut) return this.setState({ sheet: "login", qsel: null });
+    if (s.intent === "reply" && (s.view === "composer" || s.minimized) && !s.published) {
+      if (this._el) { this.insertBlock(fig); this.setState({ qsel: null, announce: "Quote added" }, () => this.focusBody()); }
+      else this.setState((st) => ({ html: st.html + fig + L.P_, qsel: null, view: "composer", minimized: false, announce: "Quote added" }), () => { this._range = null; if (this.props.live) { this.focusBody(); this.caretIntoView(); } this.touch(); });
+      return;
+    }
+    this.fresh({ intent: "reply", replyTo: p.mine ? null : p.user, page: "topic", html: fig + L.P_, announce: "Quote added" }, () => { if (this.props.live) this.focusBody(); this.touch(); });
+  };
+  pickCat(c) {
+    const s = this.state, cur = F().catById(s.cat);
+    if (c.id === s.cat) return this.closeSheet();
+    const formHas = cur.form && (s.form.stage || s.form.piece.trim() || s.form.note.trim());
+    const bodyHas = !cur.form && this.currentMd().trim();
+    if ((cur.form && formHas) || (c.form && bodyHas)) return this.setState({ sheet: "formSwitch", pendingSwitch: c.id });
+    this.applyCat(c.id);
+  }
+  applyCat(id) {
+    const s = this.state, cur = F().catById(s.cat), next = F().catById(id); const st = { cat: id, sheet: null, destQ: "", pendingSwitch: null, announce: "Category " + next.name };
+    if (cur.form && !next.form) { st.html = F().mdToHtml(F().composeForm(s.form)); st.form = F().BASE.form; st.formPreview = false; }
+    if (!cur.form && next.form) { st.form = { ...F().BASE.form, piece: this.currentMd() }; st.html = ""; }
+    if (s.banner === "forbidden") st.banner = null;
+    this.setState(st, () => { if (this._el && st.html != null) this._el.innerHTML = this.state.html; this.touch(); });
+  }
+  submit = () => {
+    const s = this.state; if (this._busy || s.submitting) return;
+    const L = F(); const html = this._el ? this._el.innerHTML : s.html; const form = this.isForm(); const md = this.currentMd(html);
+    const e = {}; const needT = s.intent === "new" || s.intent === "editFirst"; let fe = {};
+    if (needT) { const t = s.title.trim(); if (!t) e.title = "Title is required"; else if (t.length < 5) e.title = "Title must be at least 5 characters"; }
+    if (form) fe = L.formErrors(s.form);
+    else if (/data-kind="up"/.test(html) || /!\[Uploading/.test(md)) e.body = "Wait for the photos to finish uploading.";
+    else if (md.replace(/\s+/g, " ").trim().length < 2) e.body = "Post must be at least 2 characters";
+    if (Object.keys(e).length || Object.keys(fe).length) { this.setState({ errors: e, formErr: fe, formPreview: false, html, announce: [...Object.values(e), ...(Object.keys(fe).length ? ["Complete the required fields"] : [])].join(". ") }); setTimeout(() => { if (e.title && this._title) this._title.focus(); else if (form) { const f = this._root.querySelector('section [aria-invalid="true"]'); if (f) f.focus(); } else this.focusBody(); }, 60); return; }
+    this._busy = true; this.blurField();
+    this.setState({ submitting: true, errors: {}, formErr: {}, banner: null, html, mention: null, panel: null, kb: false, announce: "Submitting" });
+    this._st = setTimeout(() => this.complete(), 1100);
+  };
+  complete() {
+    this._busy = false; const sim = this.sim(), st = this.state, r = sim.result, edit = st.intent.startsWith("edit");
+    const once = (k) => { if (this._seen[k]) return false; this._seen[k] = true; return true; };
+    const fail = (banner, extra) => this.setState({ submitting: false, banner, announce: "Not posted", ...(extra || {}) });
+    if (sim.net === "offline") return fail("offline", { draft: "offline" });
+    if (r === "rate" && once("rate")) return fail("rate");
+    if (r === "error" && once("error")) return fail("error");
+    if (r === "rejected" && once("rejected")) return fail("rejected");
+    if (r === "session" && once("session")) return fail("session", { session: true, draft: "failed" });
+    if (r === "forbidden" && once("forbidden")) { if (st.intent === "reply") return fail("noReply"); if (st.intent === "new") return fail("forbidden", { revoked: [st.cat] }); }
+    if (r === "closed" && st.intent === "reply" && once("closed")) return fail("closedNow", { closed: true });
+    if (edit && (r === "conflict" || this._meta.conflict) && !this._over) return fail("conflict", { draft: "conflict" });
+    const pending = r === "pending" && !edit;
+    this.blurField();
+    this.setState({ submitting: false, view: "page", page: st.intent === "new" ? (pending ? "feed" : "newtopic") : "topic", published: !pending, edited: edit, editedTitle: st.intent === "editFirst" ? st.title : st.editedTitle, sheet: pending ? "pending" : null, minimized: false, drafts: [], kb: false, panel: null, draft: null, banner: null, announce: pending ? "Post Needs Approval" : edit ? "Edit saved" : "Posted" }, () => {
+      requestAnimationFrame(() => { if (this._pg) { const h = this._pg.querySelector("[data-hl]"); this._pg.scrollTop = h ? h.offsetTop - 80 : 0; } });
+    });
+  }
+  replyAsLinked = () => {
+    const s = this.state, L = F(); const body = this._el ? this._el.innerHTML : s.html;
+    const lead = `<p>Continuing the discussion from <a href="https://fomio.example/t/4127">${L.esc(L.TITLE)}</a>:</p>`;
+    this.fresh({ intent: "new", cat: "open", html: lead + body, drafts: s.drafts, draft: null, announce: "New topic with your reply" }, () => { this.touch(); if (this._title) this._title.focus(); });
+  };
+  labels() {
+    const i = this.state.intent;
+    return i === "new" ? { action: "Create topic", primary: "Create Topic", icon: "fa-solid fa-plus" } : i === "reply" ? { action: "Byte", primary: "Reply", icon: "fa-solid fa-reply" } : { action: "Edit", primary: "Save Edit", icon: "fa-solid fa-pencil" };
+  }
+  typeKey(k) {
+    const a = document.activeElement; if (!a || !this._root || !this._root.contains(a)) return;
+    const isEd = a.isContentEditable;
+    if (k === "⌫") document.execCommand("delete");
+    else if (k === "return") { if (a === this._title) return this.focusBody(); document.execCommand(isEd ? "insertParagraph" : "insertText", false, isEd ? undefined : "\n"); }
+    else if (k) document.execCommand("insertText", false, k);
+    if (isEd) this.caretIntoView();
+  }
+  onKey = (e) => {
+    const s = this.state, g = this.geo(), mn = s.mention;
+    if (mn && mn.status === "results" && ["ArrowDown", "ArrowUp", "Enter", "Tab"].includes(e.key)) {
+      const items = this.mentionItems(mn.q); e.preventDefault();
+      if (e.key === "ArrowDown") return this.setState({ mention: { ...mn, sel: (mn.sel + 1) % items.length } });
+      if (e.key === "ArrowUp") return this.setState({ mention: { ...mn, sel: (mn.sel - 1 + items.length) % items.length } });
+      return this.pickMention(items[mn.sel]);
+    }
+    if (e.key === "Escape") {
+      if (mn) { e.preventDefault(); return this.dismissMention(); }
+      if (s.qsel) { e.preventDefault(); return this.setState({ qsel: null }); }
+      if (s.sheet) { e.stopPropagation(); e.preventDefault(); return this.closeSheet(); }
+      if (s.panel) { e.preventDefault(); this.setState({ panel: null }); return this.focusBody(); }
+      if (["image", "atom", "block"].includes(s.ctx)) { e.preventDefault(); this.clearBlk(); this.setState({ ctx: "caret" }); return this.focusBody(); }
+      if ((g.desk || g.hw) && s.view === "composer") return this.minimize();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && s.view === "composer") { e.preventDefault(); this.submit(); }
+    if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K") && s.view === "composer" && s.field === "body") { e.preventDefault(); this.openLink(); }
+  };
+  mentionItems(q) { const lq = (q || "").toLowerCase(); return this.sim().mention === "none" ? [] : F().USERS.filter((u) => !lq || u.u.startsWith(lq) || u.n.toLowerCase().split(" ").some((w) => w.startsWith(lq))); }
+  runCmd(type) {
+    const go = () => {
+      if (type === "pasteUrl") { if (this.state.mode === "md") this.mdInsertBlock(F().URL1); else { this.focusBody(); this.pasteUrl(F().URL1, true); } }
+      else if (type === "pasteImage") { this.focusBody(); this.handleFiles([{ name: "Pasted image.png", type: "image/png" }]); }
+      else if (type === "dropImages" || type === "dropPdf") { this.setState({ drag: true }); setTimeout(() => { this.setState({ drag: false }); this.handleFiles(type === "dropPdf" ? [{ name: "Reading list.pdf", type: "application/pdf" }] : [{ name: "IMG_2044.jpeg", type: "image/jpeg" }, { name: "IMG_2045.jpeg", type: "image/jpeg" }]); }, 700); }
+    };
+    if (this.state.view !== "composer") this.setState({ view: "composer", minimized: false }, () => requestAnimationFrame(go)); else go();
+  }
+  renderVals() {
+    const s = this.state, g0 = this.geo();
+    if (!s.ready || !F()) return { L: { w: g0.W + "px", h: g0.H + "px", zoom: "1", r: g0.G.r + "px" }, isTouch: false, showComposer: false, showPage: false, announce: "" };
+    const L0 = F(), g = g0, { V, G, z, W, H, phoneL, tab, desk, touch, hw, softKb } = g, dark = this.props.scheme === "dark", sim = this.sim();
+    const lb = this.labels(), isMd = s.mode === "md", isRich = !isMd, catObj = L0.catById(s.cat), isForm = s.intent === "new" && !!catObj.form;
+    const composerOpen = s.view === "composer", moreOpen = s.sheet === "more" && composerOpen;
+    const kbOpen = softKb && composerOpen && s.kb && !s.submitting && !(s.sheet && (phoneL || s.sheet !== "more"));
+    const st = G.st / z, safe = G.safe / z, keyH = G.keyH / z;
+    const kbH = 36 + 11 + 4 * keyH + 33 + 8 + safe, moreH = Math.round(H * 0.47);
+    const bottomPx = touch ? (phoneL && moreOpen ? moreH : kbOpen ? kbH : safe) : 0;
+    const previewCol = isMd && s.preview && (desk || V === "tabletL") && W >= 1000 && !isForm;
+    const two = "minmax(0,1fr) minmax(0,1fr)", one = "minmax(0,1fr)";
+    let C;
+    if (phoneL) C = { top: st + "px", left: "0", right: "0", r: "0", shadow: "none", border: "0", pad: "12px 16px 0", measure: "none", cols: one, bodyMin: "140px", full: true, auto: true };
+    else if (tab) {
+      const auto = V === "split600" || (V === "tabletL" && kbOpen); const full = s.full || auto;
+      const side = V === "tabletL" && !full ? Math.round((W - 880) / 2) : 0;
+      C = full ? { top: st + "px", left: "0", right: "0", r: "0", shadow: "none", border: "0" } : { top: (V === "tabletP" ? 330 : 250) + "px", left: side + "px", right: side + "px", r: "16px 16px 0 0", shadow: "var(--shadow-composer)", border: "1px solid var(--content-border-color)" };
+      Object.assign(C, { pad: "16px 24px 0", measure: previewCol ? "none" : "720px", cols: previewCol ? two : one, bodyMin: "180px", full, auto });
+    } else {
+      const side = W >= 1000 ? Math.max(24, Math.round((W - 840) / 2)) : 0;
+      C = s.full ? { top: "0", left: "0", right: "0", r: "0", shadow: "none", border: "0" } : { top: Math.round(H * (previewCol ? 0.19 : 0.31)) + "px", left: (previewCol ? (W >= 1000 ? 60 : 0) : side) + "px", right: (previewCol ? (W >= 1000 ? 60 : 0) : side) + "px", r: "12px 12px 0 0", shadow: "var(--shadow-composer)", border: "1px solid var(--content-border-color)" };
+      Object.assign(C, { pad: W < 700 ? "16px 16px 0" : "18px 28px 0", measure: s.full && !previewCol ? "760px" : "none", cols: previewCol ? two : one, bodyMin: s.full ? "360px" : "140px", full: s.full });
+    }
+    const cv = L0.catV(catObj);
+    const DS = { saving: ["fa-solid fa-circle-notch", "Saving", "var(--primary-medium)"], saved: ["fa-solid fa-check", "Draft saved", "var(--primary-medium)"], offline: ["fa-solid fa-triangle-exclamation", "Offline. Draft not saved", "var(--danger)"], failed: ["fa-solid fa-triangle-exclamation", "Draft not saved", "var(--danger)"], draftConflict: ["fa-solid fa-triangle-exclamation", "Draft not saved", "var(--danger)"], conflict: ["fa-solid fa-triangle-exclamation", "Edit conflict", "var(--danger)"] }[s.draft];
+    const ds = DS ? { show: true, icon: DS[0], text: DS[1], color: DS[2], wide: W >= 330 } : { show: false };
+    const act = (label, on, primary) => ({ label, on, bd: primary ? "0" : "1px solid var(--input-border-color)", bg: primary ? "var(--tertiary)" : "var(--secondary)", ink: primary ? "var(--on-tertiary)" : "var(--primary)" });
+    const dismiss = () => { this.setState({ banner: null }); this.focusBody(); };
+    const retrySave = (closing) => () => { this._closing = !!closing; this.setState({ banner: null, closing: !!closing }); this.touch(); };
+    const copyA = act("Copy text", this.copyText);
+    const warn = "fa-solid fa-circle-exclamation";
+    const BN = {
+      offline: { title: "Unable to connect.", body: "Not posted. Your writing is still here, but it isn’t saved anywhere until you reconnect.", actions: [act("Try Again", this.submit, true), copyA] },
+      rate: { title: "Not posted yet.", body: "You’ve performed this action too many times. Please wait 10 seconds before trying again.", actions: [act("Try Again", this.submit, true)] },
+      error: { title: "Not posted.", body: "Sorry, an error has occurred. Your writing is still here.", actions: [act("Try Again", this.submit, true), copyA] },
+      rejected: { title: "Not posted.", body: "Body is too similar to what you recently posted", actions: [act("Keep editing", dismiss, true)] },
+      conflict: { title: "Edit conflict", body: "This post changed while you were editing. Overwrite Edit replaces the newer version with yours.", actions: [act("Overwrite Edit", () => { this._over = true; this.setState({ draft: "saved" }); this.submit(); }, true), act("Keep editing", dismiss)] },
+      closeOffline: { title: "You’re offline. Draft not saved.", body: "The composer stays open so nothing is lost. When you reconnect, the draft saves and you can close it.", actions: [act("Keep editing", dismiss, true), copyA] },
+      closeFailed: { title: "Draft not saved.", body: "Closing now could lose this writing. Try saving again, or copy the text first.", actions: [act("Retry save", retrySave(true), true), copyA, act("Keep editing", dismiss)] },
+      saveFailed: { title: "Draft not saved.", body: "The last save didn’t go through. Your writing is still on this screen.", actions: [act("Retry save", retrySave(false), true), act("Keep editing", dismiss)] },
+      draftConflict: { title: "This draft changed somewhere else.", body: "It was edited in another window or on another device. Nothing has been replaced yet, and this screen won’t save until you choose.", actions: [act("Copy my text", this.copyText, true), act("Save mine over it", () => { this._forced = true; this.setState({ draft: null, banner: null, announce: "Saving your version" }, () => this.touch()); }), act("Use the other version", () => this.openSheet("replace"))] },
+      forbidden: { title: "You can no longer post in " + catObj.name + ".", body: "Posting permission for this category changed while you were writing. Your writing is still here.", actions: [act("Choose another category", () => this.openSheet("dest"), true), copyA] },
+      noReply: { title: "You can no longer reply here.", body: "Your permission to reply in this topic changed. Your reply is still here.", actions: [act("Reply as linked topic", this.replyAsLinked, true), copyA] },
+      closedNow: { title: "This topic was closed while you were writing.", body: "It no longer accepts replies. Your reply is still here.", actions: [act("Reply as linked topic", this.replyAsLinked, true), copyA] },
+      session: { title: "You were logged out.", body: "Your session ended. Log in again to post. Your writing stays in this window.", actions: [act("Log In", () => this.openSheet("login"), true), copyA] },
+    }[s.banner];
+    const needTitle = s.intent === "new" || s.intent === "editFirst";
+    const bodyEmpty = isRich && !s.html.replace(/<br\s*\/?>/g, "").replace(/<(?!figure)[^>]+>/g, "").replace(/&nbsp;/g, "").trim();
+    const fieldTitle = s.field === "title";
+    const on = (k) => () => this.fmtAction(k);
+    const compact = W < 380, tiny = W < 330;
+    const fmtOpen = s.panel === "format";
+    const ctxStrip = !fmtOpen && !fieldTitle && (s.ctx === "text" || (s.ctx === "link" && isRich)), short = (compact && ctxStrip) || tiny;
+    const item = (key, label, icon, fn, o) => { o = o || {}; return { key, isBtn: true, isSep: false, label, icon, on: fn, title: o.title || label, showLabel: !!o.label && !tiny, pressed: o.pressed, expanded: o.expanded, popup: o.popup, keys: o.keys, disabled: !!o.disabled || s.submitting, bg: o.active ? "var(--highlight)" : "transparent", ink: o.active ? "var(--quaternary)" : "var(--primary)", op: o.disabled || s.submitting ? "0.4" : "1", px: o.label && !tiny ? "10px" : "0" }; };
+    const sep = { key: "sep", isSep: true, isBtn: false };
+    const photo = item("photo", "Photo", "fa-regular fa-image", () => this.openSheet("photo", { photoSel: [] }), { label: 1, popup: "dialog" });
+    const fmt = item("format", "Format", "fa-solid fa-font", () => this.setState({ panel: fmtOpen ? null : "format", mention: null }), { label: !short, expanded: fmtOpen ? "true" : "false", active: fmtOpen, disabled: fieldTitle && !fmtOpen });
+    const more = item("more", "More", "fa-solid fa-ellipsis", () => { if (moreOpen) return this.closeSheet(); this.openSheet("more"); }, { label: !short, expanded: moreOpen ? "true" : "false", popup: "dialog", active: moreOpen });
+    const F_ = s.fmt || {}; const kh = (k) => (desk || hw ? k : undefined);
+    let strip;
+    if (isForm) strip = [item("pv", "Preview", "fa-regular fa-eye", () => this.setState({ formPreview: !s.formPreview }), { label: 1, pressed: String(!!s.formPreview), active: s.formPreview })];
+    else if (s.ctx === "text" && !fmtOpen && !fieldTitle) strip = [item("b", "Bold", "fa-solid fa-bold", on("bold"), { pressed: String(!!F_.bold), active: F_.bold, keys: kh("Control+B"), title: "Bold (Ctrl+B)" }), item("i", "Italic", "fa-solid fa-italic", on("italic"), { pressed: String(!!F_.italic), active: F_.italic, keys: kh("Control+I"), title: "Italic (Ctrl+I)" }), item("l", "Link", "fa-solid fa-link", on("link"), { keys: kh("Control+K"), title: "Hyperlink (Ctrl+K)" }), sep, fmt, more];
+    else if (s.ctx === "link" && isRich && !fmtOpen && !fieldTitle) strip = [item("el", "Edit link", "fa-solid fa-link", () => this.openLink(), { label: !compact }), item("rl", "Remove link", "fa-solid fa-link-slash", this.removeLink, { label: !compact }), sep, fmt, more];
+    else if (s.ctx === "image" && isRich) strip = [item("alt", "Alt text", "fa-solid fa-closed-captioning", this.openAlt, { label: 1 }), item("rm", "Remove", "fa-regular fa-trash-can", this.removeBlock, { label: 1 }), sep, more];
+    else if (s.ctx === "atom" && isRich) strip = [item("ed", "Edit", "fa-solid fa-pen", this.editAtom, { label: 1, popup: "dialog" }), item("rm", "Remove", "fa-regular fa-trash-can", this.removeBlock, { label: 1 }), sep, more];
+    else if (s.ctx === "block" && isRich) strip = [item("rm", "Remove", "fa-regular fa-trash-can", this.removeBlock, { label: 1 }), sep, fmt, more];
+    else strip = [photo, fmt, more];
+    strip = strip.map((t, i) => ({ ...t, key: t.key + i }));
+    const blk = isRich ? F_.block : "";
+    const blockOpts = [["p", "Paragraph", "600 15px/1 var(--font-family)"], ["h2", "Heading", "700 16px/1 var(--heading-font-family)"], ["h3", "Subheading", "700 14px/1 var(--heading-font-family)"]].map(([k, label, font]) => { const o = isRich && (blk === k || (k === "p" && !["h2", "h3"].includes(blk))); return { label, font, on: String(o), bg: o ? "var(--secondary)" : "transparent", sh: o ? "0 1px 2px rgb(0 0 0 / 12%)" : "none", set: on(k) }; });
+    const fb = (k, label, aria, icon, stt) => ({ label, aria, icon, on: on(k), pressed: stt === undefined ? undefined : String(!!stt), bg: stt ? "var(--highlight)" : "transparent", ink: stt ? "var(--quaternary)" : "var(--primary)" });
+    const fmtBtns = [fb("bold", "Bold", "Bold (Ctrl+B)", "fa-solid fa-bold", isRich ? !!F_.bold : undefined), fb("italic", "Italic", "Italic (Ctrl+I)", "fa-solid fa-italic", isRich ? !!F_.italic : undefined), fb("ul", "Bullets", "Bulleted list", "fa-solid fa-list-ul", isRich ? !!F_.ul : undefined), fb("ol", "Numbers", "Numbered list", "fa-solid fa-list-ol", isRich ? !!F_.ol : undefined), fb("quote", "Quote", "Blockquote", "fa-solid fa-quote-left", isRich ? blk === "blockquote" : undefined), fb("link", "Link", "Hyperlink (Ctrl+K)", "fa-solid fa-link")];
+    const mi = (label, icon, fn) => ({ label, icon, on: fn });
+    const moreInsert = [sim.poll && mi("Build poll", "fa-solid fa-square-poll-vertical", () => this.openAtom("poll")), mi("Insert table", "fa-solid fa-table", () => this.openAtom("table")), mi("Hide details", "fa-solid fa-caret-right", () => this.openAtom("details")), sim.dates && mi("Insert date / time", "fa-regular fa-calendar", () => this.openAtom("date")), mi("Blur spoiler", "fa-solid fa-circle-half-stroke", () => this.openAtom("spoiler")), mi("Preformatted text", "fa-solid fa-code", () => this.openAtom("code"))].filter(Boolean);
+    const locked = /data-kind="(up|fail|obload)"/.test(s.html) || s.notice === "mdUp";
+    const modeSwitch = { checked: String(isMd), locked: String(!!locked), sub: locked ? "Finish or remove uploads first" : isMd ? "Writing in Markdown source" : "Writing in rich text", track: isMd ? "var(--tertiary)" : "var(--primary-400)", x: isMd ? "21px" : "3px" };
+    const stripPx = 52 + (fmtOpen ? 128 : 0);
+    const M = phoneL ? { s: "0", e: "0", b: "0", w: "auto", h: moreH + "px", hh: moreH + "px", border: "0", rad: "0", shadow: "none" } : { s: "12px", e: "auto", b: (desk ? 60 : stripPx + bottomPx + 8) + "px", w: "380px", h: Math.min(440, H - 140) + "px", hh: "auto", border: "1px solid var(--content-border-color)", rad: "12px", shadow: dark ? "none" : "0 12px 32px -12px rgb(0 0 0 / 25%)" };
+    const O = phoneL ? { justify: "flex-end", w: "100%", h: "calc(100% - " + (st + 16) + "px)", mh: "calc(100% - " + (st + 16) + "px)", r: "16px 16px 0 0" } : { justify: "center", w: Math.min(540, W - 32) + "px", h: Math.min(600, H - 80) + "px", mh: (H - 80) + "px", r: "12px" };
+    const q = s.destQ.trim().toLowerCase();
+    const destList = L0.CATS.filter((c) => !s.revoked.includes(c.id) && (!q || (c.name + " " + (c.parent || "") + " " + c.desc).toLowerCase().includes(q))).map((c) => ({ ...L0.catV(c), isSel: c.id === s.cat, sel: String(c.id === s.cat), bg: c.id === s.cat ? "var(--selected)" : "transparent", pick: () => this.pickCat(c) }));
+    const photos = ["IMG_2041.jpeg", "IMG_2040.jpeg", "IMG_2038.jpeg", "IMG_2031.jpeg", "IMG_2027.jpeg", "IMG_2019.jpeg"].map((name, i) => { const idx = s.photoSel.indexOf(name); return { name, on: String(idx >= 0), isOn: idx >= 0, num: idx + 1, bg: i % 2 ? "var(--primary-low)" : "var(--primary-low-mid)", ring: idx >= 0 ? "inset 0 0 0 3px var(--tertiary)" : "none", toggle: () => this.setState((x) => ({ photoSel: x.photoSel.includes(name) ? x.photoSel.filter((n) => n !== name) : [...x.photoSel, name] })) }; });
+    const K = { tray: dark ? "#161618" : "#D3D5DB", ink: dark ? "#ECEBF0" : "#1B1A1F", line: dark ? "#2A2A2E" : "#C3C6CD", sub: dark ? "#9C9AA3" : "#5E5C66", keyH: keyH + "px" };
+    const kb1 = dark ? "#3A3A3D" : "#FFFFFF", kb2 = dark ? "#26262A" : "#ABB0BA", kf = tab || G.dev === "tablet" ? 22 : 20;
+    const press = (k) => (e) => { e.preventDefault(); this.typeKey(k); };
+    const key = (label, o) => { o = o || {}; return { label, flex: o.flex || "1 1 0", bg: o.mod ? kb2 : kb1, font: o.mod ? "15px/1 system-ui,sans-serif" : kf + "px/1 system-ui,sans-serif", press: press(o.k != null ? o.k : label) }; };
+    K.rows = [{ pad: "0", keys: "qwertyuiop".split("").map((c) => key(c)) }, { pad: "18px", keys: "asdfghjkl".split("").map((c) => key(c)) }, { pad: "0", keys: [key("⇧", { mod: 1, flex: "1.4 1 0", k: "" }), ..."zxcvbnm".split("").map((c) => key(c)), key("⌫", { mod: 1, flex: "1.4 1 0" })] }, { pad: "0", keys: [key("123", { mod: 1, flex: "2.4 1 0", k: "" }), key("@", { mod: 1, flex: "1 1 0" }), key("space", { flex: "5 1 0", k: " " }), key("return", { mod: 1, flex: "2.4 1 0" })] }];
+    K.pred = ["the", "morning", "quieter"].map((w) => ({ label: w, press: press(w + " ") }));
+    const PB = L0.PB, pub = (h) => ({ __html: L0.publish(h) });
+    const posts = PB.map((p, idx) => {
+      let html = "<p>" + L0.esc(p.text) + "</p>";
+      if (idx === 1 && s.qsel && s.qsel.fake) html = "<p>" + L0.esc(p.text).replace(L0.esc(s.qsel.text), '<span data-fakeq="" style="background:var(--highlight);box-shadow:0 0 0 2px var(--highlight)">' + L0.esc(s.qsel.text) + "</span>") + "</p>";
+      const ed = p.mine && s.edited && s.intent === "edit";
+      if (ed) html = L0.publish(s.html);
+      if (idx === 0 && s.edited && s.intent === "editFirst") html = L0.publish(s.html);
+      const edited = ed || (idx === 0 && s.edited && s.intent === "editFirst");
+      return { ...p, idx, html: { __html: html }, mine: !!p.mine && !s.signedOut, edited, hl: edited, canReply: !p.mine && !s.signedOut && !s.closed, reply: () => this.openReplyTo(idx), bg: edited ? "var(--highlight-low)" : "transparent" };
+    });
+    if (s.published && s.intent === "reply") posts.push({ ...PB[2], idx: 3, name: "Jun", when: "now", html: pub(isMd ? L0.mdToHtml(s.md) : s.html), mine: false, edited: false, canReply: false, bg: "var(--highlight-low)" });
+    const ok = () => { this.setState({ sheet: null }); };
+    const dlgs = {
+      discard: { title: s.intent.startsWith("edit") ? "Do you want to discard your changes?" : "Do you want to discard your post?", actions: [act("Keep editing", this.closeSheet, true), act("Save draft for later", () => { this.setState({ sheet: null }); this.saveClose(); }), { ...act(s.intent.startsWith("edit") ? "Discard changes" : "Discard", this.discard), ink: "var(--danger)", bd: "1px solid var(--danger)" }] },
+      pending: { title: "Post Needs Approval", body: "We've received your new post but it needs to be approved by a moderator before it will appear. Please be patient.", actions: [act("OK", () => this.setState({ sheet: null, pendingNotice: true }), true)] },
+      login: { title: "Log In", login: true, actions: [act("Log In", () => { if (s.session) { this._seen.session = true; this.setState({ session: false, sheet: null, banner: null, announce: "Logged in. Your writing is still here." }, () => { this.touch(); this.focusBody(); }); } else ok(); }, true), act(s.session ? "Cancel" : "Sign Up", this.closeSheet)] },
+      replace: { title: "Replace your text with the other version?", body: "The text on this screen will be removed. Copy it first if you want to keep it.", actions: [act("Keep editing", this.closeSheet, true), act("Copy my text", this.copyText), { ...act("Replace", () => { this._forced = true; this.setState({ html: L0.OTHER, sheet: null, banner: null, draft: "saved", announce: "Other version loaded" }, () => { if (this._el) this._el.innerHTML = L0.OTHER; }); }), ink: "var(--danger)", bd: "1px solid var(--danger)" }] },
+      formSwitch: (() => { const nx = s.pendingSwitch && L0.catById(s.pendingSwitch); if (!nx) return null; return catObj.form ? { title: "Switch to " + nx.name + "?", body: "That category uses a normal post. Your answers will be moved into the post as text.", actions: [act("Switch and keep answers", () => this.applyCat(nx.id), true), act("Cancel", this.closeSheet)] } : { title: "Switch to " + nx.name + "?", body: "That category uses a form. Your text will be moved into the first long answer.", actions: [act("Switch and keep text", () => this.applyCat(nx.id), true), act("Cancel", this.closeSheet)] }; })(),
+    };
+    const dlg = dlgs[s.sheet]; const dlgV = dlg ? { ...dlg, hasBody: !!dlg.body, login: !!dlg.login, role: s.sheet === "discard" || s.sheet === "replace" ? "alertdialog" : "dialog" } : { actions: [], role: "dialog" };
+    const newHtml = isForm || catObj.form ? L0.mdToHtml(L0.composeForm(s.form)) : L0.publish(isMd ? L0.mdToHtml(s.md) : s.html);
+    const rp = s.replyTo ? PB.find((p) => p.user === s.replyTo) : null;
+    const ecP = s.intent === "editFirst" ? PB[0] : PB[2];
+    const mn = s.mention, mItems = mn && mn.status === "results" ? this.mentionItems(mn.q) : [];
+    const a = s.atomEd || {};
+    const setA = (k) => (e) => this.setAtom({ [k]: e.target.value });
+    const cols = a.rows ? a.rows[0].length : 2;
+    const ae = { title: { table: "Insert table", details: "Hide details", date: "Insert date / time", spoiler: "Blur spoiler", code: "Preformatted text", poll: "Build poll" }[a.type] || "", primary: a.editing ? "Save" : a.type === "poll" ? "Insert Poll" : "Insert",
+      isTable: a.type === "table", isDetails: a.type === "details", isDate: a.type === "date", isSpoiler: a.type === "spoiler", isCode: a.type === "code", isPoll: a.type === "poll",
+      cols: "repeat(" + cols + ",minmax(0,1fr))", rows: (a.rows || []).map((r, ri) => ({ cells: r.map((c, ci) => ({ val: c, aria: ri === 0 ? "Column " + (ci + 1) + " heading" : "Row " + ri + ", column " + (ci + 1), ph: ri === 0 ? "Heading" : "", bg: ri === 0 ? "var(--primary-very-low)" : "var(--secondary)", font: ri === 0 ? "700 15px/1 var(--font-family)" : "15px/1 var(--font-family)", on: (e) => { const v = e.target.value; this.setState((x) => ({ atomEd: { ...x.atomEd, err: "", rows: x.atomEd.rows.map((rr, i) => i === ri ? rr.map((cc, j) => (j === ci ? v : cc)) : rr) } })); } })) })),
+      addRow: () => this.setAtom({ rows: [...a.rows, a.rows[0].map(() => "")] }), addCol: () => cols < 4 && this.setAtom({ rows: a.rows.map((r) => [...r, ""]) }),
+      summary: a.summary, content: a.content, date: a.date, time: a.time, tz: a.tz, tzs: L0.TZS, text: a.text, lang: a.lang, code: a.code, opts: a.opts,
+      langs: Object.entries(L0.LANGS).map(([v, n]) => ({ v, n })),
+      ptypes: [["regular", "Single Choice"], ["multiple", "Multiple Choice"]].map(([k, label]) => ({ label, on: String(a.ptype === k), bg: a.ptype === k ? "var(--secondary)" : "transparent", sh: a.ptype === k ? "0 1px 2px rgb(0 0 0 / 12%)" : "none", set: () => this.setAtom({ ptype: k }) })),
+      onSummary: setA("summary"), onContent: setA("content"), onDate: setA("date"), onTime: setA("time"), onTz: setA("tz"), onText: setA("text"), onLang: setA("lang"), onCode: setA("code"), onOpts: setA("opts"),
+      hasErr: !!a.err, err: a.err, inv: String(!!a.err), save: this.saveAtom };
+    const T = L0.TPLS[s.form.tpl] || L0.TPLS.prose, fe = s.formErr || {};
+    const setF = (p) => this.setState((x) => { const fe2 = { ...x.formErr }; Object.keys(p).forEach((k) => delete fe2[k]); return { form: { ...x.form, ...p }, formErr: fe2 }; }, () => this.touch());
+    const fm = { fields: !s.formPreview, preview: !!s.formPreview, previewHtml: { __html: L0.mdToHtml(L0.composeForm(s.form)) },
+      tpls: Object.entries(L0.TPLS).map(([k, t]) => ({ label: t.name, on: String(s.form.tpl === k), set: () => setF({ tpl: k }), bd: s.form.tpl === k ? "var(--primary)" : "var(--input-border-color)", bg: s.form.tpl === k ? "var(--primary)" : "var(--secondary)", ink: s.form.tpl === k ? "var(--secondary)" : "var(--primary)" })),
+      stageLabel: L0.FORM.stage, stages: L0.FORM.stages, stage: s.form.stage, onStage: (e) => setF({ stage: e.target.value }), stageInv: String(!!fe.stage), hasStageErr: !!fe.stage, stageErr: fe.stage,
+      pieceLabel: T.piece, piecePh: T.ph, piece: s.form.piece, onPiece: (e) => setF({ piece: e.target.value }), pieceInv: String(!!fe.piece), hasPieceErr: !!fe.piece, pieceErr: fe.piece,
+      fbLabel: L0.FORM.fb, fbs: L0.FORM.fbs.map((o) => ({ label: o, on: s.form.fb.includes(o), toggle: () => setF({ fb: s.form.fb.includes(o) ? s.form.fb.filter((x) => x !== o) : [...s.form.fb, o] }) })),
+      noteLabel: L0.FORM.note, note: s.form.note, onNote: (e) => setF({ note: e.target.value }) };
+    const NT = { type: { text: "Sorry, the file you are trying to upload is not authorized (authorized extensions: jpg, jpeg, png, gif, heic, heif, webp, avif, svg, jxl).", hasAct: false }, mdUp: { text: "Upload failed. The photo was not added.", hasAct: true, actLabel: "Retry", act: () => { this.setState({ notice: null }); this.mdUpload(this._lastUp || "IMG_2041.jpeg"); } } }[s.notice];
+    const qb = s.qsel && s.qsel.x != null ? { top: Math.max(st + 8, s.qsel.y - 52) + "px", left: Math.min(W - 120, Math.max(8, s.qsel.x)) + "px" } : { top: "0", left: "0" };
+    return {
+      ready: true, scheme: dark ? "dark" : "light", rm: this.props.reducedMotion ? "1" : "0", dir: this.props.rtl ? "rtl" : "ltr", rootRef: this.rootRef, scrollRef: this.scrollRef, pageRef: this.pageRef, onKey: this.onKey, announce: s.announce,
+      L: { w: W + "px", h: H + "px", zoom: String(z), r: G.r / z + "px", st: st + "px", stPad: G.dev === "phone" ? (V === "phone" ? "0 28px 7px 34px" : "0 20px 6px 24px") : "0 16px 4px 20px", stFont: G.dev === "phone" ? "15px/1" : "13px/1", clock: G.dev === "phone" ? "9:41" : "9:41  Wed 30 Sep", pageTop: touch ? st + "px" : "0", pagePad: phoneL ? "14px 16px 24px" : tab ? "20px 32px 40px" : W < 900 ? "20px 20px 40px" : "24px 0 48px", minPad: phoneL ? "8px" : "0" },
+      isTouch: touch, isDesktop: desk, phoneL, online: sim.net !== "offline", wideNew: !phoneL,
+      showPage: s.view === "page" || !phoneL, onPageUp: this.onPageUp, signedIn: !s.signedOut, pendingNotice: s.pendingNotice, drafts: s.drafts, hasDrafts: s.view === "page" && s.drafts.length > 0,
+      isFeed: s.page === "feed", isTopic: s.page === "topic", isNewTopic: s.page === "newtopic", feed: L0.FEED, openNew: this.openNew, openReply: this.openReply, openEdit: this.openEdit,
+      topicH1: s.editedTitle || L0.TITLE, posts, closed: s.closed, canReply: !s.closed && s.view === "page" && !s.signedOut, newPost: { crumb: cv.path, title: s.title, html: { __html: newHtml } },
+      minimized: s.view === "page" && s.minimized, minLabel: lb.action, minTitle: s.title || (rp ? rp.name : L0.TITLE), resume: this.resume,
+      showComposer: composerOpen, C, composerLabel: lb.action, saveClose: this.saveClose, minimize: this.minimize, closing: s.closing, closeIcon: s.closing ? "fa-solid fa-circle-notch" : "fa-solid fa-xmark", closeAnim: s.closing ? "fmc4spin 800ms linear infinite" : "none",
+      showFullBtn: tab && !C.auto, toggleFull: () => this.setState({ full: !s.full, sheet: s.sheet === "more" ? null : s.sheet }), fullLabel: C.full ? "Exit fullscreen" : "Fullscreen", fullIcon: C.full ? "fa-solid fa-compress" : "fa-solid fa-expand",
+      ds, submit: this.submit, primaryLabel: lb.primary, submitting: s.submitting, actionTitle: lb.action, actionIcon: lb.icon, editable: s.submitting ? "false" : "true",
+      banner: !!BN, bn: BN ? { ...BN, icon: warn, iconColor: "var(--danger)" } : { actions: [] },
+      showDest: needTitle, cat: cv, openDest: () => this.openSheet("dest"), destAria: "Category: " + cv.path + ". Visible to: " + cv.visText + ". Change",
+      isReply: s.intent === "reply", rc: rp ? { person: true, topic: false, name: rp.name, initial: rp.initial, color: rp.color, excerpt: rp.text, aria: "Reply to " + rp.name + ". " + (s.replyOpen ? "Hide" : "Show") + " post" } : { person: false, topic: true },
+      replyOpen: s.replyOpen, replyOpenStr: String(s.replyOpen), replyChevron: s.replyOpen ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down", toggleReply: () => this.setState({ replyOpen: !s.replyOpen }),
+      isEdit: s.intent === "edit" || s.intent === "editFirst", ec: { name: ecP.name, initial: ecP.initial, color: ecP.color }, reasonOpen: s.reasonOpen, reasonClosed: !s.reasonOpen, openReason: () => this.setState({ reasonOpen: true }), reason: s.reason, onReason: (e) => this.setState({ reason: e.target.value }),
+      showTitle: needTitle, title: s.title, titleRef: this.titleRef, titleInvalid: String(!!s.errors.title), titleErrId: s.errors.title ? "fmc4-title-err" : undefined, hasErrTitle: !!s.errors.title, errTitle: s.errors.title, fakeTitleCaret: s.fakeTitleCaret && !s.title,
+      onTitle: (e) => { const errors = { ...s.errors }; delete errors.title; this.setState({ title: e.target.value, errors, fakeTitleCaret: false }); this.touch(); },
+      onTitleFocus: () => this.setState({ kb: softKb, field: "title", fakeTitleCaret: false, mention: null, panel: s.panel === "format" ? null : s.panel }),
+      onTitleKey: (e) => { if (e.key === "Enter") { e.preventDefault(); this.focusBody(); } },
+      showSimilar: s.intent === "new" && !isForm && s.similar !== "dismissed" && s.title.trim().length >= 10, similarOpen: s.similar === "open", similarOpenStr: String(s.similar === "open"), similarChevron: s.similar === "open" ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down", similar: L0.SIMILAR,
+      toggleSimilar: () => this.setState({ similar: s.similar === "open" ? "collapsed" : "open" }), dismissSimilar: () => this.setState({ similar: "dismissed", announce: "Dismissed" }),
+      showRule: needTitle, isForm, fm, isRichEd: isRich && !isForm, bodyRef: this.bodyRef, bodyEmpty, bodyPh: "Type here. Drag or paste images.", bodyInvalid: String(!!s.errors.body), bodyErrId: s.errors.body ? "fmc4-body-err" : undefined,
+      onBodyInput: () => { if (s.errors.body) { const errors = { ...s.errors }; delete errors.body; this.setState({ errors }); } this.sync(true); this.detectMention(); this.caretIntoView(); },
+      onBodyFocus: () => { if (isRich) this.unfake(false); this.setState({ kb: softKb, field: "body" }); },
+      onBodyClick: this.onBodyClick, onPaste: this.onPaste, onDragOver: this.onDragOver, onDragLeave: this.onDragLeave, onDrop: this.onDrop, drag: s.drag,
+      isMdEdit: isMd && !isForm && !(s.preview && !previewCol), md: s.md, mdRef: this.mdRef,
+      onMd: (e) => { const errors = { ...s.errors }; delete errors.body; this.setState({ md: e.target.value, errors }); this.touch(); },
+      onMdSelect: (e) => { const t = e.target; this._taRange = [t.selectionStart, t.selectionEnd]; const ctx = t.selectionStart !== t.selectionEnd ? "text" : "caret"; if (ctx !== s.ctx) this.setState({ ctx }); },
+      showPreviewInline: isMd && !isForm && s.preview && !previewCol, previewHtml: { __html: isMd ? L0.mdToHtml(s.md) : "" }, previewCol,
+      hasErrBody: !!s.errors.body, errBody: s.errors.body,
+      hasNotice: !!NT && composerOpen, nt: NT ? { ...NT, dismiss: () => this.setState({ notice: null }) } : {},
+      mentionOpen: !!mn && composerOpen, mn: { loading: !!mn && mn.status === "loading", none: !!mn && mn.status === "none", hasItems: mItems.length > 0, maxH: phoneL ? "200px" : "240px", items: mItems.map((u, i) => ({ id: "fmc4-m-" + u.u, name: u.n, handle: "@" + u.u, initial: u.n[0], color: u.c, shape: u.group ? "6px" : "50%", sel: String(mn.sel === i), bg: mn.sel === i ? "var(--d-hover)" : "transparent", pick: () => this.pickMention(u) })) },
+      panelFormat: fmtOpen && composerOpen, blockOpts, fmtBtns, keep: this.keep,
+      panelLink: s.panel === "link", linkLabel: s.link.edit ? "Edit link" : "Insert link", link: s.link, onLinkUrl: (e) => this.setState({ link: { ...s.link, url: e.target.value } }), onLinkText: (e) => this.setState({ link: { ...s.link, text: e.target.value } }), insertLink: this.insertLink, cancelPanel: this.cancelPanel,
+      panelAlt: s.panel === "alt", altVal: s.alt, onAlt: (e) => this.setState({ alt: e.target.value }), saveAlt: this.saveAlt,
+      strip, stripLabel: isForm ? "Form tools" : s.ctx === "text" ? "Selection tools" : s.ctx === "link" ? "Link tools" : s.ctx === "image" ? "Photo tools" : s.ctx === "atom" || s.ctx === "block" ? "Block tools" : "Composer tools",
+      showHideKb: kbOpen && s.ctx === "caret" && !tiny, hideKb: () => { this.blurField(); this.setState({ kb: false, mention: null }); },
+      bottomH: bottomPx + "px", bottomBg: kbOpen ? K.tray : "var(--secondary)", kbOpen, K,
+      sheetMore: moreOpen, M, moreInsert, modeSwitch, switchMode: this.switchMode, showPreviewRow: isMd, previewStr: String(s.preview), previewState: s.preview ? "On" : "Off", togglePreview: () => this.setState({ preview: !s.preview, sheet: phoneL ? null : "more" }),
+      discardLabel: s.intent.startsWith("edit") ? "Cancel edit" : "Discard", askDiscard: () => this.openSheet("discard"), closeSheet: this.closeSheet,
+      sheetDest: s.sheet === "dest", O, destQ: s.destQ, onDestQ: (e) => this.setState({ destQ: e.target.value }), destList, destEmpty: destList.length === 0, destRevoked: s.revoked.length > 0, destRevokedText: s.revoked.map((id) => L0.catById(id).name).join(", ") + " is no longer available to you. Categories you can post in are listed below.",
+      sheetPhoto: s.sheet === "photo", photos, ph: { none: s.photoSel.length === 0, op: s.photoSel.length ? "1" : "0.4", add: s.photoSel.length ? "Add (" + s.photoSel.length + ")" : "Add" }, addPhotos: () => this.addImages(s.photoSel),
+      sheetAtom: s.sheet === "atom" && !!s.atomEd, ae,
+      sheetDialog: !!dlg, dlg: dlgV,
+      qbShow: !!(s.qsel && s.qsel.x != null && s.view === "page" || (s.qsel && s.qsel.x != null && !phoneL)), qb, doQuote: this.doQuote,
+    };
+  }
+}
+</script>
+</body>
+</html>

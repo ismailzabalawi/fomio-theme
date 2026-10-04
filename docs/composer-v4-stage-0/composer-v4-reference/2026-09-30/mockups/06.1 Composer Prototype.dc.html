@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+<style>body{margin:0;background:#E9E8EE}a{color:#4A2FBF}a:hover{text-decoration:underline}[data-rail] *:focus-visible{outline:2px solid #5B3FD6;outline-offset:2px}</style>
+</helmet>
+<div style="display:flex;align-items:flex-start;min-height:100vh;font-family:var(--font-family);color:#1B1A1F">
+  <aside data-rail="" aria-label="Prototype controls" style="position:sticky;top:0;flex:none;width:320px;height:100vh;box-sizing:border-box;overflow:auto;padding:22px 18px 40px;background:#F7F6FA;border-right:1px solid #DDDBE3;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <a href="06 Composer.dc.html" style="font:700 14px/1 var(--font-family);color:#5E5C66">← 06 Composer review</a>
+      <h1 style="margin:0;font:700 22px/1.2 var(--heading-font-family)">Composer prototype · v4</h1>
+      <p style="margin:0;font:14px/1.45 var(--font-family);color:#45434C">Design awaiting approval. Local simulation only: nothing is sent to Fomio, and the drawn keyboard is not device validation. Real typing, paste and drag work in this browser. Controls stay outside the composer.</p>
+    </div>
+    <sc-for list="{{ seg }}" as="g" hint-placeholder-count="5">
+      <div role="radiogroup" aria-label="{{ g.name }}" style="display:flex;flex-direction:column;gap:4px"><span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">{{ g.name }}</span>
+        <div style="display:grid;gap:4px;grid-template-columns:{{ g.cols }}">
+          <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><button role="radio" aria-checked="{{ o.on }}" onClick="{{ o.set }}" style="min-height:32px;padding:4px;border-radius:8px;font:700 12px/1.15 var(--font-family);cursor:pointer;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.ink }}">{{ o.label }}</button></sc-for>
+        </div>
+      </div>
+    </sc-for>
+    <div role="group" aria-label="Simulated actions" style="display:flex;flex-direction:column;gap:4px"><span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">Simulate an action</span>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px">
+        <sc-for list="{{ cmds }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.go }}" style="min-height:32px;padding:4px 6px;border-radius:8px;border:1px solid #BDBAC6;background:#fff;font:700 12px/1.15 var(--font-family);cursor:pointer">{{ c.label }}</button></sc-for>
+      </div>
+    </div>
+    <div role="status" aria-live="polite" style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:8px;background:#fff;border:1px solid #DDDBE3">
+      <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">Current state (independent axes)</span>
+      <span style="font:13px/1.45 var(--font-family)">{{ status }}</span>
+      <button onClick="{{ reset }}" style="align-self:flex-start;margin-top:4px;height:30px;padding:0 10px;border:1px solid #BDBAC6;border-radius:8px;background:#fff;font:700 13px/1 var(--font-family);cursor:pointer">Reset this state</button>
+    </div>
+    <nav aria-label="Journeys and frames" style="display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+        <div role="group" aria-label="{{ g.name }}" style="display:flex;flex-direction:column;gap:2px">
+          <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66;padding-bottom:4px">{{ g.name }}</span>
+          <sc-for list="{{ g.items }}" as="f" hint-placeholder-count="6">
+            <button onClick="{{ f.go }}" aria-current="{{ f.cur }}" style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;align-items:baseline;min-height:30px;padding:5px 8px;border:0;border-radius:8px;text-align:left;cursor:pointer;background:{{ f.bg }};color:{{ f.ink }}" style-hover="background:#E7E0FF"><span style="font:700 11px/1.2 var(--d-font-family--monospace)">{{ f.id }}</span><span style="font:14px/1.3 var(--font-family)">{{ f.name }}</span></button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+  </aside>
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 24px 60px;overflow:auto">
+    <p style="margin:0;max-width:780px;font:15px/1.45 var(--font-family);color:#45434C;text-align:center;text-wrap:pretty">{{ hint }}</p>
+    <dc-import name="FmComposer4" viewport="{{ vp }}" scheme="{{ scheme }}" rtl="{{ rtl }}" hwkb="{{ hw }}" zoom="{{ zoom }}" reduced-motion="{{ rm }}" preset="{{ preset }}" live="{{ true }}" sim="{{ sim }}" cmd="{{ cmd }}" reset-key="{{ rk }}" on-state="{{ onState }}" hint-size="390px,844px"></dc-import>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const R = (id, name, o) => ({ id, name, ...(o || {}) });
+const GROUPS = [
+  ["Primary review sequence", [R("M1", "Opening a new post"), R("M2", "Writing, keyboard open"), R("M3", "Selecting and formatting"), R("M4", "Photo uploading"), R("M4b", "Photo failed, retry"), R("M5", "Left: minimized"), R("M5b", "Left: saved and closed"), R("M6", "Submit: fix fields"), R("M6b", "Submit: offline")]],
+  ["1 · Tablets", [R("TAB-1", "Portrait, keyboard open", { p: "M2", vp: "tabletP" }), R("TAB-2", "Portrait, keyboard closed, docked", { p: "C04", vp: "tabletP" }), R("TAB-3", "Landscape, keyboard open (auto full height)", { p: "M2", vp: "tabletL" }), R("TAB-4", "Landscape, hardware keyboard + trackpad", { p: "M3", vp: "tabletL", hw: true }), R("TAB-5", "Split view 600, keyboard open", { p: "M2", vp: "split600" }), R("TAB-6", "Narrow split 375, keyboard open", { p: "M2", vp: "splitNarrow" }), R("TAB-7", "Landscape Markdown + preview", { p: "C05p", vp: "tabletL", hw: true }), R("TAB-8", "Portrait, More popover", { p: "C08-1", vp: "tabletP" }), R("TAB-9", "Portrait, uploads during rotation", { p: "C06-3", vp: "tabletP" }), R("TAB-10", "Landscape RTL, hardware keyboard", { p: "R1", vp: "tabletL", hw: true, rtl: true })]],
+  ["2 · Links (C07)", [R("C07-1", "Pasted URL, preview loading"), R("C07-2", "Preview loaded"), R("C07-3", "Unsupported URL, plain link"), R("C07-4", "Preview fetch failed"), R("C07-5", "Caret in a link"), R("C07-6", "Insert link on a selection"), R("C07-7", "Edit link")]],
+  ["3 · Quote and reply (C10)", [R("C10-1", "Reply to the topic"), R("C10-2", "Reply to a person"), R("C10-3", "Select text, Quote"), R("C10-4", "Quoted reply"), R("C10-5", "Second quote added"), R("C10-6", "Quoted reply published")]],
+  ["4 · Drafts (C12 / C15)", [R("C12-1", "Saving draft"), R("C12-2", "Draft saved"), R("C12-3", "Close while saving", { sim: { draft: "slow" } }), R("C12-4", "Save failed"), R("C12-5", "Offline close blocked"), R("C12-7", "Minimized"), R("C12-8", "Drafts, resume"), R("C12-9", "Discard confirm"), R("C15-1", "Draft changed elsewhere"), R("C15-2", "Replace with other version"), R("C15-3", "Post edit conflict", { sim: { result: "conflict" } })]],
+  ["5 · Permissions (C13 / C19)", [R("C13-4", "Category permission revoked"), R("C13-5", "Choose another category"), R("C19-3", "Topic closed while writing"), R("C19-4", "Session expired at submit"), R("C19-5", "Log in again"), R("C19-1", "Signed out"), R("C19-2", "Closed before opening"), R("L1", "Restricted to one group"), R("L2", "Restricted to two groups")]],
+  ["6 · Advanced inserts (C08)", [R("C08-1", "More: all tools"), R("C08-2", "More: poll and dates off"), R("C08-3", "Insert table"), R("C08-4", "Hide details"), R("C08-5", "Insert date"), R("C08-6", "Blur spoiler"), R("C08-7", "Preformatted text"), R("C08-8", "Poll with validation"), R("C08-9", "Inserted block selected"), R("C08-10", "Mention results"), R("C08-11", "Mention loading", { sim: { mention: "slow" } }), R("C08-12", "Mention, no results", { sim: { mention: "none" } })]],
+  ["7 · Completion (C16 / C17)", [R("C16-1", "Submitting, double tap blocked"), R("C16-2", "Topic published"), R("C16-3", "Reply published"), R("C16-4", "Edit saved"), R("C16-5", "Server error, retry"), R("C13-2", "Rate limited"), R("C13-3", "Rejected by server"), R("C17", "Awaiting approval")]],
+  ["8 · Guided form (C18, conditional)", [R("C18-1", "Form category, empty"), R("C18-2", "Required fields"), R("C18-3", "Preview"), R("C18-4", "Switch category"), R("C18-5", "Published from form")]],
+  ["9 · Upload (C06)", [R("C06-1", "Picker, then Cancel"), R("C06-2", "Picker, multiple selected"), R("C06-3", "Three uploading", { sim: { upload: "partial" } }), R("C06-4", "Partial failure"), R("C06-5", "Photo selected"), R("C06-6", "Alt text"), R("C06-7", "Drop images", { vp: "desktop" }), R("C06-8", "File not authorized"), R("C06-9", "Submit while uploading")]],
+  ["10 · Accessibility and stress", [R("A-1", "Large text 1.5×, phone", { p: "C04", zoom: "1.5" }), R("A-2", "Browser zoom 200%, desktop", { p: "C04", vp: "desktop", zoom: "2" }), R("A-3", "Mixed-direction writing", { p: "MX" }), R("A-4", "RTL interface", { p: "R1", rtl: true }), R("A-5", "Long title, narrow", { p: "L1", vp: "narrow" }), R("A-6", "Reduced motion", { p: "C12-1", rm: true })]],
+  ["Other states", [R("C01", "New topic"), R("C02", "From a category"), R("C03", "Destination chooser"), R("C04", "Rich text, mixed"), R("C05", "Markdown source"), R("C05b", "More: editor"), R("C09", "Similar topics"), R("C11", "Edit first post", { vp: "desktop" }), R("C11b", "Edit a reply"), R("C14-2", "Offline while writing")]],
+];
+const ALL = {}; GROUPS.forEach(([, items]) => items.forEach((r) => (ALL[r.id] = r)));
+const HINTS = {
+  "TAB-1": "Portrait stays docked: the topic stays visible above for reading and quoting. Rotate with the Viewport control. Text, caret, selection and uploads carry over.",
+  "TAB-3": "Landscape with the software keyboard: the composer fills the height, since the docked sheet would leave too little room. Hide the keyboard and it returns to docked.",
+  "TAB-4": "Hardware keyboard: no drawn keyboard, no Hide keyboard button. Ctrl/⌘+B, I, K, Esc and Ctrl/⌘+Enter work.",
+  "TAB-9": "Uploads keep running. Switch viewport to Landscape or Split while they progress.",
+  "C07-1": "Set Link preview to Unsupported or Fails, then use “Paste a link” to compare outcomes. Real paste of a URL on an empty line works too.",
+  "C10-3": "Tap Quote. On phone, minimize the reply, select more text in another post, and Quote again to add a second quote.",
+  "C12-3": "Draft save is slow here. Close (×) while “Saving draft…” shows; the composer waits, then closes only once saved.",
+  "C12-5": "Switch Network to Online: the draft saves and the banner clears. Then close.",
+  "C15-1": "Nothing on screen is replaced automatically. Choose one of the three actions.",
+  "C13-4": "Choose another category: the revoked one is no longer offered. Submit again.",
+  "C19-3": "Reply as linked topic keeps your text and adds a link back to this topic.",
+  "C19-4": "Log In returns to the composer with text intact. Submit again.",
+  "C16-1": "Double-tap the action: only one submission is sent.",
+  "C18-1": "Shown only for a category configured with form templates. Feedback requests is a fixture, not a real Fomio category.",
+  "C06-1": "Cancel returns focus to the writing with nothing inserted. Choose several photos, then Add.",
+  "A-6": "With reduced motion, spinners and height changes stop; status text still changes.",
+};
+class Component extends DCLogic {
+  state = { vp: "phone", scheme: "light", rtl: false, hw: false, zoom: "1", rm: false, preset: "M2", cur: "M2", rk: 0, status: "", net: "online", upload: "ok", onebox: "ok", draft: "ok", mention: "ok", plug: "on", result: "published", cmd: null };
+  componentDidMount() { this._h = () => { const id = decodeURIComponent(location.hash.slice(1)); if (id && ALL[id] && id !== this.state.cur) this.go(id)(); }; this._h(); window.addEventListener("hashchange", this._h); }
+  componentWillUnmount() { window.removeEventListener("hashchange", this._h); }
+  go = (id) => () => {
+    const r = ALL[id] || { id }; history.replaceState(null, "", "#" + id);
+    const base = { vp: "phone", rtl: false, hw: false, zoom: "1", rm: false, net: "online", upload: "ok", onebox: "ok", draft: "ok", mention: "ok", plug: "on", result: "published" };
+    const keep = { scheme: this.state.scheme };
+    const d = { ...base, ...keep, ...(r.vp ? { vp: r.vp } : {}), ...(r.hw ? { hw: true } : {}), ...(r.rtl ? { rtl: true } : {}), ...(r.zoom ? { zoom: r.zoom } : {}), ...(r.rm ? { rm: true } : {}), ...(r.sim || {}) };
+    if (["C05p", "C11"].includes(id)) d.vp = "desktop"; if (id === "R1") d.rtl = true;
+    if (["M6b", "C12-5", "C14-1", "C14-2"].includes(id)) d.net = "offline";
+    if (id === "C12-4") d.draft = "fail"; if (["C15-1", "C15-2"].includes(id)) d.draft = "conflict"; if (id === "C08-2") d.plug = "off";
+    if (["C13-4", "C13-5"].includes(id)) d.result = "forbidden";
+    this.setState((p) => ({ ...d, preset: r.p || id, cur: id, rk: p.rk + 1 }));
+  };
+  renderVals() {
+    const s = this.state;
+    const opt = (label, on, set) => ({ label, on: String(on), set, bd: on ? "#1B1A1F" : "#BDBAC6", bg: on ? "#1B1A1F" : "#fff", ink: on ? "#fff" : "#1B1A1F" });
+    const seg = (name, key, opts, cols) => ({ name, cols: "repeat(" + (cols || opts.length) + ",minmax(0,1fr))", opts: opts.map(([k, l]) => opt(l, s[key] === k, () => this.setState({ [key]: k }))) });
+    const segs = [
+      seg("Viewport", "vp", [["phone", "Phone 390"], ["narrow", "Phone 360"], ["splitNarrow", "Split 375"], ["split600", "Split 600"], ["tabletP", "Tablet 834×1194"], ["tabletL", "Tablet 1194×834"], ["desktop", "Desktop 1280"]], 3),
+      seg("Keyboard (tablet)", "hw", [[false, "Software"], [true, "Hardware + trackpad"]]),
+      seg("Scheme", "scheme", [["light", "Light"], ["dark", "AMOLED"]]),
+      seg("Direction", "rtl", [[false, "LTR"], [true, "RTL"]]),
+      seg("Zoom", "zoom", [["1", "100%"], ["1.5", "150%"], ["2", "200%"]]),
+      seg("Reduced motion", "rm", [[false, "Off"], [true, "On"]]),
+      seg("Network", "net", [["online", "Online"], ["offline", "Offline"]]),
+      seg("Draft save", "draft", [["ok", "Saves"], ["slow", "Slow"], ["fail", "Fails"], ["conflict", "Changed elsewhere"]], 4),
+      seg("Upload", "upload", [["ok", "Succeeds"], ["failonce", "Fail once"], ["partial", "Every 2nd fails"], ["fail", "Always fail"]], 4),
+      seg("Link preview", "onebox", [["ok", "Loads"], ["unsupported", "Unsupported"], ["fail", "Fails"]]),
+      seg("Mention search", "mention", [["ok", "Results"], ["slow", "Slow"], ["none", "No results"]]),
+      seg("Poll + dates plugins", "plug", [["on", "Enabled"], ["off", "Disabled"]]),
+      seg("Server result on submit", "result", [["published", "Publish"], ["pending", "Approval"], ["rate", "Rate limit"], ["rejected", "Rejected"], ["error", "Server error"], ["conflict", "Edit conflict"], ["forbidden", "No permission"], ["closed", "Topic closed"], ["session", "Session expired"]], 3),
+    ];
+    const k = s.net + s.upload + s.onebox + s.draft + s.mention + s.plug + s.result;
+    if (this._simK !== k) { this._simK = k; this._sim = { net: s.net, upload: s.upload, onebox: s.onebox, draft: s.draft, mention: s.mention, poll: s.plug === "on", dates: s.plug === "on", result: s.result }; }
+    if (!this._onState) this._onState = (t) => this.setState({ status: t });
+    const cmd = (type) => () => this.setState((p) => ({ cmd: { n: (p.cmd ? p.cmd.n : 0) + 1, type } }));
+    const it = (r) => ({ id: r.id, name: r.name, go: this.go(r.id), cur: s.cur === r.id ? "true" : undefined, bg: s.cur === r.id ? "#1B1A1F" : "transparent", ink: s.cur === r.id ? "#fff" : "#1B1A1F" });
+    return {
+      seg: segs, cmds: [["Paste a link", "pasteUrl"], ["Paste an image", "pasteImage"], ["Drop 2 images", "dropImages"], ["Drop a PDF", "dropPdf"]].map(([label, t]) => ({ label, go: cmd(t) })),
+      groups: GROUPS.map(([name, items]) => ({ name, items: items.map(it) })),
+      vp: s.vp, scheme: s.scheme, rtl: s.rtl, hw: s.hw, zoom: s.zoom, rm: s.rm, preset: s.preset, rk: s.rk, sim: this._sim, cmd: s.cmd, onState: this._onState, status: s.status || "—",
+      reset: () => this.setState((p) => ({ rk: p.rk + 1 })),
+      hint: HINTS[s.cur] || "Every control works locally. Esc closes the top layer, then clears a selected block; on desktop or with a hardware keyboard it then minimizes. Ctrl/⌘+Enter submits.",
+    };
+  }
+}
+</script>
+</body>
+</html>

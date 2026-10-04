@@ -3,43 +3,39 @@
   "component": false,
   "license_url": null,
   "about_url": null,
-  "authors": null,
-  "theme_version": null,
-  "minimum_discourse_version": null,
-  "maximum_discourse_version": null,
-  "assets": {
-    "icons-sprite": "/assets/phosphor-icons.svg"
-  },
+  "authors": "Fomio",
+  "theme_version": "0.1.0",
+  "minimum_discourse_version": "2026.8.0.beta0",
+  "assets": {},
   "color_schemes": {
     "Fomio": {
-      "primary": "1A1A1A",
-      "secondary": "F8F7F3",
-      "tertiary": "C44536",
-      "quaternary": "9E3326",
-      "header_background": "F8F7F3",
-      "header_primary": "1A1A1A",
-      "highlight": "F5D0CC",
-      "selected": "F2F1EC",
-      "hover": "F2F1EC",
-      "danger": "EF4444",
-      "success": "22C55E",
-      "love": "EF4444"
+      "primary": "1B1A1F",
+      "secondary": "FFFFFF",
+      "tertiary": "5B3FD6",
+      "quaternary": "4A2FBF",
+      "header_background": "FFFFFF",
+      "header_primary": "1B1A1F",
+      "highlight": "E7E0FF",
+      "selected": "EEEBFA",
+      "hover": "F4F3F7",
+      "danger": "C62D3A",
+      "success": "1D7F4A",
+      "love": "D6245C"
     },
-    "Fomio Dark": {
-      "primary": "FFFFFF",
+    "Fomio AMOLED": {
+      "primary": "ECEBF0",
       "secondary": "000000",
-      "tertiary": "D4604F",
-      "quaternary": "B83D30",
+      "tertiary": "A58FFF",
+      "quaternary": "BFAFFF",
       "header_background": "000000",
-      "header_primary": "FFFFFF",
-      "highlight": "2A100E",
-      "selected": "1F1F1F",
-      "hover": "161616",
-      "danger": "F97373",
-      "success": "4ADE80",
-      "love": "EF4444"
+      "header_primary": "ECEBF0",
+      "highlight": "2B2257",
+      "selected": "1B1826",
+      "hover": "111114",
+      "danger": "FF6B78",
+      "success": "4CD48A",
+      "love": "FF5C8D"
     }
   },
-  "modifiers": {},
-  "learn_more": "https://meta.discourse.org/t/beginners-guide-to-using-discourse-themes/91966"
+  "modifiers": {}
 }

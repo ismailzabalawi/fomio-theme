@@ -1,0 +1,5 @@
+@import "tokens/fonts.css";
+@import "tokens/icons.css";
+@import "tokens/color-schemes.css";
+@import "tokens/core-variables.css";
+@import "core/discourse-core.css";

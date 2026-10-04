@@ -1,0 +1,71 @@
+/* ============================================================
+   Discourse core CSS variables, re-pointed. No --fomio-* namespace:
+   every name below is one core components already read.
+   ============================================================ */
+:root, [data-scheme="dark"] {
+  /* Type (base_font / heading_font site settings) */
+  --font-family: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
+  --heading-font-family: "Roboto Slab", Georgia, serif;
+  --d-font-family--monospace: "JetBrains Mono", ui-monospace, monospace;
+  --base-font-size: 16px;
+  --font-up-6: 2.2974em; --font-up-5: 2em; --font-up-4: 1.7411em; --font-up-3: 1.5157em;
+  --font-up-2: 1.3195em; --font-up-1: 1.1487em; --font-0: 1em;
+  --font-down-1: 0.8706em; --font-down-2: 0.7579em; --font-down-3: 0.6599em;
+  --line-height-small: 1; --line-height-medium: 1.2; --line-height-large: 1.4;
+  --line-height-body: 1.55;
+
+  /* Spacing — 0.25rem steps */
+  --space: 0.25rem;
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+
+  /* Shape */
+  --d-border-radius: 8px;
+  --d-border-radius-large: 12px;
+  --d-button-border-radius: 8px;
+  --d-input-border-radius: 8px;
+  --d-nav-pill-border-radius: 8px;
+  --d-tag-border-radius: 999px;
+
+  /* Layout */
+  --d-max-width: 1110px;
+  --d-sidebar-width: 17em;
+  --topic-body-width: 690px;
+  --header-height: 60px;
+
+  /* Semantic aliases core cascades off */
+  --d-content-background: var(--secondary);
+  --d-hover: var(--hover);
+  --d-selected: var(--selected);
+  --d-link-color: var(--tertiary);
+  --d-sidebar-background: var(--secondary);
+  --d-sidebar-highlight-background: var(--selected);
+  --d-sidebar-highlight-color: var(--primary);
+  --d-nav-bg-color--active: var(--quaternary);
+  --d-nav-color--active: var(--on-tertiary);
+  --content-border-color: var(--primary-low);
+  --input-border-color: var(--primary-400);
+  --metadata-color: var(--primary-medium);
+  --excerpt-color: var(--primary-high);
+  --title-color: var(--primary);
+  --title-color--read: var(--primary-medium);
+  --focus-ring: 0 0 0 2px var(--secondary), 0 0 0 4px var(--tertiary);
+
+  /* Motion */
+  --d-transition: 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+:root {
+  --shadow-card: 0 1px 2px rgb(27 26 31 / 6%);
+  --shadow-dropdown: 0 4px 16px rgb(27 26 31 / 12%);
+  --shadow-menu-panel: 0 8px 28px rgb(27 26 31 / 14%);
+  --shadow-modal: 0 16px 48px rgb(27 26 31 / 22%);
+  --shadow-composer: 0 -4px 20px rgb(27 26 31 / 8%);
+}
+[data-scheme="dark"] {
+  /* AMOLED: no shadows on black — borders carry the edge */
+  --shadow-card: 0 0 0 1px var(--primary-low);
+  --shadow-dropdown: 0 0 0 1px var(--primary-low);
+  --shadow-menu-panel: 0 0 0 1px var(--primary-low);
+  --shadow-modal: 0 0 0 1px var(--primary-low-mid);
+  --shadow-composer: 0 -1px 0 var(--primary-low);
+}

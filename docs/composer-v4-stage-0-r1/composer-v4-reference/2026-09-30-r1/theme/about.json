@@ -1,0 +1,35 @@
+{
+  "color_schemes": {
+    "Fomio": {
+      "primary": "1B1A1F",
+      "secondary": "FFFFFF",
+      "tertiary": "5B3FD6",
+      "quaternary": "4A2FBF",
+      "header_background": "FFFFFF",
+      "header_primary": "1B1A1F",
+      "highlight": "E7E0FF",
+      "selected": "EEEBFA",
+      "hover": "F4F3F7",
+      "danger": "C62D3A",
+      "success": "1D7F4A",
+      "love": "D6245C"
+    },
+    "Fomio AMOLED": {
+      "primary": "ECEBF0",
+      "secondary": "000000",
+      "tertiary": "A58FFF",
+      "quaternary": "BFAFFF",
+      "header_background": "000000",
+      "header_primary": "ECEBF0",
+      "highlight": "2B2257",
+      "selected": "1B1826",
+      "hover": "111114",
+      "danger": "FF6B78",
+      "success": "4CD48A",
+      "love": "FF5C8D"
+    }
+  },
+  "modifiers": {
+    "serialize_topic_excerpts": true
+  }
+}

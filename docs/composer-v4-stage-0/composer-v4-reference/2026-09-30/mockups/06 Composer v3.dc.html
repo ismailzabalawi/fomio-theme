@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="../styles.css">
+<style>body{margin:0;background:#E9E8EE}a{color:#4A2FBF}a:hover{text-decoration:underline}</style>
+</helmet>
+<div style="padding:56px 64px 120px;display:flex;flex-direction:column;gap:72px;font-family:var(--font-family);color:#1B1A1F">
+  <header style="display:flex;flex-direction:column;gap:12px;max-width:900px">
+    <div style="display:flex;gap:12px;font:700 14px/1 var(--font-family);color:#5E5C66"><a href="00 Index.dc.html" style="color:#5E5C66">Screen pack</a><span>/</span><span>06</span></div>
+    <h1 style="margin:0;font:700 40px/1.1 var(--heading-font-family)">Composer · v3 (superseded by v4)</h1>
+    <p style="margin:0;font:18px/1.55 var(--font-family);color:#45434C;text-wrap:pretty">The same native Discourse composer, reorganised around one question: what do I want to share? Where it goes and who can read it sit at the top. The title and body take the screen. Three labelled entry points (Photo, Format, More) replace the row of formatting icons, and the strip changes with what you have selected. Draft state is always stated truthfully, and one action matches your intent.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:4px">
+      <a href="06.1 Composer Prototype v3.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;background:#1B1A1F;color:#fff;font:700 15px/1 var(--font-family);text-decoration:none">Open the interactive prototype →</a>
+      <a href="06 Composer handoff v3.md" style="display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid #BDBAC6;background:#fff;color:#1B1A1F;font:700 15px/1 var(--font-family);text-decoration:none">Implementation handoff</a>
+      <a href="06 Composer v2.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 12px;color:#5E5C66;font:15px/1 var(--font-family)">Previous version (v2)</a>
+      <a href="06 Composer v1.dc.html" style="display:inline-flex;align-items:center;height:40px;padding:0 12px;color:#5E5C66;font:15px/1 var(--font-family)">v1</a>
+    </div>
+    <p style="margin:0;display:flex;gap:8px;align-items:baseline;font:15px/1.45 var(--font-family);color:#5E5C66"><span style="flex:none;font:700 12px/1 var(--font-family);padding:4px 6px;border:1px dashed #8F8C99;border-radius:4px">Proposed copy</span><span>Photo, Format, More, the Format labels, Public / Members only, Add edit reason and Hide keyboard are proposed UX copy. They need i18n keys or site-text overrides before shipping (handoff §4). Submission labels and field placeholders are the wording observed on 2026-09-28. The drawn keyboard is a depiction, not evidence of iOS or Android behaviour. Every frame below is a live instance of the prototype.</span></p>
+  </header>
+
+  <section id="compare" aria-labelledby="cmp-h" style="display:flex;flex-direction:column;gap:20px">
+    <h2 id="cmp-h" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">Before and after · writing with the keyboard open</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:10px;align-items:baseline;font:15px/1.3 var(--font-family);color:#5E5C66"><span style="font:700 12px/1 var(--font-family);background:#8F8C99;color:#fff;padding:5px 7px;border-radius:6px">v2</span><strong style="color:#1B1A1F">Native shell, restyled</strong><span>C04 · 390 × 844</span></div>
+        <dc-import name="FmComposer" viewport="phone" scheme="light" frame="C04" alt="A" keyboard="{{ true }}" long-title="{{ false }}" offline="{{ false }}" hint-size="410px,864px"></dc-import>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:10px;align-items:baseline;font:15px/1.3 var(--font-family);color:#5E5C66"><span style="font:700 12px/1 var(--font-family);background:#1B1A1F;color:#fff;padding:5px 7px;border-radius:6px">v3</span><strong style="color:#1B1A1F">Touch-first hierarchy</strong><span>Moment 2 · 390 × 844</span></div>
+        <dc-import name="FmComposer3" viewport="phone" scheme="light" preset="M2" hint-size="390px,844px"></dc-import>
+      </div>
+      <div style="flex:1;min-width:320px;max-width:520px;display:flex;flex-direction:column;gap:14px;padding-top:34px">
+        <h3 style="margin:0;font:700 19px/1.3 var(--heading-font-family)">What changed</h3>
+        <ol style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:12px;font:16px/1.5 var(--font-family);color:#2A2930">
+          <sc-for list="{{ changes }}" as="c" hint-placeholder-count="6"><li><strong>{{ c.k }}</strong> {{ c.v }}</li></sc-for>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="map" aria-labelledby="map-h" style="display:flex;flex-direction:column;gap:18px;max-width:1400px">
+    <h2 id="map-h" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">Interaction and IA map</h2>
+    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px">
+      <sc-for list="{{ moments }}" as="m" hint-placeholder-count="6">
+        <a href="{{ m.href }}" style="display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:10px;background:#fff;border:1px solid #DDDBE3;color:#1B1A1F;text-decoration:none" style-hover="border-color:#5B3FD6">
+          <span style="font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:#5E5C66">{{ m.n }}</span>
+          <strong style="font:700 17px/1.25 var(--heading-font-family)">{{ m.t }}</strong>
+          <span style="font:14px/1.45 var(--font-family);color:#45434C">{{ m.d }}</span>
+          <span style="font:700 12px/1.3 var(--d-font-family--monospace);color:#5E5C66">{{ m.ids }}</span>
+        </a>
+      </sc-for>
+    </div>
+    <h3 style="margin:10px 0 0;font:700 19px/1.3 var(--heading-font-family)">Keyboard and panels on phone</h3>
+    <div style="display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1.2fr) 150px;border-top:1px solid #DDDBE3;font:15px/1.45 var(--font-family)">
+      <span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">Surface</span><span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">Keyboard</span><span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">Transition and focus</span><span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">Frames</span>
+      <sc-for list="{{ panels }}" as="p" hint-placeholder-count="7">
+        <strong style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3">{{ p.s }}</strong><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3;color:#2A2930">{{ p.k }}</span><span style="padding:9px 12px 9px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ p.t }}</span><a href="{{ p.href }}" style="padding:9px 0;border-bottom:1px solid #DDDBE3;font:700 13px/1.45 var(--d-font-family--monospace)">{{ p.ids }}</a>
+      </sc-for>
+    </div>
+    <p style="margin:0;font:15px/1.5 var(--font-family);color:#45434C;max-width:110ch">Draft status runs on its own axis beside every open state: Saving draft → Draft saved, or Offline. Draft not saved, or Edit conflict. Text on screen is never described as saved. Every failure returns to the editor with the writing intact; closing while offline keeps the composer open.</p>
+  </section>
+
+  <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+    <section id="{{ row.id }}" aria-label="{{ row.title }}" style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:4px;max-width:960px"><h2 style="margin:0;font:700 26px/1.2 var(--heading-font-family)">{{ row.title }}</h2><p style="margin:0;font:16px/1.5 var(--font-family);color:#45434C">{{ row.note }}</p></div>
+      <div style="display:flex;flex-wrap:wrap;gap:48px 36px;align-items:flex-start">
+        <sc-for list="{{ row.boards }}" as="b" hint-placeholder-count="4">
+          <div id="{{ b.id }}" style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:6px;max-width:{{ b.w }}">
+              <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font:15px/1.3 var(--font-family);color:#5E5C66"><a href="{{ b.hash }}" style="font:700 12px/1 var(--font-family);background:#1B1A1F;color:#fff;padding:5px 7px;border-radius:6px;text-decoration:none">{{ b.id }}</a><strong style="color:#1B1A1F">{{ b.title }}</strong><span>{{ b.meta }}</span><a href="{{ b.proto }}" style="font:14px/1 var(--font-family)">open in prototype</a></div>
+              <sc-if value="{{ b.hasNote }}"><p style="margin:0;font:14px/1.45 var(--font-family);color:#45434C">{{ b.note }}</p></sc-if>
+            </div>
+            <dc-import name="FmComposer3" viewport="{{ b.vp }}" scheme="{{ b.scheme }}" preset="{{ b.preset }}" rtl="{{ b.rtl }}" hint-size="{{ b.size }}"></dc-import>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-for>
+
+  <section id="coverage" aria-labelledby="cov-h" style="display:flex;flex-direction:column;gap:14px;max-width:1360px">
+    <h2 id="cov-h" style="margin:0;font:700 26px/1.2 var(--heading-font-family)">C01–C19 coverage in v3</h2>
+    <div style="display:grid;grid-template-columns:64px minmax(0,1.1fr) minmax(0,1.2fr) minmax(0,1.4fr);border-top:1px solid #DDDBE3;font:15px/1.4 var(--font-family)">
+      <span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">ID</span><span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">State</span><span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">Frames</span><span style="padding:8px 0;font:700 12px/1.2 var(--font-family);color:#5E5C66;border-bottom:1px solid #DDDBE3">v3 treatment</span>
+      <sc-for list="{{ coverage }}" as="c" hint-placeholder-count="19">
+        <span style="padding:8px 0;border-bottom:1px solid #DDDBE3;font:700 13px/1.4 var(--d-font-family--monospace)">{{ c.id }}</span><span style="padding:8px 12px 8px 0;border-bottom:1px solid #DDDBE3">{{ c.name }}</span><span style="padding:8px 12px 8px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ c.where }}</span><span style="padding:8px 0;border-bottom:1px solid #DDDBE3;color:#45434C">{{ c.how }}</span>
+      </sc-for>
+    </div>
+    <p style="margin:0;font:15px/1.5 var(--font-family);color:#45434C;max-width:110ch">Unchanged conditions: tags and AI stay out (disabled on the site). Build Poll appears because the poll plugin is on. Uploads are images only. Staff, whisper, shared-draft and PM actions stay hidden for the member role shown. The guided category form (C18) remains an optional follow-up and keeps its v2 frame, <a href="06 Composer v2.dc.html#6t">v2 6t</a>.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    if (this._v) return this._v;
+    const P = (id) => "06.1 Composer Prototype v3.dc.html#" + id;
+    const changes = [
+      ["Destination and audience first.", "Category path and Public / Members only on one quiet row, inherited from where you started. Tap to change."],
+      ["Title and body own the screen.", "Separate full-width rows; the title wraps. No mode toggle, status row or tool wall between them."],
+      ["Photo / Format / More.", "Three labelled entry points instead of nine icons. Common formatting is two taps away; less frequent tools are grouped under More."],
+      ["Context sets the strip.", "Select text and Bold, Italic and Link come forward. Put the caret in a link or tap a photo and only the relevant actions appear."],
+      ["One action, top right.", "Create Topic, Reply or Save Edit stays visible above the keyboard. Close saves the draft; Discard sits under More and is confirmed."],
+      ["Truthful draft state.", "Saving, saved, offline-unsaved and conflict read differently, next to the action."],
+    ].map(([k, v]) => ({ k, v }));
+    const moments = [
+      ["1", "Open a new post", "Destination inherited with audience. Title focused, keyboard up, Create Topic visible.", "M1 · C01 C02 C03"],
+      ["2", "Write, keyboard open", "Caret kept above a single 52px strip. Nothing else stacks between text and keyboard.", "M2 · C04 C05"],
+      ["3", "Select and format", "Selection brings B / I / Link forward. Format opens a stable panel that keeps the selection.", "M3 · C07"],
+      ["4", "Add a photo", "One tap to the system picker. Progress, Cancel and Retry sit on the image, in the text.", "M4 M4b · C06"],
+      ["5", "Leave and come back", "Minimize to a strip, or close to Drafts. Resume restores text and title.", "M5 M5b · C12"],
+      ["6", "Submit and resolve", "Field errors beside the field. Offline or rate limits beside the action. Text kept.", "M6 M6b · C13 C14 C17"],
+    ].map(([n, t, d, ids]) => ({ n: "Moment " + n, t, d, ids, href: "#moment-" + n }));
+    const panels = [
+      ["Format", "Stays open. Panel sits between text and strip.", "Buttons act on pointer-down without taking focus, so the selection and caret stay put. Close with Format, Esc, or by hiding the keyboard; the panel then rests above the safe area.", "M3", "M3"],
+      ["Contextual strip", "Stays open.", "Strip contents swap in place when the selection changes (text, link, photo). Same height, no new rows.", "M3 C07 C06s", "C07"],
+      ["Link", "Stays open; focus moves to the URL field.", "Inline panel in the Format slot. OK or Cancel returns focus to the saved insertion point.", "C07b", "C07b"],
+      ["More", "Hides. More takes the keyboard's slot.", "Caret position is stored. Done or any insertion restores focus, and the keyboard returns.", "C05b C08", "C05b"],
+      ["Photo", "Hides. System picker over the composer.", "After picking, the image is placed at the stored caret and uploads in place. The keyboard comes back when you tap into text.", "C06p M4", "C06p"],
+      ["Category", "Hides. Full-height sheet with search.", "Choosing returns to the composer. A topic template never replaces text already written.", "C03", "C03"],
+      ["Dialogs", "Hides.", "Discard, approval and login are modal; Esc and Keep editing return to the text.", "C12b C17 C19", "C12b"],
+    ].map(([s, k, t, ids, h]) => ({ s, k, t, ids, href: "#" + h.toLowerCase() }));
+    const G = { phone: ["390px,844px", "390 × 844", "390px"], narrow: ["360px,740px", "360 × 740", "360px"], desktop: ["1280px,800px", "1280 × 800", "1280px"] };
+    const b = (preset, title, vp, scheme, note, rtl) => ({ id: preset.toLowerCase() + (vp === "phone" ? "" : "-" + vp) + (scheme === "dark" ? "-d" : "") + (rtl ? "-rtl" : ""), preset, title, vp, scheme, rtl: !!rtl, size: G[vp][0], w: G[vp][2], meta: preset + " · " + G[vp][1] + " · " + (scheme === "dark" ? "AMOLED" : "Light") + (rtl ? " · RTL" : ""), note: note || "", hasNote: !!note, proto: P(preset) });
+    const fix = (x) => ({ ...x, hash: "#" + x.id });
+    const rows = [
+      { id: "moment-1", title: "Moment 1 · Opening a new post", note: "Started from Open Discussions, so the destination is already set and readable, with who can see it. The title has focus and the keyboard is up.", boards: [b("M1", "New post, keyboard open", "phone", "light", "Required fields visible, optional metadata absent. No content-type choice before writing."), b("C02", "Started from Questions", "phone", "light", "Category guidance appears as one line under the destination."), b("C03", "Change destination", "phone", "light", "Permitted categories only, with description and audience.")] },
+      { id: "moment-2", title: "Moment 2 · Writing with the keyboard open", note: "Status bar, action row, text, one strip, keyboard. The current sentence stays above the strip as you type.", boards: [b("M2", "Writing", "phone", "light"), b("M2", "Writing", "narrow", "light", "Narrow check: the same strip fits at 360px."), b("M2", "Writing", "phone", "dark")] },
+      { id: "moment-3", title: "Moment 3 · Selecting and formatting", note: "Selection makes formatting easy to reach; the Format panel is a stable surface that keeps the selection, rather than a floating bubble competing with native handles.", boards: [b("M3", "Format panel on a selection", "phone", "light", "Paragraph / Heading / Subheading, then Bold, Italic, lists, quote, link. Active styles are marked."), b("C07", "Caret inside a link", "phone", "light", "Only Edit link and Remove link come forward."), b("C06s", "Photo selected", "phone", "dark", "Alt text and Remove only. Alt-text editing needs feasibility work (handoff §3).")] },
+      { id: "moment-4", title: "Moment 4 · Adding a photo", note: "Photo opens the system picker directly. Progress, Cancel and Retry stay on the image, inside the writing.", boards: [b("C06p", "System picker (depicted)", "phone", "light"), b("M4", "Uploading in place", "phone", "light"), b("M4b", "Failed, retry beside it", "phone", "light", "Text around it is untouched. Markdown switching waits until uploads finish or are removed.")] },
+      { id: "moment-5", title: "Moment 5 · Leaving and restoring a draft", note: "Minimize keeps the composer one tap away above the bottom bar. Close saves and closes; the draft appears in Drafts with Resume.", boards: [b("M5", "Minimized above the bar", "phone", "light"), b("M5b", "Closed, draft listed", "phone", "light"), b("C12b", "Discard is confirmed", "phone", "light", "Keep editing is the default. Discard is secondary.")] },
+      { id: "moment-6", title: "Moment 6 · Resolving submission errors", note: "Problems appear where they belong: field rules under the field, connection and rate limits under the action.", boards: [b("M6", "Fix the fields", "phone", "light"), b("M6b", "Offline, not posted", "phone", "light", "Not saved is stated plainly. Try Again keeps everything."), b("C13b", "Rate limited", "phone", "dark"), b("C17", "Awaiting approval", "phone", "dark", "Distinct from published: approval dialog, then a pending notice.")] },
+      { id: "matrix-phone", title: "State matrix · phone", note: "The rest of C01–C19 on the same hierarchy.", boards: [b("C01", "New topic, closed keyboard", "phone", "light"), b("C09", "Similar topics, expanded", "phone", "light", "Inline under the title; collapses and dismisses; never covers text."), b("C04", "Rich text, mixed content", "phone", "light"), b("C05", "Markdown source", "phone", "dark", "Chosen under More › Editor. Content round-trips."), b("C05b", "More: insert and preferences", "phone", "light"), b("C07b", "Link panel", "phone", "light"), b("C08", "Build Poll (conditional)", "phone", "dark"), b("C10", "Reply", "phone", "light", "Compact context row, body ready, no title or category."), b("C10b", "Reply, post expanded", "phone", "dark"), b("C11b", "Edit a reply", "phone", "light", "Reason is optional and disclosed on request."), b("C14", "Offline while writing", "phone", "dark"), b("C15", "Edit conflict", "phone", "dark"), b("C16", "Topic published", "phone", "light"), b("C16b", "Reply published", "phone", "dark"), b("C19", "Signed out", "phone", "light"), b("C19b", "Closed topic", "phone", "dark"), b("L1", "Long title, restricted category", "narrow", "light")] },
+      { id: "matrix-desktop", title: "Desktop", note: "Same order, docked to the 840px reading column. Extra width does not add tools: the strip is still Photo / Format / More, with draft status beside the action. Preview and fullscreen are available, not always on.", boards: [b("C01", "New topic, docked", "desktop", "light"), b("M3", "Format on a selection", "desktop", "light", "Keyboard alternative: Ctrl/⌘+B, I, K, Esc closes, Ctrl/⌘+Enter submits."), b("C05p", "Markdown with preview", "desktop", "dark", "Preview column appears only in Markdown, only on request."), b("C11", "Edit first post", "desktop", "light"), b("C12", "Minimized", "desktop", "dark")] },
+      { id: "rtl", title: "Right-to-left", note: "Layout mirrors through logical properties; the tool strip and destination row flip.", boards: [b("R1", "Writing, RTL", "phone", "light", null, true), b("R1", "Writing, RTL", "desktop", "dark", null, true)] },
+    ].map((r) => ({ ...r, boards: r.boards.map(fix) }));
+    const cov = [
+      ["C01", "New topic, empty", "M1, C01, desktop C01", "Destination + audience row, wrapping title, body, three entry points, one action."],
+      ["C02", "New from category", "C02", "Inherited destination; category guidance as a single line."],
+      ["C03", "Destination chooser", "C03", "Full-height sheet: search, path, description, audience."],
+      ["C04", "Writing, rich text", "M2, C04", "Default for new users in this mockup; not a live settings change."],
+      ["C05", "Writing, Markdown", "C05, C05b, C05p", "Under More › Editor; persistent toggle removed from the surface."],
+      ["C06", "Insert image", "C06p, M4, M4b, C06s", "One tap to picker; progress, cancel, retry in place."],
+      ["C07", "Insert link", "C07, C07b", "Link in Format and in the selection strip; edit/remove when the caret is in a link."],
+      ["C08", "Poll / advanced", "C05b, C08", "Grouped under More › Insert. Poll only while the plugin is on."],
+      ["C09", "Similar topics", "C09, M2", "Compact, collapsible, dismissible row under the title."],
+      ["C10", "Reply / quote", "C10, C10b", "Compact reply context; expand to read the post."],
+      ["C11", "Edit", "C11, C11b, C15", "Same layout; Save Edit; reason optional; first post adds title and category."],
+      ["C12", "Draft lifecycle", "M5, M5b, C12b, desktop C12", "Minimize, Save and close, Drafts › Resume, confirmed Discard."],
+      ["C13", "Validation / restriction", "M6, C13b, C19b", "Inline beside fields; rejection beside the action."],
+      ["C14", "Upload / network failure", "M4b, M6b, C14", "Offline stated as unsaved; close blocked while unsaved."],
+      ["C15", "Concurrent edit", "C15", "Conflict status + Overwrite Edits or Keep editing."],
+      ["C16", "Submitted", "C16, C16b", "Returns to the published topic or reply."],
+      ["C17", "Awaiting approval", "C17", "Approval dialog, then pending notice. Never shown as published."],
+      ["C18", "Guided category form", "v2 6t", "Unchanged optional follow-up; not in the main path."],
+      ["C19", "Signed out / no permission", "C19, C19b", "Native login; closed topic removes Reply and says why."],
+    ].map(([id, name, where, how]) => ({ id, name, where, how }));
+    return (this._v = { changes, moments, panels, rows, coverage: cov });
+  }
+}
+</script>
+</body>
+</html>

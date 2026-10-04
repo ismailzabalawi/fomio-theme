@@ -1,39 +1,1261 @@
-// ============================================================
-// FOMIO THEME — common entrypoint
+// Fomio — restarted 2026-09-26. The previous theme is on the archive/v0 branch.
 //
-// This file is an import manifest only. All rules live in stylesheets/,
-// which Discourse adds to the Sass load path (see Theme#with_scss_load_paths).
-//
-// ORDER IS SIGNIFICANT — these partials rely on source order for the
-// cascade. Add a new partial in the position its rules should apply, and
-// never re-sort this list alphabetically.
-// ============================================================
+// Before adding a rule:
+// - it must pass the redesign rule in docs/00-roadmap.md,
+// - every variable and selector must be confirmed in core (docs/02),
+// - colours come from the about.json palettes, fonts from site settings.
+// Values follow the Claude Design screen pack (docs/08).
 
-@import "tokens";
-@import "base";
-@import "typography";
-@import "topic-list";
-@import "topic-page";
-@import "fresh-bytes";
-@import "app-handoff";
-@import "auth";
-@import "sidebar";
-@import "hubs";
-@import "search";
-@import "conversation";
-@import "link-cards";
-@import "feed";
-@import "byte-card";
-@import "bottom-bar";
-@import "notifications";
-@import "byte-interactions";
-@import "ui-library";
-@import "design-system";
-@import "masthead";
-@import "content-layer";
-@import "messages";
-@import "forms";
-@import "preferences";
-@import "user-profile";
-@import "activity";
-@import "topic-thumbnails";
+@use "lib/viewport";
+
+// 07 Profile: core owns identity fields, collapse/expand, permissions and
+// profile tabs. Scope to user-main so shared group-page markup is untouched.
+section.user-main {
+  .about .details {
+    padding-block: var(--space-6);
+    background: var(--secondary);
+
+    .primary {
+      gap: var(--space-6);
+
+      .user-profile-avatar {
+        margin: 0;
+
+        .avatar {
+          width: 112px;
+          height: 112px;
+          margin: 0;
+        }
+      }
+    }
+
+    .primary-textual {
+      min-width: 0;
+      flex: 1 1 0;
+      padding: 0;
+    }
+
+    .user-profile-names__primary {
+      font-family: var(--heading-font-family);
+      font-size: 2rem;
+      line-height: 1.1;
+      margin-bottom: var(--space-2);
+    }
+
+    .user-profile-names__secondary {
+      font-size: 1.125rem;
+      color: var(--primary-medium);
+    }
+
+    .bio {
+      color: var(--primary-high);
+      line-height: 1.5;
+      text-align: start;
+      overflow-wrap: anywhere;
+    }
+
+    .controls {
+      align-self: flex-start;
+
+      .btn {
+        min-height: 44px;
+      }
+    }
+  }
+
+  .about.collapsed-info .details {
+    padding-block: var(--space-6);
+
+    .primary {
+      .avatar {
+        width: 112px;
+        height: 112px;
+        margin: 0;
+      }
+
+      .user-profile-names__primary {
+        font-size: 2rem;
+      }
+
+      .user-profile-names__secondary {
+        font-size: 1.125rem;
+      }
+    }
+  }
+
+  .about .secondary dl {
+    padding-block: var(--space-3);
+    line-height: 1.5;
+  }
+
+  .user-navigation-primary {
+    .horizontal-overflow-nav {
+      border-top: 0;
+    }
+
+    .nav-pills {
+      --d-nav-color--active: var(--primary);
+      --d-nav-bg-color--active: transparent;
+      --d-nav-underline-height: 2px;
+      --d-nav-pill-border-radius: 0;
+      gap: var(--space-3);
+
+      > li {
+        flex: 0 0 auto;
+      }
+
+      > li > a {
+        font-weight: bold;
+        padding-block: var(--space-3);
+      }
+
+      > li > a.active::after {
+        background: var(--tertiary);
+      }
+    }
+  }
+
+  .user-navigation-secondary .nav-pills > li {
+    flex: 0 0 auto;
+  }
+
+  .user-stream {
+    .user-stream-item {
+      padding: var(--space-4) 0;
+    }
+
+    .stream-topic-title {
+      font-family: var(--heading-font-family);
+      font-size: 1.125rem;
+      font-weight: bold;
+      line-height: 1.3;
+      text-wrap: pretty;
+    }
+
+    .excerpt {
+      color: var(--primary-high);
+      line-height: 1.5;
+      margin-top: var(--space-2);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .stats-title {
+    font-family: var(--heading-font-family);
+    text-transform: none;
+  }
+
+  @include viewport.until(lg) {
+    box-sizing: border-box;
+    padding-inline: var(--space-3);
+
+    .about .details,
+    .about.collapsed-info .details {
+      padding-block: var(--space-4);
+
+      .primary {
+        flex-wrap: wrap;
+        gap: var(--space-3);
+
+        .user-profile-avatar .avatar,
+        .avatar {
+          width: 72px;
+          height: 72px;
+        }
+
+        .primary-textual {
+          flex: 1 1 0;
+          width: auto;
+        }
+
+        .user-profile-names__primary {
+          font-size: 1.5rem;
+        }
+
+        .user-profile-names__secondary {
+          font-size: 1rem;
+        }
+      }
+
+      .controls {
+        flex: 1 0 100%;
+        max-width: none;
+        margin-inline: 0;
+
+        > ul {
+          justify-content: flex-start;
+          margin-inline: 0;
+        }
+      }
+    }
+
+    .user-stream .stream-topic-title {
+      font-size: 1.0625rem;
+    }
+
+    // Core's new-user.scss hides these labels below lg. Keep the concept's
+    // named tabs and let core's horizontal-overflow-nav scroll them.
+    .user-navigation-primary .nav-pills.main-nav > li > a {
+      gap: var(--space-2);
+
+      > span {
+        display: inline-block;
+      }
+    }
+  }
+
+  // Tablets have room for identity and actions together. Keep wrapping
+  // available for long names or additional permission-dependent controls.
+  @include viewport.from(md) {
+    @include viewport.until(lg) {
+      .about .details .controls,
+      .about.collapsed-info .details .controls {
+        flex: 0 1 auto;
+        align-self: center;
+        margin-inline-start: auto;
+
+        > ul {
+          justify-content: flex-end;
+          margin-bottom: 0;
+        }
+
+        .btn {
+          min-width: 0;
+          width: auto;
+        }
+      }
+    }
+  }
+}
+
+// 05 Search concept: style core's full-page search and retain all native
+// result types, filters, sorting, bulk actions, loading and empty states.
+body.search-page {
+  --d-max-width: 840px;
+
+  .search-container {
+    .search-header {
+      padding: var(--space-6) 0 0;
+    }
+
+    .search-page-heading {
+      font-family: var(--heading-font-family);
+      font-size: var(--font-up-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .search-bar {
+      gap: var(--space-2);
+
+      input.search-query {
+        min-width: 0;
+        min-height: 44px;
+        border-radius: var(--d-border-radius);
+      }
+
+      .select-kit-header,
+      .search-cta {
+        min-height: 44px;
+      }
+
+      .search-cta {
+        flex: 0 0 auto;
+        padding-inline: var(--space-5);
+      }
+    }
+
+    .search-advanced {
+      .search-info {
+        margin-inline: 0;
+        padding: var(--space-3) 0;
+        gap: var(--space-2);
+      }
+
+      .search-results {
+        padding: 0;
+      }
+    }
+
+    .fps-result {
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-3);
+      margin: 0;
+      border-radius: var(--d-border-radius);
+
+      &:hover {
+        background: var(--d-hover);
+      }
+
+      &.bulk-select-enabled {
+        padding-inline-start: 3em;
+      }
+
+      .author {
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 0;
+
+        .avatar {
+          width: 36px;
+          height: 36px;
+        }
+      }
+
+      .fps-topic {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .search-link .topic-title {
+        font-family: var(--heading-font-family);
+        font-size: 1.1875rem;
+        font-weight: bold;
+        line-height: 1.3;
+        color: var(--d-link-color);
+        text-wrap: pretty;
+      }
+
+      .search-category {
+        margin-block: var(--space-2);
+        font-size: var(--font-down-1);
+      }
+
+      .blurb {
+        color: var(--primary-high);
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+
+      .search-highlight {
+        background: var(--highlight);
+        color: var(--primary);
+        border-radius: 3px;
+      }
+    }
+  }
+
+  @include viewport.until(sm) {
+    .search-container {
+      .search-header {
+        padding-top: var(--space-3);
+      }
+
+      .search-bar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+
+        input.search-query {
+          grid-column: 1 / -1;
+          width: 100%;
+        }
+      }
+
+      .fps-result {
+        padding-inline: 0;
+        border-top: 1px solid var(--content-border-color);
+        border-radius: 0;
+
+        .author {
+          display: none;
+        }
+
+        .search-link .topic-title {
+          font-size: 1.0625rem;
+        }
+      }
+    }
+  }
+}
+
+// Composer v4 first implementation slice: native draft feedback stays
+// readable on phones; offline-close risk is visible at every width.
+// No fixed height, truncation, status inference or replacement save action.
+#reply-control .fomio-composer-feedback {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  color: var(--primary-high);
+  font-family: var(--font-family);
+  font-size: var(--font-0);
+  line-height: var(--line-height-large);
+
+  &__message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin-block: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--content-border-color);
+    border-radius: var(--d-border-radius);
+    background: var(--primary-very-low);
+
+    > .d-icon {
+      flex: 0 0 auto;
+      margin-top: var(--space-1);
+    }
+
+    &.--offline {
+      color: var(--primary);
+      background: var(--danger-low);
+      border-color: transparent;
+
+      > .d-icon {
+        color: var(--danger);
+      }
+    }
+  }
+
+  &__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+
+    > span {
+      font-weight: bold;
+    }
+
+    > p {
+      margin: var(--space-1) 0 0;
+    }
+  }
+}
+
+// Native composer presentation. Keep geometry stable when core swaps in a
+// contextual image/table toolbar. Keyboard/viewport height stays native.
+#reply-control {
+  --composer-max-width--hide-preview: 840px;
+
+  #reply-title {
+    font-family: var(--heading-font-family);
+    font-weight: bold;
+    font-size: var(--font-up-3);
+    line-height: var(--line-height-medium);
+  }
+
+  .d-editor-button-bar .toolbar__button,
+  .composer-controls .btn,
+  .submit-panel .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .d-editor-button-bar .fomio-composer-format {
+    gap: var(--space-2);
+    padding-inline: var(--space-3);
+  }
+
+  // Labeled controls must keep their intrinsic width at larger text sizes.
+  // Core's overflow scroller then exposes them without overlapping labels.
+  .d-editor-button-bar > button {
+    flex-shrink: 0;
+  }
+
+  // Present the existing translated native title; no copied vocabulary or
+  // replacement control. Native toolbar scrolling retains conditional tools.
+  .d-editor-button-bar :is(.upload, .options) {
+    gap: var(--space-2);
+    padding-inline: var(--space-3);
+
+    &::after {
+      content: attr(title);
+    }
+  }
+
+  // Includes tablet portrait and narrow split-screen windows, independent
+  // of whether Discourse calls the device desktopView or mobileView.
+  @include viewport.until(lg) {
+    .title-and-category {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .title-input {
+      flex: 1 0 100%;
+    }
+
+    .category-input {
+      flex: 1 1 100%;
+      max-width: 100%;
+      margin-bottom: var(--space-2);
+    }
+  }
+}
+
+// v4's open writing surface on the native redesigned layout. The native
+// layout owns category/title order, footer portals, preview, resizer and
+// keyboard measurements. Legacy layout remains functional without the setting.
+.uc-enable-composer-redesign #reply-control:is(.open, .fullscreen) {
+  .composer-fields {
+    padding: var(--space-4) var(--space-6) 0;
+  }
+
+  .title-and-category {
+    border-bottom: 0;
+    flex-wrap: wrap;
+  }
+
+  .category-input {
+    border-right: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-chooser.select-kit.combo-box .select-kit-header {
+    padding-inline: 0;
+    padding-bottom: var(--space-1);
+    font-weight: bold;
+  }
+
+  .title-input #reply-title {
+    padding: var(--space-3) 0 !important;
+    border-bottom: 1px solid var(--content-border-color);
+    border-radius: 0;
+
+    &:focus-visible {
+      border-bottom-color: var(--tertiary);
+      box-shadow: 0 1px 0 var(--tertiary);
+    }
+  }
+
+  .d-editor-input {
+    padding: var(--space-4) var(--space-6) !important;
+  }
+
+  .composer-footer {
+    padding-inline: var(--space-3);
+  }
+
+  .d-editor-button-bar .btn {
+    font-size: var(--font-0);
+  }
+
+  @include viewport.until(sm) {
+    .d-editor-button-bar {
+      gap: var(--space-1);
+    }
+
+    .d-editor-button-bar :is(.upload, .fomio-composer-format, .options) {
+      gap: var(--space-1);
+      padding-inline: var(--space-1);
+    }
+
+    // Keep the existing action, validation and pending-submit state. Grid
+    // lifts the native submit panel; no cloned button, portal or DOM move.
+    &:not(.private-message) {
+      .reply-area {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        grid-template-areas:
+          "controls submit"
+          "context context"
+          "editor editor"
+          "tools tools";
+      }
+
+      .reply-to,
+      .composer-footer {
+        display: contents;
+      }
+
+      .composer-controls {
+        grid-area: controls;
+        align-self: center;
+        display: flex;
+        flex-wrap: wrap;
+        padding-inline-start: var(--space-2);
+      }
+
+      .composer-action-title,
+      .reply-details {
+        grid-area: context;
+        max-width: 100%;
+        min-width: 0;
+        padding: var(--space-1) var(--space-4);
+        border-bottom: 1px solid var(--content-border-color);
+      }
+
+      .wmd-controls {
+        grid-area: editor;
+        min-width: 0;
+        overflow-y: auto;
+
+        // Long feedback and large text must not collapse the writing area.
+        .d-editor-textarea-wrapper {
+          min-height: 8rem;
+        }
+      }
+
+      .composer-footer__toolbar {
+        grid-area: tools;
+        min-width: 0;
+      }
+
+      .composer-footer .submit-panel {
+        grid-area: submit;
+        width: auto;
+        max-width: 60vw;
+        padding-block: var(--space-1);
+        justify-content: flex-end;
+
+        .save-or-cancel {
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          min-width: 0;
+        }
+
+        .create {
+          max-width: 100%;
+
+          .d-button-label {
+            white-space: normal;
+          }
+        }
+      }
+
+      // Preserve occupied plugin outlets in their own full-width row.
+      .reply-area > span {
+        grid-column: 1 / -1;
+      }
+    }
+
+    // v4 keeps category, title and feedback above the writing surface. Core's
+    // experimental slide overlays those fields whenever the editor is focused,
+    // including with a hardware keyboard. Retain the normal document layout.
+    .d-editor-textarea-wrapper {
+      &:focus,
+      &:focus-within,
+      &.in-focus {
+        margin-top: 0;
+        padding-top: 0;
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+
+    .composer-fields {
+      padding-inline: var(--space-4);
+    }
+
+    .d-editor-input {
+      padding-inline: var(--space-4) !important;
+    }
+
+    .composer-footer {
+      padding-inline: 0;
+    }
+
+    .composer-footer .submit-panel .save-or-cancel .btn.btn-primary {
+      background: var(--tertiary);
+      color: var(--secondary);
+      padding-inline: var(--space-4);
+    }
+  }
+}
+
+@include viewport.from(sm) {
+  body:not(.has-sidebar-page)
+    #reply-control.open.hide-preview:not(.fullscreen) {
+    margin-inline: auto;
+    max-width: min(var(--composer-max-width--hide-preview), calc(100% - 2rem));
+  }
+}
+
+// Native float-kit owns placement, dismissal, focus and viewport collision.
+// Scope to this menu so other Discourse dropdowns retain their own density.
+.toolbar-menu__fomio-composer-format-content {
+  .btn {
+    min-height: 44px;
+    padding-block: var(--space-2);
+  }
+
+  // Core scopes active marks to its three built-in menu identifiers. Carry
+  // the same presentation into our grouped menu, including the mobile modal.
+  .d-button-label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .d-button-label__active-icon {
+    visibility: hidden;
+    margin-inline-start: auto;
+  }
+
+  .btn.--active .d-button-label__active-icon {
+    visibility: visible;
+  }
+
+  @include viewport.until(sm) {
+    .shortcut {
+      display: none;
+    }
+  }
+}
+
+// --------------------------------------------------
+// Shape (Phase 2, shared shell)
+// 8px controls, 12px large surfaces. Buttons, inputs and nav pills follow
+// --d-border-radius (components/buttons.scss:3, foundation/base.scss:12-13).
+// Declared on body too: upcoming changes set variables there (docs/02).
+// --------------------------------------------------
+
+:root,
+body {
+  --d-border-radius: 8px;
+  --d-border-radius-large: 12px; // core: twice the radius
+}
+
+// --------------------------------------------------
+// Local navigation (2C) — core's nav pills (components/navs.scss)
+// Active is a filled pill; hover is the hover wash. Scoped to .nav-pills
+// because core reuses --d-nav-color--active for keyboard-shortcut rings,
+// the category-drop border and overflow-nav arrows.
+// --------------------------------------------------
+
+.nav-pills {
+  --d-nav-color--hover: var(--primary);
+  --d-nav-bg-color--hover: var(--d-hover);
+  --d-nav-color--active: var(--secondary);
+  --d-nav-bg-color--active: var(--quaternary);
+  --d-nav-underline-height: 0; // the fill replaces the underline
+
+  // nav-hover (foundation/mixins.scss) paints a hovered pill's icon in the
+  // active colour, which is now the page colour.
+  > li > a:not(.active):hover .d-icon {
+    color: var(--d-nav-color--hover);
+  }
+
+  // Tracked filter (fomio-tracked-filter.js): li.fomio-tracked is core's
+  // name class. On, it's a selected filter, distinct from the filled tab.
+  > li.fomio-tracked.--on > a {
+    background: var(--d-selected);
+    color: var(--tertiary);
+  }
+}
+
+// --------------------------------------------------
+// Responsive list controls (2E) — one row grammar at every width: context
+// (breadcrumbs), tabs, actions, in core's DOM order inside
+// .navigation-container (flex, wrap; base/list-controls.scss), so focus
+// order matches what's seen.
+// --------------------------------------------------
+
+.navigation-container .navigation-controls {
+  // Actions end flush right whether they share the row (desktop, where
+  // #navigation-bar's margin-right: auto already pushes them) or wrap to
+  // their own (tablet, phone). Core leaves a wrapped row on the left.
+  margin-left: auto;
+}
+
+// Phones: fomio-mobile-tabs.js keeps core's pills inline instead of the
+// dropdown. They take their own row and scroll sideways rather than wrap.
+@include viewport.until(sm) {
+  .navigation-container #navigation-bar {
+    flex: 1 0 100%;
+    flex-wrap: nowrap; // core: wrap
+    margin-right: 0; // core: auto
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    > li {
+      flex: none;
+    }
+  }
+}
+
+// --------------------------------------------------
+// Content frame (2D) and context headers (2B) — one reading column
+// List pages: core's body classes from components/discovery/navigation.gjs
+// (Home's lists, a category's lists, the categories page). .wrap reads
+// --d-max-width (base/discourse.scss:604), so the global header aligns with
+// the column and the context header under it.
+// Topic and profile (2B, 2026-09-27): the same column, so the header doesn't
+// jump ~135px between list, topic and profile. Core sets no body class for
+// either, so :has() keys off core's own containers:
+// - #topic.nested-view — the nested topic view (components/nested.gjs),
+//   the site default (nested_replies_default). It has no timeline, which was
+//   the only reason topics kept core's width; the flat view, which has one,
+//   doesn't match and keeps it.
+// - section.user-main — every profile tab (summary, activity, messages,
+//   notifications, preferences). Core's horizontal-overflow-nav scrolls the
+//   secondary tabs that no longer fit.
+// Title, category, identity and actions stay core's markup and styles.
+// --------------------------------------------------
+
+body.navigation-topics,
+body.navigation-category,
+body.navigation-categories,
+body:has(#topic.nested-view),
+body:has(section.user-main) {
+  --d-max-width: 840px;
+}
+
+// Phones (2D): core scales the empty list's picture with the viewport —
+// 8vh above it, 65vw wide (components/empty-states.scss, until sm) — which
+// pushed core's "browse latest" button under the bottom bar on short
+// screens (375×667 left 18px; less with browser toolbars). Capping the
+// picture keeps the button clear at any height; the page still scrolls and
+// #main-outlet keeps core's footer-nav padding at the end.
+@include viewport.until(sm) {
+  html.fomio-bottom-bar-visible
+    .empty-state__container.--empty-topic-filter
+    .empty-state__image {
+    margin-top: var(--space-4); // core: 8vh
+
+    svg {
+      width: min(65vw, 10rem); // core: 65vw
+    }
+  }
+}
+
+// Visitor empty list (4.5, fomio-visitor-empty-list.gjs): the other native
+// lists sit in core's tip line; space them apart.
+.fomio-visitor-empty-list__link + .fomio-visitor-empty-list__link {
+  margin-inline-start: var(--space-4);
+}
+
+// --------------------------------------------------
+// Topic cards (3A) — the discourse-topic-cards component (theme 37, a child
+// of this theme; docs/03). Only fixes, never a second card layout.
+// --------------------------------------------------
+
+// On phones the component lays .main-link out as a grid whose tracks grow
+// to the longest unbreakable word; an excerpt holding a pasted URL pushed
+// the page 8px sideways at 375px (2026-09-27).
+.topic-card__excerpt-text {
+  overflow-wrap: anywhere;
+}
+
+// Core's keyboard marker, `.topic-list-item.selected td:first-of-type`
+// (components/keyboard_shortcuts.scss:2), also matches the first cell of
+// the component's nested stats table, so focusing a card's title drew a
+// stray 3px bar beside the like button (2026-09-27). The row's own marker
+// is unchanged.
+.topic-card.selected .topic-card__stats td:first-of-type {
+  box-shadow: none;
+}
+
+// Home concept (01 Home / FmTopicCard), adapted to the official component.
+// Retain its DOM order, thumbnail placement, topic links and native actions.
+// Category and suggested lists continue to use the upstream presentation.
+body.navigation-topics {
+  .topic-cards-list {
+    margin-top: var(--space-3);
+
+    .topic-list-body {
+      gap: var(--space-3);
+    }
+  }
+
+  .topic-card {
+    gap: var(--space-4);
+    border-color: var(--content-border-color);
+    border-radius: 12px;
+    box-shadow: none;
+
+    &:hover,
+    &.selected {
+      border-color: var(--primary-low-mid);
+    }
+
+    .main-link {
+      min-width: 0;
+      padding: var(--space-4) var(--space-5) var(--space-4) 0 !important;
+
+      // Text-only cards need the same inset as the thumbnail cards.
+      &:first-child {
+        padding-inline-start: var(--space-5) !important;
+      }
+
+      .title {
+        font-family: var(--heading-font-family);
+        font-size: 1.3125rem;
+        line-height: 1.25;
+        max-height: none;
+        text-wrap: pretty;
+      }
+
+      .link-bottom-line {
+        margin-bottom: var(--space-2);
+      }
+
+      .topic-card__excerpt-text {
+        margin-block: var(--space-2) var(--space-3);
+        color: var(--primary-high);
+        line-height: 1.5;
+        -webkit-line-clamp: 2;
+        max-height: none;
+      }
+    }
+
+    .topic-card__thumbnail {
+      flex-basis: 22%;
+
+      .main-thumbnail {
+        border-start-start-radius: 12px;
+        border-end-start-radius: 12px;
+      }
+    }
+  }
+
+  // Core welcome-banner.gjs supplies all text and search behavior. Its
+  // display transformer makes the home welcome visitor-only.
+  .welcome-banner {
+    --d-welcome-banner-text-alignment: start;
+    --d-welcome-banner-header-size: var(--font-up-3);
+    --d-welcome-banner-title-margin-bottom: var(--space-2);
+    --d-welcome-banner-padding-top: var(--space-4);
+    --d-welcome-banner-padding-bottom: var(--space-4);
+    border: 1px solid var(--content-border-color);
+    border-radius: 12px;
+    background: var(--primary-very-low);
+
+    &__wrap {
+      padding-inline: var(--space-4);
+    }
+
+    &__search-menu {
+      margin-inline: 0;
+    }
+  }
+
+  @include viewport.until(sm) {
+    .topic-card {
+      padding: var(--space-3);
+      gap: 0;
+
+      .main-link,
+      .main-link:first-child {
+        padding: var(--space-1) !important;
+      }
+
+      .main-link .title {
+        font-size: 1.125rem;
+      }
+
+      .topic-card__thumbnail .main-thumbnail {
+        border-radius: var(--d-border-radius);
+      }
+
+      .topic__like-button,
+      .topic-card__stats a {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+    }
+
+    .welcome-banner {
+      display: block;
+      margin-bottom: var(--space-3);
+    }
+  }
+}
+
+// --------------------------------------------------
+// Category context (2B) — fomio-category-context.gjs
+// Reuses core's logo-heading classes (.category-heading__content,
+// __description; common/base/_topic-list.scss:20-58), so type, colour and
+// width are core's. Core spaces the logo case through .discovery-heading
+// (margin-bottom: --space-6), which it only adds with a logo; match it.
+// --------------------------------------------------
+
+.fomio-category-context {
+  margin-bottom: var(--space-6);
+}
+
+// --------------------------------------------------
+// Subcategory row (3B) — core's subcategory list on a parent category
+// Shown by the category settings show_subcategory_list + subcategory_list_style
+// "rows" (build-category-route.js, _createSubcategoryList), rendered by
+// categories-only.gjs → parent-category-row.gjs into #header-list-area
+// (discovery/layout.gjs). Its full rows pushed the first topic ~1,700px down
+// on a phone, so it becomes one wrapping row of core's own category links
+// (the pack's "Subcategories:" line). Descriptions and counts stay on each
+// subcategory's own page (2B). Scoped to category pages; /categories keeps
+// core's list.
+// Desktop: table.category-list > thead + tbody > tr[data-category-id] > td.
+// Phones: div.category-list > .category-list-item > table.topic-list > … th.
+// --------------------------------------------------
+
+body.navigation-category #header-list-area {
+  .category-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-4);
+  }
+
+  // The column heads ("categories.category", "categories.topics") label the
+  // table's tbody (aria-labelledby), so they're hidden visually only.
+  table.category-list > thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  // …except the topics head: its column's counts are hidden, so a screen
+  // reader announced a column with no data (a11y check, 2026-09-27).
+  table.category-list > thead th.topics {
+    display: none;
+  }
+
+  table.category-list > tbody,
+  .category-list-item > table,
+  .category-list-item > table > tbody,
+  .category-list-item > table > tbody > tr:not(.category-description),
+  .category-list-item th.main-link {
+    display: contents;
+  }
+
+  // One subcategory: core's title link (colour square + name) in a chip.
+  table.category-list > tbody > tr,
+  .category-list > .category-list-item {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    border: 0;
+    border-radius: var(--d-border-radius);
+    box-shadow: inset 0 0 0 1px var(--content-border-color);
+
+    &:hover {
+      background: var(--d-hover);
+    }
+  }
+
+  td.category {
+    width: auto;
+    padding: 0;
+    border: 0; // core: the category-colour bar; the badge's square carries it
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--font-0);
+  }
+
+  // A member's "N new" / "N unread" badges stay; the raw count beside them
+  // goes. Core renders both in td.topics (parent-category-row.gjs:210-219):
+  // an unclassed stat div, then CategoryUnread with class="unread-new" (a
+  // classic component, so an ember-view wrapper and the inner
+  // div.category__badges both carry it). Core has no badges in the phone
+  // row, so there's nothing to keep there.
+  td.topics {
+    width: auto;
+    padding: 0;
+    border: 0;
+
+    > div:not(.unread-new) {
+      display: none;
+    }
+  }
+
+  .category__badges .badge-notification {
+    margin-left: var(--space-2);
+  }
+
+  .category-description,
+  .category-topics-count,
+  .subcategories,
+  .subcategories-list {
+    display: none;
+  }
+}
+
+// --------------------------------------------------
+// Categories page Latest rail (3B) — desktop `categories_and_latest_topics`
+// (components/categories-and-latest-topics.gjs, categories-topic-list.gjs).
+// Toward the 02 Categories concept: a compact rail, not card-like rows.
+// Core's latest-topic-list-item (base/categories-topic-list.scss) has 1em
+// padding, a 48px avatar, the title cell capped at 65% and the title at
+// --font-up-1; in the 393px column titles wrapped to 4-5 lines (rows
+// 81-183px). Same markup and links: avatar (named for AT), title (full text
+// kept in the link, only visually clamped), category badge, replies, time.
+// `.categories-and-latest` only renders on desktop; phones use
+// mobile_category_page_style.
+// --------------------------------------------------
+
+.categories-and-latest {
+  .latest-topic-list-item {
+    align-items: flex-start; // core: center
+    gap: var(--space-3); // core: --space-4
+    padding: var(--space-2) var(--space-1); // core: 1em
+
+    .topic-poster .avatar {
+      width: var(--space-6); // core renders 48px
+      height: var(--space-6);
+    }
+
+    .main-link {
+      flex: 1 1 auto; // core: 0 1 auto
+      min-width: 0;
+      max-width: none; // core: 65%
+
+      .top-row {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        font-size: var(--font-0); // core: --font-up-1
+      }
+
+      a.title {
+        padding: 0; // core: 15px 0
+      }
+    }
+
+    .topic-stats {
+      flex: 0 0 auto; // core: 1 0 0
+    }
+  }
+
+  .latest-topic-list .posts-map {
+    font-size: var(--font-0); // core: --font-up-1
+  }
+}
+
+// --------------------------------------------------
+// Composer (3E) — the docked composer lines up with the reading column
+// Core aligns the docked composer (no sidebar, preview hidden) with the
+// content column: margin-left .67em below 1110px, and
+// calc((100% - var(--d-max-width)) / 2 + .67em) from 1110px
+// (common/base/compose.scss, body:not(.has-sidebar-page) #reply-control…).
+// That breakpoint assumes core's 1110px column. With the theme's 840px
+// column (2D) the composer sat at the window's left edge between ~790 and
+// 1110px while the page was centred. Same formula at every desktop width,
+// floored at core's .67em. Phones keep core's full-screen composer.
+// --------------------------------------------------
+
+@include viewport.from(sm) {
+  body:not(.has-sidebar-page) #reply-control:not(.fullscreen).hide-preview {
+    margin-left: max(0.67em, calc((100% - var(--d-max-width)) / 2 + 0.67em));
+  }
+}
+
+// --------------------------------------------------
+// Mobile bottom bar — javascripts/.../fomio-bottom-bar.gjs (Phase 2A)
+// Surface is core's footer nav's (common/components/footer-nav.scss), with
+// the header's hairline in place of a shadow; the badge is the header
+// avatar's (common/base/header.scss).
+// --------------------------------------------------
+
+// Core's footer-nav layout reads this for #main-outlet padding and the
+// offsets it lifts (footer-nav.scss:8); 56px instead of core's 49px.
+html.fomio-bottom-bar-visible {
+  --footer-nav-height: 3.5rem;
+}
+
+.fomio-bottom-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 900; // core's z("footer-nav"), foundation/variables.scss
+  display: flex;
+  box-sizing: content-box;
+  height: var(--footer-nav-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: var(--header_background);
+  box-shadow: var(--shadow-header); // 1px ring; no shadow on AMOLED black
+}
+
+.fomio-bottom-bar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-half);
+  // No min-width: 0. A flex item's automatic minimum is its content, so the
+  // columns stay equal while every label fits and one only widens when its
+  // core label needs it ("Notifications" at 375px). The label's ellipsis
+  // stays as the last resort.
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--header_primary-medium);
+  font-size: var(--font-down-2);
+  font-weight: bold;
+  line-height: var(--line-height-medium); // buttons don't inherit it; links do
+  cursor: pointer;
+
+  .d-icon {
+    color: inherit;
+    font-size: var(--font-up-2);
+  }
+
+  // One icon row height for all five items: the avatar's (imageSize
+  // "small", 24px). Without it Profile's label sits lower than the others.
+  > .d-icon,
+  .fomio-bottom-bar__icon {
+    height: var(--space-6);
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--header_primary);
+  }
+
+  &.active {
+    color: var(--tertiary);
+  }
+
+  // Profile shows the member's avatar; the active item rings it.
+  .avatar {
+    border-radius: 50%;
+  }
+
+  &.active .avatar {
+    box-shadow:
+      0 0 0 2px var(--header_background),
+      0 0 0 4px var(--tertiary);
+  }
+}
+
+.fomio-bottom-bar__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fomio-bottom-bar__icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .badge-notification {
+    position: absolute;
+    top: -4px;
+    right: -3px;
+    border: 2px solid var(--header_background);
+  }
+
+  .unread-notifications {
+    background-color: var(--tertiary);
+  }
+}
+
+// Core override: a minimized (draft) or saving composer is a 45px strip at
+// bottom: 0 (base/compose.scss, #reply-control.draft/.saving), under the bar.
+// Core lifts it above its own footer nav on iOS only
+// (.ios-device.footer-nav-visible #reply-control); the bar shows on every
+// phone, so the same lift applies wherever the bar does. While the composer
+// is open the bar hides, so the open state needs nothing.
+html.fomio-bottom-bar-visible #reply-control:is(.draft, .saving) {
+  bottom: calc(var(--footer-nav-height) + env(safe-area-inset-bottom));
+}
+
+// Core override: the bar's Notifications item opens the user menu the
+// avatar opens, so the avatar goes while the bar shows. No setting or header
+// hider covers it (services/header.js hides search/login/signup/menu only).
+.fomio-bottom-bar-visible .d-header-icons .header-dropdown-toggle.current-user {
+  display: none;
+}

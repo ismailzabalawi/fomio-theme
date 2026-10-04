@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+<style>
+[data-fmc3] *:focus-visible{outline:2px solid var(--tertiary);outline-offset:2px}
+[data-fmc3] [data-plain]:focus-visible{outline:none}
+[data-fmc3-body] p{margin:0 0 14px}
+[data-fmc3-body] h2{margin:18px 0 8px;font:700 22px/1.3 var(--heading-font-family)}
+[data-fmc3-body] h3{margin:16px 0 6px;font:700 19px/1.3 var(--heading-font-family)}
+[data-fmc3-body] blockquote{margin:0 0 14px;padding:8px 14px;border-radius:8px;background:var(--primary-very-low);color:var(--primary-high)}
+[data-fmc3-body] blockquote p{margin:0}
+[data-fmc3-body] ul,[data-fmc3-body] ol{margin:0 0 14px;padding-inline-start:24px}
+[data-fmc3-body] a{color:var(--tertiary);text-decoration:underline}
+[data-fmc3-body]>:first-child{margin-top:0}
+@keyframes fmc3spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div data-fmc3="" data-scheme="{{ scheme }}" dir="{{ dir }}" ref="{{ rootRef }}" onKeyDown="{{ onKey }}" style="position:relative;flex:none;overflow:hidden;background:var(--secondary);color:var(--primary);font-family:var(--font-family);width:{{ L.w }};height:{{ L.h }};border-radius:{{ L.r }};box-shadow:0 0 0 1px var(--content-border-color)">
+  <span role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">{{ announce }}</span>
+
+  <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;z-index:6;top:0;left:0;right:0;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px 34px;box-sizing:border-box;background:var(--secondary);font:600 15px/1 var(--font-family);height:{{ L.st }}" dir="ltr"><span>9:41</span><span style="display:flex;gap:6px;font-size:12px"><i class="fa-solid fa-signal"></i><sc-if value="{{ online }}"><i class="fa-solid fa-wifi"></i></sc-if><i class="fa-solid fa-battery-full"></i></span></div>
+  </sc-if>
+
+  <sc-if value="{{ showPage }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;top:{{ L.pageTop }}">
+      <dc-import name="FmHeader" mobile="{{ isTouch }}" signed-in="{{ signedIn }}" unread="{{ 3 }}" hint-size="100%,60px"></dc-import>
+      <div style="flex:1;min-height:0;overflow:auto">
+        <div style="max-width:840px;margin:0 auto;display:flex;flex-direction:column;gap:16px;padding:{{ L.pagePad }}">
+          <sc-if value="{{ pendingNotice }}"><p role="status" style="margin:0;padding:12px 14px;border-radius:8px;background:var(--highlight-low);font:16px/1.45 var(--font-family)">You have <strong>1</strong> post pending.</p></sc-if>
+          <sc-if value="{{ hasDrafts }}">
+            <section aria-label="Drafts" style="display:flex;flex-direction:column;border:1px solid var(--content-border-color);border-radius:12px;overflow:hidden">
+              <h2 style="margin:0;padding:12px 16px;font:700 15px/1 var(--font-family);color:var(--primary-high);border-bottom:1px solid var(--content-border-color)">Drafts</h2>
+              <sc-for list="{{ drafts }}" as="dr" hint-placeholder-count="1">
+                <button onClick="{{ resume }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 16px;border:0;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-regular fa-file-lines" style="color:var(--primary-medium)"></i><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><strong style="font:700 16px/1.3 var(--font-family);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ dr.title }}</strong><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">{{ dr.meta }}</span></span><span style="font:700 15px/1 var(--font-family);color:var(--tertiary)">Resume</span></button>
+              </sc-for>
+            </section>
+          </sc-if>
+          <sc-if value="{{ isFeed }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:12px;padding-top:6px"><h1 style="margin:0;flex:1;font:700 26px/1.15 var(--heading-font-family)">Latest</h1><sc-if value="{{ isDesktop }}"><button onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer" style-hover="background:var(--quaternary)"><i class="fa-solid fa-plus"></i><span>New Byte</span></button></sc-if></div>
+            <ul style="list-style:none;margin:0;padding:0;border-top:1px solid var(--content-border-color)">
+              <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3"><li style="display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--content-border-color)"><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">{{ f.meta }}</span><strong style="font:700 18px/1.3 var(--heading-font-family)">{{ f.title }}</strong></li></sc-for>
+            </ul>
+          </sc-if>
+          <sc-if value="{{ isTopic }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:6px"><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">General › Open Discussions</span><h1 style="margin:0;font:700 26px/1.2 var(--heading-font-family);text-wrap:pretty">{{ topicTitle }}</h1></div>
+            <sc-for list="{{ posts }}" as="po" hint-placeholder-count="3">
+              <article style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:14px 12px;margin:0 -12px;border-top:1px solid var(--content-border-color);border-radius:8px;background:{{ po.bg }}">
+                <span style="width:36px;height:36px;border-radius:50%;color:#fff;font:700 15px/36px var(--font-family);text-align:center;background:{{ po.color }}">{{ po.initial }}</span>
+                <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px;font:15px/1.2 var(--font-family);color:var(--primary-medium)"><strong style="color:var(--primary)">{{ po.name }}</strong><span style="margin-inline-start:auto">{{ po.when }}</span><sc-if value="{{ po.mine }}"><button onClick="{{ openEdit }}" aria-label="Edit" style="width:44px;height:44px;margin:-10px -10px -10px 0;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-pencil"></i></button></sc-if></div>
+                  <div data-fmc3-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ po.html }}"></div>
+                </div>
+              </article>
+            </sc-for>
+            <sc-if value="{{ closed }}"><p style="margin:0;display:flex;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--content-border-color);font:16px/1.45 var(--font-family);color:var(--primary-high)"><i class="fa-solid fa-lock" style="color:var(--primary-medium)"></i><span>This topic is closed. It no longer accepts new replies.</span></p></sc-if>
+            <sc-if value="{{ canReply }}"><div style="display:flex;justify-content:flex-end;border-top:1px solid var(--content-border-color);padding-top:14px"><button onClick="{{ openReply }}" style="display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer"><i class="fa-solid fa-reply"></i><span>Reply</span></button></div></sc-if>
+          </sc-if>
+          <sc-if value="{{ isNewTopic }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:6px"><span style="font:14px/1.2 var(--font-family);color:var(--primary-medium)">{{ newPost.crumb }}</span><h1 style="margin:0;font:700 26px/1.2 var(--heading-font-family);text-wrap:pretty;overflow-wrap:anywhere">{{ newPost.title }}</h1></div>
+            <article style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding-top:14px;border-top:1px solid var(--content-border-color)">
+              <span style="width:36px;height:36px;border-radius:50%;background:#56708A;color:#fff;font:700 15px/36px var(--font-family);text-align:center">J</span>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><div style="display:flex;gap:8px;font:15px/1.2 var(--font-family);color:var(--primary-medium)"><strong style="color:var(--primary)">Jun</strong><span style="margin-inline-start:auto">now</span></div><div data-fmc3-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ newPost.html }}"></div></div>
+            </article>
+          </sc-if>
+        </div>
+      </div>
+      <sc-if value="{{ minimized }}">
+        <div style="flex:none;display:flex;justify-content:center;padding:0 {{ L.minPad }}">
+          <button onClick="{{ resume }}" aria-label="Open the composer" style="flex:1;max-width:840px;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 8px 8px 16px;border:1px solid var(--content-border-color);border-bottom:0;border-radius:12px 12px 0 0;background:var(--secondary);color:var(--primary);text-align:start;cursor:pointer;box-shadow:var(--shadow-composer)"><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 14px/1.2 var(--font-family);color:var(--primary-medium)">{{ minLabel }}</span><strong style="font:700 16px/1.25 var(--font-family);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ minTitle }}</strong></span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--primary-medium)"><i class="fa-solid fa-chevron-up"></i></span></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isTouch }}">
+        <div style="position:relative;flex:none">
+          <dc-import name="FmBottomNav" signed-in="{{ signedIn }}" active="home" hint-size="100%,90px"></dc-import>
+          <sc-if value="{{ signedIn }}"><button onClick="{{ openNew }}" aria-label="New Byte" style="position:absolute;top:0;left:40%;width:20%;height:56px;border:0;background:transparent;cursor:pointer"></button></sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showComposer }}" hint-placeholder-val="{{ true }}">
+    <section aria-label="{{ composerLabel }}" style="position:absolute;z-index:4;bottom:0;display:flex;flex-direction:column;background:var(--secondary);top:{{ C.top }};left:{{ C.left }};right:{{ C.right }};border-radius:{{ C.r }};box-shadow:{{ C.shadow }};border:{{ C.border }}">
+
+      <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;display:flex;align-items:center;gap:2px;height:56px;padding:0 12px 0 4px;border-bottom:1px solid var(--content-border-color)">
+          <button onClick="{{ saveClose }}" aria-label="Save and close" style="width:44px;height:44px;flex:none;border:0;border-radius:8px;background:none;color:var(--primary);font-size:19px;cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+          <button onClick="{{ minimize }}" aria-label="Minimize the composer panel" style="width:44px;height:44px;flex:none;border:0;border-radius:8px;background:none;color:var(--primary-medium);font-size:16px;cursor:pointer"><i class="fa-solid fa-chevron-down"></i></button>
+          <div style="flex:1;min-width:0;display:flex;justify-content:center;padding:0 4px">
+            <sc-if value="{{ ds.show }}"><span style="display:flex;align-items:center;gap:6px;font:600 13px/1.2 var(--font-family);text-align:center;color:{{ ds.color }}"><i class="{{ ds.icon }}" style="flex:none"></i><span>{{ ds.text }}</span></span></sc-if>
+          </div>
+          <button onClick="{{ submit }}" aria-busy="{{ submitting }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer;white-space:nowrap" style-hover="background:var(--quaternary)"><sc-if value="{{ submitting }}"><i class="fa-solid fa-circle-notch" style="animation:fmc3spin 800ms linear infinite"></i></sc-if><span>{{ primaryLabel }}</span></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:none;display:flex;align-items:center;gap:4px;height:48px;padding:0 8px 0 24px;border-bottom:1px solid var(--content-border-color)">
+          <span style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;font:700 15px/1 var(--font-family);color:var(--primary-high)"><i class="{{ actionIcon }}" style="color:var(--primary-medium)"></i>{{ actionTitle }}</span>
+          <button onClick="{{ minimize }}" aria-label="Minimize the composer panel" title="Minimize the composer panel" style="width:40px;height:40px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-chevron-down"></i></button>
+          <button onClick="{{ toggleFull }}" aria-label="{{ fullLabel }}" title="{{ fullLabel }}" style="width:40px;height:40px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="{{ fullIcon }}"></i></button>
+          <button onClick="{{ saveClose }}" aria-label="Save and close" title="Save and close" style="width:40px;height:40px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ banner }}">
+        <div role="alert" style="flex:none;display:flex;gap:12px;align-items:flex-start;padding:12px 16px;background:var(--danger-low);border-bottom:1px solid var(--content-border-color)">
+          <i class="fa-solid fa-circle-exclamation" style="margin-top:3px;color:var(--danger)"></i>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font:15px/1.4 var(--font-family)">
+            <strong style="font:700 15px/1.3 var(--font-family)">{{ bn.title }}</strong><span>{{ bn.body }}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:6px">
+              <sc-for list="{{ bn.actions }}" as="a" hint-placeholder-count="1"><button onClick="{{ a.on }}" style="height:40px;padding:0 14px;border-radius:8px;font:700 15px/1 var(--font-family);cursor:pointer;border:{{ a.bd }};background:{{ a.bg }};color:{{ a.ink }}">{{ a.label }}</button></sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <div ref="{{ scrollRef }}" style="flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin">
+        <div style="display:grid;min-height:100%;grid-template-columns:{{ C.cols }}">
+          <div style="width:100%;box-sizing:border-box;margin:0 auto;display:flex;flex-direction:column;gap:10px;max-width:{{ C.measure }};padding:{{ C.pad }}">
+
+            <sc-if value="{{ showDest }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <button onClick="{{ openDest }}" aria-haspopup="dialog" aria-label="{{ destAria }}" style="align-self:flex-start;max-width:100%;display:flex;align-items:center;gap:10px;min-height:48px;padding:4px 10px;margin:0 -10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)">
+                  <span style="flex:none;width:12px;height:12px;border-radius:3px;background:{{ cat.color }}"></span>
+                  <span style="min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 16px/1.25 var(--font-family);overflow-wrap:anywhere">{{ cat.path }}</span><span style="display:flex;align-items:center;gap:6px;font:14px/1.2 var(--font-family);color:var(--primary-medium)"><i class="{{ cat.visIcon }}" style="font-size:12px"></i>{{ cat.visText }}</span></span>
+                  <i class="fa-solid fa-chevron-down" style="flex:none;font-size:12px;color:var(--primary-medium)"></i>
+                </button>
+                <sc-if value="{{ cat.guide }}"><p style="margin:0;font:15px/1.45 var(--font-family);color:var(--primary-high)">{{ cat.desc }}</p></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isReply }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button onClick="{{ toggleReply }}" aria-expanded="{{ replyOpenStr }}" aria-label="{{ replyAria }}" style="display:flex;align-items:center;gap:10px;min-height:48px;padding:4px 10px;margin:0 -10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)">
+                  <i class="fa-solid fa-reply" style="color:var(--primary-medium);font-size:14px"></i>
+                  <span style="flex:none;width:28px;height:28px;border-radius:50%;background:#6A7F2E;color:#fff;font:700 13px/28px var(--font-family);text-align:center">R</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><strong style="font:700 16px/1.2 var(--font-family)">Ravi Patel</strong><span style="font:14px/1.25 var(--font-family);color:var(--primary-medium);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ topicTitle }}</span></span>
+                  <i class="{{ replyChevron }}" style="font-size:12px;color:var(--primary-medium)"></i>
+                </button>
+                <sc-if value="{{ replyOpen }}"><p style="margin:0;padding:10px 14px;border-radius:8px;background:var(--primary-very-low);font:16px/1.5 var(--font-family);color:var(--primary-high)">I keep the kettle filled the night before. Two minutes saved, but it feels like the morning has already started.</p></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:10px;min-height:40px">
+                  <i class="fa-solid fa-pencil" style="color:var(--primary-medium);font-size:14px"></i>
+                  <span style="flex:none;width:28px;height:28px;border-radius:50%;background:#56708A;color:#fff;font:700 13px/28px var(--font-family);text-align:center">J</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><strong style="font:700 16px/1.2 var(--font-family)">Jun</strong><span style="font:14px/1.25 var(--font-family);color:var(--primary-medium);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ topicTitle }}</span></span>
+                </div>
+                <sc-if value="{{ reasonClosed }}"><button onClick="{{ openReason }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;margin:0 -10px;border:0;border-radius:8px;background:none;color:var(--tertiary);font:600 15px/1 var(--font-family);cursor:pointer"><i class="fa-solid fa-plus" style="font-size:12px"></i>Add edit reason</button></sc-if>
+                <sc-if value="{{ reasonOpen }}"><input value="{{ reason }}" onChange="{{ onReason }}" aria-label="Why are you editing?" placeholder="Why are you editing?" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showTitle }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:6px;padding-top:4px">
+                <div style="position:relative">
+                  <textarea data-plain="" ref="{{ titleRef }}" rows="1" value="{{ title }}" onChange="{{ onTitle }}" onFocus="{{ onTitleFocus }}" aria-label="Title" aria-invalid="{{ titleInvalid }}" aria-describedby="{{ titleErrId }}" placeholder="Type title, or paste a link here" style="display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;field-sizing:content;border:0;padding:2px 0;margin:0;background:none;color:var(--primary);font:700 23px/1.3 var(--heading-font-family)"></textarea>
+                  <sc-if value="{{ fakeTitleCaret }}"><span aria-hidden="true" style="position:absolute;top:5px;inset-inline-start:0;width:2px;height:26px;background:var(--tertiary)"></span></sc-if>
+                </div>
+                <sc-if value="{{ hasErrTitle }}"><p id="{{ titleErrId }}" style="margin:0;display:flex;gap:8px;align-items:flex-start;color:var(--danger);font:600 15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i><span>{{ errTitle }}</span></p></sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showSimilar }}">
+              <div style="display:flex;flex-direction:column;border-radius:8px;background:var(--primary-very-low);border:1px solid var(--content-border-color)">
+                <div style="display:flex;align-items:center">
+                  <button onClick="{{ toggleSimilar }}" aria-expanded="{{ similarOpenStr }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;background:none;color:var(--primary);text-align:start;font:600 15px/1.2 var(--font-family);cursor:pointer"><i class="fa-regular fa-comments" style="color:var(--primary-medium)"></i><span style="flex:1">Your topic is similar to…</span><span style="font:700 13px/1 var(--font-family);padding:3px 7px;border-radius:999px;background:var(--primary-low)">3</span><i class="{{ similarChevron }}" style="font-size:12px;color:var(--primary-medium)"></i></button>
+                  <button onClick="{{ dismissSimilar }}" aria-label="Dismiss" style="width:44px;height:44px;flex:none;border:0;background:none;color:var(--primary-medium);cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <sc-if value="{{ similarOpen }}">
+                  <ul style="list-style:none;margin:0;padding:0 12px 6px">
+                    <sc-for list="{{ similar }}" as="sm" hint-placeholder-count="3"><li style="display:flex;flex-direction:column;gap:3px;padding:8px 0;border-top:1px solid var(--content-border-color)"><a href="#" style="font:600 15px/1.3 var(--font-family);color:var(--primary)">{{ sm.t }}</a><span style="font:13px/1.2 var(--font-family);color:var(--primary-medium)">{{ sm.m }}</span></li></sc-for>
+                  </ul>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showRule }}"><div style="height:1px;background:var(--content-border-color);margin:2px 0 4px"></div></sc-if>
+
+            <sc-if value="{{ isRich }}" hint-placeholder-val="{{ true }}">
+              <div style="position:relative">
+                <sc-if value="{{ bodyEmpty }}"><span aria-hidden="true" style="position:absolute;top:0;inset-inline-start:0;inset-inline-end:0;pointer-events:none;font:18px/1.6 var(--font-family);color:var(--primary-medium)">{{ bodyPh }}</span></sc-if>
+                <div data-plain="" data-fmc3-body="" ref="{{ bodyRef }}" contentEditable="true" role="textbox" aria-multiline="true" aria-label="{{ bodyLabel }}" aria-invalid="{{ bodyInvalid }}" onInput="{{ onBodyInput }}" onFocus="{{ onBodyFocus }}" onClick="{{ onBodyClick }}" style="outline:none;font:18px/1.6 var(--font-family);overflow-wrap:anywhere;padding-bottom:20px;min-height:{{ C.bodyMin }}"></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isMdEdit }}" hint-placeholder-val="{{ false }}">
+              <textarea data-plain="" ref="{{ mdRef }}" value="{{ md }}" onChange="{{ onMd }}" onSelect="{{ onMdSelect }}" onFocus="{{ onBodyFocus }}" aria-label="{{ bodyLabel }}" aria-invalid="{{ bodyInvalid }}" placeholder="Type here. Use Markdown, BBCode, or HTML to format. Drag or paste images." style="display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;field-sizing:content;border:0;padding:0 0 20px;margin:0;background:none;color:var(--primary);font:16px/1.65 var(--d-font-family--monospace);min-height:{{ C.bodyMin }}"></textarea>
+            </sc-if>
+            <sc-if value="{{ showPreviewInline }}"><div aria-label="Preview" data-fmc3-body="" style="font:18px/1.6 var(--font-family);overflow-wrap:anywhere;padding-bottom:20px" dangerouslySetInnerHTML="{{ previewHtml }}"></div></sc-if>
+            <sc-if value="{{ hasErrBody }}"><p style="margin:-8px 0 12px;display:flex;gap:8px;align-items:flex-start;color:var(--danger);font:600 15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="margin-top:2px"></i><span>{{ errBody }}</span></p></sc-if>
+          </div>
+          <sc-if value="{{ previewCol }}"><div aria-label="Preview" style="border-inline-start:1px solid var(--content-border-color);padding:18px 28px;background:var(--primary-very-low)"><div data-fmc3-body="" style="font:17px/1.6 var(--font-family);overflow-wrap:anywhere" dangerouslySetInnerHTML="{{ previewHtml }}"></div></div></sc-if>
+        </div>
+      </div>
+
+      <sc-if value="{{ upBanner }}"><div role="alert" style="flex:none;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 16px;border-top:1px solid var(--content-border-color);background:var(--danger-low);font:15px/1.35 var(--font-family)"><i class="fa-solid fa-circle-exclamation" style="color:var(--danger)"></i><span style="flex:1">Upload failed. The photo was not added.</span><button onClick="{{ retryMdUpload }}" style="height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">Retry</button></div></sc-if>
+
+      <sc-if value="{{ panelFormat }}">
+        <div role="group" aria-label="Format" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-top:1px solid var(--content-border-color);background:var(--primary-very-low)">
+          <div role="radiogroup" aria-label="Text style" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:3px;border-radius:10px;background:var(--primary-low)">
+            <sc-for list="{{ blockOpts }}" as="o" hint-placeholder-count="3"><button role="radio" aria-checked="{{ o.on }}" onMouseDown="{{ keep }}" onClick="{{ o.set }}" style="height:38px;border:0;border-radius:8px;color:var(--primary);cursor:pointer;background:{{ o.bg }};font:{{ o.font }};box-shadow:{{ o.sh }}">{{ o.label }}</button></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px">
+            <sc-for list="{{ fmtBtns }}" as="b" hint-placeholder-count="6"><button aria-pressed="{{ b.pressed }}" aria-label="{{ b.aria }}" title="{{ b.aria }}" onMouseDown="{{ keep }}" onClick="{{ b.on }}" style="height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;border-radius:8px;cursor:pointer;background:{{ b.bg }};color:{{ b.ink }}"><i class="{{ b.icon }}" style="font-size:16px"></i><span style="font:600 12px/1 var(--font-family)">{{ b.label }}</span></button></sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ panelLink }}">
+        <div role="group" aria-label="Insert Hyperlink" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-top:1px solid var(--content-border-color);background:var(--primary-very-low)">
+          <input value="{{ link.url }}" onChange="{{ onLinkUrl }}" inputMode="url" aria-label="URL" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)">
+          <div style="display:flex;gap:8px"><input value="{{ link.text }}" onChange="{{ onLinkText }}" aria-label="Link text (optional)" placeholder="Link text (optional)" style="flex:1;min-width:0;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"><button onClick="{{ cancelPanel }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 15px/1 var(--font-family);cursor:pointer">Cancel</button><button onClick="{{ insertLink }}" style="height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">OK</button></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ panelAlt }}">
+        <div role="group" aria-label="Alt text" style="flex:none;display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--content-border-color);background:var(--primary-very-low)">
+          <input value="{{ altVal }}" onChange="{{ onAlt }}" aria-label="Alt text" placeholder="Describe the photo" style="flex:1;min-width:0;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"><button onClick="{{ saveAlt }}" style="height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">OK</button>
+        </div>
+      </sc-if>
+
+      <div role="toolbar" aria-label="{{ stripLabel }}" style="flex:none;display:flex;align-items:center;gap:4px;min-height:52px;padding:4px 8px;box-sizing:border-box;border-top:1px solid var(--content-border-color);background:var(--secondary)">
+        <sc-for list="{{ strip }}" as="t" hint-placeholder-count="3">
+          <sc-if value="{{ t.isSep }}"><span aria-hidden="true" style="width:1px;height:24px;margin:0 4px;background:var(--content-border-color)"></span></sc-if>
+          <sc-if value="{{ t.isBtn }}"><button aria-label="{{ t.label }}" aria-pressed="{{ t.pressed }}" aria-expanded="{{ t.expanded }}" aria-haspopup="{{ t.popup }}" aria-keyshortcuts="{{ t.keys }}" title="{{ t.label }}" disabled="{{ t.disabled }}" onMouseDown="{{ keep }}" onClick="{{ t.on }}" style="flex:none;min-width:44px;height:44px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:8px;font:600 16px/1 var(--font-family);cursor:pointer;padding:0 {{ t.px }};background:{{ t.bg }};color:{{ t.ink }};opacity:{{ t.op }}" style-hover="background:var(--d-hover)"><i class="{{ t.icon }}" style="font-size:17px"></i><sc-if value="{{ t.showLabel }}"><span>{{ t.label }}</span></sc-if></button></sc-if>
+        </sc-for>
+        <span style="flex:1"></span>
+        <sc-if value="{{ showHideKb }}"><button onClick="{{ hideKb }}" aria-label="Hide keyboard" title="Hide keyboard" style="flex:none;width:44px;height:44px;border:0;border-radius:8px;background:none;color:var(--primary-medium);cursor:pointer"><i class="fa-regular fa-keyboard"></i><i class="fa-solid fa-chevron-down" style="font-size:9px;margin-inline-start:2px"></i></button></sc-if>
+        <sc-if value="{{ isDesktop }}">
+          <div style="display:flex;align-items:center;gap:16px">
+            <sc-if value="{{ ds.show }}"><span style="display:flex;align-items:center;gap:6px;font:600 14px/1.2 var(--font-family);color:{{ ds.color }}"><i class="{{ ds.icon }}"></i><span>{{ ds.text }}</span></span></sc-if>
+            <button onClick="{{ submit }}" aria-busy="{{ submitting }}" aria-keyshortcuts="Control+Enter Meta+Enter" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer" style-hover="background:var(--quaternary)"><sc-if value="{{ submitting }}"><i class="fa-solid fa-circle-notch" style="animation:fmc3spin 800ms linear infinite"></i></sc-if><span>{{ primaryLabel }}</span></button>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;position:relative;overflow:hidden;transition:height 240ms cubic-bezier(0.22,0.61,0.36,1);height:{{ bottomH }};background:{{ bottomBg }}">
+          <sc-if value="{{ kbOpen }}">
+            <div aria-hidden="true" dir="ltr" style="display:flex;flex-direction:column;gap:11px;padding:0 3px 8px">
+              <div style="display:flex;height:36px;align-items:center;border-bottom:1px solid {{ K.line }}">
+                <sc-for list="{{ K.pred }}" as="w" hint-placeholder-count="3"><button tabIndex="-1" onMouseDown="{{ w.press }}" style="flex:1;height:36px;border:0;background:none;color:{{ K.ink }};font:16px/1 system-ui,sans-serif;cursor:pointer">{{ w.label }}</button></sc-for>
+              </div>
+              <sc-for list="{{ K.rows }}" as="row" hint-placeholder-count="4">
+                <div style="display:flex;gap:6px;justify-content:center;padding:0 {{ row.pad }}">
+                  <sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="10"><button tabIndex="-1" onMouseDown="{{ k.press }}" style="border:0;border-radius:6px;color:{{ K.ink }};cursor:pointer;padding:0;box-shadow:0 1px 0 rgb(0 0 0 / 30%);flex:{{ k.flex }};height:{{ K.keyH }};background:{{ k.bg }};font:{{ k.font }}">{{ k.label }}</button></sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <span aria-hidden="true" style="position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--primary)"></span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sheetMore }}">
+        <div data-sheet="" role="dialog" aria-label="More" style="position:absolute;z-index:5;overflow:auto;background:var(--secondary);padding:4px 0 8px;box-sizing:border-box;inset-inline-start:{{ M.s }};inset-inline-end:{{ M.e }};bottom:{{ M.b }};width:{{ M.w }};max-height:{{ M.h }};height:{{ M.hh }};border:{{ M.border }};border-top:1px solid var(--content-border-color);border-radius:{{ M.rad }};box-shadow:{{ M.shadow }}">
+          <div style="display:flex;align-items:center;padding:0 8px 0 16px"><h2 style="flex:1;margin:0;font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:var(--primary-medium)">Insert</h2><button onClick="{{ closeSheet }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--tertiary);font:700 16px/1 var(--font-family);cursor:pointer">Done</button></div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 8px">
+            <sc-for list="{{ moreInsert }}" as="mi" hint-placeholder-count="6"><button onClick="{{ mi.on }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--d-hover)"><i class="{{ mi.icon }}" style="width:20px;text-align:center;color:var(--primary-medium)"></i>{{ mi.label }}</button></sc-for>
+          </div>
+          <h2 style="margin:10px 16px 2px;font:700 12px/1 var(--font-family);letter-spacing:0.04em;text-transform:uppercase;color:var(--primary-medium)">Editor</h2>
+          <div style="display:flex;flex-direction:column;padding:0 8px">
+            <button role="switch" aria-checked="{{ modeSwitch.checked }}" aria-disabled="{{ modeSwitch.locked }}" onClick="{{ switchMode }}" style="display:flex;align-items:center;gap:12px;min-height:56px;padding:4px 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-code" style="width:20px;text-align:center;color:var(--primary-medium)"></i><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:16px/1.2 var(--font-family)">Markdown</span><span style="font:14px/1.3 var(--font-family);color:var(--primary-medium)">{{ modeSwitch.sub }}</span></span><span style="flex:none;position:relative;width:44px;height:26px;border-radius:13px;background:{{ modeSwitch.track }}"><span style="position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:var(--secondary);inset-inline-start:{{ modeSwitch.x }}"></span></span></button>
+            <sc-if value="{{ showPreviewRow }}"><button role="switch" aria-checked="{{ previewStr }}" onClick="{{ togglePreview }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-regular fa-eye" style="width:20px;text-align:center;color:var(--primary-medium)"></i><span style="flex:1">Preview</span><span style="font:600 14px/1 var(--font-family);color:var(--primary-medium)">{{ previewState }}</span></button></sc-if>
+            <sc-if value="{{ isDesktop }}"><button onClick="{{ toggleFull }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--primary);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--d-hover)"><i class="{{ fullIcon }}" style="width:20px;text-align:center;color:var(--primary-medium)"></i>{{ fullLabel }}</button></sc-if>
+          </div>
+          <div style="height:1px;margin:6px 16px;background:var(--content-border-color)"></div>
+          <div style="padding:0 8px"><button onClick="{{ askDiscard }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--danger);text-align:start;font:16px/1.2 var(--font-family);cursor:pointer" style-hover="background:var(--danger-low)"><i class="fa-regular fa-trash-can" style="width:20px;text-align:center"></i>{{ discardLabel }}</button></div>
+        </div>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ sheetDest }}">
+    <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:{{ O.justify }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="dialog" aria-label="Category" style="position:relative;display:flex;flex-direction:column;background:var(--secondary);border:1px solid var(--content-border-color);width:{{ O.w }};height:{{ O.h }};border-radius:{{ O.r }}">
+        <div style="flex:none;display:flex;align-items:center;gap:8px;padding:12px 8px 8px 16px"><h2 style="flex:1;margin:0;font:700 20px/1.2 var(--heading-font-family)">Category</h2><button onClick="{{ closeSheet }}" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--tertiary);font:700 16px/1 var(--font-family);cursor:pointer">Cancel</button></div>
+        <div style="flex:none;padding:0 16px 8px"><input value="{{ destQ }}" onChange="{{ onDestQ }}" aria-label="Search categories" placeholder="Search categories" style="width:100%;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"></div>
+        <div role="listbox" aria-label="Categories" style="flex:1;min-height:0;overflow:auto;padding:0 8px 16px">
+          <sc-for list="{{ destList }}" as="c" hint-placeholder-count="4">
+            <button role="option" aria-selected="{{ c.sel }}" onClick="{{ c.pick }}" style="display:grid;grid-template-columns:14px minmax(0,1fr) 20px;gap:4px 12px;align-items:center;width:100%;min-height:60px;padding:10px;border:0;border-radius:8px;text-align:start;color:var(--primary);cursor:pointer;background:{{ c.bg }}" style-hover="background:var(--d-hover)"><span style="width:12px;height:12px;border-radius:3px;background:{{ c.color }}"></span><span style="display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:600 16px/1.25 var(--font-family)">{{ c.path }}</span><span style="font:14px/1.35 var(--font-family);color:var(--primary-medium)">{{ c.desc }}</span><span style="display:flex;align-items:center;gap:6px;font:13px/1.2 var(--font-family);color:var(--primary-medium)"><i class="{{ c.visIcon }}" style="font-size:11px"></i>{{ c.visText }}</span></span><sc-if value="{{ c.isSel }}"><i class="fa-solid fa-check" style="color:var(--tertiary)"></i></sc-if></button>
+          </sc-for>
+          <sc-if value="{{ destEmpty }}"><p style="margin:0;padding:16px 10px;font:16px/1.4 var(--font-family);color:var(--primary-medium)">No matches found</p></sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetPhoto }}">
+    <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:{{ O.justify }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="dialog" aria-label="Photos" style="position:relative;display:flex;flex-direction:column;gap:8px;padding:8px 12px 28px;box-sizing:border-box;background:var(--primary-very-low);border:1px solid var(--content-border-color);width:{{ O.w }};border-radius:{{ O.r }}">
+        <div style="display:flex;align-items:center"><button onClick="{{ closeSheet }}" style="height:44px;padding:0 8px;border:0;background:none;color:var(--tertiary);font:600 16px/1 system-ui,sans-serif;cursor:pointer">Cancel</button><strong style="flex:1;text-align:center;font:600 16px/1 system-ui,sans-serif">Photos</strong><span style="width:64px"></span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px">
+          <sc-for list="{{ photos }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.pick }}" aria-label="{{ p.name }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:0;border-radius:4px;cursor:pointer;color:var(--primary-medium);background:{{ p.bg }}"><i class="fa-regular fa-image" style="font-size:20px"></i><span style="font:12px/1 system-ui,sans-serif">{{ p.name }}</span></button></sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetPoll }}">
+    <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:{{ O.justify }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="dialog" aria-label="Build Poll" style="position:relative;display:flex;flex-direction:column;gap:12px;padding:16px 16px 32px;box-sizing:border-box;background:var(--secondary);border:1px solid var(--content-border-color);width:{{ O.w }};border-radius:{{ O.r }}">
+        <h2 style="margin:0;font:700 20px/1.2 var(--heading-font-family)">Build Poll</h2>
+        <label style="display:flex;flex-direction:column;gap:6px;font:600 15px/1.2 var(--font-family)">Options (one per line)<textarea value="{{ pollOpts }}" onChange="{{ onPollOpts }}" rows="4" style="box-sizing:border-box;padding:10px 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1.5 var(--font-family);resize:vertical"></textarea></label>
+        <sc-if value="{{ hasPollErr }}"><p role="alert" style="margin:0;color:var(--danger);font:600 15px/1.35 var(--font-family)">{{ pollErr }}</p></sc-if>
+        <div style="display:flex;justify-content:flex-end;gap:8px"><button onClick="{{ closeSheet }}" style="height:44px;padding:0 14px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 16px/1 var(--font-family);cursor:pointer">Cancel</button><button onClick="{{ insertPoll }}" style="height:44px;padding:0 18px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);cursor:pointer">Insert Poll</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetDialog }}">
+    <div style="position:absolute;inset:0;z-index:11;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
+      <div style="position:absolute;inset:0;background:rgb(0 0 0 / 45%)"></div>
+      <div data-sheet="" role="alertdialog" aria-labelledby="fmc3-dlg-h" style="position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px;padding:20px;box-sizing:border-box;border-radius:12px;background:var(--secondary);border:1px solid var(--content-border-color)">
+        <h2 id="fmc3-dlg-h" style="margin:0;font:700 19px/1.3 var(--heading-font-family)">{{ dlg.title }}</h2>
+        <sc-if value="{{ dlg.hasBody }}"><p style="margin:0;font:16px/1.5 var(--font-family);color:var(--primary-high)">{{ dlg.body }}</p></sc-if>
+        <sc-if value="{{ dlg.login }}">
+          <div style="display:flex;flex-direction:column;gap:8px"><input aria-label="Email / Username" placeholder="Email / Username" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"><input type="password" aria-label="Password" placeholder="Password" style="height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--input-border-color);border-radius:8px;background:var(--secondary);color:var(--primary);font:16px/1 var(--font-family)"></div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px">
+          <sc-for list="{{ dlg.actions }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.on }}" style="height:44px;padding:0 16px;border-radius:8px;font:700 16px/1 var(--font-family);cursor:pointer;border:{{ a.bd }};background:{{ a.bg }};color:{{ a.ink }}">{{ a.label }}</button></sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;viewport&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;phone&quot;,&quot;narrow&quot;,&quot;desktop&quot;],&quot;default&quot;:&quot;phone&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;scheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;preset&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;M2&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;rtl&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;live&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;sim&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{net?:string,upload?:string,result?:string}&quot;},&quot;resetKey&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;number&quot;},&quot;onState&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(s:string)=&gt;void&quot;}}">
+const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const inl = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+const imgFig = (name, md) => `<figure contenteditable="false" data-kind="img" data-name="${esc(name)}" data-md="${esc(md)}" style="margin:4px 0 16px;display:flex;flex-direction:column;gap:6px;border-radius:8px;cursor:pointer"><span style="display:flex;align-items:center;justify-content:center;height:180px;border-radius:8px;background:var(--primary-low);color:var(--primary-medium)"><i class="fa-regular fa-image" style="font-size:28px"></i></span><figcaption style="font:14px/1.3 var(--font-family);color:var(--primary-medium)">${esc(name)}</figcaption></figure>`;
+const upFig = (id, name, pct) => `<figure contenteditable="false" data-kind="up" data-up="${id}" data-name="${esc(name)}" data-pct="${pct}" style="margin:4px 0 16px"><span style="display:flex;align-items:center;gap:12px;padding:10px 6px 10px 14px;border-radius:8px;background:var(--primary-very-low);border:1px solid var(--content-border-color)"><i class="fa-regular fa-image" style="color:var(--primary-medium)"></i><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><span style="font:600 15px/1.2 var(--font-family);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</span><span style="display:block;height:4px;border-radius:2px;background:var(--primary-low);overflow:hidden"><span data-bar="" style="display:block;height:100%;width:${pct}%;background:var(--tertiary)"></span></span><span data-pct-t="" style="font:14px/1 var(--font-family);color:var(--primary-medium)">Uploading… ${pct}%</span></span><button type="button" data-act="cancel" style="height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 15px/1 var(--font-family);cursor:pointer">Cancel</button></span></figure>`;
+const failFig = (id, name) => `<figure contenteditable="false" data-kind="fail" data-up="${id}" data-name="${esc(name)}" style="margin:4px 0 16px"><span role="alert" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 8px 10px 14px;border-radius:8px;background:var(--danger-low);border:1px solid var(--danger)"><i class="fa-solid fa-circle-exclamation" style="color:var(--danger)"></i><span style="flex:1;min-width:140px;display:flex;flex-direction:column;gap:3px"><strong style="font:700 15px/1.2 var(--font-family)">Upload failed</strong><span style="font:14px/1.3 var(--font-family);color:var(--primary-high)">${esc(name)} was not added.</span></span><span style="display:flex;gap:4px"><button type="button" data-act="retry" style="height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);cursor:pointer">Retry</button><button type="button" data-act="remove" style="height:40px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--primary-high);font:600 15px/1 var(--font-family);cursor:pointer">Remove</button></span></span></figure>`;
+const atomInfo = (md) => /^\[poll/.test(md) ? ["fa-solid fa-square-poll-vertical", "Poll · " + (md.match(/^\* /gm) || []).length + " options"] : /^\[details/.test(md) ? ["fa-solid fa-caret-right", "Hidden details"] : /^\[date/.test(md) ? ["fa-regular fa-calendar", "Date · Oct 3, 08:00"] : /^\[spoiler/.test(md) ? ["fa-solid fa-circle-half-stroke", "Blurred spoiler"] : /^\|/.test(md) ? ["fa-solid fa-table", "Table"] : ["fa-solid fa-code", "Code block"];
+const atomFig = (md) => { const [ic, lb] = atomInfo(md); return `<figure contenteditable="false" data-kind="atom" data-md="${esc(md)}" style="margin:0 0 14px;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid var(--content-border-color);background:var(--primary-very-low);font:600 15px/1.3 var(--font-family)"><i class="${ic}" style="color:var(--primary-medium)"></i><span>${esc(lb)}</span></figure>`; };
+const node = (html) => { const d = document.createElement("div"); d.innerHTML = html; return d.firstChild; };
+function mdToHtml(md) {
+  const L = (md || "").replace(/\r/g, "").split("\n"); const out = []; let para = [], i = 0, m;
+  const flush = () => { if (para.length) { out.push("<p>" + para.map(inl).join("<br>") + "</p>"); para = []; } };
+  while (i < L.length) {
+    const l = L[i];
+    if (!l.trim()) { flush(); i++; continue; }
+    if ((m = l.match(/^!\[([^|\]]*)(?:\|[^\]]*)?\]\((upload:\/\/[^)]+)\)\s*$/))) { flush(); out.push(imgFig((m[1] || "photo") + ".jpg", l.trim())); i++; continue; }
+    if (/^\[(poll|details|spoiler)/.test(l)) { flush(); const tag = l.match(/^\[(\w+)/)[1]; const buf = [l]; i++; while (i < L.length && !L[i - 1].includes("[/" + tag + "]")) { buf.push(L[i]); i++; } out.push(atomFig(buf.join("\n"))); continue; }
+    if (/^\[date=/.test(l)) { flush(); out.push(atomFig(l.trim())); i++; continue; }
+    if (/^\|/.test(l)) { flush(); const buf = []; while (i < L.length && /^\|/.test(L[i])) { buf.push(L[i]); i++; } out.push(atomFig(buf.join("\n"))); continue; }
+    if (/^```/.test(l)) { flush(); const buf = [l]; i++; while (i < L.length && !/^```/.test(L[i])) { buf.push(L[i]); i++; } if (i < L.length) { buf.push(L[i]); i++; } out.push(atomFig(buf.join("\n"))); continue; }
+    if ((m = l.match(/^(#{2,3}) (.*)/))) { flush(); const n = m[1].length; out.push(`<h${n}>${inl(m[2])}</h${n}>`); i++; continue; }
+    if (/^> ?/.test(l)) { flush(); const buf = []; while (i < L.length && /^> ?/.test(L[i])) { buf.push(L[i].replace(/^> ?/, "")); i++; } out.push("<blockquote><p>" + buf.map(inl).join("<br>") + "</p></blockquote>"); continue; }
+    if (/^[-*] /.test(l)) { flush(); const buf = []; while (i < L.length && /^[-*] /.test(L[i])) { buf.push("<li>" + inl(L[i].slice(2)) + "</li>"); i++; } out.push("<ul>" + buf.join("") + "</ul>"); continue; }
+    if (/^\d+\. /.test(l)) { flush(); const buf = []; while (i < L.length && /^\d+\. /.test(L[i])) { buf.push("<li>" + inl(L[i].replace(/^\d+\. /, "")) + "</li>"); i++; } out.push("<ol>" + buf.join("") + "</ol>"); continue; }
+    para.push(l); i++;
+  }
+  flush(); return out.join("");
+}
+function htmlToMd(html) {
+  const d = document.createElement("div"); d.innerHTML = html || "";
+  const inline = (n) => { let s = ""; n.childNodes.forEach((c) => { if (c.nodeType === 3) { s += c.textContent; return; } if (c.nodeType !== 1 || (c.dataset && c.dataset.fake === "caret")) return; const t = c.tagName, v = inline(c); if (t === "STRONG" || t === "B") s += v.trim() ? `**${v}**` : v; else if (t === "EM" || t === "I") s += v.trim() ? `*${v}*` : v; else if (t === "A") s += `[${v}](${c.getAttribute("href") || ""})`; else if (t === "BR") s += "\n"; else s += v; }); return s; };
+  const blocks = [];
+  const walk = (n) => n.childNodes.forEach((c) => {
+    if (c.nodeType === 3) { if (c.textContent.trim()) blocks.push(c.textContent.trim()); return; }
+    if (c.nodeType !== 1) return; const t = c.tagName;
+    if (t === "FIGURE") { if (c.dataset.kind === "img" || c.dataset.kind === "atom") blocks.push(c.dataset.md); return; }
+    if (t === "H1" || t === "H2") blocks.push("## " + inline(c).trim());
+    else if (t === "H3" || t === "H4") blocks.push("### " + inline(c).trim());
+    else if (t === "UL") blocks.push([...c.children].map((li) => "- " + inline(li).trim()).join("\n"));
+    else if (t === "OL") blocks.push([...c.children].map((li, j) => (j + 1) + ". " + inline(li).trim()).join("\n"));
+    else if (t === "BLOCKQUOTE") { const inner = c.children.length ? [...c.children].map((x) => inline(x).trim()).join("\n") : inline(c).trim(); blocks.push(inner.split("\n").map((x) => "> " + x).join("\n")); }
+    else if (c.querySelector("figure,ul,ol,blockquote,p,h2,h3")) walk(c);
+    else { const v = inline(c).replace(/\u00a0/g, " ").trim(); if (v) blocks.push(v); }
+  });
+  walk(d); return blocks.join("\n\n");
+}
+const TITLE = "What small habit made your mornings easier?";
+const LONG = "A slightly embarrassing question about mornings: does anyone else plan the whole day in bed, then forget all of it by the time the coffee is ready, and how do you stop that happening?";
+const CARET = '<span data-fake="caret" style="display:inline-block;width:2px;height:1.15em;margin:0 1px;vertical-align:-0.2em;background:var(--tertiary)"></span>';
+const W1 = "<p>I stopped checking my phone before the kettle boils. It sounds small, but the first ten minutes are quieter now.</p>";
+const W2 = (mid) => `<p>What changed things for you? I would like to try ${mid} this month.</p>`;
+const WRITE = W1 + W2("one more thing every morning");
+const WRITE_C = W1 + W2("one more thing every morning") .replace("</p>", CARET + "</p>");
+const SEL = W1 + W2('<span data-fake="sel" style="background:var(--highlight);border-radius:2px;box-shadow:0 0 0 2px var(--highlight)">one more thing every morning</span>');
+const MIX = "I stopped checking my phone before the kettle boils. It sounds **small**, but the first ten minutes are quieter now.\n\n![kettle-window|690x460](upload://k3tlw1nd0w.jpeg)\n\nWhat I tried:\n\n- Charger in the hallway\n- Window open for five minutes\n- One page of a book\n\n> Slow is smooth.\n\nMore notes on [slow mornings](https://example.org/slow-mornings).";
+const LINKED = W1 + '<p>I got the idea from a post on <a href="https://example.org/slow-mornings">slow mornings</a>' + CARET + ".</p>";
+const REPLY_MINE = "<p>The charger lives in the hallway now. I read on paper until breakfast.</p>";
+const REPLY_NEW = "<p>Same here. I put the charger in the hallway, so the phone stays there until after breakfast.</p>";
+const AR_T = "ما العادة الصغيرة التي جعلت صباحك أسهل؟";
+const AR_B = "<p>توقفت عن تفقد هاتفي قبل أن يغلي الماء. تبدو خطوة صغيرة، لكن الدقائق العشر الأولى أصبحت أهدأ." + CARET + "</p>";
+const CATS = [
+  { id: "open", parent: "General", name: "Open Discussions", color: "#56708A", vis: "public", desc: "Anything that does not fit elsewhere." },
+  { id: "q", parent: "General", name: "Questions", color: "#B07A1E", vis: "public", desc: "Ask one clear question. Say what you have tried.", guide: true },
+  { id: "craft", parent: "Craft", name: "Writing workshop", color: "#6A7F2E", vis: "public", desc: "Share drafts and ask for feedback." },
+  { id: "lounge", parent: null, name: "Members lounge for regulars and long-time readers", color: "#A0527A", vis: "restricted", desc: "For members of the Regulars group." },
+];
+const BASE = { view: "composer", page: "feed", intent: "new", mode: "rich", title: "", md: "", html: "", cat: "open", kb: false, field: null, panel: null, sheet: null, ctx: "caret", fmt: {}, draft: null, errors: {}, banner: null, submitting: false, similar: "collapsed", reasonOpen: false, reason: "", preview: false, full: false, minimized: false, drafts: [], pendingNotice: false, published: false, replyOpen: false, destQ: "", link: { url: "", text: "" }, poll: { opts: "", err: "" }, alt: "", signedOut: false, closed: false, fakeTitleCaret: false, upBanner: false, announce: "", edited: false };
+const W = { title: TITLE, html: WRITE, draft: "saved" };
+function preset(id) {
+  const P = {
+    M1: [{ kb: true, field: "title", fakeTitleCaret: true }, { focus: "title" }],
+    M2: [{ ...W, html: WRITE_C, kb: true, field: "body" }, { caret: 1 }],
+    M3: [{ ...W, html: SEL, kb: true, field: "body", panel: "format", ctx: "text" }, { select: 1 }],
+    M4: [{ ...W, html: WRITE + upFig("u1", "IMG_2041.jpeg", 62) + "<p><br></p>" }, { up: 1 }],
+    M4b: [{ ...W, html: WRITE + failFig("u1", "IMG_2041.jpeg") + "<p><br></p>" }],
+    M5: [{ ...W, view: "page", minimized: true }],
+    M5b: [{ ...W, view: "page", drafts: [{ title: TITLE, meta: "Create topic · just now" }] }],
+    M6: [{ title: "Mornings", html: "<p>Any tips?</p>", draft: "saved", errors: { title: "Title must be at least 15 characters", body: "Post must be at least 20 characters" } }],
+    M6b: [{ ...W, banner: "offline", draft: "offline" }],
+    C01: [{}], C02: [{ cat: "q" }], C03: [{ sheet: "dest" }],
+    C04: [{ ...W, html: mdToHtml(MIX) }],
+    C05: [{ ...W, mode: "md", md: MIX }], C05b: [{ ...W, sheet: "more" }], C05p: [{ ...W, mode: "md", md: MIX, preview: true }],
+    C06p: [{ ...W, sheet: "photo" }],
+    C06s: [{ ...W, html: WRITE + imgFig("IMG_2041.jpeg", "![IMG_2041|690x460](upload://u1x7Qe.jpeg)").replace('cursor:pointer"', 'cursor:pointer;outline:2px solid var(--tertiary);outline-offset:3px"') + "<p><br></p>", ctx: "image" }, { fig: 1 }],
+    C07: [{ ...W, html: LINKED, kb: true, field: "body", ctx: "link" }, { caret: 1 }],
+    C07b: [{ ...W, html: LINKED, kb: true, field: "body", panel: "link", link: { url: "https://example.org/slow-mornings", text: "slow mornings" } }],
+    C08: [{ ...W, sheet: "poll", poll: { opts: "Charger in the hallway\nWindow open\nOne page of a book", err: "" } }],
+    C09: [{ title: TITLE, similar: "open" }],
+    C10: [{ intent: "reply", page: "topic", kb: true, field: "body" }],
+    C10b: [{ intent: "reply", page: "topic", replyOpen: true, html: REPLY_NEW, draft: "saved" }],
+    C11: [{ intent: "editFirst", page: "topic", title: TITLE, html: "<p>Mine is leaving the curtains open so the light wakes me before the alarm.</p>", reasonOpen: true }],
+    C11b: [{ intent: "edit", page: "topic", html: REPLY_MINE }],
+    C12b: [{ ...W, sheet: "discard" }],
+    C13b: [{ ...W, banner: "rate" }],
+    C15: [{ intent: "edit", page: "topic", html: "<p>The charger lives in the hallway now. I read on paper until breakfast, usually one chapter.</p>", banner: "conflict", draft: "conflict" }, { conflict: 1 }],
+    C16: [{ ...W, view: "page", page: "newtopic", published: true }],
+    C16b: [{ intent: "reply", view: "page", page: "topic", published: true, html: REPLY_NEW }],
+    C17: [{ ...W, view: "page", page: "feed", sheet: "pending" }],
+    C19: [{ view: "page", page: "topic", signedOut: true, sheet: "login" }],
+    C19b: [{ view: "page", page: "topic", closed: true }],
+    R1: [{ title: AR_T, html: AR_B, kb: true, field: "body", draft: "saved" }, { caret: 1 }],
+    L1: [{ title: LONG, cat: "lounge", html: WRITE, draft: "saved" }],
+  };
+  P.C06 = P.M4; P.C06c = P.M4b; P.C12 = P.M5; P.C12c = P.M5b; P.C13 = P.M6; P.C14 = P.M6b;
+  const [st, meta] = P[id] || P.C01;
+  return { st: { ...BASE, ...st }, meta: meta || {} };
+}
+const SIMILAR = [{ t: "Morning routines that actually stuck", m: "General › Open Discussions · 24 replies" }, { t: "Phones out of the bedroom: one year later", m: "General › Open Discussions · 41 replies" }, { t: "How do you start the day without the news?", m: "General › Questions · 9 replies" }];
+const FEED = [{ title: "Recommend a notebook that survives a bag", meta: "Craft › Writing workshop · 2h" }, { title: "What are you reading this week?", meta: "General › Open Discussions · 5h" }, { title: TITLE, meta: "General › Open Discussions · 1d" }];
+
+class Component extends DCLogic {
+  state = this.init();
+  init() { const p = preset(this.props.preset); this._meta = p.meta; return p.st; }
+  _ups = {}; _uid = 10;
+  rootRef = (el) => { this._root = el; };
+  scrollRef = (el) => { this._sc = el; };
+  titleRef = (el) => { this._title = el; if (el) this.autosize(el); };
+  mdRef = (el) => { this._ta = el; if (el) this.autosize(el); };
+  bodyRef = (el) => {
+    if (!el) { this._el = null; return; }
+    if (el !== this._el) { this._el = el; el.innerHTML = this.state.html; if (this._meta.fig) this._fig = el.querySelector('figure[data-kind="img"]'); }
+  };
+  keep = (e) => e.preventDefault();
+  sim() { return this.props.sim || {}; }
+  touchy() { return (this.props.viewport || "phone") !== "desktop"; }
+
+  componentDidMount() { this._onSel = () => this.readSel(); document.addEventListener("selectionchange", this._onSel); this.live(); }
+  componentWillUnmount() { document.removeEventListener("selectionchange", this._onSel); Object.values(this._ups).forEach(clearInterval); clearTimeout(this._dt); clearTimeout(this._st); }
+  componentDidUpdate(pp, ps) {
+    if (pp.preset !== this.props.preset || pp.resetKey !== this.props.resetKey) return this.reset();
+    const n = this.sim().net, o = (pp.sim || {}).net;
+    if (o === "offline" && n !== "offline" && this.state.draft === "offline") this.touch();
+    if (this._title) this.autosize(this._title);
+    if (this._ta) this.autosize(this._ta);
+    if (this._taSel && this._ta) { const [a, b] = this._taSel; this._taSel = null; this._ta.focus({ preventScroll: true }); this._ta.setSelectionRange(a, b); this._taRange = [a, b]; }
+    if (this.state.sheet && ps.sheet !== this.state.sheet) requestAnimationFrame(() => { const f = this._root && this._root.querySelector("[data-sheet] input, [data-sheet] textarea, [data-sheet] button"); if (f) f.focus({ preventScroll: true }); });
+    if (this.state.panel === "link" && ps.panel !== "link") requestAnimationFrame(() => { const f = this._root && this._root.querySelector('[aria-label="URL"]'); if (f) f.focus({ preventScroll: true }); });
+    const s = this.state, sum = [s.view === "page" ? "Page (" + s.page + (s.minimized ? ", minimized" : "") + ")" : "Composer · " + s.intent, s.mode === "md" ? "Markdown" : "Rich text", "keyboard " + (s.kb ? "open" : "hidden"), "panel " + (s.sheet || s.panel || "none"), "context " + s.ctx, "draft " + (s.draft || "none"), s.banner ? "banner " + s.banner : ""].filter(Boolean).join(" · ");
+    if (sum !== this._sum) { this._sum = sum; if (this.props.onState) this.props.onState(sum); }
+  }
+  reset() {
+    Object.values(this._ups).forEach(clearInterval); clearTimeout(this._dt); clearTimeout(this._st);
+    this._range = null; this._fig = null; this._over = false; this._rateSeen = false; this._failedOnce = false;
+    const st = this.init();
+    this.setState(st, () => { if (this._el) this._el.innerHTML = st.html; if (this._sc) this._sc.scrollTop = 0; this.live(); });
+  }
+  live() {
+    const m = this._meta;
+    requestAnimationFrame(() => {
+      if (m.caret && this._sc) this._sc.scrollTop = this._sc.scrollHeight;
+      if (!this.props.live) return;
+      if (m.focus === "title" && this._title) { this.setState({ fakeTitleCaret: false }); this._title.focus(); }
+      if ((m.caret || m.select) && this._el) this.unfake(true);
+      if (m.up && this._el) this._el.querySelectorAll('[data-kind="up"]').forEach((f) => this.runUpload(f.dataset.up, f.dataset.name, +f.dataset.pct || 0));
+    });
+  }
+  autosize(el) { if (window.CSS && CSS.supports("field-sizing", "content")) return; el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; requestAnimationFrame(() => { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; }); }
+
+  unfake(keep) {
+    const el = this._el; if (!el) return; let r = null;
+    const s = el.querySelector('[data-fake="sel"]');
+    if (s) { const t = document.createTextNode(s.textContent); s.replaceWith(t); if (keep) { r = document.createRange(); r.selectNodeContents(t); } }
+    const c = el.querySelector('[data-fake="caret"]');
+    if (c) { if (keep && !r) { r = document.createRange(); r.setStartBefore(c); r.collapse(true); } c.remove(); }
+    if (keep && r) { el.focus({ preventScroll: true }); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); this._range = r.cloneRange(); this.readSel(); }
+    if (s || c) this.sync(false);
+  }
+  sync(t) { if (!this._el) return; this.setState({ html: this._el.innerHTML }); if (t) this.touch(); }
+  touch() {
+    this.setState((st) => ({ draft: st.draft === "conflict" ? "conflict" : "saving" }));
+    clearTimeout(this._dt);
+    this._dt = setTimeout(() => { const off = this.sim().net === "offline"; this.setState((st) => ({ draft: st.draft === "conflict" ? "conflict" : off ? "offline" : "saved" })); }, 900);
+  }
+  readSel() {
+    const el = this._el, sel = getSelection(); if (!el || !sel.rangeCount) return;
+    const r = sel.getRangeAt(0); if (!el.contains(r.commonAncestorContainer)) return;
+    this._range = r.cloneRange();
+    if (this._fig && Date.now() - (this._figAt || 0) < 400) return;
+    const nd = r.startContainer.nodeType === 3 ? r.startContainer.parentElement : r.startContainer;
+    const a = nd && nd.closest ? nd.closest("a") : null;
+    const ctx = a && el.contains(a) ? "link" : r.collapsed ? "caret" : "text";
+    const q = (c) => { try { return document.queryCommandState(c); } catch (e) { return false; } };
+    let block = "p"; try { block = (document.queryCommandValue("formatBlock") || "p").toLowerCase(); } catch (e) {}
+    const fmt = { bold: q("bold"), italic: q("italic"), ul: q("insertUnorderedList"), ol: q("insertOrderedList"), block };
+    this.clearFig(); this._linkA = ctx === "link" ? a : null;
+    const key = ctx + JSON.stringify(fmt);
+    if (key !== this._selKey || this.state.ctx !== ctx) { this._selKey = key; this.setState({ ctx, fmt }); }
+    this.caretIntoView();
+  }
+  caretIntoView() {
+    requestAnimationFrame(() => {
+      const sc = this._sc; if (!sc) return; const sel = getSelection(); if (!sel.rangeCount) return;
+      const r = sel.getRangeAt(0); if (!sc.contains(r.startContainer)) return;
+      const rc = r.getClientRects()[0] || (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement).getBoundingClientRect();
+      const sr = sc.getBoundingClientRect(), k = sc.offsetHeight ? sr.height / sc.offsetHeight : 1;
+      if (rc.bottom > sr.bottom - 16) sc.scrollTop += (rc.bottom - sr.bottom + 32) / k;
+      else if (rc.top < sr.top + 8) sc.scrollTop -= (sr.top - rc.top + 24) / k;
+    });
+  }
+  focusBody() {
+    if (this.state.mode === "md") { const t = this._ta; if (t) { t.focus({ preventScroll: true }); if (this._taRange) t.setSelectionRange(...this._taRange); } return; }
+    const el = this._el; if (!el) return; el.focus({ preventScroll: true });
+    const sel = getSelection();
+    if (this._range && el.contains(this._range.commonAncestorContainer)) { sel.removeAllRanges(); sel.addRange(this._range); }
+    else { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); sel.removeAllRanges(); sel.addRange(r); this._range = r.cloneRange(); }
+  }
+  exec(cmd, val) { this.focusBody(); try { document.execCommand(cmd, false, val); } catch (e) {} this.sync(true); this.readSel(); }
+  taRange() { const t = this._ta; if (t && document.activeElement === t) return [t.selectionStart, t.selectionEnd]; return this._taRange || [this.state.md.length, this.state.md.length]; }
+  mdEdit(fn) { const v = this.state.md, [a, b] = this.taRange(); const [nv, na, nb] = fn(v, a, b); this._taSel = [na, nb]; this.setState({ md: nv }); this.touch(); }
+  mdFmt(k) {
+    if (k === "link") return this.openLink();
+    const wrap = (m) => this.mdEdit((v, a, b) => [v.slice(0, a) + m + v.slice(a, b) + m + v.slice(b), a + m.length, b + m.length]);
+    if (k === "bold") return wrap("**"); if (k === "italic") return wrap("*");
+    const pre = { ul: "- ", ol: "1. ", quote: "> ", h2: "## ", h3: "### ", p: "" }[k];
+    this.mdEdit((v, a, b) => { const ls = v.lastIndexOf("\n", a - 1) + 1; const blk = v.slice(ls, b).split("\n").map((x, j) => (k === "ol" ? (j + 1) + ". " : pre) + x.replace(/^(\d+\. |- |> |#{2,3} )/, "")).join("\n"); return [v.slice(0, ls) + blk + v.slice(b), ls, ls + blk.length]; });
+  }
+  fmtAction(k) {
+    const s = this.state; if (s.mode === "md") return this.mdFmt(k);
+    if (k === "bold") this.exec("bold"); else if (k === "italic") this.exec("italic");
+    else if (k === "ul") this.exec("insertUnorderedList"); else if (k === "ol") this.exec("insertOrderedList");
+    else if (k === "quote") this.exec("formatBlock", s.fmt.block === "blockquote" ? "p" : "blockquote");
+    else if (k === "link") this.openLink(); else this.exec("formatBlock", k);
+  }
+  openLink() {
+    let text = "", url = "https://";
+    if (this.state.mode === "rich") { if (this._linkA) { text = this._linkA.textContent; url = this._linkA.getAttribute("href"); } else if (this._range) text = this._range.toString(); }
+    else { const [a, b] = this.taRange(); this._taRange = [a, b]; text = this.state.md.slice(a, b); }
+    this._linkEdit = !!this._linkA && this.state.mode === "rich";
+    this.setState({ panel: "link", link: { url, text } });
+  }
+  insertLink = () => {
+    const { url, text } = this.state.link; const u = url.trim();
+    if (!u || u === "https://") return;
+    if (this.state.mode === "md") { this.setState({ panel: null }); return this.mdEdit((v, a, b) => { const ins = `[${text || u}](${u})`; return [v.slice(0, a) + ins + v.slice(b), a + ins.length, a + ins.length]; }); }
+    this.focusBody();
+    if (this._linkEdit && this._linkA) { this._linkA.setAttribute("href", u); if (text) this._linkA.textContent = text; }
+    else if (this._range && !this._range.collapsed) document.execCommand("createLink", false, u);
+    else document.execCommand("insertHTML", false, `<a href="${esc(u)}">${esc(text || u)}</a>&nbsp;`);
+    this.sync(true); this.setState({ panel: null, announce: "Link inserted" }); this.readSel();
+  };
+  removeLink = () => { const a = this._linkA; if (!a) return; a.replaceWith(...a.childNodes); this._linkA = null; this.sync(true); this.setState({ ctx: "caret" }); this.focusBody(); };
+  blurField() { const a = document.activeElement; if (a && this._root && this._root.contains(a)) a.blur(); }
+
+  insertBlock(html) {
+    const el = this._el; if (!el) return null; const n = node(html); const r = this._range; let anchor = null;
+    if (r && el.contains(r.startContainer)) { anchor = r.startContainer; while (anchor && anchor.parentNode !== el) anchor = anchor.parentNode; }
+    if (anchor && anchor.nodeName === "P" && !anchor.textContent.trim() && !anchor.querySelector("figure")) anchor.replaceWith(n);
+    else if (anchor) anchor.after(n); else el.appendChild(n);
+    let next = n.nextSibling;
+    if (!next || next.nodeName !== "P") { const p = document.createElement("p"); p.innerHTML = "<br>"; n.after(p); next = p; }
+    const nr = document.createRange(); nr.setStart(next, 0); nr.collapse(true); this._range = nr;
+    this.sync(true); return n;
+  }
+  mdInsertBlock(txt) { this.mdEdit((v, a) => { const pre = a > 0 && v[a - 1] !== "\n" ? "\n\n" : "", ins = pre + txt + "\n\n"; return [v.slice(0, a) + ins + v.slice(a), a + ins.length, a + ins.length]; }); }
+  runUpload(id, name, start) {
+    const s = this.sim(); const fail = s.upload === "fail" || (s.upload === "failonce" && !this._failedOnce) || s.net === "offline";
+    let pct = start || 0; clearInterval(this._ups[id]);
+    this.setState({ announce: "Uploading " + name });
+    this._ups[id] = setInterval(() => {
+      const f = this._el && this._el.querySelector(`[data-up="${id}"][data-kind="up"]`);
+      if (!f) { clearInterval(this._ups[id]); return; }
+      pct = Math.min(100, pct + 6);
+      if (fail && pct >= 48) { clearInterval(this._ups[id]); if (s.upload === "failonce") this._failedOnce = true; f.replaceWith(node(failFig(id, name))); this.sync(false); this.setState({ announce: "Upload failed" }); return; }
+      if (pct >= 100) { clearInterval(this._ups[id]); f.replaceWith(node(imgFig(name, `![${name.replace(/\.\w+$/, "")}|690x460](upload://${id}x7Qe.jpeg)`))); this.sync(true); this.setState({ announce: "Photo added" }); return; }
+      const bar = f.querySelector("[data-bar]"); if (bar) bar.style.width = pct + "%";
+      const t = f.querySelector("[data-pct-t]"); if (t) t.textContent = "Uploading… " + pct + "%";
+    }, 150);
+  }
+  mdUpload(name) {
+    const id = "u" + (++this._uid), ph = `![Uploading: ${name}…]()`;
+    this.mdInsertBlock(ph);
+    const s = this.sim(); const fail = s.upload === "fail" || (s.upload === "failonce" && !this._failedOnce) || s.net === "offline";
+    this.setState({ announce: "Uploading " + name, upBanner: false });
+    clearTimeout(this._mdu);
+    this._mdu = setTimeout(() => {
+      if (fail) { if (s.upload === "failonce") this._failedOnce = true; this._lastUp = name; this.setState((st) => ({ md: st.md.replace(ph + "\n\n", "").replace(ph, ""), upBanner: true, announce: "Upload failed" })); return; }
+      this.setState((st) => ({ md: st.md.replace(ph, `![${name.replace(/\.\w+$/, "")}|690x460](upload://${id}x7Qe.jpeg)`), announce: "Photo added" })); this.touch();
+    }, 1600);
+  }
+  retryMdUpload = () => { this.setState({ upBanner: false }); this.mdUpload(this._lastUp || "IMG_2041.jpeg"); };
+  pick(name) {
+    this.setState({ sheet: null });
+    if (this.state.mode === "md") return this.mdUpload(name);
+    const id = "u" + (++this._uid); this.insertBlock(upFig(id, name, 0)); this.runUpload(id, name, 0);
+    requestAnimationFrame(() => { const f = this._el && this._el.querySelector(`[data-up="${id}"]`); if (f && this._sc) { const fr = f.getBoundingClientRect(), sr = this._sc.getBoundingClientRect(); if (fr.bottom > sr.bottom || fr.top < sr.top) this._sc.scrollTop += fr.top - sr.top - 40; } });
+  }
+  onBodyClick = (e) => {
+    const t = e.target; const act = t.closest && t.closest("[data-act]");
+    if (act) {
+      e.preventDefault(); const f = act.closest("figure"); const id = f.dataset.up, name = f.dataset.name;
+      if (act.dataset.act === "retry") { f.replaceWith(node(upFig(id, name, 0))); this.sync(false); this.runUpload(id, name, 0); }
+      else { clearInterval(this._ups[id]); f.remove(); this.sync(true); this.setState({ announce: "Removed" }); }
+      return;
+    }
+    const fig = t.closest && t.closest('figure[data-kind="img"]');
+    if (fig) { this.clearFig(); this._fig = fig; this._figAt = Date.now(); fig.style.outline = "2px solid var(--tertiary)"; fig.style.outlineOffset = "3px"; this.setState({ ctx: "image", panel: null }); }
+  };
+  clearFig() { if (this._fig) { this._fig.style.outline = ""; this._fig = null; } }
+  removeImage = () => { const f = this._fig; if (!f) return; this.clearFig(); const p = f.nextSibling; f.remove(); if (p && p.nodeName === "P") { const r = document.createRange(); r.setStart(p, 0); r.collapse(true); this._range = r; } this.sync(true); this.setState({ ctx: "caret", announce: "Photo removed" }); this.focusBody(); };
+  openAlt = () => { const f = this._fig; const m = f && f.dataset.md.match(/^!\[([^|\]]*)/); this.setState({ panel: "alt", alt: m ? m[1] : "" }); };
+  saveAlt = () => { const f = this._fig || (this._el && this._el.querySelector('figure[data-kind="img"]')); if (f) { const a = this.state.alt.replace(/[\[\]|]/g, ""); f.dataset.md = f.dataset.md.replace(/^!\[[^|\]]*/, "![" + a); this.sync(true); } this.setState({ panel: null, announce: "Alt text saved" }); };
+  insertAtom(md) { this.setState({ sheet: null }); if (this.state.mode === "md") this.mdInsertBlock(md); else this.insertBlock(atomFig(md)); requestAnimationFrame(() => this.focusBody()); }
+  insertPoll = () => {
+    const opts = this.state.poll.opts.split("\n").map((x) => x.trim()).filter(Boolean);
+    if (opts.length < 2) return this.setState({ poll: { ...this.state.poll, err: "Poll must have at least 2 options." } });
+    this.insertAtom("[poll type=regular results=always chartType=bar]\n" + opts.map((o) => "* " + o).join("\n") + "\n[/poll]");
+  };
+  switchMode = () => {
+    const s = this.state; if (/data-kind="(up|fail)"/.test(s.html) || s.upBanner) return this.setState({ announce: "Finish or remove uploads first" });
+    if (s.mode === "rich") { const html = this._el ? this._el.innerHTML : s.html; this._taRange = null; this.setState({ mode: "md", md: htmlToMd(html), html, ctx: "caret", announce: "Markdown" }); }
+    else this.setState({ mode: "rich", html: mdToHtml(s.md), preview: false, ctx: "caret", announce: "Rich text" });
+    this.touch();
+  };
+  closeSheet = () => {
+    const was = this.state.sheet; this.setState({ sheet: null });
+    if (["more", "photo", "poll"].includes(was) && this.state.field !== "title" && this.state.view === "composer") requestAnimationFrame(() => this.focusBody());
+  };
+  saveClose = () => {
+    const s = this.state; const html = this._el ? this._el.innerHTML : s.html; const has = s.title.trim() || htmlToMd(html).trim() || s.md.trim();
+    if (s.draft === "offline" && has) return this.setState({ banner: "closeOffline", html });
+    this.blurField();
+    this.setState({ html, view: "page", minimized: false, kb: false, sheet: null, panel: null, banner: null, drafts: has ? [{ title: s.title || (s.intent === "reply" ? "Reply: " + TITLE : TITLE), meta: this.labels().action + " · just now" }] : [] });
+  };
+  minimize = () => { this.blurField(); this.setState({ html: this._el ? this._el.innerHTML : this.state.html, view: "page", minimized: true, kb: false, sheet: null, panel: null }); };
+  resume = () => this.setState({ view: "composer", minimized: false, drafts: [], kb: false, ctx: "caret" });
+  discard = () => { Object.values(this._ups).forEach(clearInterval); this._range = null; this.setState({ ...BASE, view: "page", page: this.state.page, intent: this.state.intent, signedOut: this.state.signedOut, announce: "Discarded" }); };
+  openNew = () => {
+    if (this.state.signedOut) return this.setState({ sheet: "login" });
+    this._range = null; this._meta = {};
+    this.setState({ ...BASE, drafts: this.state.drafts, pendingNotice: this.state.pendingNotice, page: this.state.page }, () => { if (this._el) this._el.innerHTML = ""; if (this._title) this._title.focus(); });
+  };
+  openReply = () => {
+    if (this.state.signedOut) return this.setState({ sheet: "login" });
+    this._range = null; this._meta = {};
+    this.setState({ ...BASE, intent: "reply", page: "topic" }, () => { if (this._el) { this._el.innerHTML = ""; this.focusBody(); } });
+  };
+  openEdit = () => { this._range = null; this._meta = {}; this.setState({ ...BASE, intent: "edit", page: "topic", html: REPLY_MINE }, () => { if (this._el) this._el.innerHTML = REPLY_MINE; }); };
+  submit = () => {
+    const s = this.state; if (s.submitting) return;
+    const html = this._el ? this._el.innerHTML : s.html; const md = s.mode === "md" ? s.md : htmlToMd(html);
+    const e = {}; const needT = s.intent === "new" || s.intent === "editFirst";
+    if (needT) { const t = s.title.trim(); if (!t) e.title = "Title is required"; else if (t.length < 15) e.title = "Title must be at least 15 characters"; }
+    if (/data-kind="up"/.test(html) || /!\[Uploading/.test(md)) e.body = "Wait for the photo to finish uploading.";
+    else if (md.replace(/\s+/g, " ").trim().length < 20) e.body = "Post must be at least 20 characters";
+    if (Object.keys(e).length) { this.setState({ errors: e, html, announce: Object.values(e).join(". ") }); requestAnimationFrame(() => { if (e.title && this._title) this._title.focus(); else this.focusBody(); }); return; }
+    this.setState({ submitting: true, errors: {}, banner: null, html });
+    this._st = setTimeout(() => {
+      const sim = this.sim(), st = this.state, r = sim.result || "published", edit = st.intent.startsWith("edit");
+      if (sim.net === "offline") return this.setState({ submitting: false, banner: "offline", draft: "offline" });
+      if (r === "rate" && !this._rateSeen) { this._rateSeen = true; return this.setState({ submitting: false, banner: "rate" }); }
+      if (edit && (r === "conflict" || this._meta.conflict) && !this._over) return this.setState({ submitting: false, banner: "conflict", draft: "conflict" });
+      const pending = r === "pending" && !edit;
+      this.blurField();
+      this.setState({ submitting: false, view: "page", page: st.intent === "new" ? (pending ? "feed" : "newtopic") : "topic", published: !pending, edited: edit, sheet: pending ? "pending" : null, minimized: false, drafts: [], kb: false, panel: null, draft: null, announce: pending ? "Post Needs Approval" : "Posted" });
+    }, 900);
+  };
+  labels() {
+    const i = this.state.intent;
+    return i === "new" ? { action: "Create topic", primary: "Create Topic", icon: "fa-solid fa-plus" } : i === "reply" ? { action: "Byte", primary: "Reply", icon: "fa-solid fa-reply" } : { action: "Edit", primary: "Save Edit", icon: "fa-solid fa-pencil" };
+  }
+  typeKey(k) {
+    const a = document.activeElement; if (!a || !this._root || !this._root.contains(a)) return;
+    const isEd = a.isContentEditable;
+    if (k === "⌫") document.execCommand("delete");
+    else if (k === "return") { if (a === this._title) return this.focusBody(); document.execCommand(isEd ? "insertParagraph" : "insertText", false, isEd ? undefined : "\n"); }
+    else document.execCommand("insertText", false, k);
+    if (isEd) { this.sync(true); this.caretIntoView(); }
+  }
+
+  renderVals() {
+    const s = this.state, V = this.props.viewport || "phone", touch = V !== "desktop", desk = !touch, dark = this.props.scheme === "dark";
+    const G = { phone: { w: 390, h: 844, st: 47, safe: 34, keyH: 42, r: 48 }, narrow: { w: 360, h: 740, st: 36, safe: 20, keyH: 38, r: 28 }, desktop: { w: 1280, h: 800, st: 0, r: 12 } }[V];
+    const kbH = touch ? 36 + 11 + 4 * G.keyH + 3 * 11 + 8 + G.safe : 0, moreH = touch ? Math.round(G.h * 0.47) : 0;
+    const lb = this.labels(), isMd = s.mode === "md", isRich = !isMd;
+    const composerOpen = s.view === "composer";
+    const kbOpen = touch && composerOpen && s.kb && !s.sheet;
+    const previewCol = desk && isMd && s.preview;
+    const C = touch ? { top: G.st + "px", left: "0", right: "0", r: "0", shadow: "none", border: "0", pad: "12px 16px 0", measure: "none", cols: "minmax(0,1fr)", bodyMin: "140px" }
+      : s.full ? { top: "0", left: "0", right: "0", r: "0", shadow: "none", border: "0", pad: "24px 32px 0", measure: "760px", cols: previewCol ? "minmax(0,1fr) minmax(0,1fr)" : "minmax(0,1fr)", bodyMin: "360px" }
+      : previewCol ? { top: "150px", left: "60px", right: "60px", r: "12px 12px 0 0", shadow: "var(--shadow-composer)", border: "1px solid var(--content-border-color)", pad: "18px 28px 0", measure: "none", cols: "minmax(0,1fr) minmax(0,1fr)", bodyMin: "200px" }
+      : { top: "250px", left: "220px", right: "220px", r: "12px 12px 0 0", shadow: "var(--shadow-composer)", border: "1px solid var(--content-border-color)", pad: "18px 28px 0", measure: "none", cols: "minmax(0,1fr)", bodyMin: "140px" };
+    const cat = CATS.find((c) => c.id === s.cat) || CATS[0];
+    const catV = (c) => ({ path: c.parent ? c.parent + " › " + c.name : c.name, color: c.color, visIcon: c.vis === "public" ? "fa-solid fa-earth-americas" : "fa-solid fa-lock", visText: c.vis === "public" ? "Public" : "Members only", desc: c.desc, guide: !!c.guide });
+    const cv = catV(cat);
+    const dsMap = { saving: ["fa-solid fa-circle-notch", "Saving draft…", "var(--primary-medium)"], saved: ["fa-solid fa-check", "Draft saved", "var(--primary-medium)"], offline: ["fa-solid fa-triangle-exclamation", "Offline. Draft not saved", "var(--danger)"], conflict: ["fa-solid fa-triangle-exclamation", "Edit conflict", "var(--danger)"] }[s.draft];
+    const ds = dsMap ? { show: true, icon: dsMap[0], text: dsMap[1], color: dsMap[2] } : { show: false };
+    const act = (label, on, primary) => ({ label, on, bd: primary ? "0" : "1px solid var(--input-border-color)", bg: primary ? "var(--tertiary)" : "var(--secondary)", ink: primary ? "var(--on-tertiary)" : "var(--primary)" });
+    const dismissBanner = () => this.setState({ banner: null });
+    const BN = {
+      offline: { title: "Unable to connect.", body: "Not posted. Your writing is still here, but it is not saved anywhere until you reconnect.", actions: [act("Try Again", this.submit, true)] },
+      rate: { title: "Not posted yet.", body: "You’ve performed this action too many times. Please wait 10 seconds before trying again.", actions: [act("Try Again", this.submit, true)] },
+      conflict: { title: "Edit conflict", body: "This post changed while you were editing. Overwrite Edits replaces the newer version with yours.", actions: [act("Overwrite Edits", () => { this._over = true; this.setState({ draft: "saved" }); this.submit(); }, true), act("Keep editing", dismissBanner)] },
+      closeOffline: { title: "Draft not saved", body: "You are offline, so closing now could lose this writing. The composer stays open until the draft saves.", actions: [act("Keep editing", dismissBanner, true)] },
+    }[s.banner];
+    const needTitle = s.intent === "new" || s.intent === "editFirst";
+    const bodyEmpty = isRich && !s.html.replace(/<br\s*\/?>/g, "").replace(/<(?!figure)[^>]+>/g, "").replace(/&nbsp;/g, "").trim();
+    const fieldTitle = s.field === "title";
+    const on = (k) => () => this.fmtAction(k);
+    const item = (key, label, icon, fn, o = {}) => ({ key, isBtn: true, isSep: false, label, icon, on: fn, showLabel: !!o.label, pressed: o.pressed, expanded: o.expanded, popup: o.popup, keys: o.keys, disabled: !!o.disabled, bg: o.active ? "var(--highlight)" : "transparent", ink: o.active ? "var(--quaternary)" : "var(--primary)", op: o.disabled ? "0.4" : "1", px: o.label ? "10px" : "0" });
+    const sep = { key: "sep", isSep: true, isBtn: false };
+    const compact = V === "narrow";
+    const fmtOpen = s.panel === "format", moreOpen = s.sheet === "more";
+    const ctxStrip = !fmtOpen && !fieldTitle && (s.ctx === "text" || (s.ctx === "link" && isRich)), short = compact && ctxStrip;
+    const photo = item("photo", "Photo", "fa-regular fa-image", () => { this.blurField(); this.setState({ sheet: "photo", kb: false, panel: null }); }, { label: 1, popup: "dialog" });
+    const fmt = item("format", "Format", "fa-solid fa-font", () => this.setState({ panel: fmtOpen ? null : "format" }), { label: !short, expanded: fmtOpen ? "true" : "false", active: fmtOpen, disabled: fieldTitle && !fmtOpen });
+    const more = item("more", "More", "fa-solid fa-ellipsis", () => { if (moreOpen) return this.closeSheet(); this.blurField(); this.setState({ sheet: "more", kb: false, panel: null }); }, { label: !short, expanded: moreOpen ? "true" : "false", popup: "dialog", active: moreOpen });
+    const F = s.fmt || {};
+    let strip;
+    if (s.ctx === "text" && !fmtOpen && !fieldTitle) strip = [item("b", "Bold", "fa-solid fa-bold", on("bold"), { pressed: String(!!F.bold), active: F.bold, keys: "Control+B" }), item("i", "Italic", "fa-solid fa-italic", on("italic"), { pressed: String(!!F.italic), active: F.italic, keys: "Control+I" }), item("l", "Link", "fa-solid fa-link", on("link"), { keys: "Control+K" }), sep, fmt, more];
+    else if (s.ctx === "link" && isRich && !fmtOpen && !fieldTitle) strip = [item("el", "Edit link", "fa-solid fa-link", () => this.openLink(), { label: !compact }), item("rl", "Remove link", "fa-solid fa-link-slash", this.removeLink, { label: !compact }), sep, fmt, more];
+    else if (s.ctx === "image" && isRich) strip = [item("alt", "Alt text", "fa-solid fa-closed-captioning", this.openAlt, { label: 1 }), item("rm", "Remove", "fa-regular fa-trash-can", this.removeImage, { label: 1 }), sep, more];
+    else strip = [photo, fmt, more];
+    strip = strip.map((t, i) => ({ ...t, key: t.key + i }));
+    const blk = isRich ? F.block : "";
+    const blockOpts = [["p", "Paragraph", "600 15px/1 var(--font-family)"], ["h2", "Heading", "700 16px/1 var(--heading-font-family)"], ["h3", "Subheading", "700 14px/1 var(--heading-font-family)"]].map(([k, label, font]) => { const o = isRich && (blk === k || (k === "p" && !["h2", "h3"].includes(blk))); return { label, font, on: String(o), bg: o ? "var(--secondary)" : "transparent", sh: o ? "0 1px 2px rgb(0 0 0 / 12%)" : "none", set: on(k) }; });
+    const fb = (k, label, aria, icon, st) => ({ label, aria, icon, on: on(k), pressed: st === undefined ? undefined : String(!!st), bg: st ? "var(--highlight)" : "transparent", ink: st ? "var(--quaternary)" : "var(--primary)" });
+    const fmtBtns = [fb("bold", "Bold", "Bold (Ctrl+B)", "fa-solid fa-bold", isRich ? !!F.bold : undefined), fb("italic", "Italic", "Italic (Ctrl+I)", "fa-solid fa-italic", isRich ? !!F.italic : undefined), fb("ul", "Bullets", "Bulleted list", "fa-solid fa-list-ul", isRich ? !!F.ul : undefined), fb("ol", "Numbers", "Numbered list", "fa-solid fa-list-ol", isRich ? !!F.ol : undefined), fb("quote", "Quote", "Blockquote", "fa-solid fa-quote-left", isRich ? blk === "blockquote" : undefined), fb("link", "Link", "Hyperlink (Ctrl+K)", "fa-solid fa-link")];
+    const mi = (label, icon, fn) => ({ label, icon, on: fn });
+    const moreInsert = [mi("Build Poll", "fa-solid fa-square-poll-vertical", () => this.setState({ sheet: "poll", poll: { opts: "", err: "" } })), mi("Insert table", "fa-solid fa-table", () => this.insertAtom("| Column | Column |\n| --- | --- |\n|  |  |")), mi("Hide details", "fa-solid fa-caret-right", () => this.insertAtom('[details="Summary"]\nThis text will be hidden\n[/details]')), mi("Insert date", "fa-regular fa-calendar", () => this.insertAtom('[date=2026-10-03 time=08:00:00 timezone="Europe/London"]')), mi("Blur spoiler", "fa-solid fa-circle-half-stroke", () => this.insertAtom("[spoiler]This text will be blurred[/spoiler]")), mi("Preformatted text", "fa-solid fa-code", () => this.insertAtom("```\ntype or paste code here\n```"))];
+    const locked = /data-kind="(up|fail)"/.test(s.html) || s.upBanner;
+    const modeSwitch = { checked: String(isMd), locked: String(!!locked), sub: locked ? "Finish or remove uploads first" : isMd ? "Writing in Markdown source" : "Writing in rich text", track: isMd ? "var(--tertiary)" : "var(--primary-400)", x: isMd ? "21px" : "3px" };
+    const M = touch ? { s: "0", e: "0", b: "0", w: "auto", h: moreH + "px", hh: moreH + "px", border: "0", rad: "0", shadow: "none" } : { s: "12px", e: "auto", b: "60px", w: "380px", h: "440px", hh: "auto", border: "1px solid var(--content-border-color)", rad: "12px", shadow: dark ? "none" : "0 12px 32px -12px rgb(0 0 0 / 25%)" };
+    const O = touch ? { justify: "flex-end", w: "100%", h: "calc(100% - " + (G.st + 16) + "px)", r: "16px 16px 0 0" } : { justify: "center", w: "540px", h: "560px", r: "12px" };
+    const q = s.destQ.trim().toLowerCase();
+    const destList = CATS.filter((c) => !q || (c.name + " " + (c.parent || "") + " " + c.desc).toLowerCase().includes(q)).map((c) => ({ ...catV(c), isSel: c.id === s.cat, sel: String(c.id === s.cat), bg: c.id === s.cat ? "var(--selected)" : "transparent", pick: () => this.setState({ cat: c.id, sheet: null, destQ: "", announce: "Category " + c.name }, () => this.touch()) }));
+    const photos = ["IMG_2041.jpeg", "IMG_2040.jpeg", "IMG_2038.jpeg", "IMG_2031.jpeg", "IMG_2027.jpeg", "IMG_2019.jpeg"].map((name, i) => ({ name, bg: i % 2 ? "var(--primary-low)" : "var(--primary-low-mid)", pick: () => this.pick(name) }));
+    const K = { tray: dark ? "#161618" : "#D3D5DB", key: dark ? "#3A3A3D" : "#FFFFFF", key2: dark ? "#26262A" : "#ABB0BA", ink: dark ? "#ECEBF0" : "#1B1A1F", line: dark ? "#2A2A2E" : "#C3C6CD", keyH: G.keyH + "px" };
+    const press = (k) => (e) => { e.preventDefault(); this.typeKey(k); };
+    const key = (label, o = {}) => ({ label, flex: o.flex || "1 1 0", bg: o.mod ? K.key2 : K.key, font: o.mod ? "15px/1 system-ui,sans-serif" : "20px/1 system-ui,sans-serif", press: press(o.k || label) });
+    K.rows = [{ pad: "0", keys: "qwertyuiop".split("").map((c) => key(c)) }, { pad: "18px", keys: "asdfghjkl".split("").map((c) => key(c)) }, { pad: "0", keys: [key("⇧", { mod: 1, flex: "1.4 1 0", k: "" }), ..."zxcvbnm".split("").map((c) => key(c)), key("⌫", { mod: 1, flex: "1.4 1 0" })] }, { pad: "0", keys: [key("123", { mod: 1, flex: "2.4 1 0", k: "1" }), key("space", { flex: "6 1 0", k: " " }), key("return", { mod: 1, flex: "2.4 1 0" })] }];
+    K.pred = ["the", "morning", "quieter"].map((w) => ({ label: w, press: press(w + " ") }));
+    const posts = [{ name: "Maya Chen", initial: "M", color: "#A0527A", when: "1d", html: "<p>What small habit made your mornings easier? Mine is leaving the curtains open so the light wakes me before the alarm.</p>" }, { name: "Ravi Patel", initial: "R", color: "#6A7F2E", when: "20h", html: "<p>I keep the kettle filled the night before. Two minutes saved, but it feels like the morning has already started.</p>" }, { name: "Jun", initial: "J", color: "#56708A", when: "3h", mine: !s.signedOut, html: s.edited && s.intent === "edit" ? s.html : REPLY_MINE }];
+    if (s.published && s.intent === "reply") posts.push({ name: "Jun", initial: "J", color: "#56708A", when: "now", html: isMd ? mdToHtml(s.md) : s.html, highlight: true });
+    const postsV = posts.map((p) => ({ ...p, html: { __html: p.html }, mine: !!p.mine, bg: p.highlight ? "var(--highlight-low)" : "transparent" }));
+    const dlgs = {
+      discard: { title: s.intent.startsWith("edit") ? "Do you want to discard your changes?" : "Do you want to discard your post?", actions: [act("Keep editing", this.closeSheet, true), act("Save draft for later", () => { this.setState({ sheet: null }); this.saveClose(); }), { ...act(s.intent.startsWith("edit") ? "Cancel edit" : "Discard", this.discard), ink: "var(--danger)", bd: "1px solid var(--danger)" }] },
+      pending: { title: "Post Needs Approval", body: "Your post was submitted but it needs to be approved by a moderator before it will appear. Please be patient.", actions: [act("OK", () => this.setState({ sheet: null, pendingNotice: true }), true)] },
+      login: { title: "Log In", login: true, actions: [act("Log In", () => {}, true), act("Sign Up", () => {})] },
+    };
+    const dlg = dlgs[s.sheet]; const dlgV = dlg ? { ...dlg, hasBody: !!dlg.body, login: !!dlg.login } : { actions: [] };
+    const newHtml = isMd ? mdToHtml(s.md) : s.html;
+    return {
+      scheme: dark ? "dark" : "light", dir: this.props.rtl ? "rtl" : "ltr", rootRef: this.rootRef, scrollRef: this.scrollRef, onKey: this.onKey, announce: s.announce,
+      L: { w: G.w + "px", h: G.h + "px", r: G.r + "px", st: G.st + "px", pageTop: touch ? G.st + "px" : "0", pagePad: touch ? "14px 16px 24px" : "24px 0 48px", minPad: touch ? "8px" : "0" },
+      isTouch: touch, isDesktop: desk, online: this.sim().net !== "offline",
+      showPage: s.view === "page" || desk, signedIn: !s.signedOut, pendingNotice: s.pendingNotice, drafts: s.drafts, hasDrafts: s.view === "page" && s.drafts.length > 0,
+      isFeed: s.page === "feed" || s.page === "category", isTopic: s.page === "topic", isNewTopic: s.page === "newtopic", feed: FEED, openNew: this.openNew, openReply: this.openReply, openEdit: this.openEdit,
+      topicTitle: TITLE, posts: postsV, closed: s.closed, canReply: !s.closed && s.view === "page", newPost: { crumb: cv.path, title: s.title, html: { __html: newHtml } },
+      minimized: s.view === "page" && s.minimized, minLabel: lb.action, minTitle: s.title || (s.intent === "reply" ? "Ravi Patel" : "Untitled"), resume: this.resume,
+      showComposer: composerOpen, C, composerLabel: lb.action, saveClose: this.saveClose, minimize: this.minimize,
+      toggleFull: () => this.setState({ full: !s.full, sheet: null }), fullLabel: s.full ? "Exit fullscreen" : "Fullscreen", fullIcon: s.full ? "fa-solid fa-compress" : "fa-solid fa-expand",
+      ds, submit: this.submit, primaryLabel: lb.primary, submitting: s.submitting, actionTitle: lb.action, actionIcon: lb.icon,
+      banner: !!BN, bn: BN || { actions: [] },
+      showDest: s.intent === "new" || s.intent === "editFirst", cat: cv, openDest: () => { this.blurField(); this.setState({ sheet: "dest", kb: false }); }, destAria: "Category: " + cv.path + ", " + cv.visText + ". Change",
+      isReply: s.intent === "reply", replyOpen: s.replyOpen, replyOpenStr: String(s.replyOpen), replyChevron: s.replyOpen ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down", replyAria: "Reply to Ravi Patel. " + (s.replyOpen ? "Hide" : "Show") + " post", toggleReply: () => this.setState({ replyOpen: !s.replyOpen }),
+      isEdit: s.intent === "edit" || s.intent === "editFirst", reasonOpen: s.reasonOpen, reasonClosed: !s.reasonOpen, openReason: () => this.setState({ reasonOpen: true }), reason: s.reason, onReason: (e) => this.setState({ reason: e.target.value }),
+      showTitle: needTitle, title: s.title, titleRef: this.titleRef, titleInvalid: String(!!s.errors.title), titleErrId: s.errors.title ? "fmc3-title-err" : undefined, hasErrTitle: !!s.errors.title, errTitle: s.errors.title, fakeTitleCaret: s.fakeTitleCaret && !s.title,
+      onTitle: (e) => { const errors = { ...s.errors }; delete errors.title; this.setState({ title: e.target.value, errors, fakeTitleCaret: false }); this.touch(); },
+      onTitleFocus: () => this.setState({ kb: touch, field: "title", fakeTitleCaret: false, panel: s.panel === "format" ? null : s.panel }),
+      showSimilar: s.intent === "new" && s.similar !== "dismissed" && s.title.trim().length >= 12, similarOpen: s.similar === "open", similarOpenStr: String(s.similar === "open"), similarChevron: s.similar === "open" ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down", similar: SIMILAR,
+      toggleSimilar: () => this.setState({ similar: s.similar === "open" ? "collapsed" : "open" }), dismissSimilar: () => this.setState({ similar: "dismissed", announce: "Dismissed" }),
+      showRule: needTitle, isRich, bodyRef: this.bodyRef, bodyEmpty, bodyPh: s.intent === "reply" ? "Type here. Drag or paste images." : "Type here. Drag or paste images.", bodyLabel: "Post", bodyInvalid: String(!!s.errors.body),
+      onBodyInput: () => { const errors = { ...s.errors }; delete errors.body; if (s.errors.body) this.setState({ errors }); this.sync(true); this.caretIntoView(); },
+      onBodyFocus: () => { if (isRich) this.unfake(false); this.setState({ kb: touch, field: "body" }); },
+      onBodyClick: this.onBodyClick,
+      isMdEdit: isMd && !(touch && s.preview), md: s.md, mdRef: this.mdRef,
+      onMd: (e) => { const errors = { ...s.errors }; delete errors.body; this.setState({ md: e.target.value, errors }); this.touch(); },
+      onMdSelect: (e) => { const t = e.target; this._taRange = [t.selectionStart, t.selectionEnd]; const ctx = t.selectionStart !== t.selectionEnd ? "text" : "caret"; if (ctx !== s.ctx) this.setState({ ctx }); },
+      showPreviewInline: touch && isMd && s.preview, previewHtml: { __html: isMd ? mdToHtml(s.md) : "" }, previewCol,
+      hasErrBody: !!s.errors.body, errBody: s.errors.body, upBanner: s.upBanner, retryMdUpload: this.retryMdUpload,
+      panelFormat: fmtOpen && composerOpen, blockOpts, fmtBtns, keep: this.keep,
+      panelLink: s.panel === "link", link: s.link, onLinkUrl: (e) => this.setState({ link: { ...s.link, url: e.target.value } }), onLinkText: (e) => this.setState({ link: { ...s.link, text: e.target.value } }), insertLink: this.insertLink, cancelPanel: () => { this.setState({ panel: null }); this.focusBody(); },
+      panelAlt: s.panel === "alt", altVal: s.alt, onAlt: (e) => this.setState({ alt: e.target.value }), saveAlt: this.saveAlt,
+      strip, stripLabel: s.ctx === "text" ? "Selection tools" : s.ctx === "link" ? "Link tools" : s.ctx === "image" ? "Photo tools" : "Composer tools",
+      showHideKb: kbOpen && s.ctx === "caret", hideKb: () => { this.blurField(); this.setState({ kb: false }); },
+      bottomH: (moreOpen ? moreH : kbOpen ? kbH : G.safe || 0) + "px", bottomBg: kbOpen ? K.tray : "var(--secondary)", kbOpen, K,
+      sheetMore: moreOpen && composerOpen, M, moreInsert, modeSwitch, switchMode: this.switchMode, showPreviewRow: isMd, previewStr: String(s.preview), previewState: s.preview ? "On" : "Off", togglePreview: () => this.setState({ preview: !s.preview, sheet: touch ? null : "more" }),
+      discardLabel: s.intent.startsWith("edit") ? "Cancel edit" : "Discard", askDiscard: () => this.setState({ sheet: "discard" }), closeSheet: this.closeSheet,
+      sheetDest: s.sheet === "dest", O, destQ: s.destQ, onDestQ: (e) => this.setState({ destQ: e.target.value }), destList, destEmpty: destList.length === 0,
+      sheetPhoto: s.sheet === "photo", photos,
+      sheetPoll: s.sheet === "poll", pollOpts: s.poll.opts, onPollOpts: (e) => this.setState({ poll: { opts: e.target.value, err: "" } }), hasPollErr: !!s.poll.err, pollErr: s.poll.err, insertPoll: this.insertPoll,
+      sheetDialog: !!dlg, dlg: dlgV,
+    };
+  }
+  onKey = (e) => {
+    const s = this.state;
+    if (e.key === "Escape") { if (s.sheet) { e.stopPropagation(); e.preventDefault(); return this.closeSheet(); } if (s.panel) { e.preventDefault(); this.setState({ panel: null }); return this.focusBody(); } if (!this.touchy() && s.view === "composer") return this.minimize(); }
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && s.view === "composer") { e.preventDefault(); this.submit(); }
+    if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K") && s.view === "composer" && s.field === "body") { e.preventDefault(); this.openLink(); }
+  };
+}
+</script>
+</body>
+</html>

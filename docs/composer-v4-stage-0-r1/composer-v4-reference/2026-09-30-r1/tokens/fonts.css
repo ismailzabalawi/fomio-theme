@@ -1,0 +1,5 @@
+/* Fonts. In production these are Discourse site settings, not theme CSS:
+   base_font = Source Sans Pro · heading_font = Roboto Slab · mono = JetBrains Mono.
+   Discourse self-hosts them at 400 + 700 only, so the system uses only those weights.
+   The Google Fonts request below exists for previews outside Discourse. */
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Slab:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap");

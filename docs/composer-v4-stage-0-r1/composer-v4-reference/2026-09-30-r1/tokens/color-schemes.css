@@ -1,0 +1,58 @@
+/* ============================================================
+   Fomio colour schemes — the 12 Discourse colour-scheme slots.
+   These are the ONLY hand-picked colours in the system. Everything else
+   derives from them, the way core's color_transformations.scss does.
+   Ships to Discourse as about.json → color_schemes (see theme/about.json).
+   Light = "Fomio"; Dark = "Fomio AMOLED" (true-black ground).
+   ============================================================ */
+:root {
+  --primary: #1B1A1F;
+  --secondary: #FFFFFF;
+  --tertiary: #5B3FD6;
+  --quaternary: #4A2FBF;
+  --header-background: #FFFFFF;
+  --header-primary: #1B1A1F;
+  --highlight: #E7E0FF;
+  --selected: #EEEBFA;
+  --hover: #F4F3F7;
+  --danger: #C62D3A;
+  --success: #1D7F4A;
+  --love: #D6245C;
+  --on-tertiary: #FFFFFF;
+  color-scheme: light;
+}
+[data-scheme="dark"] {
+  --primary: #ECEBF0;
+  --secondary: #000000;
+  --tertiary: #A58FFF;
+  --quaternary: #BFAFFF;
+  --header-background: #000000;
+  --header-primary: #ECEBF0;
+  --highlight: #2B2257;
+  --selected: #1B1826;
+  --hover: #111114;
+  --danger: #FF6B78;
+  --success: #4CD48A;
+  --love: #FF5C8D;
+  --on-tertiary: #000000;
+  color-scheme: dark;
+}
+/* Derived ramp — same names core exposes, computed from the slots. */
+:root, [data-scheme="dark"] {
+  --primary-very-low: color-mix(in srgb, var(--primary) 3%, var(--secondary));
+  --primary-low: color-mix(in srgb, var(--primary) 10%, var(--secondary));
+  --primary-low-mid: color-mix(in srgb, var(--primary) 30%, var(--secondary));
+  --primary-400: color-mix(in srgb, var(--primary) 48%, var(--secondary));
+  --primary-medium: color-mix(in srgb, var(--primary) 62%, var(--secondary));
+  --primary-high: color-mix(in srgb, var(--primary) 78%, var(--secondary));
+  --primary-very-high: color-mix(in srgb, var(--primary) 90%, var(--secondary));
+  --tertiary-very-low: color-mix(in srgb, var(--tertiary) 8%, var(--secondary));
+  --tertiary-low: color-mix(in srgb, var(--tertiary) 18%, var(--secondary));
+  --tertiary-medium: color-mix(in srgb, var(--tertiary) 50%, var(--secondary));
+  --tertiary-high: color-mix(in srgb, var(--tertiary) 80%, var(--secondary));
+  --highlight-bg: var(--highlight);
+  --highlight-low: color-mix(in srgb, var(--highlight) 50%, var(--secondary));
+  --danger-low: color-mix(in srgb, var(--danger) 12%, var(--secondary));
+  --success-low: color-mix(in srgb, var(--success) 12%, var(--secondary));
+  --love-low: color-mix(in srgb, var(--love) 12%, var(--secondary));
+}

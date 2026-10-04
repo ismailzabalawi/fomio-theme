@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="../styles.css">
+</helmet>
+<header style="height:60px;box-sizing:border-box;background:var(--header-background);color:var(--header-primary);border-bottom:1px solid var(--content-border-color)">
+  <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:888px;height:100%;margin:0 auto;padding:0 24px;box-sizing:border-box;display:flex;align-items:center;gap:24px">
+      <a href="#" style="font:700 26px/1 var(--heading-font-family);letter-spacing:-0.02em;color:var(--header-primary);text-decoration:none">fomio</a>
+      <label style="flex:1;max-width:520px;margin:0 auto;position:relative;display:flex;align-items:center">
+        <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;font-size:14px;color:var(--primary-medium)"></i>
+        <input aria-label="Search" placeholder="Search" defaultValue="{{ query }}" style="width:100%;height:40px;box-sizing:border-box;padding:0 12px 0 36px;border:1px solid var(--primary-low);border-radius:8px;background:var(--primary-very-low);color:var(--primary);font:16px/1 var(--font-family)" style-focus="outline:none;border-color:var(--tertiary);box-shadow:0 0 0 1px var(--tertiary);background:var(--secondary)">
+      </label>
+      <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:4px">
+          <button aria-label="Notifications" style="position:relative;width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--primary-medium);font-size:18px;cursor:pointer" style-hover="background:var(--d-hover);color:var(--primary)">
+            <i class="fa-regular fa-bell"></i>
+            <sc-if value="{{ hasUnread }}"><span style="position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:999px;background:var(--tertiary);color:var(--on-tertiary);font:700 11px/18px var(--font-family)">{{ unread }}</span></sc-if>
+          </button>
+          <button aria-label="Profile" style="width:40px;height:40px;border:0;border-radius:50%;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--d-hover)">
+            <span style="width:32px;height:32px;border-radius:50%;background:#56708A;color:#fff;font:700 15px/32px var(--font-family);text-align:center">J</span>
+          </button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ signedOut }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px">
+          <a href="#" style="display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:8px;background:var(--primary-low);color:var(--primary);font:700 16px/1 var(--font-family);text-decoration:none" style-hover="background:var(--primary-low-mid)">Sign Up</a>
+          <a href="#" style="display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 16px/1 var(--font-family);text-decoration:none" style-hover="background:var(--quaternary)">Log In</a>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+    <div style="height:100%;padding:0 8px 0 16px;display:flex;align-items:center;gap:8px">
+      <a href="#" style="font:700 24px/1 var(--heading-font-family);letter-spacing:-0.02em;color:var(--header-primary);text-decoration:none;margin-right:auto">fomio</a>
+      <sc-if value="{{ signedOut }}" hint-placeholder-val="{{ false }}">
+        <a href="#" style="display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:8px;background:var(--tertiary);color:var(--on-tertiary);font:700 15px/1 var(--font-family);text-decoration:none">Log In</a>
+      </sc-if>
+      <button aria-label="Search" style="width:44px;height:44px;border:0;border-radius:50%;background:none;color:var(--primary-high);font-size:19px;cursor:pointer" style-hover="background:var(--d-hover)"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </sc-if>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:60},&quot;mobile&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;signedIn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;unread&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;tsType&quot;:&quot;number&quot;},&quot;query&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    const mobile = !!p.mobile, si = p.signedIn !== false;
+    return { desktop: !mobile, mobile, signedIn: si, signedOut: !si, unread: p.unread || 0, hasUnread: (p.unread || 0) > 0, query: p.query || "" };
+  }
+}
+</script>
+</body>
+</html>
