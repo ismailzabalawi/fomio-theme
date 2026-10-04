@@ -1164,6 +1164,15 @@ html.fomio-bottom-bar-visible {
   padding-bottom: env(safe-area-inset-bottom);
   background-color: var(--header_background);
   box-shadow: var(--shadow-header); // 1px ring; no shadow on AMOLED black
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform 150ms ease;
+  }
+}
+
+.fomio-bottom-bar--hidden {
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 .fomio-bottom-bar__item {
@@ -1181,6 +1190,7 @@ html.fomio-bottom-bar-visible {
   border: 0;
   background: none;
   color: var(--header_primary-medium);
+  text-decoration: none;
   font-size: var(--font-down-2);
   font-weight: bold;
   line-height: var(--line-height-medium); // buttons don't inherit it; links do
@@ -1217,6 +1227,24 @@ html.fomio-bottom-bar-visible {
       0 0 0 2px var(--header_background),
       0 0 0 4px var(--tertiary);
   }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+}
+
+// Archived dock: the centre item is a filled control. The fill is the
+// scheme's tertiary, and the glyph is secondary — core's text-on-tertiary.
+.fomio-bottom-bar__item--create .fomio-bottom-bar__icon {
+  width: var(--space-6);
+  border-radius: var(--d-border-radius);
+  background: var(--tertiary);
+  color: var(--secondary);
+
+  .d-icon {
+    color: var(--secondary);
+  }
 }
 
 .fomio-bottom-bar__label {
@@ -1230,6 +1258,7 @@ html.fomio-bottom-bar-visible {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
 
   .badge-notification {
     position: absolute;

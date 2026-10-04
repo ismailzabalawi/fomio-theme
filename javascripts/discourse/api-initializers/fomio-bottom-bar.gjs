@@ -6,10 +6,12 @@
 // navigation system. Everything it links to is native: /latest, the
 // categories page, the composer, core's user menu and the user's profile.
 //
-// Ported from ~/Projects/Fomio/apps/web (fomio-bottom-bar.gjs), without its
-// custom notifications menu, auth intent, messages state, auto-hide or
-// full-page reloads. Labels are core strings; the theme adds none.
+// The dock layout is the archived theme's: five items, a filled New Topic
+// control, and it slides away while scrolling down. Labels, routes, the
+// composer, the user menu, the avatar, and the unread count are Discourse's.
+// The archived custom menu, login intent, and product words are not.
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action, get } from "@ember/object";
 import { service } from "@ember/service";
@@ -22,6 +24,7 @@ import dAvatar from "discourse/ui-kit/helpers/d-avatar";
 import dConcatClass from "discourse/ui-kit/helpers/d-concat-class";
 import dIcon from "discourse/ui-kit/helpers/d-icon";
 import { i18n } from "discourse-i18n";
+import { nextBottomBarHidden } from "../lib/fomio-bottom-bar-scroll";
 
 // Routes where the bar would get in the way: auth flows (core's FooterNav
 // excludes the same list, components/footer-nav.gjs) and admin.
@@ -41,6 +44,37 @@ class Bar extends Component {
   @service appEvents;
   @service siteSettings;
 
+  @tracked scrollHidden = false;
+  #lastScrollY = 0;
+  #onScroll = null;
+
+  constructor(owner, args) {
+    super(owner, args);
+    this.#lastScrollY = window.scrollY;
+    this.#onScroll = () => {
+      const y = window.scrollY;
+      const scrollableHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const hidden = nextBottomBarHidden({
+        y,
+        previousY: this.#lastScrollY,
+        hidden: this.scrollHidden,
+        scrollableHeight,
+        allowHide: this.allowHide,
+      });
+      this.#lastScrollY = y;
+      if (hidden !== this.scrollHidden && !this.isDestroying) {
+        this.scrollHidden = hidden;
+      }
+    };
+    window.addEventListener("scroll", this.#onScroll, { passive: true });
+  }
+
+  willDestroy() {
+    super.willDestroy();
+    window.removeEventListener("scroll", this.#onScroll);
+  }
+
   get routeName() {
     return this.router.currentRouteName ?? "";
   }
@@ -59,6 +93,28 @@ class Bar extends Component {
       !this.routeName.startsWith("admin") &&
       !EXCLUDED_ROUTES.includes(this.routeName)
     );
+  }
+
+  get loginUrl() {
+    return getURL("/login");
+  }
+
+  get prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  // The archived bar stayed put on your own profile. It also stays while
+  // Discourse's user menu is open, and when the reader asked for less motion.
+  get allowHide() {
+    return (
+      !this.prefersReducedMotion &&
+      !this.isProfileActive &&
+      !this.header.userVisible
+    );
+  }
+
+  get isDockHidden() {
+    return this.allowHide && this.scrollHidden;
   }
 
   // Category-scoped lists and the categories page: discovery.categories,
@@ -100,6 +156,10 @@ class Bar extends Component {
 
   get unreadCount() {
     return this.currentUser?.all_unread_notifications_count;
+  }
+
+  get messagesCount() {
+    return this.currentUser?.unread_private_messages;
   }
 
   // Opened from a category page, the composer starts in that category, as
@@ -145,7 +205,14 @@ class Bar extends Component {
         fomio-bottom-bar hides the header avatar the bar replaces. }}
       {{htmlClass "footer-nav-visible fomio-bottom-bar-visible"}}
 
-      <nav class="fomio-bottom-bar" aria-label={{i18n "hamburger_menu"}}>
+      <nav
+        class={{dConcatClass
+          "fomio-bottom-bar"
+          (if this.isDockHidden "fomio-bottom-bar--hidden")
+        }}
+        aria-label={{i18n "hamburger_menu"}}
+        aria-hidden={{if this.isDockHidden "true"}}
+      >
         <a
           href={{getURL "/latest"}}
           class={{dConcatClass
@@ -153,6 +220,7 @@ class Bar extends Component {
             (if this.isHomeActive "active")
           }}
           aria-current={{if this.isHomeCurrent "page"}}
+          tabindex={{if this.isDockHidden "-1"}}
         >
           {{dIcon "house"}}
           <span class="fomio-bottom-bar__label">{{i18n "home"}}</span>
@@ -165,6 +233,7 @@ class Bar extends Component {
             (if this.isCategoriesActive "active")
           }}
           aria-current={{if this.isCategoriesCurrent "page"}}
+          tabindex={{if this.isDockHidden "-1"}}
         >
           {{dIcon "list"}}
           <span class="fomio-bottom-bar__label">
@@ -176,16 +245,42 @@ class Bar extends Component {
           {{#if this.currentUser.can_create_topic}}
             <button
               type="button"
-              class="fomio-bottom-bar__item"
+              class="fomio-bottom-bar__item fomio-bottom-bar__item--create"
+              tabindex={{if this.isDockHidden "-1"}}
               {{on "click" this.newTopic}}
             >
-              {{dIcon "plus"}}
+              <span class="fomio-bottom-bar__icon">{{dIcon "plus"}}</span>
+              <span class="fomio-bottom-bar__label">
+                {{i18n "topic.create"}}
+              </span>
+            </button>
+          {{else}}
+            <button
+              type="button"
+              class="fomio-bottom-bar__item fomio-bottom-bar__item--create"
+              disabled
+              tabindex={{if this.isDockHidden "-1"}}
+            >
+              <span class="fomio-bottom-bar__icon">{{dIcon "plus"}}</span>
               <span class="fomio-bottom-bar__label">
                 {{i18n "topic.create"}}
               </span>
             </button>
           {{/if}}
+        {{else}}
+          <a
+            href={{this.loginUrl}}
+            class="fomio-bottom-bar__item fomio-bottom-bar__item--create"
+            tabindex={{if this.isDockHidden "-1"}}
+          >
+            <span class="fomio-bottom-bar__icon">{{dIcon "plus"}}</span>
+            <span class="fomio-bottom-bar__label">
+              {{i18n "topic.create"}}
+            </span>
+          </a>
+        {{/if}}
 
+        {{#if this.currentUser}}
           <button
             type="button"
             class={{dConcatClass
@@ -194,6 +289,7 @@ class Bar extends Component {
             }}
             aria-haspopup="true"
             aria-expanded={{if this.header.userVisible "true" "false"}}
+            tabindex={{if this.isDockHidden "-1"}}
             {{on "click" this.toggleUserMenu}}
           >
             <span class="fomio-bottom-bar__icon">
@@ -217,10 +313,36 @@ class Bar extends Component {
               (if this.isProfileActive "active")
             }}
             aria-current={{if this.isProfileActive "page"}}
+            tabindex={{if this.isDockHidden "-1"}}
           >
             <span class="fomio-bottom-bar__icon">
               {{dAvatar this.currentUser imageSize="small" ignoreTitle=true}}
+              {{#if this.messagesCount}}
+                <span class="badge-notification unread-notifications">
+                  {{this.messagesCount}}
+                </span>
+              {{/if}}
             </span>
+            <span class="fomio-bottom-bar__label">{{i18n "user.profile"}}</span>
+          </a>
+        {{else}}
+          <a
+            href={{this.loginUrl}}
+            class="fomio-bottom-bar__item"
+            tabindex={{if this.isDockHidden "-1"}}
+          >
+            <span class="fomio-bottom-bar__icon">{{dIcon "far-bell"}}</span>
+            <span class="fomio-bottom-bar__label">
+              {{i18n "user.notifications"}}
+            </span>
+          </a>
+
+          <a
+            href={{this.loginUrl}}
+            class="fomio-bottom-bar__item"
+            tabindex={{if this.isDockHidden "-1"}}
+          >
+            {{dIcon "user"}}
             <span class="fomio-bottom-bar__label">{{i18n "user.profile"}}</span>
           </a>
         {{/if}}

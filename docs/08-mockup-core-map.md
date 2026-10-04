@@ -45,7 +45,7 @@ decision), *Drop* (no core source; leave out).
 
 | Element | Source | Detail |
 |---|---|---|
-| Five items, signed-out two | Built | `below-footer`, `fomio-bottom-bar.gjs`; labels core i18n (03) |
+| Five items, including signed out | Built | `below-footer`, `fomio-bottom-bar.gjs`. Signed out, Create, Notifications and Profile go to core's `/login`. New Topic is a filled control. The dock slides away on scroll (03) |
 | 56px + safe area | Variable | `--footer-nav-height` on `html.fomio-bottom-bar-visible`; core's footer-nav layout reads it |
 | Active item violet | Theme | `.active` → `--tertiary` |
 | Profile avatar with ring | Built | `ui-kit/helpers/d-avatar.js`, `imageSize="small"` |
