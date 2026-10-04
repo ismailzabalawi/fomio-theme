@@ -31,6 +31,7 @@ pending decisions and implementation authorization remain explicit.
 | [18 — Composer v4 r1 reconciliation](18-composer-v4-r1-reconciliation.md) | Exact r1 record/copy impact of D1–D10 and Ismail's approved policy defaults; build reference still pending |
 | [19 — Composer v4 native audit and proposed build reference](19-composer-v4-native-audit-and-proposed-build-reference.md) | Pinned-source findings for D3–D7, P-1–P-4 and LT; review composition and remaining runtime gates |
 | [20 — Composer v4 implementation start](20-composer-v4-implementation-start.md) | First local implementation slice, user-approved offline warning, deferred safeguard and native testing gate |
+| [26 — Commit a060586](26-october-implementation-record.md) | The monorepo import. Does not revise 00–25 |
 
 **State as of 2026-09-26:** restarted. `main` has the applied Phase 1
 configuration record, the Phase 2A mobile bottom bar and the first shell
